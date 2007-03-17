@@ -1,3 +1,5 @@
+(require 'yacc)
+(require 'lexer)
 (defpackage #:teste-yacc
   (:export teste)
   (:use #:cl #:yacc #:lexer))
@@ -33,11 +35,11 @@
    )
 
   (staff-block
-   (staff-block staff-block)
+   (NEW-STAFF music-expression staff-block)
    (NEW-STAFF music-expression))
   
   (music-expression
-   (music-expression music-expression)
+   (|{| notes |}| music-expression)
    (|{| notes |}|))
 
   (notes
