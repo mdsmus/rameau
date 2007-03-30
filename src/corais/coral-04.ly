@@ -77,6 +77,27 @@
         d b e4 a,^\fermata
         \bar "|."
       }
+      \new ChordNames \with {
+        \override BarLine #'bar-size = #0
+        voltaOnThisStaff = ##t
+        \consists Bar_engraver
+        \consists "Volta_engraver"
+      }
+      {
+        \chordmode {
+          a4:m
+          c/e f c2
+          d4:m g8 g:7 c4 fis:dim
+          g b:dim/d a:m d:m
+          b:dim/d e8 e:7 a4 g
+          c c/e g:7 d:m/f
+          a:m a:m/c e a
+          d/fis d c/e g:7
+          c d8 d:7 g4 c8/e fis:dim7
+          g4 d8/fis gis:dim7 a4:m d:m/f
+          b8:m7.5-/d b:m7.5- e4 a
+        }
+      }
     >>
   >>
-  }
+}
