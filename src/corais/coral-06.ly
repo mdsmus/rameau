@@ -115,6 +115,29 @@
           \bar "|."
         }
       }
+      \new ChordNames \with {
+        \override BarLine #'bar-size = #0
+        voltaOnThisStaff = ##t
+        \consists Bar_engraver
+        \consists "Volta_engraver"
+      }
+      {
+        \chordmode {
+          b4:m
+          d/fis g d8/fis d:7/e d4
+          e:7/gis a:m d gis:dim/b
+          a e:m b:m e8:m/g b:m/fis
+          %% dúvida acorde 1
+          cis4:m7.5-/e fis8 fis:7 b4:m
+          a/cis
+          d fis:m a ais:dim7
+          b:m eis:dim fis b:m
+          e/gis e d/fis a
+          b:7/dis e8 e:7 fis4:m/a g/b
+          a/cis e8 ais:dim/e b4:m e8:m/g b:m/fis
+          cis4:m7.5-/e fis b
+        }
+      }
     >>
   >>
 }
