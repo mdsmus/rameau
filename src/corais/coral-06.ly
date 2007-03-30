@@ -2,20 +2,15 @@
   title = "Choral #06"
   composer = "Johann Sebastian Bach"
 }
-
-\relative c' {
+\score {
   \new StaffGroup <<
-
     <<
-
       %% "SOPRANO"
-
       \new Staff {
         \key d \major
         \clef soprano
         \relative c'' {
           \partial 4
-
           d
           d b8 cis d e fis4
           e e d^\fermata d
@@ -30,12 +25,9 @@
           b b a^\fermata d
           cis b8 cis d4 e8 d
           cis2 b4^\fermata
-
           \bar "|."
         }
       }
-
-
 
       %% "CONTRALTO"
       \new Staff {
@@ -43,7 +35,6 @@
         \clef alto
         \relative c' {
           \partial 4 
-
           fis8 g
           a4 g a a
           b a8 g fis4^\fermata gis
@@ -58,7 +49,6 @@
           a gis fis^\fermata gis
           a gis8 ais b4 b8 fis
           g4 fis8 e d4^\fermata
-
           \bar "|."
         }
       }
@@ -69,7 +59,6 @@
         \clef tenor
         \relative c' {
           \partial 4
-
           d
           d d d d
           d c a^\fermata b
@@ -84,7 +73,6 @@
           fis e8 d cis4^\fermata d
           e e fis b,
           b ais fis^\fermata
-
           \bar "|."
         }
       }
@@ -96,7 +84,6 @@
         \clef bass
         \relative c' {
           \partial 4
-
           b
           fis g fis8 e d4
           gis a d,^\fermata b
@@ -111,7 +98,6 @@
           dis, e a,^\fermata b
           cis8 d e4 b'8 a g fis
           e4 fis b,^\fermata
-
           \bar "|."
         }
       }
@@ -140,4 +126,12 @@
       }
     >>
   >>
+}
+\paper {
+  #(set-paper-size "a4")
+  line-width = 17.5\cm
+  bottom-margin = 1.5\cm
+  left-margin = 2\cm
+  print-page-number = ##t
+  ragged-last-bottom = ##t
 }

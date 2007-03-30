@@ -3,17 +3,14 @@
   composer = "Johann Sebastian Bach"
 }
 
-\relative c' {
+\score {
   \new StaffGroup <<
     <<
-
       %% "SOPRANO"
-
       \new Staff {
         \clef soprano
         \relative c'' {
           \partial 4
-
           c
           c8 b a b c d e4
           d d c^\fermata c
@@ -25,19 +22,15 @@
           a a g^\fermata c
           b a8 b c4 d8 c
           b2 a4^\fermata
-
           \bar "|."
         }
       }
-
-
 
       %% "CONTRALTO"
       \new Staff {
         \clef alto
         \relative c'' {
           \partial 4 
-          
           a
           g f e8 d c4
           d8 e f4 f^\fermata fis
@@ -49,7 +42,6 @@
           f4 f e^\fermata a
           g a gis8 b a g
           f4 e8 d cis4^\fermata
-
           \bar "|."
         }
       }
@@ -59,7 +51,6 @@
         \clef tenor
         \relative c' {
           \partial 4
-
           e
           e8 d c4 c8 b a g
           a4 b c^\fermata d
@@ -71,7 +62,6 @@
           c8 b c d e4^\fermata ees
           d d e a,
           a gis e^\fermata
-
           \bar "|."
         }
       }
@@ -81,7 +71,6 @@
         \clef bass
         \relative c' {
           \partial 4
-
           a
           e f8 g a b c4
           f, g c,^\fermata a'
@@ -93,7 +82,6 @@
           a8 g a b c4^\fermata fis,
           g f e8 c f e
           d c e4 a,^\fermata
-
           \bar "|."
         }
       }
@@ -121,4 +109,12 @@
       }
     >>
   >>
+}
+\paper {
+  #(set-paper-size "a4")
+  line-width = 17.5\cm
+  bottom-margin = 1.5\cm
+  left-margin = 2\cm
+  print-page-number = ##t
+  ragged-last-bottom = ##t
 }

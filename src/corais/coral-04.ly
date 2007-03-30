@@ -1,11 +1,12 @@
 \header{
-  title = "Choral 04"
-  composer = "J.S. Bach"}
+  title = "Choral #04"
+  composer = "Johann Sebastian Bach"
+}
 
-\relative c'{
+\score {
   \new StaffGroup <<
     <<
-     % "soprano"
+      %% "SOPRANO"
       \new Staff{
         \clef soprano
         \partial 4
@@ -21,10 +22,11 @@
           a16 b c8 a4 g^\fermata c
           b a8 b c4 d8 c
           b2 a4^\fermata
-        \bar "|."
-      }}
+          \bar "|."
+        }
+      }
 
-     % "Contralto"
+      %% "CONTRALTO"
       \new Staff{
         \clef alto
         \partial 4
@@ -42,7 +44,7 @@
         \bar "|."
       }
 
-     % "Tenor"
+      %% "TENOR"
       \new Staff{
         \clef tenor
         \partial 4
@@ -60,7 +62,7 @@
         \bar "|."
       }
 
-     % "Baixo"
+      %% "BAIXO"
       \new Staff{
         \clef bass
         \partial 4
@@ -100,4 +102,12 @@
       }
     >>
   >>
+}
+\paper {
+  #(set-paper-size "a4")
+  line-width = 17.5\cm
+  bottom-margin = 1.5\cm
+  left-margin = 2\cm
+  print-page-number = ##t
+  ragged-last-bottom = ##t
 }
