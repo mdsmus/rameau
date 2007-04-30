@@ -102,6 +102,9 @@
       }
     >>
   >>
+
+\midi { }
+
 }
 \paper {
   #(set-paper-size "a4")
