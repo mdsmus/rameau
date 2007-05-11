@@ -1,10 +1,12 @@
 (require 'yacc)
 (require 'lexer)
+(load "formato.lisp")
 (defpackage #:teste-yacc
   (:export teste)
-  (:use #:cl #:yacc #:lexer))
+  (:use #:cl #:yacc #:lexer #:formato))
 
 (in-package #:teste-yacc)
+
 
 (deflexer string-lexer
   ("(c|d|e|f|g|a|b)(is|es|isis|eses)?" (return (values 'NOTE %0)))
@@ -19,21 +21,6 @@
   ("\\}" (return (values '|}| '|}|)))
   )
 
-(defun flatten-list (l)
-  (when l
-    (if (atom l)
-        l
-        (if (atom (car l))
-            (cons (car l) (flatten-list (cdr l)))
-            (nconc (flatten-list (car l)) (flatten-list (cdr l)))))))
-
-
-
-(defun flatten (&rest lists)
-  (princ "saida: ")
-  (print lists)
-  ;(reduce #'nconc (mapcar #'flatten-list lists)))
-  (flatten-list lists))
 
 
 (define-parser *expression-parser*
