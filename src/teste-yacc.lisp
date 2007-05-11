@@ -4,7 +4,7 @@
 (defpackage #:teste-yacc
   (:export teste)
   (:use #:cl #:yacc #:lexer #:formato))
-
+(use-package '#:formato)
 (in-package #:teste-yacc)
 
 
@@ -21,7 +21,17 @@
   ("\\}" (return (values '|}| '|}|)))
   )
 
+(defun parse-notes (_ notes __)
+  (declare (ignore _ __))
+  (emite-sequencia notes))
 
+(defun parse-expression(_ notes __ expr)
+  (declare (ignore _ __))
+  (append (emite-sequencia notes)
+          expr))
+
+(defun parse-note (note note-expr)
+  (cons note note-expr))
 
 (define-parser *expression-parser*
   (:start-symbol music-block)
@@ -39,18 +49,18 @@
    (NEW-STAFF music-expression))
   
   (music-expression
-   (|{| notes |}| music-expression)
-   (|{| notes |}|))
+   (|{| notes |}| music-expression #'parse-expression)
+   (|{| notes |}| #'parse-notes))
 
   (notes
-   note-expr
-   (notes note-expr #'flatten))
+   (note-expr #'list)
+   (notes note-expr #'parse-note))
   
   (note-expr
-   NOTE
-   (NOTE DUR)
-   (NOTE DUR articulation-expr)
-   (NOTE articulation-expr))
+   (NOTE #'cria-nota)
+   (NOTE DUR #'cria-nota)
+   (NOTE DUR articulation-expr #'cria-nota)
+   (NOTE articulation-expr #'cria-nota-artic))
 
   (articulation-expr
    ARTICULATION
