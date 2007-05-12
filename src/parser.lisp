@@ -3,7 +3,7 @@
 (load "formato.lisp")
 
 (defpackage #:parser
-  (:export parser)
+  (:export parse-string parse-file)
   (:use #:cl #:yacc #:lexer #:formato))
 
 (in-package #:parser)
@@ -142,24 +142,48 @@
    (articulation-expr ARTICULATION))
   )
 
-(parse-with-lexer (string-lexer "{c d e f}") *expression-parser*)
-(parse-with-lexer (string-lexer "<< { c d e f } >>") *expression-parser*)
 
-(parse-with-lexer (string-lexer "<<
-{ c d e f }
-{ c d e f }
->>") *expression-parser*)
+(defun parse-string (str)
+  (parse-with-lexer (string-lexer str) *expression-parser*))
 
-(parse-with-lexer (string-lexer "<<
-{ c d e f }
-{ c d e f }
-{ c d e f }
->>") *expression-parser*)
+(defun read-entire-file (f &optional (acumulated nil))
+  (multiple-value-bind (l end) (read-line f)
+    (if end
+        (let ((seq (nreverse (cons l acumulated))))
+          (reduce (lambda (x y)
+                    (concatenate 'string x "
+" ;; FIXME
+                                 y))
+                  (cdr seq)
+                  :initial-value (car seq)))
+        (read-entire-file f (cons l acumulated)))))
+                
+
+(defun parse-file (filename)
+  (with-open-file (f filename)
+    (parse-string (read-entire-file f))))
 
 
-(parse-with-lexer (string-lexer "<<
+(parse-string "{c d e f}")
+
+(parse-string "<< { c d e f } >>")
+
+(parse-string "<<
+{ c d e f }
+{ c d e f }
+>>")
+
+(parse-string "<<
+{ c d e f }
+{ c d e f }
+{ c d e f }
+>>")
+
+
+(parse-string "<<
 new Staff { c d e f }
 new Staff { c d e f }
->>") *expression-parser*)
+>>")
 
-(parse-with-lexer (string-lexer "new Staff { c d e f }") *expression-parser*)
+(parse-string "new Staff { c d e f }")
+
