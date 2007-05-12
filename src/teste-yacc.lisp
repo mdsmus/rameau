@@ -23,32 +23,44 @@
 
 (defun parse-notes (_ notes __)
   (declare (ignore _ __))
-  (print "parse-notes")
-  (emite-sequencia notes))
+  (list (emite-sequencia notes)))
 
 (defun parse-expression(_ notes __ expr)
   (declare (ignore _ __))
-  (print "parse-expression")
   (append (list (emite-sequencia notes))
           expr))
 
 (defun parse-note (note note-expr)
-  (print "pn")
-  (print note)
-  (print note-expr)
-  (print "np")
   (append note (list note-expr)))
 
 (defun ignore-first (a b)
   (declare (ignore a))
   b)
 
+(defun parse-standalone-expression (expr)
+  (reduce #'append expr :initial-value nil))
 
-(defun merge-exprs (ign expr1 expr2)
-  (declare (ignore ign))
-  (merge 'list expr1 expr2
+(defun expmerge (exp1 exp2)
+  (merge 'list exp1 exp2
          (lambda (x y)
            (< (inicio x) (inicio y)))))
+
+(defun merge-exprs (expr1 expr2)
+  (expmerge (parse-standalone-expression expr1) (parse-standalone-expression expr2)))
+
+(defun ign-merge-exprs (ign expr1 expr2)
+  (declare (ignore ign))
+  (merge-exprs expr1 expr2))
+
+(defun ignore-first-third (a b c)
+  (declare (ignore a c))
+  b)
+
+(defun merge-many-exprs (_ exprs __)
+  (declare (ignore _ __))
+  ;exprs)
+  (reduce #'expmerge (cdr exprs) :initial-value (car exprs)))
+  
 
 (define-parser *expression-parser*
   (:start-symbol music-block)
@@ -56,13 +68,13 @@
 
   (music-block
    staff-block
-   music-expression
-   (|<<| music-expression |>>|)
-   (|<<| staff-block |>>|)
+   (music-expression #'parse-standalone-expression)
+   (|<<| music-expression |>>| #'merge-many-exprs)
+   (|<<| staff-block |>>| #'ignore-first-third)
    )
 
   (staff-block
-   (NEW-STAFF music-expression staff-block #'merge-exprs)
+   (NEW-STAFF music-expression staff-block #'ign-merge-exprs)
    (NEW-STAFF music-expression #'ignore-first))
   
   (music-expression
@@ -93,8 +105,15 @@
 >>") *expression-parser*)
 
 (parse-with-lexer (string-lexer "<<
+{ c d e f }
+{ c d e f }
+{ c d e f }
+>>") *expression-parser*)
+
+
+(parse-with-lexer (string-lexer "<<
 new Staff { c d e f }
 new Staff { c d e f }
 >>") *expression-parser*)
 
-(print (parse-with-lexer (string-lexer "new Staff { c d e f }") *expression-parser*))
+(parse-with-lexer (string-lexer "new Staff { c d e f }") *expression-parser*)
