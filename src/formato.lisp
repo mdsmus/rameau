@@ -1,5 +1,5 @@
 (defpackage #:formato
-  (:export flatten
+  (:export 
            emite-evento
            move-evento-no-tempo
            movimenta-sequencia
@@ -7,31 +7,36 @@
            emite-acorde
            cria-nota
            cria-nota-artic
-           inicio)
+           inicio
+           concatena-sequencias)
   (:use #:cl))
 
 
 (in-package #:formato)
 
-(export 'inicio)
+#|
+
+Formato interno:
+
+O formato interno é uma lista de eventos. Cada evento é uma nota que soa, e
+soa em uma altura (pitch), por um certo tempo (dur) a partir de um certo
+instante na música (inicio). Isso é representado na struct evento.
+
+Antes disso, no entanto, as notas são processadas pra se extrair a duração e
+a altura. Isso é feito usando a struct nota, que desaparece depois do primeiro
+passo de processamento, quando as notas são transformadas em eventos.
+
+As funções desse arquivo só fazem essa conversão, de notas pra eventos, e
+representam esses eventos, e os manipulam de forma básica.
 
 
-(defun flatten-list (l)
-  (when l
-    (if (atom l)
-        l
-        (if (atom (car l))
-            (cons (car l) (flatten-list (cdr l)))
-            (nconc (flatten-list (car l)) (flatten-list (cdr l)))))))
+|#
 
 
 
-(defun flatten (&rest lists)
-  (flatten-list lists))
-
-
+;; (pitch-from-note nota) - converte "c" em 0, por exemplo
 ;; A priori usar a codificação de Jamary
-(defun nota->pitch (nota)
+(defun pitch-from-note (nota)
   (mod (let
            ((acid
              (let
@@ -54,8 +59,6 @@
               (t (error "droga")))))
        96))
 
-(nota->pitch "c")
-(nota->pitch "ceses")
 
 
 (defstruct nota
@@ -64,7 +67,7 @@
 
 (defun cria-nota (nota &optional (dur 1) (artic nil))
   (declare (ignore artic))
-  (make-nota :pitch (nota->pitch nota) :dur dur))
+  (make-nota :pitch (pitch-from-note nota) :dur dur))
 
 (cria-nota "a")
 (cria-nota "cis" 2)
@@ -81,13 +84,15 @@
 (defun dur (nota)
   (nota-dur nota))
 
-(defun inicio (evento)
-  (evento-inicio evento))
-
 (defstruct evento
   (pitch)
   (dur)
   (inicio))
+
+
+(defun inicio (evento)
+  (evento-inicio evento))
+
 
 (defun emite-evento (nota duracao inicio)
   (make-evento :pitch nota :dur duracao :inicio inicio))
@@ -114,6 +119,15 @@
             (emite-evento (pitch n) (dur n) 0))
           notas))
 
-(defun movimenta-sequencia (seq)
-  (mapcar #'move-evento-no-tempo seq))
+(defun movimenta-sequencia (seq tempo)
+  (mapcar (lambda (x)
+            (move-evento-no-tempo x tempo))
+          seq))
 
+
+(defun fim-da-execucao (seq)
+  (let ((l (first (last seq))))
+    (+ (evento-inicio l) (evento-dur l))))
+
+(defun concatena-sequencias (a b)
+  (nconc a (movimenta-sequencia b (fim-da-execucao a))))

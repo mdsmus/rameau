@@ -1,11 +1,33 @@
 (require 'yacc)
 (require 'lexer)
 (load "formato.lisp")
-(defpackage #:teste-yacc
-  (:export teste)
+
+(defpackage #:parser
+  (:export parser)
   (:use #:cl #:yacc #:lexer #:formato))
 
-(in-package #:teste-yacc)
+(in-package #:parser)
+
+
+;;;; Funções auxiliares para o parser
+
+;; (ignore-first a b) => b
+; Ignora o primeiro argumento
+(defun ignore-first (a b)
+  (declare (ignore a))
+  b)
+
+
+;; (expmerge exp1 exp2) => expressão_nova
+; Junta as duas expressões, executando simultaneamente
+(defun expmerge (exp1 exp2)
+  (merge 'list exp1 exp2
+         (lambda (x y)
+           (< (inicio x) (inicio y)))))
+
+
+
+
 
 
 (deflexer string-lexer
@@ -21,46 +43,70 @@
   ("\\}" (return (values '|}| '|}|)))
   )
 
-(defun parse-notes (_ notes __)
-  (declare (ignore _ __))
-  (list (emite-sequencia notes)))
 
-(defun parse-expression(_ notes __ expr)
+;;;; Funções para fazer o parsing
+
+;; (parse-standalone-music-expression expr)
+; trata uma music expression como se ela estivesse fora de <<>>
+(defun parse-standalone-music-expression (expr)
+  (if (cdr expr)
+      (reduce #'formato::concatena-sequencias expr :initial-value nil)
+      expr))
+
+;; (parse-simultaneous-music-expression _ exprs __)
+; Ignora _ e __ e processa uma music expression como dentro de <<>>
+(defun parse-simultaneous-music-expression (_ exprs __)
+  (declare (ignore _ __))
+  ;exprs)
+  (reduce #'expmerge (cdr exprs) :initial-value (car exprs)))
+
+
+;; (parse-simultaneous-staff-block a b c)
+; Ignora a e c e trata um staff block como dentro de <<>>
+(defun parse-simultaneous-staff-block (a b c)
+  (declare (ignore a c))
+  b)
+
+;; (merge-exprs expr1 expr2)
+; Trata expr1 e expr2 como music expressions que precisam começar
+; do 0 e as junta
+(defun merge-exprs (expr1 expr2)
+  (expmerge (car (parse-standalone-music-expression expr1))
+            (car (parse-standalone-music-expression expr2))))
+
+
+;; (parse-staff-block1 ign expr1 expr2
+; Contrói um staff block a partir de expr1 e expr2.
+; FIXME: tem como dois staff blocks em sequência não soarem simultaneamente?
+(defun parse-staff-block1 (ign expr1 expr2)
+  (declare (ignore ign))
+  (merge-exprs expr1 expr2))
+
+;; (parse-staff-block2 ign staff)
+; retorna staff
+(defun parse-staff-block2 (ign staff)
+  (ignore-first ign staff))
+
+;; (parse-notes-expression _ notes __ expr)
+; processa uma music expression que é uma sequência de notas e
+; outra music expression ignorando delimitadores
+(defun parse-notes-expression(_ notes __ expr)
   (declare (ignore _ __))
   (append (list (emite-sequencia notes))
           expr))
 
-(defun parse-note (note note-expr)
+;; (parse-notes _ notes __)
+; processa uma music expression que é uma sequência de notas
+(defun parse-notes (_ notes __)
+  (declare (ignore _ __))
+  (list (emite-sequencia notes)))
+
+;; (parse-note-sequence note note-expr)
+; processa uma sequência de notas
+(defun parse-note-sequence (note note-expr)
   (append note (list note-expr)))
 
-(defun ignore-first (a b)
-  (declare (ignore a))
-  b)
 
-(defun parse-standalone-expression (expr)
-  (reduce #'append expr :initial-value nil))
-
-(defun expmerge (exp1 exp2)
-  (merge 'list exp1 exp2
-         (lambda (x y)
-           (< (inicio x) (inicio y)))))
-
-(defun merge-exprs (expr1 expr2)
-  (expmerge (parse-standalone-expression expr1) (parse-standalone-expression expr2)))
-
-(defun ign-merge-exprs (ign expr1 expr2)
-  (declare (ignore ign))
-  (merge-exprs expr1 expr2))
-
-(defun ignore-first-third (a b c)
-  (declare (ignore a c))
-  b)
-
-(defun merge-many-exprs (_ exprs __)
-  (declare (ignore _ __))
-  ;exprs)
-  (reduce #'expmerge (cdr exprs) :initial-value (car exprs)))
-  
 
 (define-parser *expression-parser*
   (:start-symbol music-block)
@@ -68,22 +114,22 @@
 
   (music-block
    staff-block
-   (music-expression #'parse-standalone-expression)
-   (|<<| music-expression |>>| #'merge-many-exprs)
-   (|<<| staff-block |>>| #'ignore-first-third)
+   (music-expression #'parse-standalone-music-expression)
+   (|<<| music-expression |>>| #'parse-simultaneous-music-expression)
+   (|<<| staff-block |>>| #'parse-simultaneous-staff-block)
    )
 
   (staff-block
-   (NEW-STAFF music-expression staff-block #'ign-merge-exprs)
-   (NEW-STAFF music-expression #'ignore-first))
+   (NEW-STAFF music-expression staff-block #'parse-staff-block1)
+   (NEW-STAFF music-expression #'parse-staff-block2))
   
   (music-expression
-   (|{| notes |}| music-expression #'parse-expression)
+   (|{| notes |}| music-expression #'parse-notes-expression)
    (|{| notes |}| #'parse-notes))
 
   (notes
    (note-expr #'list)
-   (notes note-expr #'parse-note))
+   (notes note-expr #'parse-note-sequence))
   
   (note-expr
    (NOTE #'cria-nota)
@@ -93,7 +139,7 @@
 
   (articulation-expr
    ARTICULATION
-   (articulation-expr ARTICULATION #'flatten))
+   (articulation-expr ARTICULATION))
   )
 
 (parse-with-lexer (string-lexer "{c d e f}") *expression-parser*)
