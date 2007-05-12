@@ -4,7 +4,7 @@
 (defpackage #:teste-yacc
   (:export teste)
   (:use #:cl #:yacc #:lexer #:formato))
-(use-package '#:formato)
+
 (in-package #:teste-yacc)
 
 
@@ -23,15 +23,32 @@
 
 (defun parse-notes (_ notes __)
   (declare (ignore _ __))
+  (print "parse-notes")
   (emite-sequencia notes))
 
 (defun parse-expression(_ notes __ expr)
   (declare (ignore _ __))
-  (append (emite-sequencia notes)
+  (print "parse-expression")
+  (append (list (emite-sequencia notes))
           expr))
 
 (defun parse-note (note note-expr)
-  (cons note note-expr))
+  (print "pn")
+  (print note)
+  (print note-expr)
+  (print "np")
+  (append note (list note-expr)))
+
+(defun ignore-first (a b)
+  (declare (ignore a))
+  b)
+
+
+(defun merge-exprs (ign expr1 expr2)
+  (declare (ignore ign))
+  (merge 'list expr1 expr2
+         (lambda (x y)
+           (< (inicio x) (inicio y)))))
 
 (define-parser *expression-parser*
   (:start-symbol music-block)
@@ -45,8 +62,8 @@
    )
 
   (staff-block
-   (NEW-STAFF music-expression staff-block)
-   (NEW-STAFF music-expression))
+   (NEW-STAFF music-expression staff-block #'merge-exprs)
+   (NEW-STAFF music-expression #'ignore-first))
   
   (music-expression
    (|{| notes |}| music-expression #'parse-expression)
@@ -80,4 +97,4 @@ new Staff { c d e f }
 new Staff { c d e f }
 >>") *expression-parser*)
 
-(parse-with-lexer (string-lexer "new Staff { c d e f }") *expression-parser*)
+(print (parse-with-lexer (string-lexer "new Staff { c d e f }") *expression-parser*))

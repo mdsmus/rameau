@@ -6,11 +6,15 @@
            emite-sequencia
            emite-acorde
            cria-nota
-           cria-nota-artic)
+           cria-nota-artic
+           inicio)
   (:use #:cl))
 
-(use-package '#:common-lisp)
+
 (in-package #:formato)
+
+(export 'inicio)
+
 
 (defun flatten-list (l)
   (when l
@@ -23,8 +27,6 @@
 
 
 (defun flatten (&rest lists)
-  (princ "saida: ")
-  (print lists)
   (flatten-list lists))
 
 
@@ -48,17 +50,24 @@
               (#\d 14)
               (#\e 28)
               (#\f 41)
-              (#\g 55))))
+              (#\g 55)
+              (t (error "droga")))))
        96))
 
 (nota->pitch "c")
 (nota->pitch "ceses")
 
 
+(defstruct nota
+  (pitch)
+  (dur 1))
+
 (defun cria-nota (nota &optional (dur 1) (artic nil))
   (declare (ignore artic))
-  (list (nota->pitch nota) dur))
+  (make-nota :pitch (nota->pitch nota) :dur dur))
 
+(cria-nota "a")
+(cria-nota "cis" 2)
 
 (defun cria-nota-dur (nota dur)
   (cria-nota nota dur nil))
@@ -67,20 +76,30 @@
   (cria-nota nota 1 artic))
 
 (defun pitch (nota)
-  (first nota))
+  (nota-pitch nota))
 
 (defun dur (nota)
-  (second nota))
+  (nota-dur nota))
+
+(defun inicio (evento)
+  (evento-inicio evento))
+
+(defstruct evento
+  (pitch)
+  (dur)
+  (inicio))
 
 (defun emite-evento (nota duracao inicio)
-  (list nota duracao inicio))
+  (make-evento :pitch nota :dur duracao :inicio inicio))
 
 
 (defun move-evento-no-tempo (evento tempo)
-  (list (first evento) (second evento) (+ (third evento) tempo)))
+  (make-evento :pitch (evento-pitch evento)
+               :dur (evento-dur evento)
+               :inicio (+ (evento-inicio evento) tempo)))
 
 
-(defun emite-sequencia (&rest notas)
+(defun emite-sequencia (notas)
   (let ((seq nil)
         (inicio 0))
     (dolist (n notas)
