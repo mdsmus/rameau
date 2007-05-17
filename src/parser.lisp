@@ -135,43 +135,13 @@
 (defun parse-string (str)
   (parse-with-lexer (string-lexer str) *expression-parser*))
 
-(defun read-entire-file (f &optional (acumulated nil))
-  (multiple-value-bind (l end) (read-line f)
-    (if end
-        (let ((seq (nreverse (cons l acumulated))))
-          (reduce (lambda (x y)
-                    (concatenate 'string x "
-" ;; FIXME
-                                 y))
-                  (cdr seq)
-                  :initial-value (car seq)))
-        (read-entire-file f (cons l acumulated)))))
-                
+(defun file-string (path)
+  "Sucks up an entire file from PATH into a freshly-allocated string,
+      returning two values: the string and the number of bytes read."
+  (with-open-file (s path)
+    (let* ((len (file-length s))
+           (data (make-string len)))
+      (values data (read-sequence data s)))))
 
 (defun parse-file (filename)
-  (with-open-file (f filename)
-    (parse-string (read-entire-file f))))
-
-
-(parse-string "{c d e f}")
-
-(parse-string "<< { c d e f } >>")
-
-(parse-string "<<
-{ c d e f }
-{ c d e f }
->>")
-
-(parse-string "<<
-{ c d e f }
-{ c d e f }
-{ c d e f }
->>")
-
-(parse-string "<<
-new Staff { c d e f }
-new Staff { c d e f }
->>")
-
-(parse-string "new Staff { c d e f }")
-
+  (parse-string (file-string filename)))
