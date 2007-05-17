@@ -1,0 +1,5 @@
+(asdf:oos 'asdf:load-op 'lexer)
+(asdf:oos 'asdf:load-op 'yacc)
+(load "segmento")
+(load "formato")
+(load "parser")

@@ -1,6 +1,7 @@
 ;; segmento.lisp - algoritmo de segmentação e definição de segmentos
 (defpackage #:segment
   (:use #:cl))
+
 (in-package #:segment)
 
 ; Um segmento mínimo é uma lista de pares (n . p), onde p é a quantidade de
@@ -10,9 +11,6 @@
 ;  muito bem estar enganado quanto a esses detalhes mais musicais da coisa)
 ;
 ; Exemplo: ((c . 1) (e . 1) (g . 1)) para um acorde de dó maior
-
-
-
 
 (defun merge-segment (s1 s2)
   "Junta os segmentos s1 e s2 em um segmento maior"
@@ -28,8 +26,6 @@
          (cons (car s1) (merge-segment (cdr s1) s2)))
         (t
          (cons (car s2) (merge-segment s1 (cdr s2))))))
-
-
 
 (defvar *C*  '((c . 1) (e . 1) (g . 1)))
 (defvar *Dm* '((a . 1) (d . 1) (f . 1)))

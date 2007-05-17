@@ -1,14 +1,14 @@
 (defpackage #:formato
   (:export 
-   emite-evento
-   move-evento-no-tempo
-   movimenta-sequencia
-   emite-sequencia
-   emite-acorde
-   cria-nota
-   cria-nota-artic
-   inicio
-   concatena-sequencias)
+   #:emite-evento
+   #:move-evento-no-tempo
+   #:movimenta-sequencia
+   #:emite-sequencia
+   #:emite-acorde
+   #:cria-nota
+   #:cria-nota-artic
+   #:inicio
+   #:concatena-sequencias)
   (:use #:cl))
 
 (in-package #:formato)
@@ -65,9 +65,6 @@ i tem nos isis e quantos e tem nos eses."
   (make-nota :pitch (note-from-string nota)
              :octave (octave-from-string octave)
              :dur dur))
-
-;; (cria-nota "dis")
-;; (cria-nota "cis" 2)
 
 (defun cria-nota-dur (nota dur)
   (cria-nota nota dur nil))

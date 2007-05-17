@@ -1,10 +1,6 @@
-(require 'yacc)
-(require 'lexer)
-(load "formato.lisp")
-
 (defpackage #:parser
-  (:export parse-string parse-file)
-  (:use #:cl #:yacc #:lexer #:formato))
+  (:use #:cl #:yacc #:lexer #:formato)
+  (:export #:parse-string #:parse-file))
 
 (in-package #:parser)
 
@@ -30,7 +26,7 @@
   ("(\-|\a|\\^)." (return (values 'ARTICULATION %0)))
   ("[:space:]+" ); (return (values 'WHITESPACE %0)))
   ("-+\n")
-  ("new Staff" (return (values 'NEW-STAFF %0)))
+  ("\\new Staff" (return (values 'NEW-STAFF %0)))
   ("<<" (return (values '|<<| '|<<|)))
   (">>" (return (values '|>>| '|>>|)))
   ("\\{" (return (values '|{| '|{|)))
@@ -43,7 +39,7 @@
 ; trata uma music expression como se ela estivesse fora de <<>>
 (defun parse-standalone-music-expression (expr)
   (if (cdr expr)
-      (reduce #'formato::concatena-sequencias expr :initial-value nil)
+      (reduce #'concatena-sequencias expr :initial-value nil)
       expr))
 
 ;; (parse-simultaneous-music-expression a exprs b)
@@ -147,5 +143,3 @@
 
 (defun parse-file (filename)
   (parse-string (file-string filename)))
-
-(parse-string "{c'}")
