@@ -25,6 +25,7 @@
 
 (deflexer string-lexer
   ("(c|d|e|f|g|a|b)(is|es|isis|eses)?" (return (values 'NOTE %0)))
+  ("('|,)" (return (values 'OCTAVE %0)))
   ("(128|16|32|64|1|2|4|8)" (return (values 'DUR %0)))
   ("(\-|\a|\\^)." (return (values 'ARTICULATION %0)))
   ("[:space:]+" ); (return (values 'WHITESPACE %0)))
@@ -82,7 +83,7 @@
 ;; (parse-notes-expression a notes b expr)
 ; processa uma music expression que é uma sequência de notas e
 ; outra music expression ignorando delimitadores
-(defun parse-notes-expression(a notes b expr)
+(defun parse-notes-expression (a notes b expr)
   (declare (ignore a b))
   (append (list (emite-sequencia notes))
           expr))
@@ -100,7 +101,7 @@
 
 (define-parser *expression-parser*
   (:start-symbol music-block)
-  (:terminals (WHITESPACE NEW-STAFF DUR NOTE ARTICULATION |{| |}| |<<| |>>| ))
+  (:terminals (WHITESPACE NEW-STAFF DUR NOTE OCTAVE ARTICULATION |{| |}| |<<| |>>| ))
 
   (music-block
    staff-block
@@ -123,6 +124,7 @@
   
   (note-expr
    (NOTE #'cria-nota)
+   (NOTE OCTAVE #'cria-nota)
    (NOTE DUR #'cria-nota)
    (NOTE DUR articulation-expr #'cria-nota)
    (NOTE articulation-expr #'cria-nota-artic))
@@ -145,3 +147,5 @@
 
 (defun parse-file (filename)
   (parse-string (file-string filename)))
+
+(parse-string "{c'}")

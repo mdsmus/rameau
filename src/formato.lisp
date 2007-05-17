@@ -36,8 +36,8 @@
   "Usa um hack para contar quantos acidentes tem contando quantos
 i tem nos isis e quantos e tem nos eses."
   (let ((accidental (subseq note 1)))
-    (cond ((search "is" note) (count #\i accidental :test #'string=))
-          ((search "es" note) (- (count #\e accidental :test #'string=)))
+    (cond ((search "is" note) (count #\i accidental))
+          ((search "es" note) (- (count #\e accidental)))
           (t 0))))
 
 (defun note-number (note codification)
@@ -45,18 +45,26 @@ i tem nos isis e quantos e tem nos eses."
 
 ;; (pitch-from-note nota) - converte "c" em 0, por exemplo
 ;; A priori usar a codificação de Jamary
-(defun pitch-from-note (nota &optional (codification *tonal*))
+(defun note-from-string (nota &optional (codification *tonal*))
   (mod (+ (number-of-accidentals nota)
           (note-number (char nota 0) codification))
        96))
 
+(defun octave-from-string (string)
+  (cond ((search "'" string) (count #\' string))
+        ((search "," string) (count #\, string))
+        (t 0)))
+
 (defstruct nota
   (pitch)
+  (octave)
   (dur 1))
 
-(defun cria-nota (nota &optional (dur 1) (artic nil))
-  (declare (ignore artic))
-  (make-nota :pitch (pitch-from-note nota) :dur dur))
+(defun cria-nota (nota &optional (octave) (dur 4) articulation)
+  (declare (ignore articulation))
+  (make-nota :pitch (note-from-string nota)
+             :octave (octave-from-string octave)
+             :dur dur))
 
 ;; (cria-nota "dis")
 ;; (cria-nota "cis" 2)
