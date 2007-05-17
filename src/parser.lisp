@@ -1,3 +1,7 @@
+(require 'yacc)
+(require 'lexer)
+
+(load "formato.lisp")
 (defpackage #:parser
   (:use #:cl #:yacc #:lexer #:formato)
   (:export #:parse-string #:parse-file))
@@ -26,7 +30,7 @@
   ("(\-|\a|\\^)." (return (values 'ARTICULATION %0)))
   ("[:space:]+" ); (return (values 'WHITESPACE %0)))
   ("-+\n")
-  ("\\new Staff" (return (values 'NEW-STAFF %0)))
+  ("\\\\new Staff" (return (values 'NEW-STAFF %0)))
   ("<<" (return (values '|<<| '|<<|)))
   (">>" (return (values '|>>| '|>>|)))
   ("\\{" (return (values '|{| '|{|)))
@@ -143,3 +147,4 @@
 
 (defun parse-file (filename)
   (parse-string (file-string filename)))
+
