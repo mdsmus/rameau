@@ -76,21 +76,20 @@ i tem nos isis e quantos e tem nos eses."
                :dur (evento-dur evento)
                :inicio (+ (evento-inicio evento) tempo)))
 
-(defun emite-sequencia (notas)
-  (let ((seq nil)
-        (inicio 0)
-        (dur 1/4))
-    (dolist (n notas)
-      (if (not (= 1/42 (evento-dur n)))
-          (setf dur (evento-dur n)))
-      (setf seq (cons (emite-evento (evento-pitch n)
-                                    dur
-                                    inicio
-                                    (evento-octave n))
-                      seq))
-      (setf inicio (+ inicio dur)))
-    (nreverse seq)))
 
+(defun emite-sequencia (notas &optional (seq nil) (inicio 0) (dur 1/4))
+  (if notas
+      (let* ((n (car notas))
+             (dur (if (not (= 1/42 (evento-dur n)))
+                      (evento-dur n)
+                      dur))
+             (seq (cons (emite-evento (evento-pitch n)
+                                      dur
+                                      inicio
+                                      (evento-octave n))
+                        seq)))
+        (emite-sequencia (cdr notas) seq (+ inicio dur) dur))
+      (nreverse seq)))
 
 (defun emite-acorde (&rest notas)
   (mapcar (lambda (n)

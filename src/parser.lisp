@@ -17,7 +17,7 @@
 (defun expmerge (exp1 exp2)
   (merge 'list exp1 exp2
          (lambda (x y)
-           (< (inicio x) (inicio y)))))
+           (< (evento-inicio x) (evento-inicio y)))))
 
 (deflexer string-lexer
   ("(c|d|e|f|g|a|b)(is|es|isis|eses)?" (return (values 'NOTE %0)))
@@ -120,9 +120,9 @@
   (note-expr
    (NOTE #'cria-nota)
    (NOTE OCTAVE #'cria-nota)
-   (NOTE DUR #'cria-nota-dur)
-   (NOTE DUR articulation-expr #'cria-nota-dur-artic)
-   (NOTE articulation-expr #'cria-nota-artic))
+   (NOTE DUR #'cria-nota-com-duracao)
+   (NOTE DUR articulation-expr #'cria-nota-com-duracao-articulacao)
+   (NOTE articulation-expr #'cria-nota-com-articulacao))
 
   (articulation-expr
    ARTICULATION
