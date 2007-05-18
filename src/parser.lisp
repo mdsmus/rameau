@@ -12,12 +12,22 @@
   (declare (ignore a))
   b)
 
+(defun ignore-first-second-fourth-fifth (a b c d e)
+  (declare (ignore a b d e))
+  c)
+
 ;; (expmerge exp1 exp2) => expressãoanova
 ;; Junta as duas expressões, executando simultaneamente
 (defun expmerge (exp1 exp2)
-  (merge 'list exp1 exp2
-         (lambda (x y)
-           (< (evento-inicio x) (evento-inicio y)))))
+  (let ((exp1 (if (atom (car exp1))
+                        exp1
+                        (car exp1)))
+        (exp2 (if (atom (car exp2))
+                        exp2
+                        (car exp2))))
+    (merge 'list exp1 exp2
+           (lambda (x y)
+             (< (evento-inicio x) (evento-inicio y))))))
 
 (deflexer string-lexer
   ("(c|d|e|f|g|a|b)(is|es|isis|eses)?" (return (values 'NOTE %0)))
@@ -59,21 +69,23 @@
 ;; (merge-exprs expr1 expr2)
 ; Trata expr1 e expr2 como music expressions que precisam começar
 ; do 0 e as junta
-(defun merge-exprs (expr1 expr2)
-  (expmerge (car (parse-standalone-music-expression expr1))
-            (car (parse-standalone-music-expression expr2))))
-
+    
 ;; (parse-staff-block1 ign expr1 expr2
 ; Contrói um staff block a partir de expr1 e expr2.
 ; FIXME: tem como dois staff blocks em sequência não soarem simultaneamente?
 (defun parse-staff-block1 (ign expr1 expr2)
   (declare (ignore ign))
-  (merge-exprs expr1 expr2))
+  (print "staff block 1")
+  (print expr1)
+  (print expr2)
+  (expmerge (car (parse-standalone-music-expression expr1))
+            expr2))
 
 ;; (parse-staff-block2 ign staff)
 ; retorna staff
 (defun parse-staff-block2 (ign staff)
-  (ignore-first ign staff))
+  (declare (ignore ign))
+  (parse-standalone-music-expression staff))
 
 ;; (parse-notes-expression a notes b expr)
 ; processa uma music expression que é uma sequência de notas e
@@ -99,7 +111,7 @@
   (:terminals (WHITESPACE NEW-STAFF DUR NOTE OCTAVE ARTICULATION |{| |}| |<<| |>>| ))
 
   (music-block
-   staff-block
+   (|{| |<<| staff-block |>>| |}| #'ignore-first-second-fourth-fifth)
    (music-expression #'parse-standalone-music-expression)
    (|<<| music-expression |>>| #'parse-simultaneous-music-expression)
    (|<<| staff-block |>>| #'parse-simultaneous-staff-block)

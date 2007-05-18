@@ -1,7 +1,6 @@
 ; -*- org -*-
 
 * parser chaves de escopo global (score)
-* corrigir bug em arquivo testes/01.ly
 * [kroger] sistema de testes
 * colocar \relative no parser/lexer
 * lidar com oitava
