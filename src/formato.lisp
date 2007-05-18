@@ -40,33 +40,26 @@ i tem nos isis e quantos e tem nos eses."
         ((search "," string) (count #\, string))
         (t 0)))
 
-(defstruct nota
-  (pitch)
-  (octave)
-  (dur))
 
 ;; Esse 42 está horrível aí, preciso tirar.
 (defun cria-nota (nota &optional (octave "") (dur "42") articulation) 
   (declare (ignore articulation))
-  (make-nota :pitch (note-from-string nota)
+  (make-evento :pitch (note-from-string nota)
              :octave (octave-from-string octave)
-             :dur (/ 1 (parse-integer dur))))
+             :dur (/ 1 (parse-integer dur))
+             :inicio 0))
 
-(defun cria-nota-dur (nota dur)
+(defun cria-nota-com-duracao (nota dur)
   (cria-nota nota  "" dur nil))
 
-(defun cria-nota-dur-artic (nota dur artic)
+(defun cria-nota-com-duracao-articulacao (nota dur artic)
   (declare (ignore artic))
   (cria-nota nota  "" dur nil))
 
-(defun cria-nota-artic (nota artic)
+(defun cria-nota-com-articulacao (nota artic)
+  (declare (ignore artic))
   (cria-nota nota))
 
-(defun pitch (nota)
-  (nota-pitch nota))
-
-(defun dur (nota)
-  (nota-dur nota))
 
 (defstruct evento
   (pitch)
@@ -74,8 +67,6 @@ i tem nos isis e quantos e tem nos eses."
   (dur)
   (inicio))
 
-(defun inicio (evento)
-  (evento-inicio evento))
 
 (defun emite-evento (nota duracao inicio oitava)
   (make-evento :pitch nota :dur duracao :inicio inicio :octave oitava))
@@ -90,23 +81,20 @@ i tem nos isis e quantos e tem nos eses."
         (inicio 0)
         (dur 1/4))
     (dolist (n notas)
-      (if (not (= 1/42 (dur n)))
-          (setf dur (dur n)))
-      (setf seq (cons (emite-evento (pitch n)
+      (if (not (= 1/42 (evento-dur n)))
+          (setf dur (evento-dur n)))
+      (setf seq (cons (emite-evento (evento-pitch n)
                                     dur
                                     inicio
-                                    (nota-octave n))
+                                    (evento-octave n))
                       seq))
       (setf inicio (+ inicio dur)))
     (nreverse seq)))
 
-;; (emite-sequencia (list (cria-nota "d")
-;;                        (cria-nota "e" "'''" "2")
-;;                        (cria-nota "f")))
 
 (defun emite-acorde (&rest notas)
   (mapcar (lambda (n)
-            (emite-evento (pitch n) (/ 1 (dur n)) 0 (nota-octave n)))
+            (emite-evento (evento-pitch n) (/ 1 (evento-dur n)) 0 (evento-octave n)))
           notas))
 
 (defun movimenta-sequencia (seq tempo)

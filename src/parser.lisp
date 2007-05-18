@@ -1,3 +1,9 @@
+(require 'yacc)
+(require 'lexer)
+
+(use-package '#:yacc)
+(use-package '#:lexer)
+
 ;;;; Funções auxiliares para o parser
 
 ;; (ignore-first a b) => b
