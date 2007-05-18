@@ -12,9 +12,10 @@
   (declare (ignore a))
   b)
 
-(defun ignore-first-second-fourth-fifth (a b c d e)
-  (declare (ignore a b d e))
-  c)
+
+(defun ignore-first-second-third-fifth-sixth (a b c d e f)
+  (declare (ignore a b c e f))
+  d)
 
 ;; (expmerge exp1 exp2) => expressãoanova
 ;; Junta as duas expressões, executando simultaneamente
@@ -37,6 +38,7 @@
   ("[:space:]+" ); (return (values 'WHITESPACE %0)))
   ("-+\n")
   ("\\\\new (s|S)taff" (return (values 'NEW-STAFF %0)))
+  ("\\\\(S|s)core" (return (values 'NEW-SCORE %0)))
   ("<<" (return (values '|<<| '|<<|)))
   (">>" (return (values '|>>| '|>>|)))
   ("\\{" (return (values '|{| '|{|)))
@@ -108,10 +110,10 @@
 
 (define-parser *expression-parser*
   (:start-symbol music-block)
-  (:terminals (WHITESPACE NEW-STAFF DUR NOTE OCTAVE ARTICULATION |{| |}| |<<| |>>| ))
+  (:terminals (WHITESPACE NEW-STAFF NEW-SCORE DUR NOTE OCTAVE ARTICULATION |{| |}| |<<| |>>| ))
 
   (music-block
-   (|{| |<<| staff-block |>>| |}| #'ignore-first-second-fourth-fifth)
+   (NEW-SCORE |{| |<<| staff-block |>>| |}| #'ignore-first-second-third-fifth-sixth)
    (music-expression #'parse-standalone-music-expression)
    (|<<| music-expression |>>| #'parse-simultaneous-music-expression)
    (|<<| staff-block |>>| #'parse-simultaneous-staff-block)
