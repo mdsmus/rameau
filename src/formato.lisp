@@ -1,20 +1,3 @@
-(defpackage #:formato
-  (:export 
-   #:emite-evento
-   #:move-evento-no-tempo
-   #:movimenta-sequencia
-   #:emite-sequencia
-   #:emite-acorde
-   #:cria-nota
-   #:cria-nota-dur
-   #:cria-nota-dur-artic
-   #:cria-nota-artic
-   #:inicio
-   #:concatena-sequencias)
-  (:use #:cl))
-
-(in-package #:formato)
-
 ;; Formato interno:
 ;; O formato interno é uma lista de eventos. Cada evento é uma nota
 ;; que soa, e soa em uma altura (pitch), por um certo tempo (dur) a
@@ -62,7 +45,6 @@ i tem nos isis e quantos e tem nos eses."
   (octave)
   (dur))
 
-
 ;; Esse 42 está horrível aí, preciso tirar.
 (defun cria-nota (nota &optional (octave "") (dur "42") articulation) 
   (declare (ignore articulation))
@@ -77,8 +59,6 @@ i tem nos isis e quantos e tem nos eses."
   (declare (ignore artic))
   (cria-nota nota  "" dur nil))
 
-
-
 (defun cria-nota-artic (nota artic)
   (cria-nota nota))
 
@@ -87,7 +67,6 @@ i tem nos isis e quantos e tem nos eses."
 
 (defun dur (nota)
   (nota-dur nota))
-
 
 (defstruct evento
   (pitch)
@@ -120,6 +99,10 @@ i tem nos isis e quantos e tem nos eses."
                       seq))
       (setf inicio (+ inicio dur)))
     (nreverse seq)))
+
+;; (emite-sequencia (list (cria-nota "d")
+;;                        (cria-nota "e" "'''" "2")
+;;                        (cria-nota "f")))
 
 (defun emite-acorde (&rest notas)
   (mapcar (lambda (n)

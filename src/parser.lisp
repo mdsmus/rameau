@@ -1,13 +1,3 @@
-(require 'yacc)
-(require 'lexer)
-
-(load "formato.lisp")
-(defpackage #:parser
-  (:use #:cl #:yacc #:lexer #:formato)
-  (:export #:parse-string #:parse-file))
-
-(in-package #:parser)
-
 ;;;; Funções auxiliares para o parser
 
 ;; (ignore-first a b) => b
@@ -30,7 +20,7 @@
   ("(\-|\a|\\^)." (return (values 'ARTICULATION %0)))
   ("[:space:]+" ); (return (values 'WHITESPACE %0)))
   ("-+\n")
-  ("\\\\new Staff" (return (values 'NEW-STAFF %0)))
+  ("\\\\new (s|S)taff" (return (values 'NEW-STAFF %0)))
   ("<<" (return (values '|<<| '|<<|)))
   (">>" (return (values '|>>| '|>>|)))
   ("\\{" (return (values '|{| '|{|)))
@@ -66,7 +56,6 @@
 (defun merge-exprs (expr1 expr2)
   (expmerge (car (parse-standalone-music-expression expr1))
             (car (parse-standalone-music-expression expr2))))
-
 
 ;; (parse-staff-block1 ign expr1 expr2
 ; Contrói um staff block a partir de expr1 e expr2.
@@ -147,6 +136,3 @@
 
 (defun parse-file (filename)
   (parse-string (file-string filename)))
-
-
-
