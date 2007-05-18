@@ -16,9 +16,9 @@
 >>")
 
 (parse-string "<<
-new Staff { c d e f }
-new Staff { c d e f }
+\\new Staff { c d e f }
+\\new Staff { c d e f }
 >>")
 
-(parse-string "new Staff { c d e f }")
+(parse-string "\\new Staff { c d e f }")
 

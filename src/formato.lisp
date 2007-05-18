@@ -6,6 +6,8 @@
    #:emite-sequencia
    #:emite-acorde
    #:cria-nota
+   #:cria-nota-dur
+   #:cria-nota-dur-artic
    #:cria-nota-artic
    #:inicio
    #:concatena-sequencias)
@@ -58,19 +60,27 @@ i tem nos isis e quantos e tem nos eses."
 (defstruct nota
   (pitch)
   (octave)
-  (dur 1))
+  (dur))
 
-(defun cria-nota (nota &optional (octave) (dur 4) articulation)
+
+;; Esse 42 está horrível aí, preciso tirar.
+(defun cria-nota (nota &optional (octave "") (dur "42") articulation) 
   (declare (ignore articulation))
   (make-nota :pitch (note-from-string nota)
              :octave (octave-from-string octave)
-             :dur dur))
+             :dur (/ 1 (parse-integer dur))))
 
 (defun cria-nota-dur (nota dur)
-  (cria-nota nota dur nil))
+  (cria-nota nota  "" dur nil))
+
+(defun cria-nota-dur-artic (nota dur artic)
+  (declare (ignore artic))
+  (cria-nota nota  "" dur nil))
+
+
 
 (defun cria-nota-artic (nota artic)
-  (cria-nota nota 1 artic))
+  (cria-nota nota))
 
 (defun pitch (nota)
   (nota-pitch nota))
@@ -78,16 +88,18 @@ i tem nos isis e quantos e tem nos eses."
 (defun dur (nota)
   (nota-dur nota))
 
+
 (defstruct evento
   (pitch)
+  (octave)
   (dur)
   (inicio))
 
 (defun inicio (evento)
   (evento-inicio evento))
 
-(defun emite-evento (nota duracao inicio)
-  (make-evento :pitch nota :dur duracao :inicio inicio))
+(defun emite-evento (nota duracao inicio oitava)
+  (make-evento :pitch nota :dur duracao :inicio inicio :octave oitava))
 
 (defun move-evento-no-tempo (evento tempo)
   (make-evento :pitch (evento-pitch evento)
@@ -96,15 +108,22 @@ i tem nos isis e quantos e tem nos eses."
 
 (defun emite-sequencia (notas)
   (let ((seq nil)
-        (inicio 0))
+        (inicio 0)
+        (dur 1/4))
     (dolist (n notas)
-      (setf seq (cons (emite-evento (pitch n) (dur n) inicio) seq))
-      (setf inicio (+ inicio (dur n))))
+      (if (not (= 1/42 (dur n)))
+          (setf dur (dur n)))
+      (setf seq (cons (emite-evento (pitch n)
+                                    dur
+                                    inicio
+                                    (nota-octave n))
+                      seq))
+      (setf inicio (+ inicio dur)))
     (nreverse seq)))
 
 (defun emite-acorde (&rest notas)
   (mapcar (lambda (n)
-            (emite-evento (pitch n) (dur n) 0))
+            (emite-evento (pitch n) (/ 1 (dur n)) 0 (nota-octave n)))
           notas))
 
 (defun movimenta-sequencia (seq tempo)

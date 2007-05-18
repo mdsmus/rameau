@@ -125,8 +125,8 @@
   (note-expr
    (NOTE #'cria-nota)
    (NOTE OCTAVE #'cria-nota)
-   (NOTE DUR #'cria-nota)
-   (NOTE DUR articulation-expr #'cria-nota)
+   (NOTE DUR #'cria-nota-dur)
+   (NOTE DUR articulation-expr #'cria-nota-dur-artic)
    (NOTE articulation-expr #'cria-nota-artic))
 
   (articulation-expr
@@ -147,4 +147,6 @@
 
 (defun parse-file (filename)
   (parse-string (file-string filename)))
+
+
 
