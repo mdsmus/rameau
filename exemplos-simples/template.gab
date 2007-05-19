@@ -1,0 +1,5 @@
+;; sintaxe: (tonica modo inversao <acrescimos>)
+;; obs.: 1 acorde por linha. exemplos:
+(d maj 0 7)
+(d maj 0 7 9)
+(d min 1 7 9)
