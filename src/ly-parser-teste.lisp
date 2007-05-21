@@ -38,7 +38,16 @@
 
 (define-test cria-nota
   (assert-equal 0 (evento-pitch (cria-nota "c")))
-  (assert-equal 1/4 (evento-dur (cria-nota "c")))
+  (assert-equal nil (evento-dur (cria-nota "c")))
   (assert-equal 8 (evento-octave (cria-nota "c")))
   (assert-equal 0 (evento-inicio (cria-nota "c")))
   )
+
+
+
+(run-tests number-of-accidentals)
+(run-tests note-number)
+(run-tests note-from-string)
+(run-tests octave-from-string)
+(run-tests cria-nota)
+

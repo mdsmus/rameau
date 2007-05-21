@@ -4,7 +4,7 @@
 (defparameter *main-dir* 
   (if (string= (machine-instance) "phoenix")
       "/home/kroger/doc/pesquisa/analise-harmonica/src/"
-      "path/do/top"))
+      "/home/top/programas/analise-harmonica/src/"))
 
 (defun load-all (&rest files)
   (loop for file in files do

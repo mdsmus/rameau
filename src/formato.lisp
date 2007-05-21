@@ -40,16 +40,16 @@ i tem nos isis e quantos e tem nos eses."
        96))
 
 (defun octave-from-string (string)
-  (cond ((search "'" string) (count #\' string))
-        ((search "," string) (count #\, string))
-        (t 0)))
+  (+ 8 (cond ((search "'" string) (count #\' string))
+             ((search "," string) (- (count #\, string)))
+             (t 0))))
 
 ;; Esse 42 está horrível aí, preciso tirar.
-(defun cria-nota (nota &optional (octave "") (dur "42") articulation) 
+(defun cria-nota (nota &optional (octave "") dur articulation) 
   (declare (ignore articulation))
   (make-evento :pitch (note-from-string nota)
              :octave (octave-from-string octave)
-             :dur (/ 1 (parse-integer dur))
+             :dur dur
              :inicio 0))
 
 (defun cria-nota-com-duracao (nota dur)
@@ -64,7 +64,10 @@ i tem nos isis e quantos e tem nos eses."
   (cria-nota nota))
 
 (defun emite-evento (nota duracao inicio oitava)
-  (make-evento :pitch nota :dur duracao :inicio inicio :octave oitava))
+  (make-evento :pitch nota
+               :dur (parse-integer duracao)
+               :inicio inicio
+               :octave oitava))
 
 (defun move-evento-no-tempo (evento tempo)
   (make-evento :pitch (evento-pitch evento)
@@ -75,7 +78,7 @@ i tem nos isis e quantos e tem nos eses."
 (defun emite-sequencia (notas &optional (seq nil) (inicio 0) (dur 1/4))
   (if notas
       (let* ((n (car notas))
-             (dur (if (not (= 1/42 (evento-dur n)))
+             (dur (if (evento-dur n)
                       (evento-dur n)
                       dur))
              (seq (cons (emite-evento (evento-pitch n)
