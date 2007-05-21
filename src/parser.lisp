@@ -1,10 +1,6 @@
-(require 'yacc)
-(require 'lexer)
-
-(use-package '#:yacc)
-(use-package '#:lexer)
-
-;;;; Funções auxiliares para o parser
+(import 'lexer:deflexer)
+(import 'lexer:%0)
+(use-package 'yacc)
 
 ;; (ignore-first a b) => b
 ;; Ignora o primeiro argumento
@@ -12,23 +8,18 @@
   (declare (ignore a))
   b)
 
-
 (defun ignore-first-second-third-fifth-sixth (a b c d e f)
   (declare (ignore a b c e f))
   d)
 
+(defun get-exp (exp)
+  (if (atom (car exp)) exp (car exp)))
+      
 ;; (expmerge exp1 exp2) => expressãoanova
 ;; Junta as duas expressões, executando simultaneamente
 (defun expmerge (exp1 exp2)
-  (let ((exp1 (if (atom (car exp1))
-                        exp1
-                        (car exp1)))
-        (exp2 (if (atom (car exp2))
-                        exp2
-                        (car exp2))))
-    (merge 'list exp1 exp2
-           (lambda (x y)
-             (< (evento-inicio x) (evento-inicio y))))))
+  (merge 'list (get-exp exp1) (get-exp exp2)
+         (lambda (x y) (< (evento-inicio x) (evento-inicio y)))))
 
 (deflexer string-lexer
   ("(c|d|e|f|g|a|b)(is|es|isis|eses)?" (return (values 'NOTE %0)))
@@ -45,8 +36,6 @@
   ("\\}" (return (values '|}| '|}|)))
   )
 
-;;;; Funções para fazer o parsing
-
 ;; (parse-standalone-music-expression expr)
 ; trata uma music expression como se ela estivesse fora de <<>>
 (defun parse-standalone-music-expression (expr)
@@ -60,7 +49,6 @@
   (declare (ignore a b))
   ;exprs)
   (reduce #'expmerge (cdr exprs) :initial-value (car exprs)))
-
 
 ;; (parse-simultaneous-staff-block a b c)
 ; Ignora a e c e trata um staff block como dentro de <<>>

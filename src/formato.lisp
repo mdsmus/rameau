@@ -16,7 +16,13 @@
 (defparameter *notes-names* '(#\a #\b #\c #\d #\e #\f #\g))
 (defparameter *tonal* '(69 83 0 14 28 41 55))
 (defparameter *tempered* '(9 11 0 2 4 5 7))
- 
+
+(defstruct evento
+  (pitch)
+  (octave)
+  (dur)
+  (inicio))
+
 (defun number-of-accidentals (note)
   "Usa um hack para contar quantos acidentes tem contando quantos
 i tem nos isis e quantos e tem nos eses."
@@ -28,8 +34,6 @@ i tem nos isis e quantos e tem nos eses."
 (defun note-number (note codification)
   (nth (position note *notes-names*) codification))
 
-;; (pitch-from-note nota) - converte "c" em 0, por exemplo
-;; A priori usar a codificação de Jamary
 (defun note-from-string (nota &optional (codification *tonal*))
   (mod (+ (number-of-accidentals nota)
           (note-number (char nota 0) codification))
@@ -39,7 +43,6 @@ i tem nos isis e quantos e tem nos eses."
   (cond ((search "'" string) (count #\' string))
         ((search "," string) (count #\, string))
         (t 0)))
-
 
 ;; Esse 42 está horrível aí, preciso tirar.
 (defun cria-nota (nota &optional (octave "") (dur "42") articulation) 
@@ -59,14 +62,6 @@ i tem nos isis e quantos e tem nos eses."
 (defun cria-nota-com-articulacao (nota artic)
   (declare (ignore artic))
   (cria-nota nota))
-
-
-(defstruct evento
-  (pitch)
-  (octave)
-  (dur)
-  (inicio))
-
 
 (defun emite-evento (nota duracao inicio oitava)
   (make-evento :pitch nota :dur duracao :inicio inicio :octave oitava))
@@ -97,8 +92,7 @@ i tem nos isis e quantos e tem nos eses."
           notas))
 
 (defun movimenta-sequencia (seq tempo)
-  (mapcar (lambda (x)
-            (move-evento-no-tempo x tempo))
+  (mapcar (lambda (x) (move-evento-no-tempo x tempo))
           seq))
 
 (defun fim-da-execucao (seq)

@@ -1,4 +1,6 @@
 (asdf:oos 'asdf:load-op 'lexer)
 (asdf:oos 'asdf:load-op 'yacc)
-(load "formato")
-(load "parser")
+(load "lisp-unit.lisp")
+(load "formato.lisp")
+(load "parser.lisp")
+(load "ly-parser-teste.lisp")
