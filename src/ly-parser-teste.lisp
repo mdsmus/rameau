@@ -61,9 +61,11 @@
 >> }")))
 
 
-(run-tests number-of-accidentals)
-(run-tests note-number)
-(run-tests note-from-string)
-(run-tests octave-from-string)
-(run-tests cria-nota)
-(run-tests parser)
+;(run-tests number-of-accidentals)
+;(run-tests note-number)
+;(run-tests note-from-string)
+;(run-tests octave-from-string)
+;(run-tests cria-nota)
+;(run-tests parser)
+
+(run-tests)
