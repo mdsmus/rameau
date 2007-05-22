@@ -44,10 +44,26 @@
   )
 
 
+(define-test parser
+  (assert-equalp
+   (list
+    (make-evento :PITCH 0 :OCTAVE 8 :DUR 1/4 :INICIO 0)
+    (make-evento :PITCH 0 :OCTAVE 8 :DUR 1/4 :INICIO 0)
+    (make-evento :PITCH 14 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)
+    (make-evento :PITCH 14 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)
+    (make-evento :PITCH 28 :OCTAVE 8 :DUR 1/4 :INICIO 1/2)
+    (make-evento :PITCH 28 :OCTAVE 8 :DUR 1/4 :INICIO 1/2)
+    (make-evento :PITCH 41 :OCTAVE 8 :DUR 1/4 :INICIO 3/4)
+    (make-evento :PITCH 41 :OCTAVE 8 :DUR 1/4 :INICIO 3/4))
+   (parse-string "\\score { <<
+\\new Staff { c d e f }
+\\new Staff { c d e f }
+>> }")))
+
 
 (run-tests number-of-accidentals)
 (run-tests note-number)
 (run-tests note-from-string)
 (run-tests octave-from-string)
 (run-tests cria-nota)
-
+(run-tests parser)

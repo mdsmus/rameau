@@ -29,47 +29,38 @@
   ("[:space:]+" ); (return (values 'WHITESPACE %0)))
   ("-+\n")
   ("\\\\new (s|S)taff" (return (values 'NEW-STAFF %0)))
+  ("\\\\(R|r)elative" (return (values 'RELATIVE %0)))
   ("\\\\(S|s)core" (return (values 'NEW-SCORE %0)))
   ("<<" (return (values '|<<| '|<<|)))
   (">>" (return (values '|>>| '|>>|)))
+  ("<" (return (values '|<| %0)))
+  (">" (return (values '|>| %0)))
   ("\\{" (return (values '|{| '|{|)))
   ("\\}" (return (values '|}| '|}|)))
   )
 
 ;; (parse-standalone-music-expression expr)
 ; trata uma music expression como se ela estivesse fora de <<>>
-(defun parse-standalone-music-expression (expr)
+(defun parse-standalone-expression (expr)
   (if (cdr expr)
-      (reduce #'concatena-sequencias expr :initial-value nil)
+      (if (not (evento-p (car expr)))
+          (reduce #'concatena-sequencias expr :initial-value nil)
+          expr)
       expr))
 
 ;; (parse-simultaneous-music-expression a exprs b)
 ; Ignora a e b e processa uma music expression como dentro de <<>>
-(defun parse-simultaneous-music-expression (a exprs b)
+(defun parse-chord (a exprs b)
   (declare (ignore a b))
   ;exprs)
   (reduce #'expmerge (cdr exprs) :initial-value (car exprs)))
 
-;; (parse-simultaneous-staff-block a b c)
-; Ignora a e c e trata um staff block como dentro de <<>>
-(defun parse-simultaneous-staff-block (a b c)
-  (declare (ignore a c))
-  b)
-
-;; (merge-exprs expr1 expr2)
-; Trata expr1 e expr2 como music expressions que precisam começar
-; do 0 e as junta
-    
 ;; (parse-staff-block1 ign expr1 expr2
 ; Contrói um staff block a partir de expr1 e expr2.
 ; FIXME: tem como dois staff blocks em sequência não soarem simultaneamente?
 (defun parse-staff-block1 (ign expr1 expr2)
   (declare (ignore ign))
-  (print "staff block 1")
-  (print expr1)
-  (print expr2)
-  (expmerge (car (parse-standalone-music-expression expr1))
-            expr2))
+  (expmerge expr1 expr2))
 
 ;; (parse-staff-block2 ign staff)
 ; retorna staff
@@ -89,35 +80,52 @@
 ; processa uma music expression que é uma sequência de notas
 (defun parse-notes (a notes b)
   (declare (ignore a b))
-  (list (emite-sequencia notes)))
+  (emite-sequencia notes))
 
 ;; (parse-note-sequence note note-expr)
 ; processa uma sequência de notas
 (defun parse-note-sequence (note note-expr)
   (append note (list note-expr)))
 
+;; processa uma sequência de notas dentro de um \relative
+(defun parse-relative (a nota expr)
+  (declare (ignore a))
+  (relativiza nota (emite-sequencia expr)))
+  
+
 (define-parser *expression-parser*
   (:start-symbol music-block)
-  (:terminals (WHITESPACE NEW-STAFF NEW-SCORE DUR NOTE OCTAVE ARTICULATION |{| |}| |<<| |>>| ))
+  (:terminals (WHITESPACE
+               NEW-STAFF
+               NEW-SCORE
+               DUR
+               NOTE
+               OCTAVE
+               ARTICULATION
+               RELATIVE
+               |{| |}| |<<| |>>| |<| |>|))
 
   (music-block
    (NEW-SCORE |{| |<<| staff-block |>>| |}| #'ignore-first-second-third-fifth-sixth)
-   (music-expression #'parse-standalone-music-expression)
-   (|<<| music-expression |>>| #'parse-simultaneous-music-expression)
-   (|<<| staff-block |>>| #'parse-simultaneous-staff-block)
-   )
+   (expression #'identity))
 
   (staff-block
-   (NEW-STAFF music-expression staff-block #'parse-staff-block1)
-   (NEW-STAFF music-expression #'parse-staff-block2))
+   (NEW-STAFF expression staff-block #'parse-staff-block1)
+   (NEW-STAFF expression #'ignore-first))
   
-  (music-expression
-   (|{| notes |}| music-expression #'parse-notes-expression)
-   (|{| notes |}| #'parse-notes))
-
   (notes
    (note-expr #'list)
    (notes note-expr #'parse-note-sequence))
+
+  (expression
+   (|{| subexpr |}| #'parse-notes)
+   (|{| subexpr |}| expression #'parse-notes-expression)
+   (RELATIVE note-expr expression #'parse-relative)
+   (|<| notes |>| #'parse-chord))
+
+  (subexpr
+   (notes #'identity)
+   (expression #'identity))
   
   (note-expr
    (NOTE #'cria-nota)

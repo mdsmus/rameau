@@ -65,7 +65,9 @@ i tem nos isis e quantos e tem nos eses."
 
 (defun emite-evento (nota duracao inicio oitava)
   (make-evento :pitch nota
-               :dur (parse-integer duracao)
+               :dur (if (numberp duracao)
+                        duracao
+                        (/ 1 (parse-integer duracao)))
                :inicio inicio
                :octave oitava))
 
@@ -103,4 +105,44 @@ i tem nos isis e quantos e tem nos eses."
     (+ (evento-inicio l) (evento-dur l))))
 
 (defun concatena-sequencias (a b)
-  (nconc a (movimenta-sequencia b (fim-da-execucao a))))
+  (if (not a)
+      b
+      (if (not b)
+          a
+          (nconc a (movimenta-sequencia b (fim-da-execucao a))))))
+
+(defun menos-mod-96 (a b)
+  (mod (- a b) 96))
+
+(defun boa-ordem (a b)
+  (let ((a (evento-pitch a))
+        (b (evento-pitch b)))
+    (< (menos-mod-96 b a)
+       (menos-mod-96 a b))))
+
+(defun modificador-de-oitava (a b)
+  (let ((a (evento-pitch a))
+        (b (evento-pitch b)))
+    (if (< a b)
+        0
+        -1)))
+
+(defun relativiza (nota expressao &optional seq)
+  (if (not expressao)
+      (nreverse seq)
+      (let ((prox-nota (first expressao))
+            (expressao (rest (expressao)))
+            (seq 
+             (cons 
+              (emite-evento
+               (evento-pitch prox-nota)
+               (evento-dur prox-nota)
+               (evento-inicio prox-nota)
+               (+ (evento-octave prox-nota) -8 ;é nisso que dá 0 não ser o centro
+                  (if (boa-ordem nota prox-nota)
+                      (modificador-de-oitava nota prox-nota)
+                      (modificador-de-oitava prox-nota nota))))
+              seq)))
+        (relativiza prox-nota expressao seq))))
+
+  
