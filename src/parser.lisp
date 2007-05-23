@@ -23,7 +23,7 @@
 
 (deflexer string-lexer
   ("(c|d|e|f|g|a|b)(is|es|isis|eses)?" (return (values 'NOTE %0)))
-  ("('|,)" (return (values 'OCTAVE %0)))
+  ("('|,)+" (return (values 'OCTAVE %0)))
   ("(128|16|32|64|1|2|4|8)" (return (values 'DUR %0)))
   ("(\-|\a|\\^)." (return (values 'ARTICULATION %0)))
   ("[:space:]+" ); (return (values 'WHITESPACE %0)))
@@ -107,7 +107,8 @@
 
   (music-block
    (NEW-SCORE |{| |<<| staff-block |>>| |}| #'ignore-first-second-third-fifth-sixth)
-   (expression #'identity))
+   (expression #'identity)
+   (note-expr #'identity))
 
   (staff-block
    (NEW-STAFF expression staff-block #'parse-staff-block1)

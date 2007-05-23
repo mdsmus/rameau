@@ -17,6 +17,8 @@
 (defparameter *tonal* '(69 83 0 14 28 41 55))
 (defparameter *tempered* '(9 11 0 2 4 5 7))
 
+(defparameter *quarta-tonal* 41)
+
 (defstruct evento
   (pitch)
   (octave)
@@ -114,35 +116,45 @@ i tem nos isis e quantos e tem nos eses."
 (defun menos-mod-96 (a b)
   (mod (- a b) 96))
 
-(defun boa-ordem (a b)
+(defun menos-de-uma-quarta (a b)
   (let ((a (evento-pitch a))
         (b (evento-pitch b)))
     (< (menos-mod-96 b a)
-       (menos-mod-96 a b))))
+       41)))
 
-(defun modificador-de-oitava (a b)
-  (let ((a (evento-pitch a))
-        (b (evento-pitch b)))
-    (if (< a b)
-        0
-        -1)))
+(defun modificador-oitava (a b)
+  (let ((pa (evento-pitch a))
+        (pb (evento-pitch b))
+        (oa (evento-octave a))
+        (ob (evento-octave b)))
+    (print pa)
+    (print pb)
+    (print oa)
+    (print ob)
+    (+ (- ob 8)
+       (if (< pa pb)
+           (if (menos-de-uma-quarta a b)
+               oa
+               (- oa 1))
+           (if (menos-de-uma-quarta b a)
+               oa
+               (+ oa 1))))))
 
-(defun relativiza (nota expressao &optional seq)
+
+(defun relativiza (nota expressao &optional seq oitava)
   (if (not expressao)
       (nreverse seq)
-      (let ((prox-nota (first expressao))
-            (expressao (rest (expressao)))
-            (seq 
-             (cons 
+      (let* ((prox-nota (first expressao))
+             (oitava (if oitava oitava
+                         (evento-octave nota)))
+             (expressao (rest expressao))
+             (evento-novo
               (emite-evento
                (evento-pitch prox-nota)
                (evento-dur prox-nota)
                (evento-inicio prox-nota)
-               (+ (evento-octave prox-nota) -8 ;é nisso que dá 0 não ser o centro
-                  (if (boa-ordem nota prox-nota)
-                      (modificador-de-oitava nota prox-nota)
-                      (modificador-de-oitava prox-nota nota))))
-              seq)))
-        (relativiza prox-nota expressao seq))))
+               (modificador-oitava nota prox-nota)))
+             (seq 
+              (cons evento-novo seq)))
+        (relativiza evento-novo expressao seq oitava))))
 
-  
