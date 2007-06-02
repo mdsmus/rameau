@@ -48,6 +48,14 @@
           expr)
       expr))
 
+(defun only-the-third (a b c &rest args)
+  (declare (ignore a b args))
+  c)
+
+(defun only-the-first (a &rest args)
+  (declare (ignore args))
+  a)
+
 ;; (parse-simultaneous-music-expression a exprs b)
 ; Ignora a e b e processa uma music expression como dentro de <<>>
 (defun parse-chord (a exprs b)
@@ -138,7 +146,73 @@
   (articulation-expr
    ARTICULATION
    (articulation-expr ARTICULATION))
-  )
+
+#|  ;; Tentativa de refazer a gramática baseada na do lilypond
+  
+  (lilypond
+   (toplevel_expression #'identity))
+
+  (toplevel_expression
+   (lilypond_header #'identity)
+   (score_block #'identity)
+   (toplevel_music #'identity))
+
+  (toplevel_music
+   (composite_music #'identity))
+
+  (lilypond_header
+   (HEADER |{| lilypond_header_block |}| #'only-the-third))
+
+  (score-block
+   (NEW-SCORE |{| score_body |}| #'only-the-third))
+
+  (score_body
+   (music #'parse-music)
+   (score_identifier #'identity)
+   (score_body lilypond_header #'only-the-first))
+
+  (music_list
+   ()
+   (music_list music #'parse-music-list))
+
+  (music
+   (simple_music #'parse-simple-music)
+   (composite-music #'parse-composite-music))
+
+  (sequential_music
+   (|{| music_list |}| #'parse-sequential-music))
+
+  (simultaneous_music
+   (|<<| music_list |>>| #'parse-simultaneous-music))
+
+  (simple_music
+   (event_chord #'parse-event-chord)
+   (music_identifier #'parse-music-identifier)
+   (music_property_def #'identity)
+   (context_change #'identity))
+
+  (grouped_music_list
+   (simultaneous_music #'identity)
+   (sequential_music #'identity))
+
+  (relative_music
+   (RELATIVE note-expr sequential_music #'parse-relative-music))
+
+  (event_chord
+   (note_chord_element #'identity))
+
+  (note_chord_element
+   (chord_body #'parse-chord-element))
+
+  (chord_body
+   (|<| chord_body_elements |>| #'ignore-first-third))
+
+  (chord_body_elements
+   (pitch exclamations questions octave_check #'parse-chord-body))
+  
+   
+
+|#)
 
 (defun parse-string (str)
   (parse-with-lexer (string-lexer str) *expression-parser*))
