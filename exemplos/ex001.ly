@@ -2,34 +2,32 @@
   file = "ex001.ly"
   objetivo = "tônica dominante tônica"
 }
-global = {
-  \time 3/4
-}
 \score {
   <<
-    \new Staff <<
-      \global
+    \new Staff {
       \relative c'' {
+        \time 3/4
         c b c
       }
-    >>
-    \new Staff <<
+    }
+    \new Staff {
       \global
       \relative c'' {
+        \time 3/4
         g g g
       }
-    >>
-    \new Staff <<
-      \global
+    }
+    \new Staff {
       \relative c' {
+        \time 3/4
         e d e
       }
-    >>
-    \new Staff <<
-      \global
+    }
+    \new Staff {
       \relative c' {
+        \time 3/4
         c g c
       }
-    >>
+    }
   >>
 }
