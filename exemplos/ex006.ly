@@ -1,5 +1,4 @@
 \header {
-  file = "ex006.ly"
   objetivo = "tônica dominante com 7 tônica com inversões"
 }
 \score {

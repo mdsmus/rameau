@@ -1,5 +1,4 @@
 \header {
-  file = "ex001.ly"
   objetivo = "tônica dominante tônica"
 }
 \score {
@@ -11,7 +10,6 @@
       }
     }
     \new Staff {
-      \global
       \relative c'' {
         \time 3/4
         g g g
