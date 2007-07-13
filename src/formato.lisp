@@ -76,56 +76,39 @@ i tem nos isis e quantos e tem nos eses."
 (defun move-evento-no-tempo (evento tempo)
   (make-evento :pitch (evento-pitch evento)
                :dur (evento-dur evento)
-               :inicio (+ (evento-inicio evento) tempo)))
+               :inicio (+ (evento-inicio evento) tempo)
+               :octave (evento-octave evento)))
 
-
-(defun emite-sequencia (notas &optional (seq nil) (inicio 0) (dur 1/4))
-  (if notas
-      (let* ((n (car notas))
-             (dur (if (evento-dur n)
-                      (evento-dur n)
-                      dur))
-             (seq (cons (emite-evento (evento-pitch n)
-                                      dur
-                                      inicio
-                                      (evento-octave n))
-                        seq)))
-        (emite-sequencia (cdr notas) seq (+ inicio dur) dur))
-      (nreverse seq)))
-
-(defun emite-acorde (&rest notas)
-  (mapcar (lambda (n)
-            (emite-evento (evento-pitch n) (/ 1 (evento-dur n)) 0 (evento-octave n)))
-          notas))
 
 (defun movimenta-sequencia (seq tempo)
   (mapcar (lambda (x) (move-evento-no-tempo x tempo))
           seq))
 
+(defun fim-evento (evento)
+  (+ (evento-inicio evento) (evento-dur evento)))
+
 (defun fim-da-execucao (seq)
   (let ((l (first (last seq))))
-    (+ (evento-inicio l) (evento-dur l))))
-
-(defun concatena-sequencias (a b)
-  (if (not a)
-      b
-      (if (not b)
-          a
-          (nconc a (movimenta-sequencia b (fim-da-execucao a))))))
+    (fim-evento l)))
 
 (defun coloca-expressoes-em-sequencia (sequencias)
   "Leva uma lista de expressões musicais e as arruma em sequência"
   (when sequencias
     (let* ((primeiro (car sequencias))
            (outros (cdr sequencias))
-           (fim-primeiro (reduce #'max (mapcar #'fim-da-execucao primeiro)))
-           (inicio-primeiro (inicio (car primeiro)))
+           (fim-primeiro (reduce #'max (mapcar #'fim-evento primeiro)))
+           (inicio-primeiro (evento-inicio (car primeiro)))
            (movimentador (- fim-primeiro inicio-primeiro)))
       (append primeiro
               (coloca-expressoes-em-sequencia
                (mapcar (lambda (x) (movimenta-sequencia x movimentador))
                        outros))))))
-            
+(defun sequencia-eventos (eventos)
+  (when eventos
+    (cons (first eventos)
+          (sequencia-eventos
+           (movimenta-sequencia (rest eventos) (evento-dur (first eventos)))))))
+
 
 (defun menos-mod-96 (a b)
   (mod (- a b) 96))

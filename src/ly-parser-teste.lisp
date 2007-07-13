@@ -60,13 +60,8 @@
 \\new Staff { c d e f }
 >> }")))
 
+;(parse-file "/home/top/programas/analise-harmonica/exemplos-simples/ex-simples1.ly")
 
-;(run-tests number-of-accidentals)
-;(run-tests note-number)
-;(run-tests note-from-string)
-;(run-tests octave-from-string)
-;(run-tests cria-nota)
-;(run-tests parser)
 
 (run-tests)
 

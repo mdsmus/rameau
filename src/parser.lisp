@@ -12,6 +12,11 @@
   (merge 'list (get-exp exp1) (get-exp exp2)
          (lambda (x y) (< (evento-inicio x) (evento-inicio y)))))
 
+(defun merge-exprs (exprs)
+  (if (second exprs)
+      (expmerge (first exprs) (merge-exprs (rest exprs)))
+      (car exprs)))
+
 (deflexer string-lexer
   ("(c|d|e|f|g|a|b)(is|es|isis|eses)?" (return (values 'NOTE %0)))
   ("('|,)+" (return (values 'OCTAVE %0)))
@@ -34,37 +39,103 @@
 
 (defun parse-music-block (a block b)
   (declare (ignore a b))
-  `(MUSIC-BLOCK ,block))
+  `(MUSIC-BLOCK ,@block))
 
 (defun parse-chord (a chord b)
   (declare (ignore a b))
-  `(CHORD ,chord))
+  `(CHORD ,@chord))
 
 (defun parse-simultaneous (a simultaneous b)
   (declare (ignore a b))
-  `(SIMULTANEOUS ,simultaneous))
+  `(SIMULTANEOUS ,@simultaneous))
 
 (defun parse-staff-block (a block)
   (declare (ignore a))
-  `(STAFF ,block))
+  `(STAFF ,@block))
 
 (defun parse-score-block (a block)
   (declare (ignore a))
-  `(SCORE ,block))
+  `(SCORE ,@block))
 
 (defun parse-voice-block (a block)
   (declare (ignore a))
-  `(VOICE ,block))
+  `(VOICE ,@block))
 
 (defun parse-relative-block (a relative block)
   (declare (ignore a))
-  `(RELATIVE ,relative ,block))
+  `(RELATIVE ,relative ,@block))
 
 (defun parse-expression-atom (atom)
-  `(EXPRESSION-ATOM ,atom))
+  (cons atom nil))
 
 (defun parse-expression (atom expression)
-  `(EXPRESSION ,atom ,expression))
+  (cons atom expression))
+
+
+;; do-the-parsing estabelece o ambiente global
+;; onde a duração está definida e onde o parsing
+;; vai acontecer. Tá, é feio, mas eu não imagino
+;; solução mais limpa nesse momento.
+
+(defun do-the-parsing (tree)
+  (let ((*dur* 1/4))
+    (declare (special *dur*))
+    (process-tree (ajusta-duracao tree))))
+
+(defun ajusta-duracao (tree)
+  "acerta as durações por tempo de uma AST"
+  (let ((prim (car tree))
+        (rest (cdr tree)))
+    (when (evento-p prim)
+      (if (evento-dur prim)
+          (setf *dur* (evento-dur prim))
+          (setf (evento-dur prim) *dur*)))
+    (when (listp prim)
+      (ajusta-duracao prim))
+    (when rest
+      (ajusta-duracao rest))
+    tree))
+
+
+(defun process-tree (tree)
+  (if (listp tree)
+      (let ((type (car tree))
+            (expr (cdr tree)))
+        (case type
+          (MUSIC-BLOCK
+           ;; Se a árvore é um music block, expr é uma lista
+           ;; de expressões que devem ser processadas em sequência
+           ;; e depois juntas
+           (let ((seq (mapcar #'process-tree expr)))
+             (if (listp (car seq))
+                 (coloca-expressoes-em-sequencia seq)
+                 (sequencia-eventos seq))))
+          (CHORD
+           ;; Se a árvore é um acorde, expr é uma sequência de notas
+           ;; que devem ter a mesma duração
+           (process-tree expr))
+          (SIMULTANEOUS
+           ;; Se a árvore é um simultaneous, expr é uma lista de
+           ;; expressões que devem ser executadas ao mesmo tempo,
+           ;; mas com durações possivelmente diferentes
+           (merge-exprs (mapcar #'process-tree expr)))
+          (STAFF
+           ;; Se a árvore é um staff, nada mais precisa ser feito
+           (process-tree expr))
+          (SCORE
+           ;; Se a árvore é um score, nada mais precisa ser feito
+           (process-tree expr))
+          (VOICE
+           ;; Se a árvore é uma voz, nada precisa ser feito
+           (process-tree expr))
+          (RELATIVE
+           ;; Se a árvore é um relative, ela precisa ser processada
+           ;; para relativizar as oitavas
+           (relativiza (car expr) (process-tree (rest expr))))
+          (EXPRESSION
+           expr)
+          (t tree)))
+      tree))
 
 (define-parser *expression-parser*
   (:start-symbol lilypond)
@@ -101,16 +172,16 @@
    (|{| expression |}| #'parse-music-block))
 
   (staff-block
-   (NEW-STAFF music-block #'parse-staff-block))
+   (NEW-STAFF expression-atom #'parse-staff-block))
 
   (score-block
-   (NEW-SCORE music-block #'parse-score-block))
+   (NEW-SCORE expression-atom #'parse-score-block))
 
   (voice-block
-   (NEW-VOICE music-block #'parse-voice-block))
+   (NEW-VOICE expression-atom #'parse-voice-block))
   
   (relative-block
-   (RELATIVE note-expr music-block #'parse-relative-block))
+   (RELATIVE note-expr expression-atom #'parse-relative-block))
   
   (notes
    (note-expr #'list)
