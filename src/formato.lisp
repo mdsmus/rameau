@@ -113,6 +113,20 @@ i tem nos isis e quantos e tem nos eses."
           a
           (nconc a (movimenta-sequencia b (fim-da-execucao a))))))
 
+(defun coloca-expressoes-em-sequencia (sequencias)
+  "Leva uma lista de expressões musicais e as arruma em sequência"
+  (when sequencias
+    (let* ((primeiro (car sequencias))
+           (outros (cdr sequencias))
+           (fim-primeiro (reduce #'max (mapcar #'fim-da-execucao primeiro)))
+           (inicio-primeiro (inicio (car primeiro)))
+           (movimentador (- fim-primeiro inicio-primeiro)))
+      (append primeiro
+              (coloca-expressoes-em-sequencia
+               (mapcar (lambda (x) (movimenta-sequencia x movimentador))
+                       outros))))))
+            
+
 (defun menos-mod-96 (a b)
   (mod (- a b) 96))
 

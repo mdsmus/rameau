@@ -2,15 +2,6 @@
 (import 'lexer:%0)
 (use-package 'yacc)
 
-;; (ignore-first a b) => b
-;; Ignora o primeiro argumento
-(defun ignore-first (a b)
-  (declare (ignore a))
-  b)
-
-(defun ignore-first-second-third-fifth-sixth (a b c d e f)
-  (declare (ignore a b c e f))
-  d)
 
 (defun get-exp (exp)
   (if (atom (car exp)) exp (car exp)))
@@ -39,70 +30,37 @@
   ("\\}" (return (values '|}| '|}|)))
   )
 
-;; (parse-standalone-music-expression expr)
-; trata uma music expression como se ela estivesse fora de <<>>
-(defun parse-standalone-expression (expr)
-  (if (cdr expr)
-      (if (not (evento-p (car expr)))
-          (reduce #'concatena-sequencias expr :initial-value nil)
-          expr)
-      expr))
 
-(defun only-the-third (a b c &rest args)
-  (declare (ignore a b args))
-  c)
 
-(defun only-the-first (a &rest args)
-  (declare (ignore args))
-  a)
 
-;; (parse-simultaneous-music-expression a exprs b)
-; Ignora a e b e processa uma music expression como dentro de <<>>
-(defun parse-chord (a exprs b)
+;;; Novas funções de parsing
+
+(defun parse-music-block (a block b)
   (declare (ignore a b))
-  ;exprs)
-  (reduce #'expmerge (cdr exprs) :initial-value (car exprs)))
+  (coloca-expressoes-em-sequencia block))
 
-;; (parse-staff-block1 ign expr1 expr2
-; Contrói um staff block a partir de expr1 e expr2.
-; FIXME: tem como dois staff blocks em sequência não soarem simultaneamente?
-(defun parse-staff-block1 (ign expr1 expr2)
-  (declare (ignore ign))
-  (expmerge expr1 expr2))
-
-;; (parse-staff-block2 ign staff)
-; retorna staff
-(defun parse-staff-block2 (ign staff)
-  (declare (ignore ign))
-  (parse-standalone-music-expression staff))
-
-;; (parse-notes-expression a notes b expr)
-; processa uma music expression que é uma sequência de notas e
-; outra music expression ignorando delimitadores
-(defun parse-notes-expression (a notes b expr)
+(defun parse-chord (a chord b)
   (declare (ignore a b))
-  (append (list (emite-sequencia notes))
-          expr))
+  chord)
 
-;; (parse-notes a notes b)
-; processa uma music expression que é uma sequência de notas
-(defun parse-notes (a notes b)
+(defun parse-simultaneous (a simultaneous b)
   (declare (ignore a b))
-  (emite-sequencia notes))
+  (expmerge simultaneous))
 
-;; (parse-note-sequence note note-expr)
-; processa uma sequência de notas
-(defun parse-note-sequence (note note-expr)
-  (append note (list note-expr)))
-
-;; processa uma sequência de notas dentro de um \relative
-(defun parse-relative (a nota expr)
+(defun parse-staff-block (a block)
   (declare (ignore a))
-  (relativiza nota (emite-sequencia expr)))
-  
+  block)
+
+(defun parse-score-block (a block)
+  (declare (ignore a))
+  block)
+
+(defun parse-relative-block (a relative block)
+  (declare (ignore a))
+  (relativiza relative block))
 
 (define-parser *expression-parser*
-  (:start-symbol music-block)
+  (:start-symbol lilypond)
   (:terminals (WHITESPACE
                NEW-STAFF
                NEW-SCORE
@@ -113,24 +71,40 @@
                RELATIVE
                |{| |}| |<<| |>>| |<| |>|))
 
+  (lilypond
+   (lilypond-header #'identity)
+   (music-block #'identity))
+  
   (music-block
-   (NEW-SCORE |{| |<<| staff-block |>>| |}| #'ignore-first-second-third-fifth-sixth)
-   (expression #'identity)
-   (note-expr #'identity))
+   (|{| expression |}| #'parse-music-block)
+   (expression-atom #'identity))
 
+  (expression
+   (expression-atom #'list)
+   (expression-atom expression #'cons))
+
+  (expression-atom
+   (music-block #'identity)
+   (staff-block #'identity)
+   (relative-block #'identity)
+   (|<| notes |>| #'parse-chord)
+   (note-expr #'identity)
+   (|<<| expression |>>| #'parse-simultaneous)
+   (score-block #'identity))
+   
   (staff-block
-   (NEW-STAFF expression staff-block #'parse-staff-block1)
-   (NEW-STAFF expression #'ignore-first))
+   (NEW-STAFF music-block #'parse-staff-block))
+
+  (score-block
+   (NEW-SCORE music-block #'parse-score-block))
+
+  (relative-block
+   (RELATIVE note-expr music-block #'parse-relative-block))
   
   (notes
    (note-expr #'list)
-   (notes note-expr #'parse-note-sequence))
+   (note-expr notes #'cons))
 
-  (expression
-   (|{| subexpr |}| #'parse-notes)
-   (|{| subexpr |}| expression #'parse-notes-expression)
-   (RELATIVE note-expr expression #'parse-relative)
-   (|<| notes |>| #'parse-chord))
 
   (subexpr
    (notes #'identity)
@@ -147,72 +121,8 @@
    ARTICULATION
    (articulation-expr ARTICULATION))
 
-#|  ;; Tentativa de refazer a gramática baseada na do lilypond
   
-  (lilypond
-   (toplevel_expression #'identity))
-
-  (toplevel_expression
-   (lilypond_header #'identity)
-   (score_block #'identity)
-   (toplevel_music #'identity))
-
-  (toplevel_music
-   (composite_music #'identity))
-
-  (lilypond_header
-   (HEADER |{| lilypond_header_block |}| #'only-the-third))
-
-  (score-block
-   (NEW-SCORE |{| score_body |}| #'only-the-third))
-
-  (score_body
-   (music #'parse-music)
-   (score_identifier #'identity)
-   (score_body lilypond_header #'only-the-first))
-
-  (music_list
-   ()
-   (music_list music #'parse-music-list))
-
-  (music
-   (simple_music #'parse-simple-music)
-   (composite-music #'parse-composite-music))
-
-  (sequential_music
-   (|{| music_list |}| #'parse-sequential-music))
-
-  (simultaneous_music
-   (|<<| music_list |>>| #'parse-simultaneous-music))
-
-  (simple_music
-   (event_chord #'parse-event-chord)
-   (music_identifier #'parse-music-identifier)
-   (music_property_def #'identity)
-   (context_change #'identity))
-
-  (grouped_music_list
-   (simultaneous_music #'identity)
-   (sequential_music #'identity))
-
-  (relative_music
-   (RELATIVE note-expr sequential_music #'parse-relative-music))
-
-  (event_chord
-   (note_chord_element #'identity))
-
-  (note_chord_element
-   (chord_body #'parse-chord-element))
-
-  (chord_body
-   (|<| chord_body_elements |>| #'ignore-first-third))
-
-  (chord_body_elements
-   (pitch exclamations questions octave_check #'parse-chord-body))
-  
-   
-
-|#)
+)
 
 (defun parse-string (str)
   (parse-with-lexer (string-lexer str) *expression-parser*))
