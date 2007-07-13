@@ -20,6 +20,7 @@
   ("[:space:]+" ); (return (values 'WHITESPACE %0)))
   ("-+\n")
   ("\\\\new (s|S)taff" (return (values 'NEW-STAFF %0)))
+    ("\\\\new (v|V)oice" (return (values 'NEW-VOICE %0)))
   ("\\\\(R|r)elative" (return (values 'RELATIVE %0)))
   ("\\\\(S|s)core" (return (values 'NEW-SCORE %0)))
   ("<<" (return (values '|<<| '|<<|)))
@@ -55,6 +56,10 @@
   (declare (ignore a))
   block)
 
+(defun parse-voice-block (a block)
+  (declare (ignore a))
+  block)
+
 (defun parse-relative-block (a relative block)
   (declare (ignore a))
   (relativiza relative block))
@@ -64,6 +69,7 @@
   (:terminals (WHITESPACE
                NEW-STAFF
                NEW-SCORE
+               NEW-VOICE
                DUR
                NOTE
                OCTAVE
@@ -86,6 +92,7 @@
   (expression-atom
    (music-block #'identity)
    (staff-block #'identity)
+   (voice-block #'identity)
    (relative-block #'identity)
    (|<| notes |>| #'parse-chord)
    (note-expr #'identity)
@@ -95,6 +102,9 @@
   (staff-block
    (NEW-STAFF music-block #'parse-staff-block))
 
+  (voice-block
+   (NEW-VOICE music-block #'parse-voice-block))
+  
   (score-block
    (NEW-SCORE music-block #'parse-score-block))
 
