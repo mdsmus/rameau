@@ -17,10 +17,10 @@
   ("('|,)+" (return (values 'OCTAVE %0)))
   ("(128|16|32|64|1|2|4|8)" (return (values 'DUR %0)))
   ("(\-|\a|\\^)." (return (values 'ARTICULATION %0)))
-  ("[:space:]+" ); (return (values 'WHITESPACE %0)))
+  ("[:space:]+")
   ("-+\n")
   ("\\\\new (s|S)taff" (return (values 'NEW-STAFF %0)))
-    ("\\\\new (v|V)oice" (return (values 'NEW-VOICE %0)))
+  ("\\\\new (v|V)oice" (return (values 'NEW-VOICE %0)))
   ("\\\\(R|r)elative" (return (values 'RELATIVE %0)))
   ("\\\\(S|s)core" (return (values 'NEW-SCORE %0)))
   ("<<" (return (values '|<<| '|<<|)))
@@ -32,37 +32,39 @@
   )
 
 
-
-
-;;; Novas funções de parsing
-
 (defun parse-music-block (a block b)
   (declare (ignore a b))
-  (coloca-expressoes-em-sequencia block))
+  `(MUSIC-BLOCK ,block))
 
 (defun parse-chord (a chord b)
   (declare (ignore a b))
-  chord)
+  `(CHORD ,chord))
 
 (defun parse-simultaneous (a simultaneous b)
   (declare (ignore a b))
-  (expmerge simultaneous))
+  `(SIMULTANEOUS ,simultaneous))
 
 (defun parse-staff-block (a block)
   (declare (ignore a))
-  block)
+  `(STAFF ,block))
 
 (defun parse-score-block (a block)
   (declare (ignore a))
-  block)
+  `(SCORE ,block))
 
 (defun parse-voice-block (a block)
   (declare (ignore a))
-  block)
+  `(VOICE ,block))
 
 (defun parse-relative-block (a relative block)
   (declare (ignore a))
-  (relativiza relative block))
+  `(RELATIVE ,relative ,block))
+
+(defun parse-expression-atom (atom)
+  `(EXPRESSION-ATOM ,atom))
+
+(defun parse-expression (atom expression)
+  `(EXPRESSION ,atom ,expression))
 
 (define-parser *expression-parser*
   (:start-symbol lilypond)
@@ -78,36 +80,35 @@
                |{| |}| |<<| |>>| |<| |>|))
 
   (lilypond
-   (lilypond-header #'identity)
-   (music-block #'identity))
-  
-  (music-block
-   (|{| expression |}| #'parse-music-block)
-);   (expression-atom #'identity))
+   (lilypond-header expression-atom #'identity)
+   (expression-atom #'do-the-parsing))
 
   (expression
-   (expression-atom #'list)
-   (expression-atom expression #'cons))
-
+   (expression-atom #'parse-expression-atom)
+   (expression-atom expression #'parse-expression))
+  
   (expression-atom
    (music-block #'identity)
    (staff-block #'identity)
+   (score-block #'identity)
    (voice-block #'identity)
    (relative-block #'identity)
    (|<| notes |>| #'parse-chord)
-   (note-expr #'identity)
    (|<<| expression |>>| #'parse-simultaneous)
-   (score-block #'identity))
+   (note-expr #'identity))
    
+  (music-block
+   (|{| expression |}| #'parse-music-block))
+
   (staff-block
    (NEW-STAFF music-block #'parse-staff-block))
+
+  (score-block
+   (NEW-SCORE music-block #'parse-score-block))
 
   (voice-block
    (NEW-VOICE music-block #'parse-voice-block))
   
-  (score-block
-   (NEW-SCORE music-block #'parse-score-block))
-
   (relative-block
    (RELATIVE note-expr music-block #'parse-relative-block))
   
@@ -115,11 +116,6 @@
    (note-expr #'list)
    (note-expr notes #'cons))
 
-
-  (subexpr
-   (notes #'identity)
-   (expression #'identity))
-  
   (note-expr
    (NOTE #'cria-nota)
    (NOTE OCTAVE #'cria-nota)
