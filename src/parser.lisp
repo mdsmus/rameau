@@ -83,7 +83,7 @@
   
   (music-block
    (|{| expression |}| #'parse-music-block)
-   (expression-atom #'identity))
+);   (expression-atom #'identity))
 
   (expression
    (expression-atom #'list)
