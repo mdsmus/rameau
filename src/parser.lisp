@@ -2,15 +2,6 @@
 (import 'lexer:%0)
 (use-package 'yacc)
 
-;; (ignore-first a b) => b
-;; Ignora o primeiro argumento
-(defun ignore-first (a b)
-  (declare (ignore a))
-  b)
-
-(defun ignore-first-second-third-fifth-sixth (a b c d e f)
-  (declare (ignore a b c e f))
-  d)
 
 (defun get-exp (exp)
   (if (atom (car exp)) exp (car exp)))
@@ -21,14 +12,20 @@
   (merge 'list (get-exp exp1) (get-exp exp2)
          (lambda (x y) (< (evento-inicio x) (evento-inicio y)))))
 
+(defun merge-exprs (exprs)
+  (if (second exprs)
+      (expmerge (first exprs) (merge-exprs (rest exprs)))
+      (car exprs)))
+
 (deflexer string-lexer
   ("(c|d|e|f|g|a|b)(is|es|isis|eses)?" (return (values 'NOTE %0)))
   ("('|,)+" (return (values 'OCTAVE %0)))
   ("(128|16|32|64|1|2|4|8)" (return (values 'DUR %0)))
   ("(\-|\a|\\^)." (return (values 'ARTICULATION %0)))
-  ("[:space:]+" ); (return (values 'WHITESPACE %0)))
+  ("[:space:]+")
   ("-+\n")
   ("\\\\new (s|S)taff" (return (values 'NEW-STAFF %0)))
+  ("\\\\new (v|V)oice" (return (values 'NEW-VOICE %0)))
   ("\\\\(R|r)elative" (return (values 'RELATIVE %0)))
   ("\\\\(S|s)core" (return (values 'NEW-SCORE %0)))
   ("<<" (return (values '|<<| '|<<|)))
@@ -39,73 +36,113 @@
   ("\\}" (return (values '|}| '|}|)))
   )
 
-;; (parse-standalone-music-expression expr)
-; trata uma music expression como se ela estivesse fora de <<>>
-(defun parse-standalone-expression (expr)
-  (if (cdr expr)
-      (if (not (evento-p (car expr)))
-          (reduce #'concatena-sequencias expr :initial-value nil)
-          expr)
-      expr))
 
-(defun only-the-third (a b c &rest args)
-  (declare (ignore a b args))
-  c)
-
-(defun only-the-first (a &rest args)
-  (declare (ignore args))
-  a)
-
-;; (parse-simultaneous-music-expression a exprs b)
-; Ignora a e b e processa uma music expression como dentro de <<>>
-(defun parse-chord (a exprs b)
+(defun parse-music-block (a block b)
   (declare (ignore a b))
-  ;exprs)
-  (reduce #'expmerge (cdr exprs) :initial-value (car exprs)))
+  `(MUSIC-BLOCK ,@block))
 
-;; (parse-staff-block1 ign expr1 expr2
-; Contrói um staff block a partir de expr1 e expr2.
-; FIXME: tem como dois staff blocks em sequência não soarem simultaneamente?
-(defun parse-staff-block1 (ign expr1 expr2)
-  (declare (ignore ign))
-  (expmerge expr1 expr2))
-
-;; (parse-staff-block2 ign staff)
-; retorna staff
-(defun parse-staff-block2 (ign staff)
-  (declare (ignore ign))
-  (parse-standalone-music-expression staff))
-
-;; (parse-notes-expression a notes b expr)
-; processa uma music expression que é uma sequência de notas e
-; outra music expression ignorando delimitadores
-(defun parse-notes-expression (a notes b expr)
+(defun parse-chord (a chord b)
   (declare (ignore a b))
-  (append (list (emite-sequencia notes))
-          expr))
+  `(CHORD ,@chord))
 
-;; (parse-notes a notes b)
-; processa uma music expression que é uma sequência de notas
-(defun parse-notes (a notes b)
+(defun parse-simultaneous (a simultaneous b)
   (declare (ignore a b))
-  (emite-sequencia notes))
+  `(SIMULTANEOUS ,@simultaneous))
 
-;; (parse-note-sequence note note-expr)
-; processa uma sequência de notas
-(defun parse-note-sequence (note note-expr)
-  (append note (list note-expr)))
-
-;; processa uma sequência de notas dentro de um \relative
-(defun parse-relative (a nota expr)
+(defun parse-staff-block (a block)
   (declare (ignore a))
-  (relativiza nota (emite-sequencia expr)))
-  
+  `(STAFF ,@block))
+
+(defun parse-score-block (a block)
+  (declare (ignore a))
+  `(SCORE ,@block))
+
+(defun parse-voice-block (a block)
+  (declare (ignore a))
+  `(VOICE ,@block))
+
+(defun parse-relative-block (a relative block)
+  (declare (ignore a))
+  `(RELATIVE ,relative ,@block))
+
+(defun parse-expression-atom (atom)
+  (cons atom nil))
+
+(defun parse-expression (atom expression)
+  (cons atom expression))
+
+
+;; do-the-parsing estabelece o ambiente global
+;; onde a duração está definida e onde o parsing
+;; vai acontecer. Tá, é feio, mas eu não imagino
+;; solução mais limpa nesse momento.
+
+(defun do-the-parsing (tree)
+  (let ((*dur* 1/4))
+    (declare (special *dur*))
+    (process-tree (ajusta-duracao tree))))
+
+(defun ajusta-duracao (tree)
+  "acerta as durações por tempo de uma AST"
+  (let ((prim (car tree))
+        (rest (cdr tree)))
+    (when (evento-p prim)
+      (if (evento-dur prim)
+          (setf *dur* (evento-dur prim))
+          (setf (evento-dur prim) *dur*)))
+    (when (listp prim)
+      (ajusta-duracao prim))
+    (when rest
+      (ajusta-duracao rest))
+    tree))
+
+
+(defun process-tree (tree)
+  (if (listp tree)
+      (let ((type (car tree))
+            (expr (cdr tree)))
+        (case type
+          (MUSIC-BLOCK
+           ;; Se a árvore é um music block, expr é uma lista
+           ;; de expressões que devem ser processadas em sequência
+           ;; e depois juntas
+           (let ((seq (mapcar #'process-tree expr)))
+             (if (listp (car seq))
+                 (coloca-expressoes-em-sequencia seq)
+                 (sequencia-eventos seq))))
+          (CHORD
+           ;; Se a árvore é um acorde, expr é uma sequência de notas
+           ;; que devem ter a mesma duração
+           (process-tree expr))
+          (SIMULTANEOUS
+           ;; Se a árvore é um simultaneous, expr é uma lista de
+           ;; expressões que devem ser executadas ao mesmo tempo,
+           ;; mas com durações possivelmente diferentes
+           (merge-exprs (mapcar #'process-tree expr)))
+          (STAFF
+           ;; Se a árvore é um staff, nada mais precisa ser feito
+           (process-tree expr))
+          (SCORE
+           ;; Se a árvore é um score, nada mais precisa ser feito
+           (process-tree expr))
+          (VOICE
+           ;; Se a árvore é uma voz, nada precisa ser feito
+           (process-tree expr))
+          (RELATIVE
+           ;; Se a árvore é um relative, ela precisa ser processada
+           ;; para relativizar as oitavas
+           (relativiza (car expr) (process-tree (rest expr))))
+          (EXPRESSION
+           expr)
+          (t tree)))
+      tree))
 
 (define-parser *expression-parser*
-  (:start-symbol music-block)
+  (:start-symbol lilypond)
   (:terminals (WHITESPACE
                NEW-STAFF
                NEW-SCORE
+               NEW-VOICE
                DUR
                NOTE
                OCTAVE
@@ -113,29 +150,43 @@
                RELATIVE
                |{| |}| |<<| |>>| |<| |>|))
 
-  (music-block
-   (NEW-SCORE |{| |<<| staff-block |>>| |}| #'ignore-first-second-third-fifth-sixth)
-   (expression #'identity)
+  (lilypond
+   (lilypond-header expression-atom #'identity)
+   (expression-atom #'do-the-parsing))
+
+  (expression
+   (expression-atom #'parse-expression-atom)
+   (expression-atom expression #'parse-expression))
+  
+  (expression-atom
+   (music-block #'identity)
+   (staff-block #'identity)
+   (score-block #'identity)
+   (voice-block #'identity)
+   (relative-block #'identity)
+   (|<| notes |>| #'parse-chord)
+   (|<<| expression |>>| #'parse-simultaneous)
    (note-expr #'identity))
+   
+  (music-block
+   (|{| expression |}| #'parse-music-block))
 
   (staff-block
-   (NEW-STAFF expression staff-block #'parse-staff-block1)
-   (NEW-STAFF expression #'ignore-first))
+   (NEW-STAFF expression-atom #'parse-staff-block))
+
+  (score-block
+   (NEW-SCORE expression-atom #'parse-score-block))
+
+  (voice-block
+   (NEW-VOICE expression-atom #'parse-voice-block))
+  
+  (relative-block
+   (RELATIVE note-expr expression-atom #'parse-relative-block))
   
   (notes
    (note-expr #'list)
-   (notes note-expr #'parse-note-sequence))
+   (note-expr notes #'cons))
 
-  (expression
-   (|{| subexpr |}| #'parse-notes)
-   (|{| subexpr |}| expression #'parse-notes-expression)
-   (RELATIVE note-expr expression #'parse-relative)
-   (|<| notes |>| #'parse-chord))
-
-  (subexpr
-   (notes #'identity)
-   (expression #'identity))
-  
   (note-expr
    (NOTE #'cria-nota)
    (NOTE OCTAVE #'cria-nota)
@@ -147,72 +198,8 @@
    ARTICULATION
    (articulation-expr ARTICULATION))
 
-#|  ;; Tentativa de refazer a gramática baseada na do lilypond
   
-  (lilypond
-   (toplevel_expression #'identity))
-
-  (toplevel_expression
-   (lilypond_header #'identity)
-   (score_block #'identity)
-   (toplevel_music #'identity))
-
-  (toplevel_music
-   (composite_music #'identity))
-
-  (lilypond_header
-   (HEADER |{| lilypond_header_block |}| #'only-the-third))
-
-  (score-block
-   (NEW-SCORE |{| score_body |}| #'only-the-third))
-
-  (score_body
-   (music #'parse-music)
-   (score_identifier #'identity)
-   (score_body lilypond_header #'only-the-first))
-
-  (music_list
-   ()
-   (music_list music #'parse-music-list))
-
-  (music
-   (simple_music #'parse-simple-music)
-   (composite-music #'parse-composite-music))
-
-  (sequential_music
-   (|{| music_list |}| #'parse-sequential-music))
-
-  (simultaneous_music
-   (|<<| music_list |>>| #'parse-simultaneous-music))
-
-  (simple_music
-   (event_chord #'parse-event-chord)
-   (music_identifier #'parse-music-identifier)
-   (music_property_def #'identity)
-   (context_change #'identity))
-
-  (grouped_music_list
-   (simultaneous_music #'identity)
-   (sequential_music #'identity))
-
-  (relative_music
-   (RELATIVE note-expr sequential_music #'parse-relative-music))
-
-  (event_chord
-   (note_chord_element #'identity))
-
-  (note_chord_element
-   (chord_body #'parse-chord-element))
-
-  (chord_body
-   (|<| chord_body_elements |>| #'ignore-first-third))
-
-  (chord_body_elements
-   (pitch exclamations questions octave_check #'parse-chord-body))
-  
-   
-
-|#)
+)
 
 (defun parse-string (str)
   (parse-with-lexer (string-lexer str) *expression-parser*))
