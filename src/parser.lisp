@@ -18,12 +18,19 @@
       (car exprs)))
 
 (deflexer string-lexer
+  ("[:alpha:][:alpha:]+" (return (values 'VARNAME %0)))
   ("(c|d|e|f|g|a|b)(is|es|isis|eses)?" (return (values 'NOTE %0)))
   ("('|,)+" (return (values 'OCTAVE %0)))
   ("(128|16|32|64|1|2|4|8)" (return (values 'DUR %0)))
   ("(\-|\a|\\^)." (return (values 'ARTICULATION %0)))
-  ("[:space:]+")
+  ("([:space:]+)")
+  ("\\\\(V|v)oice((O|o)ne|(T|t)wo|(T|t)hree|(F|f)our)")
   ("-+\n")
+  ("\\\\clef (bass|treble)")
+  ("\\\\(T|t)ime \\d/\\d")
+  ("\\\\(H|h)eader" (return (values 'HEADER %0)))
+  ("\"[^\"]*\"" (return (values 'STRING %0)))
+  ("=" (return (values '= '=)))
   ("\\\\new (s|S)taff" (return (values 'NEW-STAFF %0)))
   ("\\\\new (v|V)oice" (return (values 'NEW-VOICE %0)))
   ("\\\\(R|r)elative" (return (values 'RELATIVE %0)))
@@ -34,6 +41,7 @@
   (">" (return (values '|>| %0)))
   ("\\{" (return (values '|{| '|{|)))
   ("\\}" (return (values '|}| '|}|)))
+  ("\\\\([:alpha:]+)" (return (values 'VARIABLE %0)))
   )
 
 
@@ -57,6 +65,9 @@
   (declare (ignore a))
   `(SCORE ,@block))
 
+(defun parse-variable-block (variable)
+  `(VARIABLE ,variable))
+
 (defun parse-voice-block (a block)
   (declare (ignore a))
   `(VOICE ,@block))
@@ -71,6 +82,13 @@
 (defun parse-expression (atom expression)
   (cons atom expression))
 
+(defun parse-lilypond (header expression)
+  (declare (ignore header))
+  (do-the-parsing expression))
+
+(defun parse-assignment (variable equal value)
+  (declare (ignore equal))
+  `(SET ,variable ,value))
 
 ;; do-the-parsing estabelece o ambiente global
 ;; onde a duração está definida e onde o parsing
@@ -78,8 +96,9 @@
 ;; solução mais limpa nesse momento.
 
 (defun do-the-parsing (tree)
-  (let ((*dur* 1/4))
-    (declare (special *dur*))
+  (let ((*dur* 1/4)
+        (*environment* (make-hash-table :test #'equalp)))
+    (declare (special *dur* *environment*))
     (process-tree (ajusta-duracao tree))))
 
 (defun ajusta-duracao (tree)
@@ -96,17 +115,19 @@
       (ajusta-duracao rest))
     tree))
 
+(defun process-trees (trees)
+  (remove-if #'null (mapcar #'process-tree trees)))
 
 (defun process-tree (tree)
   (if (listp tree)
       (let ((type (car tree))
-            (expr (cdr tree)))
+            (expr (remove-if #'null (cdr tree))))
         (case type
           (MUSIC-BLOCK
            ;; Se a árvore é um music block, expr é uma lista
            ;; de expressões que devem ser processadas em sequência
            ;; e depois juntas
-           (let ((seq (mapcar #'process-tree expr)))
+           (let ((seq (process-trees expr)))
              (if (listp (car seq))
                  (coloca-expressoes-em-sequencia seq)
                  (sequencia-eventos seq))))
@@ -118,7 +139,7 @@
            ;; Se a árvore é um simultaneous, expr é uma lista de
            ;; expressões que devem ser executadas ao mesmo tempo,
            ;; mas com durações possivelmente diferentes
-           (merge-exprs (mapcar #'process-tree expr)))
+           (merge-exprs (process-trees expr)))
           (STAFF
            ;; Se a árvore é um staff, nada mais precisa ser feito
            (process-tree expr))
@@ -134,6 +155,11 @@
            (relativiza (car expr) (process-tree (rest expr))))
           (EXPRESSION
            expr)
+          (SET
+           (setf (gethash (first expr) *environment*) (second expr))
+           nil)
+          (VARIABLE
+           (process-tree (gethash (subseq (first expr) 1) *environment*)))
           (t tree)))
       tree))
 
@@ -148,11 +174,18 @@
                OCTAVE
                ARTICULATION
                RELATIVE
-               |{| |}| |<<| |>>| |<| |>|))
+               STRING
+               HEADER
+               VARNAME
+               VARIABLE
+               = |{| |}| |<<| |>>| |<| |>|))
 
   (lilypond
-   (lilypond-header expression-atom #'identity)
+   (lilypond-header expression-atom #'parse-lilypond)
    (expression-atom #'do-the-parsing))
+
+  (lilypond-header
+   (HEADER |{| expression |}|))
 
   (expression
    (expression-atom #'parse-expression-atom)
@@ -163,10 +196,22 @@
    (staff-block #'identity)
    (score-block #'identity)
    (voice-block #'identity)
+   (assignment #'identity)
+   (variable-block #'identity)
    (relative-block #'identity)
    (|<| notes |>| #'parse-chord)
    (|<<| expression |>>| #'parse-simultaneous)
    (note-expr #'identity))
+
+  (assignment
+   (VARNAME = value #'parse-assignment))
+
+  (value
+   (STRING #'identity)
+   (expression-atom #'identity))
+
+  (variable-block
+   (VARIABLE #'parse-variable-block))
    
   (music-block
    (|{| expression |}| #'parse-music-block))
