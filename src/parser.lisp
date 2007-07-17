@@ -26,9 +26,9 @@
   ("\\\\(V|v)oice((O|o)ne|(T|t)wo|(T|t)hree|(F|f)our)")
   ("-+\n")
   ("\\\\clef (bass|treble)")
-  ("\\\\(T|t)imes \\d/\\d")
+  ("\\\\(T|t)ime \\d/\\d")
   ("\\\\(H|h)eader" (return (values 'HEADER %0)))
-  ("\"([:alnum:]|[:space:])*\"" (return (values 'STRING %0)))
+  ("\"[^\"]*\"" (return (values 'STRING %0)))
   ("=" (return (values '= '=)))
   ("\\\\new (s|S)taff" (return (values 'NEW-STAFF %0)))
   ("\\\\new (v|V)oice" (return (values 'NEW-VOICE %0)))
@@ -40,7 +40,7 @@
   (">" (return (values '|>| %0)))
   ("\\{" (return (values '|{| '|{|)))
   ("\\}" (return (values '|}| '|}|)))
-  ("[:alpha:]*" (return (values 'VARIABLE %0)))
+  ("[:alpha:]+" (return (values 'VARIABLE %0)))
   )
 
 
