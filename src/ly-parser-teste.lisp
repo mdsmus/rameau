@@ -74,6 +74,28 @@
   \\new Staff \\relative c' {
     c
   }
+>>"))
+  (assert-equalp
+   (list
+    (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+    (make-evento :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+    (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0))
+   (parse-string
+    "<<
+  \\new Staff <<
+    \\new Voice \\relative c'' {
+      \\voiceOne
+      g
+    }
+    \\new Voice \\relative c' {
+      \\voiceTwo
+      e
+    }
+  >>
+  \\new Staff \\relative c' {
+    \\clef bass
+    c
+  }
 >>")))
 
 ;(print (parse-file (concatenate 'string *main-dir* "../exemplos-simples/ex-simples2.ly")))
