@@ -13,4 +13,5 @@
 (load-all "formato.lisp"
           "parser.lisp"
           "lisp-unit.lisp"
+          "pardo.lisp"
           "ly-parser-teste.lisp")
