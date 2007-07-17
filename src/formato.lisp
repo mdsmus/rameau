@@ -51,7 +51,7 @@ i tem nos isis e quantos e tem nos eses."
   (declare (ignore articulation))
   (make-evento :pitch (note-from-string nota)
              :octave (octave-from-string octave)
-             :dur dur
+             :dur (when dur (parse-integer dur))
              :inicio 0))
 
 (defun cria-nota-com-duracao (nota dur)

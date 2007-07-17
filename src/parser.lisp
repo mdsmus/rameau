@@ -26,6 +26,10 @@
   ("\\\\(V|v)oice((O|o)ne|(T|t)wo|(T|t)hree|(F|f)our)")
   ("-+\n")
   ("\\\\clef (bass|treble)")
+  ("\\\\(T|t)imes \\d/\\d")
+  ("\\\\(H|h)eader" (return (values 'HEADER %0)))
+  ("\"([:alnum:]|[:space:])*\"" (return (values 'STRING %0)))
+  ("=" (return (values '= '=)))
   ("\\\\new (s|S)taff" (return (values 'NEW-STAFF %0)))
   ("\\\\new (v|V)oice" (return (values 'NEW-VOICE %0)))
   ("\\\\(R|r)elative" (return (values 'RELATIVE %0)))
@@ -36,6 +40,7 @@
   (">" (return (values '|>| %0)))
   ("\\{" (return (values '|{| '|{|)))
   ("\\}" (return (values '|}| '|}|)))
+  ("[:alpha:]*" (return (values 'VARIABLE %0)))
   )
 
 
@@ -73,6 +78,13 @@
 (defun parse-expression (atom expression)
   (cons atom expression))
 
+(defun parse-lilypond (header expression)
+  (declare (ignore header))
+  (do-the-parsing expression))
+
+(defun parse-assignment (variable equal value)
+  (declare (ignore equal))
+  `(SET ,variable ,value))
 
 ;; do-the-parsing estabelece o ambiente global
 ;; onde a duração está definida e onde o parsing
@@ -136,6 +148,8 @@
            (relativiza (car expr) (process-tree (rest expr))))
           (EXPRESSION
            expr)
+          (SET
+           nil)
           (t tree)))
       tree))
 
@@ -150,11 +164,17 @@
                OCTAVE
                ARTICULATION
                RELATIVE
-               |{| |}| |<<| |>>| |<| |>|))
+               STRING
+               HEADER
+               VARIABLE
+               = |{| |}| |<<| |>>| |<| |>|))
 
   (lilypond
-   (lilypond-header expression-atom #'identity)
+   (lilypond-header expression-atom #'parse-lilypond)
    (expression-atom #'do-the-parsing))
+
+  (lilypond-header
+   (HEADER |{| expression |}|))
 
   (expression
    (expression-atom #'parse-expression-atom)
@@ -165,10 +185,18 @@
    (staff-block #'identity)
    (score-block #'identity)
    (voice-block #'identity)
+   (assignment #'identity)
    (relative-block #'identity)
    (|<| notes |>| #'parse-chord)
    (|<<| expression |>>| #'parse-simultaneous)
    (note-expr #'identity))
+
+  (assignment
+   (VARIABLE = value #'parse-assignment))
+
+  (value
+   (STRING #'identity)
+   (expression-atom #'identity))
    
   (music-block
    (|{| expression |}| #'parse-music-block))
