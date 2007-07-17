@@ -58,10 +58,27 @@
    (parse-string "\\score { <<
 \\new Staff { c d e f }
 \\new Staff { c d e f }
->> }")))
+>> }"))
+  (assert-equalp
+   (list
+    (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+    (make-evento :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+    (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0))
+   (parse-string "<<
+  \\new Staff \\relative c'' {
+    g
+  }
+  \\new Staff \\relative c' {
+    e
+  }
+  \\new Staff \\relative c' {
+    c
+  }
+>>")))
 
-;(parse-file "/home/top/programas/analise-harmonica/exemplos-simples/ex-simples1.ly")
+;(print (parse-file (concatenate 'string *main-dir* "../exemplos-simples/ex-simples2.ly")))
 
+(parse-string "\\voiceOne \\clef bass < g >")
 
 (run-tests)
 
