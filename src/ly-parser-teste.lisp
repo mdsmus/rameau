@@ -149,6 +149,11 @@
     (make-evento :PITCH 0 :OCTAVE 8 :DUR 1/4 :INICIO 0)
     (make-evento :PITCH 14 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)
     (make-evento :PITCH 28 :OCTAVE 8 :DUR 1/4 :INICIO 1/2)))
+  (assert-equalp
+   (parse-string "{ foo = { c } \\foo foo = { d } \\foo }")
+   (list
+    (make-evento :PITCH 0 :OCTAVE 8 :DUR 1/4 :INICIO 0)
+    (make-evento :PITCH 14 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)))
   )
 
 (define-test pardo
