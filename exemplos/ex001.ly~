@@ -1,16 +1,17 @@
 \header {
-  file = "ex002.ly"
-  objetivo = "tonica dominante tonica com inversao"
+  file = "ex001.ly"
+  objetivo = "tônica dominante tônica"
 }
 \score {
   <<
     \new Staff {
       \relative c'' {
         \time 3/4
-        c g c
+        c b c
       }
     }
     \new Staff {
+      \global
       \relative c'' {
         \time 3/4
         g g g
@@ -25,7 +26,7 @@
     \new Staff {
       \relative c' {
         \time 3/4
-        c b c
+        c g c
       }
     }
   >>
