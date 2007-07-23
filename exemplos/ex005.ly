@@ -1,31 +1,34 @@
 \header {
   objetivo = "tônica dominante com 7 tônica"
 }
+global = {
+  \time 3/4
+}
 \score {
   <<
-    \new Staff {
+    \new Staff <<
+      \global
       \relative c'' {
-        \time 3/4
         c b c
       }
-    }
-    \new Staff {
+    >>
+    \new Staff <<
+      \global
       \relative c'' {
-        \time 3/4
         g f e
       }
-    }
-    \new Staff {
+    >>
+    \new Staff <<
+      \global
       \relative c' {
-        \time 3/4
         e d e
       }
-    }
-    \new Staff {
+    >>
+    \new Staff <<
+      \global
       \relative c' {
-        \time 3/4
         c g c
       }
-    }
+    >>
   >>
 }
