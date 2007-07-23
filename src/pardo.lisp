@@ -46,44 +46,27 @@
                     segmento)
             sobras)))
 
-
-(let ((x (list
-          (make-evento :pitch 1
-                       :octave 1
-                       :inicio 0
-                       :dur 2)
-          (make-evento :pitch 2
-                       :octave 1
-                       :inicio 0
-                       :dur 2)
-          (make-evento :pitch 3
-                       :octave 1
-                       :inicio 0
-                       :dur 5)
-          (make-evento :pitch 4
-                       :octave 1
-                       :inicio 0
-                       :dur 4))))
-  (normaliza-notas x))
-
-
-
-(defun segmentos-minimos (musica)
+(defun redivide-segmentos (musica)
   "Pega uma musica agrupada em pedaços de inicio igual e cria os
    segmentos minimos.  Para isso é preciso garantir que todos os
    pedaços tem o mesmo início e o mesmo fim. Escolhe-se o menor
    fim de cada pedaço e, caso haja alguma nota com fim posterior,
    divide-se ela e coloca-se o resto no próximo pedaço."
-  (when musica
-    (let ((ordenados (mapcar
-                      (lambda (x) (sort x (lambda (x y)
-                                            (< (evento-dur x)
-                                               (evento-dur y)))))
-                      musica)))
-      (multiple-value-bind
-            (segmento sobras)
-          (normaliza-notas (first ordenados))
-        (cons segmento (cons (append sobras
-                                     (second ordenados))
-                             (cddr ordenados)))))))
-        
+  (if (< 1 (length musica))
+     (let ((ordenados (mapcar
+                       (lambda (x) (sort x (lambda (x y)
+                                             (< (evento-dur x)
+                                                (evento-dur y)))))
+                       musica)))
+       (multiple-value-bind
+             (segmento sobras)
+           (normaliza-notas (first ordenados))
+         (cons segmento
+               (redivide-segmentos
+                (cons (append sobras
+                              (second ordenados))
+                      (cddr ordenados))))))
+     musica))
+
+(defun segmentos-minimos (musica)
+  (redivide-segmentos (agrupa-inicio musica)))
