@@ -156,7 +156,7 @@
     (make-evento :PITCH 14 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)))
   )
 
-(define-test pardo
+(define-test segmentacao
   (assert-equalp
    (segmentos-minimos
     (list (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0)
