@@ -1,5 +1,5 @@
 \header {
-  objetivo = "tônica dominante com 7 tônica com inversões"
+  objetivo = "tônica diminuto tônica"
 }
 global = {
   \time 3/4
@@ -9,13 +9,13 @@ global = {
     \new Staff <<
       \global
       \relative c'' {
-        c b c
+        c d c
       }
     >>
     \new Staff <<
       \global
       \relative c'' {
-        g g g
+        g f g
       }
     >>
     \new Staff <<
@@ -27,7 +27,7 @@ global = {
     \new Staff <<
       \global
       \relative c' {
-        c d e
+        c b c
       }
     >>
   >>

@@ -1,33 +1,35 @@
 \header {
-  objetivo = "tônica dominante com 7 tônica com inversões"
+  objetivo = "dominante secundária simples"
 }
 global = {
   \time 3/4
+  \key g \major
 }
 \score {
   <<
     \new Staff <<
       \global
       \relative c'' {
-        c b c
+        g4 e d d e fis g2.
+      }
+    >>
+    \new Staff <<
+      \global
+      \relative c' {
+        b4 c b a cis d b2.
       }
     >>
     \new Staff <<
       \global
       \relative c'' {
-        g g g
+        g4 g g fis e d d2.
       }
     >>
     \new Staff <<
       \global
       \relative c' {
-        e f e
-      }
-    >>
-    \new Staff <<
-      \global
-      \relative c' {
-        c d e
+        \clef bass
+        g4 c, g d' a d g,2.
       }
     >>
   >>
