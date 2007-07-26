@@ -1,4 +1,4 @@
-;; Implementação dos algoritmos de Pardo
+;; Implementação da segmentação
 
 
 (defun agrupa-por (inicio resto)

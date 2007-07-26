@@ -14,4 +14,5 @@
           "parser.lisp"
           "lisp-unit.lisp"
           "segmento.lisp"
+          "pardo.lisp"
           "ly-parser-teste.lisp")
