@@ -25,13 +25,18 @@
   (dur)
   (inicio))
 
-(defun number-of-accidentals (note)
-  "Usa um hack para contar quantos acidentes tem contando quantos
-i tem nos isis e quantos e tem nos eses."
-  (let ((accidental (subseq note 1)))
-    (cond ((search "is" note) (count #\i accidental))
-          ((search "es" note) (- (count #\e accidental)))
+(defun symbol->number (string mapping-list)
+  "Usa uma lista para mapear strings e caracteres. Essa função conta
+quantas ocorrências tem do caractere na lista de mapeamento e retorna
+esse valor. Essa função é usada para contar quantos acidentes ou
+oitavas uma nota tem."
+  (destructuring-bind ((s1 ch1) (s2 ch2)) mapping-list
+    (cond ((search s1 string) (count ch1 string))
+          ((search s2 string) (- (count ch2 string)))
           (t 0))))
+
+(defun number-of-accidentals (note)
+  (symbol->number note '(("is" #\i) ("es" #\e))))
 
 (defun note-number (note codification)
   (nth (position note *notes-names*) codification))
@@ -42,11 +47,8 @@ i tem nos isis e quantos e tem nos eses."
        96))
 
 (defun octave-from-string (string)
-  (+ 8 (cond ((search "'" string) (count #\' string))
-             ((search "," string) (- (count #\, string)))
-             (t 0))))
+  (+ 8 (symbol->number note '(("'" #\') ("," #\,)))))
 
-;; Esse 42 está horrível aí, preciso tirar.
 (defun cria-nota (nota &optional (octave "") dur articulation) 
   (declare (ignore articulation))
   (make-evento :pitch (note-from-string nota)
@@ -109,7 +111,6 @@ i tem nos isis e quantos e tem nos eses."
           (sequencia-eventos
            (movimenta-sequencia (rest eventos) (evento-dur (first eventos)))))))
 
-
 (defun menos-mod-96 (a b)
   (mod (- a b) 96))
 
@@ -132,7 +133,6 @@ i tem nos isis e quantos e tem nos eses."
            (if (menos-de-uma-quarta b a)
                oa
                (+ oa 1))))))
-
 
 (defun relativiza (nota expressao &optional seq oitava)
   (if (not expressao)
