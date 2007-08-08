@@ -42,7 +42,7 @@ oitavas uma nota tem."
   (nth (position note *notes-names*) codification))
 
 (defun note-name (note codification)
-  (nth (position note *notes-names*) codification))
+  (nth (position note codification) *notes-names*))
 
 (defun note-from-string (nota &optional (codification *tonal*))
   (mod (+ (number-of-accidentals nota)

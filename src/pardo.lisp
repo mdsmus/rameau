@@ -58,7 +58,7 @@
    mínimo e vai aumentando-o a cada evidência positiva."
   (let ((score (- 0
                   (reduce #'+
-                          (mapcar #'rest segmento))
+                          (mapcar #'second segmento))
                   (length template)))
         (encontrados 0))
     (dolist (nota segmento)
@@ -70,10 +70,14 @@
     (+ score encontrados)))
 
 (defun transpoe (template nota &optional (modificador 0) (codification *tonal*))
-  (mapcar (lambda (x) (+ x (note-number nota) modificador)) template))
+  (mapcar (lambda (x) (mod (+ x
+                              (note-number nota codification)
+                              modificador)
+                          96))
+          template))
 
 (defun da-nota-modificada (template segmento nota modificador)
-  (cons (avalia-template (transpoe template nota x) segmento)
+  (cons (avalia-template (transpoe template nota modificador) segmento)
         nota))
   
 
@@ -89,14 +93,32 @@
         (avalia-segmento-notas template segmento (rest notas) acumula))
       resultado))
 
+(defun max-par-lista (lista)
+  "retorna o maior par de uma lista de pares"
+  (let ((maior (first lista))
+        (maior-valor (first (first lista))))
+    (dolist (par lista)
+      (when (> (first par) maior-valor)
+            (setf maior-valor (first par))
+            (setf maior par)))
+    maior))
+
 
 (defun avalia-segmento (template segmento)
   "Gera as notas de um segmento comparado com todas as transposições de
    um template."
-  (cons (car template)
-        (avalia-segmento-notas (second template)
-                               segmento
-                               *notes-names*)))
+  (let ((resultado (max-par-lista (avalia-segmento-notas (rest template)
+                                                         segmento
+                                                         *notes-names*))))
+    (cons (first resultado)
+          (cons (cons (rest resultado) (first template))
+                nil))))
+
+(defun pardo (segmento)
+  (max-par-lista (mapcar (lambda (x) (avalia-segmento x segmento)) *templates*)))
 
 
-;(transpoe '(0 14 69) 'c)
+;(transpoe '(0 14 69) '#\d)
+;(da-nota-modificada '(0 14 69) '((95  1) (13  1) (68  1)) #\c -1)
+;(avalia-segmento '((maj 0) 0 14 69) '((95  1) (13  1) (68  1)))
+;(pardo '((95  1) (13  1) (68  1)))
