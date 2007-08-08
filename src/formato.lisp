@@ -41,13 +41,18 @@ oitavas uma nota tem."
 (defun note-number (note codification)
   (nth (position note *notes-names*) codification))
 
+(defun note-name (note codification)
+  (nth (position note *notes-names*) codification))
+
 (defun note-from-string (nota &optional (codification *tonal*))
   (mod (+ (number-of-accidentals nota)
           (note-number (char nota 0) codification))
        96))
 
 (defun octave-from-string (string)
-  (+ 8 (symbol->number note '(("'" #\') ("," #\,)))))
+  (+ 8 (cond ((search "'" string) (count #\' string))
+             ((search "," string) (- (count #\, string)))
+             (t 0))))
 
 (defun cria-nota (nota &optional (octave "") dur articulation) 
   (declare (ignore articulation))

@@ -11,12 +11,13 @@
 (defun interval-number (interval codification)
   (nth (position interval *interval-names*) codification))
 
-(defvar *templates* (make-hash-table))
+(defvar *templates* ())
 
 (defun defchord (name intervals &optional (codification *tonal-intervals*))
-  (setf (gethash name *templates*) (mapcar (lambda (x)
-                                             (interval-number x codification))
-                                           intervals)))
+  (push (cons name (mapcar (lambda (x)
+                             (interval-number x codification))
+                           intervals))
+        *templates*))
 
 (defun defchords (chords)
   (mapcar (lambda (x)
@@ -46,3 +47,56 @@
          (segment (sort segment #'<)))
     (group-and-count segment)))
 
+(defun avalia-template (template segmento)
+  "Compara as notas de um template com as de um segmento e gera a nota.
+   Seguindo o artigo de pardo, a nota S = P - (M + N), onde P é a soma
+   dos pesos das notas existentes no segmento e no template, M é a soma
+   dos pesos das notas existentes no segmento e não no template e n é o
+   número de notas no template não encontradas no segmento. O valor mínimo
+   é 0 - Mmax - Nmax, onde Mmax é a soma dos pesos das notas do segmento e
+   Nmax é o número de notas no template. Essa função começa com esse valor
+   mínimo e vai aumentando-o a cada evidência positiva."
+  (let ((score (- 0
+                  (reduce #'+
+                          (mapcar #'rest segmento))
+                  (length template)))
+        (encontrados 0))
+    (dolist (nota segmento)
+      (when (member (first nota) template)
+        (setf score (+ score
+                       (* 2 (second nota))
+                       1))
+        (incf encontrados)))
+    (+ score encontrados)))
+
+(defun transpoe (template nota &optional (modificador 0) (codification *tonal*))
+  (mapcar (lambda (x) (+ x (note-number nota) modificador)) template))
+
+(defun da-nota-modificada (template segmento nota modificador)
+  (cons (avalia-template (transpoe template nota x) segmento)
+        nota))
+  
+
+(defun avalia-segmento-notas (template segmento notas &optional resultado)
+  (if notas
+      (let* ((nota (first notas))
+             (acumula (append
+                       (mapcar 
+                        (lambda (x)
+                          (da-nota-modificada template segmento nota x))
+                        '(-1 0 1))
+                       resultado)))
+        (avalia-segmento-notas template segmento (rest notas) acumula))
+      resultado))
+
+
+(defun avalia-segmento (template segmento)
+  "Gera as notas de um segmento comparado com todas as transposições de
+   um template."
+  (cons (car template)
+        (avalia-segmento-notas (second template)
+                               segmento
+                               *notes-names*)))
+
+
+;(transpoe '(0 14 69) 'c)
