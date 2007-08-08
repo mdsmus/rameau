@@ -50,9 +50,7 @@ oitavas uma nota tem."
        96))
 
 (defun octave-from-string (string)
-  (+ 8 (cond ((search "'" string) (count #\' string))
-             ((search "," string) (- (count #\, string)))
-             (t 0))))
+  (+ 8 (symbol->number string '(("'" #\') ("," #\,)))))
 
 (defun cria-nota (nota &optional (octave "") dur articulation) 
   (declare (ignore articulation))
