@@ -78,7 +78,9 @@
 
 (defun da-nota-modificada (template segmento nota modificador)
   (cons (avalia-template (transpoe template nota (first modificador)) segmento)
-        (concatenate 'string (string nota) (second modificador))))
+        (intern
+         (string-upcase
+          (concatenate 'string (string nota) (second modificador))))))
   
 
 (defun avalia-segmento-notas (template segmento notas &optional resultado)
