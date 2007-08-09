@@ -38,7 +38,7 @@
   "Agrupa as notas de mesmo pitch e conta quantas ocorrem no segmento"
   (when segment
     (let ((nota (first segment)))
-      (cons (cons nota (count nota segment))
+      (cons (list nota (count nota segment))
             (group-and-count (pula nota segment))))))
 
 (defun segment-to-template (segment)
@@ -77,8 +77,8 @@
           template))
 
 (defun da-nota-modificada (template segmento nota modificador)
-  (cons (avalia-template (transpoe template nota modificador) segmento)
-        nota))
+  (cons (avalia-template (transpoe template nota (first modificador)) segmento)
+        (concatenate 'string (string nota) (second modificador))))
   
 
 (defun avalia-segmento-notas (template segmento notas &optional resultado)
@@ -88,7 +88,7 @@
                        (mapcar 
                         (lambda (x)
                           (da-nota-modificada template segmento nota x))
-                        '(-1 0 1))
+                        '((-1 "b") (0 "") (1 "#")))
                        resultado)))
         (avalia-segmento-notas template segmento (rest notas) acumula))
       resultado))
@@ -115,10 +115,33 @@
                 nil))))
 
 (defun pardo (segmento)
-  (max-par-lista (mapcar (lambda (x) (avalia-segmento x segmento)) *templates*)))
+  (max-par-lista (mapcar
+                  (lambda (x) (avalia-segmento
+                               x
+                               (segment-to-template segmento)))
+                  *templates*)))
+
+(defun gera-gabarito-pardo (musica)
+  (mapcar (lambda (x) (second (pardo x))) (segmentos-minimos musica)))
+
+(gera-gabarito-pardo
+   (list (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0)
+         (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+         (make-evento :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+         (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+         (make-evento :PITCH 83 :OCTAVE 9 :DUR 1/4 :INICIO 1/4)
+         (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 1/4)
+         (make-evento :PITCH 14 :OCTAVE 9 :DUR 1/4 :INICIO 1/4)
+         (make-evento :PITCH 55 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)
+         (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 1/2)
+         (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 1/2)
+         (make-evento :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 1/2)
+         (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 1/2)))
 
 
 ;(transpoe '(0 14 69) '#\d)
 ;(da-nota-modificada '(0 14 69) '((95  1) (13  1) (68  1)) #\c -1)
 ;(avalia-segmento '((maj 0) 0 14 69) '((95  1) (13  1) (68  1)))
 ;(pardo '((95  1) (13  1) (68  1)))
+;*templates*
+;(pardo '((0 1) (28 2) (55 3)))
