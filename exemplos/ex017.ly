@@ -1,5 +1,5 @@
 \header {
-  objetivo = "tônica diminuto com setima tônica"
+  objetivo = "tônica e diminuto com setima tônica"
 }
 global = {
   \time 3/4
