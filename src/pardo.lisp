@@ -126,6 +126,33 @@
 (defun gera-gabarito-pardo (musica)
   (mapcar (lambda (x) (second (pardo x))) (segmentos-minimos musica)))
 
+(defun le-gabarito (gabarito)
+  "Abre um arquivo gabarito e lê"
+  (read-from-string (concatenate 'string
+                                 "("
+                                 (file-string (concatenate 'string
+                                                           *main-dir*
+                                                           "exemplos/"
+                                                           gabarito
+                                                           ".gab"))
+                                 ")")))
+                                                           
+
+(defun corrige-exemplo (exemplo &optional (metodo #'gera-gabarito-pardo))
+  "Corrige e compara o resultado de um exemplo com o gabarito"
+  (let ((resultado (gera-gabarito-pardo
+                    (parse-file (concatenate 'string
+                                             *main-dir*
+                                             "exemplos/"
+                                             exemplo
+                                             ".ly"))))
+        (gabarito (le-gabarito exemplo)))
+    (print "gabarito:")
+    (print gabarito)
+    (print "resultado:")
+    (print resultado)
+    (equal resultado gabarito)))
+
 (gera-gabarito-pardo
    (list (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0)
          (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
@@ -147,3 +174,5 @@
 ;(pardo '((95  1) (13  1) (68  1)))
 ;*templates*
 ;(pardo '((0 1) (28 2) (55 3)))
+;(corrige-exemplo "ex002")
+;(parse-file "/home/top/programas/analise-harmonica/exemplos/ex001.ly")

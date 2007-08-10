@@ -49,6 +49,10 @@
   (declare (ignore a b))
   `(MUSIC-BLOCK ,@block))
 
+(defun parse-empty-block (a b)
+  (declare (ignore a b))
+  nil)
+
 (defun parse-chord (a chord b)
   (declare (ignore a b))
   `(CHORD ,@chord))
@@ -82,9 +86,14 @@
 (defun parse-expression (atom expression)
   (cons atom expression))
 
-(defun parse-lilypond (header expression)
+(defun parse-lilypond-header (header expression)
   (declare (ignore header))
   (do-the-parsing expression))
+
+(defun parse-lilypond (lilypond atom)
+  (coloca-expressoes-em-sequencia
+   (remove-if #'null (list lilypond
+                               (do-the-parsing atom)))))
 
 (defun parse-assignment (variable equal value)
   (declare (ignore equal))
@@ -103,17 +112,18 @@
 
 (defun ajusta-duracao (tree)
   "acerta as durações por tempo de uma AST"
-  (let ((prim (car tree))
-        (rest (cdr tree)))
-    (when (evento-p prim)
-      (if (evento-dur prim)
-          (setf *dur* (evento-dur prim))
-          (setf (evento-dur prim) *dur*)))
-    (when (listp prim)
-      (ajusta-duracao prim))
-    (when rest
-      (ajusta-duracao rest))
-    tree))
+  (when tree
+    (let ((prim (car tree))
+          (rest (cdr tree)))
+      (when (evento-p prim)
+        (if (evento-dur prim)
+            (setf *dur* (evento-dur prim))
+            (setf (evento-dur prim) *dur*)))
+      (when (listp prim)
+        (ajusta-duracao prim))
+      (when rest
+        (ajusta-duracao rest))
+      tree)))
 
 (defun process-trees (trees)
   (remove-if #'null (mapcar #'process-tree trees)))
@@ -181,8 +191,9 @@
                = |{| |}| |<<| |>>| |<| |>|))
 
   (lilypond
-   (lilypond-header expression-atom #'parse-lilypond)
-   (expression-atom #'do-the-parsing))
+   (lilypond-header expression-atom #'parse-lilypond-header)
+   (expression-atom #'do-the-parsing)
+   (lilypond expression-atom #'parse-lilypond))
 
   (lilypond-header
    (HEADER |{| expression |}|))
@@ -193,6 +204,7 @@
   
   (expression-atom
    (music-block #'identity)
+   (empty-block #'identity)
    (staff-block #'identity)
    (score-block #'identity)
    (voice-block #'identity)
@@ -215,6 +227,9 @@
    
   (music-block
    (|{| expression |}| #'parse-music-block))
+
+  (empty-block
+   (|{| |}| #'parse-empty-block))
 
   (staff-block
    (NEW-STAFF expression-atom #'parse-staff-block))

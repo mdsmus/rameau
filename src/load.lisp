@@ -3,12 +3,12 @@
 
 (defparameter *main-dir* 
   (if (string= (machine-instance) "phoenix")
-      "/home/kroger/doc/pesquisa/analise-harmonica/src/"
-      "/home/top/programas/analise-harmonica/src/"))
+      "/home/kroger/doc/pesquisa/analise-harmonica/"
+      "/home/top/programas/analise-harmonica/"))
 
 (defun load-all (&rest files)
   (loop for file in files do
-       (load (concatenate 'string *main-dir* file))))
+       (load (concatenate 'string *main-dir* "src/" file))))
 
 (load-all "formato.lisp"
           "parser.lisp"

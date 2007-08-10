@@ -257,4 +257,23 @@
                   :inicio 2
                   :dur 3))))
 
+(define-test pardo
+  (assert (corrige-exemplo "ex001"))
+  (assert (corrige-exemplo "ex002"))
+  (assert (corrige-exemplo "ex003"))
+  (assert (corrige-exemplo "ex004"))
+  (assert (corrige-exemplo "ex005"))
+  (assert (corrige-exemplo "ex006"))
+  (assert (corrige-exemplo "ex007"))
+  (assert (corrige-exemplo "ex008"))
+  (assert (corrige-exemplo "ex009"))
+  (assert (corrige-exemplo "ex010"))
+  (assert (corrige-exemplo "ex011"))
+  (assert (corrige-exemplo "ex012"))
+  (assert (corrige-exemplo "ex013"))
+  (assert (corrige-exemplo "ex014"))
+  (assert (corrige-exemplo "ex015"))
+  (assert (corrige-exemplo "ex016"))
+  (assert (corrige-exemplo "ex017")))
+
 (run-tests)
