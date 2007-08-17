@@ -66,23 +66,29 @@ oitavas uma nota tem."
     (and (find nome *notes-names*)
          (case (intern resto)
            ('|| t)
-           ('|IS| t)
-           ('|ES| t)
-           ('|ISIS| t)
-           ('|ESES| t)
+           ('|is| t)
+           ('|es| t)
+           ('|isis| t)
+           ('|eses| t)
            (t nil)))))
 
-(notap "c")
-(notap "fes")
-        
-        
+(defun pontua (dur)
+  (let ((dur (parse-integer dur)))
+    (format nil "~d" (+ dur (/ dur 2)))))
     
 (defun cria-nota-com-duracao (nota dur)
   (cria-nota nota  "" dur nil))
 
+(defun cria-nota-com-duracao-ponto (nota dur ponto)
+  (cria-nota nota  "" (pontua dur) nil))
+
 (defun cria-nota-com-duracao-articulacao (nota dur artic)
   (declare (ignore artic))
   (cria-nota nota  "" dur nil))
+
+(defun cria-nota-com-duracao-articulacao-ponto (nota dur ponto artic)
+  (declare (ignore artic))
+  (cria-nota nota  "" (pontua dur) nil))
 
 (defun cria-nota-com-articulacao (nota artic)
   (declare (ignore artic))
@@ -101,6 +107,14 @@ oitavas uma nota tem."
                :dur (evento-dur evento)
                :inicio (+ (evento-inicio evento) tempo)
                :octave (evento-octave evento)))
+
+(defun move-evento-no-tempo (evento tempo)
+  (if (listp evento)
+      (movimenta-sequencia evento tempo)
+      (make-evento :pitch (evento-pitch evento)
+                   :dur (evento-dur evento)
+                   :inicio (+ (evento-inicio evento) tempo)
+                   :octave (evento-octave evento))))
 
 
 (defun movimenta-sequencia (seq tempo)
@@ -126,11 +140,16 @@ oitavas uma nota tem."
               (coloca-expressoes-em-sequencia
                (mapcar (lambda (x) (movimenta-sequencia x movimentador))
                        outros))))))
+
 (defun sequencia-eventos (eventos)
   (when eventos
-    (cons (first eventos)
-          (sequencia-eventos
-           (movimenta-sequencia (rest eventos) (evento-dur (first eventos)))))))
+    (if (listp (first eventos))
+        (append (first eventos) (movimenta-sequencia
+                                 (rest eventos)
+                                 (evento-dur (first (first eventos)))))
+        (cons (first eventos)
+              (sequencia-eventos
+               (movimenta-sequencia (rest eventos) (evento-dur (first eventos))))))))
 
 (defun menos-mod-96 (a b)
   (mod (- a b) 96))
