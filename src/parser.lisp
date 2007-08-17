@@ -18,9 +18,11 @@
       (car exprs)))
 
 (deflexer string-lexer
-  ("(c|d|e|f|g|a|b)(is|es|isis|eses)?" (return (values 'NOTE %0)))
   ("('|,)+" (return (values 'OCTAVE %0)))
-  ("[:alpha:][:alpha:]+" (return (values 'VARNAME %0)))
+  ("[:alpha:]+"
+   (if (notap %0)
+       (return (values 'NOTE %0))
+       (return (values 'VARNAME %0))))
   ("(\-|\a|\\^)." (return (values 'ARTICULATION %0)))
   ("(128|16|32|64|1|2|4|8)" (return (values 'DUR %0)))
   ("([:space:]+)")
@@ -112,7 +114,7 @@
 
 (defun ajusta-duracao (tree)
   "acerta as durações por tempo de uma AST"
-  (when tree
+  (when (and (listp tree) tree)
     (let ((prim (car tree))
           (rest (cdr tree)))
       (when (evento-p prim)

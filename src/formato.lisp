@@ -59,6 +59,24 @@ oitavas uma nota tem."
              :dur (when dur (parse-integer dur))
              :inicio 0))
 
+(defun notap (string)
+  "Testa se uma dada string pode representar uma nota"
+  (let ((nome (aref string 0))
+        (resto (subseq string 1)))
+    (and (find nome *notes-names*)
+         (case (intern resto)
+           ('|| t)
+           ('|IS| t)
+           ('|ES| t)
+           ('|ISIS| t)
+           ('|ESES| t)
+           (t nil)))))
+
+(notap "c")
+(notap "fes")
+        
+        
+    
 (defun cria-nota-com-duracao (nota dur)
   (cria-nota nota  "" dur nil))
 
