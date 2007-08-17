@@ -1,17 +1,17 @@
 ;; Formato interno:
-;; O formato interno é uma lista de eventos. Cada evento é uma nota
+;; O formato interno Ã© uma lista de eventos. Cada evento Ã© uma nota
 ;; que soa, e soa em uma altura (pitch), por um certo tempo (dur) a
-;; partir de um certo instante na música (inicio). Isso é representado
+;; partir de um certo instante na mÃºsica (inicio). Isso Ã© representado
 ;; na struct evento.
 
-;; Antes disso, no entanto, as notas são processadas pra se extrair a
-;; duração e a altura. Isso é feito usando a struct nota, que
+;; Antes disso, no entanto, as notas sÃ£o processadas pra se extrair a
+;; duraÃ§Ã£o e a altura. Isso Ã© feito usando a struct nota, que
 ;; desaparece depois do primeiro passo de processamento, quando as
-;; notas são transformadas em eventos.
+;; notas sÃ£o transformadas em eventos.
 
-;; As funções desse arquivo só fazem essa conversão, de notas pra
+;; As funÃ§Ãµes desse arquivo sÃ³ fazem essa conversÃ£o, de notas pra
 ;; eventos, e representam esses eventos, e os manipulam de forma
-;; básica.
+;; bÃ¡sica.
 
 (defparameter *notes-names* '(#\a #\b #\c #\d #\e #\f #\g))
 (defparameter *tonal* '(69 83 0 14 28 41 55))
@@ -26,9 +26,9 @@
   (inicio))
 
 (defun symbol->number (string mapping-list)
-  "Usa uma lista para mapear strings e caracteres. Essa função conta
-quantas ocorrências tem do caractere na lista de mapeamento e retorna
-esse valor. Essa função é usada para contar quantos acidentes ou
+  "Usa uma lista para mapear strings e caracteres. Essa funÃ§Ã£o conta
+quantas ocorrÃªncias tem do caractere na lista de mapeamento e retorna
+esse valor. Essa funÃ§Ã£o Ã© usada para contar quantos acidentes ou
 oitavas uma nota tem."
   (destructuring-bind ((s1 ch1) (s2 ch2)) mapping-list
     (cond ((search s1 string) (count ch1 string))
@@ -97,7 +97,7 @@ oitavas uma nota tem."
     (fim-evento l)))
 
 (defun coloca-expressoes-em-sequencia (sequencias)
-  "Leva uma lista de expressões musicais e as arruma em sequência"
+  "Leva uma lista de expressÃµes musicais e as arruma em sequÃªncia"
   (when sequencias
     (let* ((primeiro (car sequencias))
            (outros (cdr sequencias))

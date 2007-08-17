@@ -1,8 +1,6 @@
 \header {
-  title = "Quarteto em Fá maior"
   subtitle = "fragmento"
   composer = "Maurice Ravel"
-  objetivo = "testar notação simplificada: sem articulação, dinâmica, etc."
 }
 \score {
   <<
@@ -12,7 +10,7 @@
         a4 g8 a e4 d
         a8 f c' e d2
         f4 e8 a g4 f8 e
-        d a' c2.
+        d a' c2
       }
     }
     \new Staff {

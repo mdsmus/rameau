@@ -6,8 +6,8 @@
 (defun get-exp (exp)
   (if (atom (car exp)) exp (car exp)))
       
-;; (expmerge exp1 exp2) => express„oanova
-;; Junta as duas expressıes, executando simultaneamente
+;; (expmerge exp1 exp2) => express√£oanova
+;; Junta as duas express√µes, executando simultaneamente
 (defun expmerge (exp1 exp2)
   (merge 'list (get-exp exp1) (get-exp exp2)
          (lambda (x y) (< (evento-inicio x) (evento-inicio y)))))
@@ -18,15 +18,15 @@
       (car exprs)))
 
 (deflexer string-lexer
-  ("[:alpha:][:alpha:]+" (return (values 'VARNAME %0)))
   ("(c|d|e|f|g|a|b)(is|es|isis|eses)?" (return (values 'NOTE %0)))
   ("('|,)+" (return (values 'OCTAVE %0)))
-  ("(128|16|32|64|1|2|4|8)" (return (values 'DUR %0)))
+  ("[:alpha:][:alpha:]+" (return (values 'VARNAME %0)))
   ("(\-|\a|\\^)." (return (values 'ARTICULATION %0)))
+  ("(128|16|32|64|1|2|4|8)" (return (values 'DUR %0)))
   ("([:space:]+)")
   ("\\\\(V|v)oice((O|o)ne|(T|t)wo|(T|t)hree|(F|f)our)")
   ("-+\n")
-  ("\\\\clef (bass|treble)")
+  ("\\\\clef (bass|treble|alto|violin|tenor)")
   ("\\\\(T|t)ime \\d/\\d")
   ("\\\\(H|h)eader" (return (values 'HEADER %0)))
   ("\"[^\"]*\"" (return (values 'STRING %0)))
@@ -100,9 +100,9 @@
   `(SET ,variable ,value))
 
 ;; do-the-parsing estabelece o ambiente global
-;; onde a duraÁ„o est· definida e onde o parsing
-;; vai acontecer. T·, È feio, mas eu n„o imagino
-;; soluÁ„o mais limpa nesse momento.
+;; onde a dura√ß√£o est√° definida e onde o parsing
+;; vai acontecer. T√°, √© feio, mas eu n√£o imagino
+;; solu√ß√£o mais limpa nesse momento.
 
 (defun do-the-parsing (tree)
   (let ((*dur* 1/4)
@@ -111,7 +111,7 @@
     (process-tree (ajusta-duracao tree))))
 
 (defun ajusta-duracao (tree)
-  "acerta as duraÁıes por tempo de uma AST"
+  "acerta as dura√ß√µes por tempo de uma AST"
   (when tree
     (let ((prim (car tree))
           (rest (cdr tree)))
@@ -134,33 +134,33 @@
             (expr (remove-if #'null (cdr tree))))
         (case type
           (MUSIC-BLOCK
-           ;; Se a ·rvore È um music block, expr È uma lista
-           ;; de expressıes que devem ser processadas em sequÍncia
+           ;; Se a √°rvore √© um music block, expr √© uma lista
+           ;; de express√µes que devem ser processadas em sequ√™ncia
            ;; e depois juntas
            (let ((seq (process-trees expr)))
              (if (listp (car seq))
                  (coloca-expressoes-em-sequencia seq)
                  (sequencia-eventos seq))))
           (CHORD
-           ;; Se a ·rvore È um acorde, expr È uma sequÍncia de notas
-           ;; que devem ter a mesma duraÁ„o
+           ;; Se a √°rvore √© um acorde, expr √© uma sequ√™ncia de notas
+           ;; que devem ter a mesma dura√ß√£o
            (process-tree expr))
           (SIMULTANEOUS
-           ;; Se a ·rvore È um simultaneous, expr È uma lista de
-           ;; expressıes que devem ser executadas ao mesmo tempo,
-           ;; mas com duraÁıes possivelmente diferentes
+           ;; Se a √°rvore √© um simultaneous, expr √© uma lista de
+           ;; express√µes que devem ser executadas ao mesmo tempo,
+           ;; mas com dura√ß√µes possivelmente diferentes
            (merge-exprs (process-trees expr)))
           (STAFF
-           ;; Se a ·rvore È um staff, nada mais precisa ser feito
+           ;; Se a √°rvore √© um staff, nada mais precisa ser feito
            (process-tree expr))
           (SCORE
-           ;; Se a ·rvore È um score, nada mais precisa ser feito
+           ;; Se a √°rvore √© um score, nada mais precisa ser feito
            (process-tree expr))
           (VOICE
-           ;; Se a ·rvore È uma voz, nada precisa ser feito
+           ;; Se a √°rvore √© uma voz, nada precisa ser feito
            (process-tree expr))
           (RELATIVE
-           ;; Se a ·rvore È um relative, ela precisa ser processada
+           ;; Se a √°rvore √© um relative, ela precisa ser processada
            ;; para relativizar as oitavas
            (relativiza (car expr) (process-tree (rest expr))))
           (EXPRESSION

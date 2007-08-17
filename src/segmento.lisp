@@ -1,4 +1,4 @@
-;; Implementação da segmentação
+;; ImplementaÃ§Ã£o da segmentaÃ§Ã£o
 
 
 (defun agrupa-por (inicio resto)
@@ -15,7 +15,7 @@
 
 
 (defun agrupa-inicio (musica)
-  "Separa a musica em pedaços com inicio igual, primeira etapa da segmentação"
+  "Separa a musica em pedaÃ§os com inicio igual, primeira etapa da segmentaÃ§Ã£o"
   (when musica
     (let* ((primeiro (first musica))
            (inicio (evento-inicio primeiro))
@@ -47,11 +47,11 @@
             sobras)))
 
 (defun redivide-segmentos (musica)
-  "Pega uma musica agrupada em pedaços de inicio igual e cria os
-   segmentos minimos.  Para isso é preciso garantir que todos os
-   pedaços tem o mesmo início e o mesmo fim. Escolhe-se o menor
-   fim de cada pedaço e, caso haja alguma nota com fim posterior,
-   divide-se ela e coloca-se o resto no próximo pedaço."
+  "Pega uma musica agrupada em pedaÃ§os de inicio igual e cria os
+   segmentos minimos.  Para isso Ã© preciso garantir que todos os
+   pedaÃ§os tem o mesmo inÃ­cio e o mesmo fim. Escolhe-se o menor
+   fim de cada pedaÃ§o e, caso haja alguma nota com fim posterior,
+   divide-se ela e coloca-se o resto no prÃ³ximo pedaÃ§o."
   (if (< 1 (length musica))
      (let ((ordenados (mapcar
                        (lambda (x) (sort x (lambda (x y)

@@ -1,10 +1,12 @@
-;; Implementação do algoritmo de pardo.
+;; ImplementaÃ§Ã£o do algoritmo de pardo.
 
 
 (defparameter *interval-names* '(tonic diminished-second second minor-third major-third fourth
                                  diminished-fifth fifth minor-sixth major-sixth
                                  minor-seventh major-seventh))
+
 (defparameter *tonal-intervals* '(0 13 14 27 28 41 54 55 56 68 69 82 83))
+
 (defparameter *tempered-intervals* '(0 1 2 3 4 5 6 7 8 9 10 11))
 
 
@@ -29,7 +31,7 @@
              ((maj 0 7) (tonic major-third fifth minor-seventh))))
 
 (defun pula (elemento lista)
-  "Pula as ocorrências iniciais de elemento lista"
+  "Pula as ocorrÃªncias iniciais de elemento lista"
   (if (equal elemento (first lista))
       (pula elemento (rest lista))
       lista))
@@ -49,13 +51,13 @@
 
 (defun avalia-template (template segmento)
   "Compara as notas de um template com as de um segmento e gera a nota.
-   Seguindo o artigo de pardo, a nota S = P - (M + N), onde P é a soma
-   dos pesos das notas existentes no segmento e no template, M é a soma
-   dos pesos das notas existentes no segmento e não no template e n é o
-   número de notas no template não encontradas no segmento. O valor mínimo
-   é 0 - Mmax - Nmax, onde Mmax é a soma dos pesos das notas do segmento e
-   Nmax é o número de notas no template. Essa função começa com esse valor
-   mínimo e vai aumentando-o a cada evidência positiva."
+   Seguindo o artigo de pardo, a nota S = P - (M + N), onde P Ã© a soma
+   dos pesos das notas existentes no segmento e no template, M Ã© a soma
+   dos pesos das notas existentes no segmento e nÃ£o no template e n Ã© o
+   nÃºmero de notas no template nÃ£o encontradas no segmento. O valor mÃ­nimo
+   Ã© 0 - Mmax - Nmax, onde Mmax Ã© a soma dos pesos das notas do segmento e
+   Nmax Ã© o nÃºmero de notas no template. Essa funÃ§Ã£o comeÃ§a com esse valor
+   mÃ­nimo e vai aumentando-o a cada evidÃªncia positiva."
   (let ((score (- 0
                   (reduce #'+
                           (mapcar #'second segmento))
@@ -107,7 +109,7 @@
 
 
 (defun avalia-segmento (template segmento)
-  "Gera as notas de um segmento comparado com todas as transposições de
+  "Gera as notas de um segmento comparado com todas as transposiÃ§Ãµes de
    um template."
   (let ((resultado (max-par-lista (avalia-segmento-notas (rest template)
                                                          segmento
@@ -127,7 +129,7 @@
   (mapcar (lambda (x) (second (pardo x))) (segmentos-minimos musica)))
 
 (defun le-gabarito (gabarito)
-  "Abre um arquivo gabarito e lê"
+  "Abre um arquivo gabarito e lÃª"
   (read-from-string (concatenate 'string
                                  "("
                                  (file-string (concatenate 'string
@@ -176,3 +178,6 @@
 ;(pardo '((0 1) (28 2) (55 3)))
 ;(corrige-exemplo "ex002")
 ;(parse-file "/home/top/programas/analise-harmonica/exemplos/ex001.ly")
+
+(gera-gabarito-pardo
+ (parse-file "/home/kroger/doc/pesquisa/analise-harmonica/exemplos/ex001.ly"))

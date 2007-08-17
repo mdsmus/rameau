@@ -8,7 +8,7 @@
     <<
       %% "SOPRANO"
       \new Staff{
-        \clef soprano
+        \clef treble
         \partial 4
         \relative c''{
           c
@@ -27,8 +27,8 @@
       }
 
       %% "CONTRALTO"
-      \new Staff{
-        \clef alto
+      \new Staff \relative c' {
+        \clef treble
         \partial 4
         e8 f
         g4 f g g
@@ -46,7 +46,7 @@
 
       %% "TENOR"
       \new Staff{
-        \clef tenor
+        \clef bass
         \partial 4
         c
         c c c c
@@ -103,8 +103,8 @@
     >>
   >>
 
-\midi { }
-
+%\midi { }
+%
 }
 \paper {
   #(set-paper-size "a4")
