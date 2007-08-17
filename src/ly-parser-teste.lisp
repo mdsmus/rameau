@@ -122,11 +122,11 @@
         \\time 3/4
         e d e
       }
-    }
+    } % isso é um comentário
     \\new Staff {
       \\relative c' {
         \\time 3/4
-        c g c
+        c g | c
       }
     }
   >>
@@ -258,22 +258,22 @@
                   :dur 3))))
 
 (define-test pardo
-  (assert (corrige-exemplo "ex001"))
-  (assert (corrige-exemplo "ex002"))
-  (assert (corrige-exemplo "ex003"))
-  (assert (corrige-exemplo "ex004"))
-  (assert (corrige-exemplo "ex005"))
-  (assert (corrige-exemplo "ex006"))
-  (assert (corrige-exemplo "ex007"))
-  (assert (corrige-exemplo "ex008"))
-  (assert (corrige-exemplo "ex009"))
-  (assert (corrige-exemplo "ex010"))
-  (assert (corrige-exemplo "ex011"))
-  (assert (corrige-exemplo "ex012"))
-  (assert (corrige-exemplo "ex013"))
-  (assert (corrige-exemplo "ex014"))
-  (assert (corrige-exemplo "ex015"))
-  (assert (corrige-exemplo "ex016"))
-  (assert (corrige-exemplo "ex017")))
+  (assert-true (corrige-exemplo "ex001"))
+  (assert-true (corrige-exemplo "ex002"))
+  (assert-true (corrige-exemplo "ex003"))
+  (assert-true (corrige-exemplo "ex004"))
+  (assert-true (corrige-exemplo "ex005"))
+  (assert-true (corrige-exemplo "ex006"))
+  (assert-true (corrige-exemplo "ex007"))
+  (assert-true (corrige-exemplo "ex008"))
+  (assert-true (corrige-exemplo "ex009"))
+  (assert-true (corrige-exemplo "ex010"))
+  (assert-true (corrige-exemplo "ex011"))
+  (assert-true (corrige-exemplo "ex012"))
+  (assert-true (corrige-exemplo "ex013"))
+  (assert-true (corrige-exemplo "ex014"))
+  (assert-true (corrige-exemplo "ex015"))
+  (assert-true (corrige-exemplo "ex016"))
+  (assert-true (corrige-exemplo "ex017")))
 
 (run-tests)

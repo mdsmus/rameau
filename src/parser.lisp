@@ -18,16 +18,25 @@
       (car exprs)))
 
 (deflexer string-lexer
-  ("(c|d|e|f|g|a|b)(is|es|isis|eses)?" (return (values 'NOTE %0)))
   ("('|,)+" (return (values 'OCTAVE %0)))
-  ("[:alpha:][:alpha:]+" (return (values 'VARNAME %0)))
+  ("[:alpha:]+"
+   (if (notap %0)
+       (return (values 'NOTE %0))
+       (return (values 'VARNAME %0))))
   ("(\-|\a|\\^)." (return (values 'ARTICULATION %0)))
+  ("\\\\(T|t)imes" (return (values 'TIMES %0)))
+  ("\\d/\\d" (return (values 'NUMBER (read-from-string %0))))
   ("(128|16|32|64|1|2|4|8)" (return (values 'DUR %0)))
   ("([:space:]+)")
   ("\\\\(V|v)oice((O|o)ne|(T|t)wo|(T|t)hree|(F|f)our)")
   ("-+\n")
+  ("\\|")
   ("\\\\clef (bass|treble|alto|violin|tenor)")
   ("\\\\(T|t)ime \\d/\\d")
+  ("\\\\key [:alpha:]+ \\\\[:alpha:]+")
+  ("\\\\[Vv]ersion \"[^\"]*\"")
+  ("%[^\\n]*")
+  ("\\." (return (values 'PONTO %0)))
   ("\\\\(H|h)eader" (return (values 'HEADER %0)))
   ("\"[^\"]*\"" (return (values 'STRING %0)))
   ("=" (return (values '= '=)))
@@ -35,6 +44,7 @@
   ("\\\\new (v|V)oice" (return (values 'NEW-VOICE %0)))
   ("\\\\(R|r)elative" (return (values 'RELATIVE %0)))
   ("\\\\(S|s)core" (return (values 'NEW-SCORE %0)))
+  ("\\\\(S|s)imultaneous" (return (values 'SIMULT %0)))
   ("<<" (return (values '|<<| '|<<|)))
   (">>" (return (values '|>>| '|>>|)))
   ("<" (return (values '|<| %0)))
@@ -61,6 +71,10 @@
   (declare (ignore a b))
   `(SIMULTANEOUS ,@simultaneous))
 
+(defun parse-simult (a b simultaneous c)
+  (declare (ignore a b c))
+  `(SIMULTANEOUS ,@simultaneous))
+
 (defun parse-staff-block (a block)
   (declare (ignore a))
   `(STAFF ,@block))
@@ -71,6 +85,9 @@
 
 (defun parse-variable-block (variable)
   `(VARIABLE ,variable))
+
+(defun parse-times-block (a number expr)
+  `(TIMES ,number ,@expr))
 
 (defun parse-voice-block (a block)
   (declare (ignore a))
@@ -112,7 +129,7 @@
 
 (defun ajusta-duracao (tree)
   "acerta as durações por tempo de uma AST"
-  (when tree
+  (when (and (listp tree) tree)
     (let ((prim (car tree))
           (rest (cdr tree)))
       (when (evento-p prim)
@@ -124,6 +141,18 @@
       (when rest
         (ajusta-duracao rest))
       tree)))
+
+(defun acerta-times (times tree)
+  "acerta as durações por tempo de uma AST"
+  (when (and (listp tree) tree)
+    (let ((prim (car tree))
+          (rest (cdr tree)))
+      (when (evento-p prim)
+            (setf (evento-dur prim) (* times (evento-dur prim))))
+      (when (listp prim)
+        (acerta-times times prim))
+      (when rest
+        (acerta-times times rest)))))
 
 (defun process-trees (trees)
   (remove-if #'null (mapcar #'process-tree trees)))
@@ -153,6 +182,11 @@
           (STAFF
            ;; Se a árvore é um staff, nada mais precisa ser feito
            (process-tree expr))
+          (TIMES
+           (let ((dur (car expr))
+                 (expr (cdr expr)))
+             (acerta-times dur expr)
+             (process-tree expr)))
           (SCORE
            ;; Se a árvore é um score, nada mais precisa ser feito
            (process-tree expr))
@@ -188,6 +222,10 @@
                HEADER
                VARNAME
                VARIABLE
+               SIMULT
+               PONTO
+               TIMES
+               NUMBER
                = |{| |}| |<<| |>>| |<| |>|))
 
   (lilypond
@@ -208,11 +246,13 @@
    (staff-block #'identity)
    (score-block #'identity)
    (voice-block #'identity)
+   (times-block #'identity)
    (assignment #'identity)
    (variable-block #'identity)
    (relative-block #'identity)
    (|<| notes |>| #'parse-chord)
    (|<<| expression |>>| #'parse-simultaneous)
+   (SIMULT { expression } #'parse-simult)
    (note-expr #'identity))
 
   (assignment
@@ -242,6 +282,9 @@
   
   (relative-block
    (RELATIVE note-expr expression-atom #'parse-relative-block))
+
+  (times-block
+   (TIMES NUMBER expression-atom #'parse-times-block))
   
   (notes
    (note-expr #'list)
@@ -250,6 +293,9 @@
   (note-expr
    (NOTE #'cria-nota)
    (NOTE OCTAVE #'cria-nota)
+   (NOTE OCTAVE DUR #'cria-nota)
+   (NOTE DUR PONTO #'cria-nota-com-duracao-ponto)
+   (NOTE DUR PONTO articulation-expr #'cria-nota-com-duracao-articulacao-ponto)
    (NOTE DUR #'cria-nota-com-duracao)
    (NOTE DUR articulation-expr #'cria-nota-com-duracao-articulacao)
    (NOTE articulation-expr #'cria-nota-com-articulacao))
@@ -274,3 +320,5 @@
 
 (defun parse-file (filename)
   (parse-string (file-string filename)))
+
+(parse-file "/home/top/programas/analise-harmonica/exemplos/quarteto-ravel.ly")

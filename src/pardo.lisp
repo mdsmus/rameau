@@ -179,5 +179,3 @@
 ;(corrige-exemplo "ex002")
 ;(parse-file "/home/top/programas/analise-harmonica/exemplos/ex001.ly")
 
-(gera-gabarito-pardo
- (parse-file "/home/kroger/doc/pesquisa/analise-harmonica/exemplos/ex001.ly"))

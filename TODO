@@ -3,26 +3,17 @@
 * [givaldo|marcos|sama] listar trechos musicais usados na literatura (artigos)
 * [givaldo|marcos|sama] achar exemplos musicais (midi, hundrum, ly, musedata, pdf)
 * [givaldo|marcos|sama] fazer screenshot dos exemplos musicais dos artigos
-* [passos] ORGANIZAR O QUE TEM LIDAR NO TODO
 * [marcos] criar exemplos simples:
 ** napolitano
 ** pequenas tonicizações
 ** acordes de sétima (II, III, IV)
-* [passos] implementar \times
-* [passos] implementar \simultaneous
-* [passos] ignorar key
+* [passos] lidar com arquivos não validos
 * [passos] lidar com acentos no cl-lexer
-* [passos] lidar com ponto de aumentação
-* [passos] parsear arquivo quarteto ravel
+* [passos] descobrir como \context funciona
 * [kroger] script para rodar testes a partir do terminal (makefile) com gabaritos
 * [kroger] organizar testes
-* [passos] lidar com arquivos não validos
 * [kroger] baixar e converter midi corais de bach para lilypond
 * [kroger] baixar e converter midi kostka
-* [passos] lidar com \version
-* [passos] lidar com comentarios
-* [passos] lidar com | (separa compassos)
-* [passos] descobrir como \context funciona
 * [marcos] pensar gabarito para função
 * [marcos] criar novo arquivo de quarteto de ravel com \global
 * [marcos] fazer testes de regressão (erros para quebrar parser :-)
