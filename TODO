@@ -12,8 +12,9 @@
 * [passos] descobrir como \context funciona
 * [kroger] script para rodar testes a partir do terminal (makefile) com gabaritos
 * [kroger] organizar testes
-* [kroger] baixar e converter midi corais de bach para lilypond
-* [kroger] baixar e converter midi kostka
 * [marcos] pensar gabarito para função
 * [marcos] criar novo arquivo de quarteto de ravel com \global
 * [marcos] fazer testes de regressão (erros para quebrar parser :-)
+* converter midi do kostka para lilypond usando rosegarden
+* [OK] [kroger] baixar midi kostka
+* [OK] [kroger] baixar e converter midi corais de bach para lilypond

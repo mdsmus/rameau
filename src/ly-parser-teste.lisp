@@ -122,7 +122,7 @@
         \\time 3/4
         e d e
       }
-    } % isso È um coment·rio
+    } % isso √© um coment√°rio
     \\new Staff {
       \\relative c' {
         \\time 3/4

@@ -321,4 +321,4 @@
 (defun parse-file (filename)
   (parse-string (file-string filename)))
 
-(parse-file "/home/top/programas/analise-harmonica/exemplos/quarteto-ravel.ly")
+;;(parse-file "/home/top/programas/analise-harmonica/exemplos/quarteto-ravel.ly")
