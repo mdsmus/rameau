@@ -1,1 +1,34 @@
+1. INTRODUÇÃO
 
+Você precisa dos seguintes programas para rodar os testes:
+
+  aptitude install sbcl cl-asdf cl-lexer cl-regex cl-yacc
+
+2. COMO RODAR OS TESTES
+
+se você rodar o script run-tests.sh sem argumentos ele irá rodar todos
+os arquivos .ly no diretório exemplos e mostrar um relatório para cada
+arquivo, por exemplo:
+
+./run-tests.sh
+
+ arquivo: exemplos/ex012.ly
+   pardo: (d min 0) (gis min 0) (e maj 0) (a min 0) 
+gabarito: (d min 1) (dis fra 1) (e maj 0) (a min 0) 
+correto?: não
+
+se um erro de parseamento ocorrer ele simplesmente mostrará algo como:
+
+=> ERRO em ex014
+
+para ver o erro com mais detalhes voce pode rodar o script com o nome
+do arquivo como primeiro argumento:
+
+./run-tests.sh exemplos/ex014.ly
+
+3. OPÇÕES
+
+./run-tests.sh [-w] [arquivos]
+    * sem argumentos run-tests roda todos os testes em exemplos
+    * arquivos determina os arquivos para testar
+    * -w indica que os arquivos corretos não devem ser mostrados
