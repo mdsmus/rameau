@@ -102,12 +102,6 @@ oitavas uma nota tem."
                :inicio inicio
                :octave oitava))
 
-;; (defun move-evento-no-tempo (evento tempo)
-;;   (make-evento :pitch (evento-pitch evento)
-;;                :dur (evento-dur evento)
-;;                :inicio (+ (evento-inicio evento) tempo)
-;;                :octave (evento-octave evento)))
-
 (defun move-evento-no-tempo (evento tempo)
   (if (listp evento)
       (movimenta-sequencia evento tempo)
