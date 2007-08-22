@@ -17,6 +17,8 @@
 * [marcos] fazer testes de regressão (erros para quebrar parser :-)
 * [] converter midi do kostka para lilypond usando rosegarden
 * [] escrever notação tempo*modificador nos corais corretamente
+* [] conferir se os corais de bach correspondem aos numeros
+* [] digitar no lilypon os corais 081 215 236 305 308 337
 * [OK] [kroger] baixar midi kostka
 * [OK] [kroger] baixar e converter midi corais de bach para lilypond
 * [OK] [kroger] script para rodar testes a partir do terminal (makefile) com gabaritos
