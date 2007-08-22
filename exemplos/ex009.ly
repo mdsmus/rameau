@@ -1,5 +1,5 @@
 \header {
-  objetivo = "dominante secundária"
+  objetivo = "dominante secundaria"
 }
 \score {
   <<

@@ -82,6 +82,9 @@ oitavas uma nota tem."
 (defun cria-nota-com-duracao-ponto (nota dur ponto)
   (cria-nota nota  "" (pontua dur) nil))
 
+(defun cria-nota-com-oitava-duracao-ponto (nota oitava dur ponto)
+  (cria-nota nota oitava (pontua dur) nil))
+
 (defun cria-nota-com-duracao-articulacao (nota dur artic)
   (declare (ignore artic))
   (cria-nota nota  "" dur nil))

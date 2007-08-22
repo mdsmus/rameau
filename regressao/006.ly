@@ -1,0 +1,1 @@
+{c \times 2/3 {c \times 2/3 {f d e} }}

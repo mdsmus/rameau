@@ -30,6 +30,14 @@
           (format t "gabarito: ~{~(~a~) ~}~%" gabarito)
           (format t "correto?: ~:[não~;sim~]~%" comparacao)))))
 
+(defun regression (arquivos &optional verbose?)
+  (dolist (f arquivos)
+    (handler-case (parse-file f)
+      (serious-condition (expr) (format t "[NO] ~a: ~a~%" (pathname-name f) expr))
+      ;;(:no-error (&rest rest) (format t "[OK] ~a ~a~%" (pathname-name f) rest))
+      (:no-error (&rest rest) (format t "[OK] ~a~%" (pathname-name f)))
+      )))
+  
 (defun test-all (arquivos &optional (print-only-if-incorrect? nil))
   (dolist (f arquivos)
     (handler-case (print-gabarito-pardo f print-only-if-incorrect?)
@@ -40,12 +48,15 @@
     (serious-condition (expr) (format t "~%=> ERRO em ~a~%~a~%" (pathname-name f) expr))))
 
 (let ((args (rest *posix-argv*)))
-  (cond ((string= (first args) "only-wrong")
-         (test-all (rest args) 'print-only-wrong))
-        ((> (length args) 1)
-         (test-all args))
-        ((= (length args) 1)
-         (test-one (first args)))
-        (t (error "não sei o que fazer"))))
+  (cond
+    ((string= (first args) "regression")
+     (regression (rest args)))
+    ((string= (first args) "only-wrong")
+     (test-all (rest args) 'print-only-wrong))
+    ((> (length args) 1)
+     (test-all args))
+    ((= (length args) 1)
+     (test-one (first args)))
+    (t (error "não sei o que fazer"))))
 
 (quit)

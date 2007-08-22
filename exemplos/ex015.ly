@@ -1,5 +1,5 @@
 \header {
-  objetivo = "dominante secundária com inversões"
+  objetivo = "dominante secundaria com inversoes"
 }
 global = {
   \time 3/4
