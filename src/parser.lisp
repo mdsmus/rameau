@@ -294,6 +294,7 @@
    (NOTE #'cria-nota)
    (NOTE OCTAVE #'cria-nota)
    (NOTE OCTAVE DUR #'cria-nota)
+   (NOTE OCTAVE DUR PONTO #'cria-nota-com-oitava-duracao-ponto)
    (NOTE DUR PONTO #'cria-nota-com-duracao-ponto)
    (NOTE DUR PONTO articulation-expr #'cria-nota-com-duracao-articulacao-ponto)
    (NOTE DUR #'cria-nota-com-duracao)
@@ -303,7 +304,6 @@
   (articulation-expr
    ARTICULATION
    (articulation-expr ARTICULATION))
-
   
 )
 

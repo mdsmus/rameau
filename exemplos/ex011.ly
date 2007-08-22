@@ -1,5 +1,5 @@
 \header {
-  objetivo = "acorde de sexta alemã"
+  objetivo = "acorde de sexta alema"
 }
 \score {
   <<
