@@ -145,11 +145,7 @@
                                              exemplo
                                              ".ly"))))
         (gabarito (le-gabarito exemplo)))
-    (print "gabarito:")
-    (print gabarito)
-    (print "resultado:")
-    (print resultado)
-    (equal resultado gabarito)))
+    (assert-equal resultado gabarito)))
 
 (gera-gabarito-pardo
    (list (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0)
@@ -172,6 +168,6 @@
 ;(pardo '((95  1) (13  1) (68  1)))
 ;*templates*
 ;(pardo '((0 1) (28 2) (55 3)))
-;(corrige-exemplo "ex002")
+;(corrige-exemplo "ex001")
 ;(parse-file "/home/top/programas/analise-harmonica/exemplos/ex001.ly")
 
