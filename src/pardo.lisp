@@ -92,7 +92,7 @@
                        (mapcar 
                         (lambda (x)
                           (da-nota-modificada template segmento nota x))
-                        '((-1 "b") (0 "") (1 "#")))
+                        '((-1 "es") (0 "") (1 "is")))
                        resultado)))
         (avalia-segmento-notas template segmento (rest notas) acumula))
       resultado))
@@ -128,17 +128,13 @@
 (defun gera-gabarito-pardo (musica)
   (mapcar (lambda (x) (second (pardo x))) (segmentos-minimos musica)))
 
+(defun gabarito->sexp (file)
+  "Transforma um gabarito de texto em sexp."
+  (read-from-string (format nil "(~a)" (file-string file))))
+
 (defun le-gabarito (gabarito)
   "Abre um arquivo gabarito e lê"
-  (read-from-string (concatenate 'string
-                                 "("
-                                 (file-string (concatenate 'string
-                                                           *main-dir*
-                                                           "exemplos/"
-                                                           gabarito
-                                                           ".gab"))
-                                 ")")))
-                                                           
+  (gabarito->sexp (concatenate 'string *main-dir* "exemplos/" gabarito ".gab")))
 
 (defun corrige-exemplo (exemplo &optional (metodo #'gera-gabarito-pardo))
   "Corrige e compara o resultado de um exemplo com o gabarito"
