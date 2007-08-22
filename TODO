@@ -7,10 +7,10 @@
 ** napolitano
 ** pequenas tonicizações
 ** acordes de sétima (II, III, IV)
+* [passos] lidar com \header vazio
 * [passos] lidar com arquivos não validos
 * [passos] lidar com acentos no cl-lexer
 * [passos] descobrir como \context funciona
-* [kroger] script para rodar testes a partir do terminal (makefile) com gabaritos
 * [kroger] organizar testes
 * [marcos] pensar gabarito para função
 * [marcos] criar novo arquivo de quarteto de ravel com \global
@@ -18,3 +18,4 @@
 * converter midi do kostka para lilypond usando rosegarden
 * [OK] [kroger] baixar midi kostka
 * [OK] [kroger] baixar e converter midi corais de bach para lilypond
+* [OK] [kroger] script para rodar testes a partir do terminal (makefile) com gabaritos
