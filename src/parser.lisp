@@ -146,9 +146,7 @@
 ;; solução mais limpa nesse momento.
 
 (defun do-the-parsing (tree)
-  (let ((*dur* 1/4))
-    (declare (special *dur*))
-    (process-tree (ajusta-duracao tree))))
+  (process-tree (ajusta-duracao tree)))
 
 (defun ajusta-duracao (tree)
   "acerta as durações por tempo de uma AST"
@@ -344,8 +342,9 @@
 )
 
 (defun parse-string (str)
-  (let ((*environment* nil))
-    (declare (special *environment*))
+  (let ((*environment* nil)
+        (*dur* 1/4))
+    (declare (special *environment* *dur*))
     (remove-if (lambda (x) (null (evento-pitch x)))
                (parse-with-lexer (string-lexer str) *expression-parser*))))
 
@@ -360,7 +359,7 @@
 (defun parse-file (filename)
   (parse-string (file-string filename)))
 
-;;(parse-file "/home/top/programas/analise-harmonica/literatura/bach-corais/000206b_.ly")
+;;(parse-file "/home/top/programas/analise-harmonica/literatura/bach-corais/002.ly")
 ;; (parse-file "/home/top/programas/analise-harmonica/regressao/034.ly")
 ;;(setf token (string-lexer (file-string "/home/top/programas/analise-harmonica/literatura/bach-corais/000206b_.ly")))
 ;; (funcall token)
