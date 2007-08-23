@@ -263,7 +263,8 @@
    (lilypond expression-atom #'parse-lilypond))
 
   (lilypond-header
-   (HEADER |{| expression |}|))
+   (HEADER |{| expression |}|)
+   (HEADER |{| |}|))
 
   (expression
    (expression-atom #'parse-expression-atom)
@@ -364,3 +365,4 @@
 ;; (parse-file "/home/top/programas/analise-harmonica/regressao/034.ly")
 ;;(setf token (string-lexer (file-string "/home/top/programas/analise-harmonica/literatura/bach-corais/000206b_.ly")))
 ;; (funcall token)
+;; (parse-string "\\header { } { a b c }")
