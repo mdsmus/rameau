@@ -3,20 +3,20 @@
   subtitle = "caso haja"
   instrument = "caso haja"
   composer = "compositor do exemplo - quando extraido da literatura"
-  opus = "número do opus do exemplo - quando extraido da literatura"
+  opus = "numero do opus do exemplo - quando extraido da literatura"
   objetivo = "objetivo do exemplo: mostrar acordes de sexta aumentada"
 }
 \score {
   <<
     \new Staff {
-      \relative {
-        %% fórmula de compasso, tonalidade
+      \relative c {
+        %% formula de compasso, tonalidade
         %% notas
       }
     }
     \new Staff {
-      \relative {
-        %% fórmula de compasso, tonalidade
+      \relative c {
+        %% formula de compasso, tonalidade
         %% notas
       }
     }

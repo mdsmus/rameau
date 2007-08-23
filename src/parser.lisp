@@ -36,10 +36,9 @@
   ("-+\n")
   ("\\|")
   ("\\\\[Vv]ersion[:space:]+\"[^\"]*\"")
-  ("\\\\clef \"?(treble|violin|G|G2|alto|C|tenor|bass|F|french|soprano|mezzosoprano|baritone|varbaritone|subbass)\"?")
-  ("\\\\(T|t)ime \\d/\\d")
+  ("\\\\clef[:space:]+\"?(treble|violin|G|G2|alto|C|tenor|bass|F|french|soprano|mezzosoprano|baritone|varbaritone|subbass)\"?")
+  ("\\\\(T|t)ime[:space:]+\\d/\\d")
   ("\\\\(T|t)empo[:space:]+\\d+[:space:]+=[:space:]+\\d+")
-  ("\\\\[Vv]ersion \"[^\"]*\"")
   ;; FIXME: porque sem o foo nao funciona? (wtf!?) [ver regressao 034]
   ;; acho que \minor está sendo pegado por VARIABLE abaixo (comentar e ver)
   ("\\\\key[:space:]+(a|b|c|d|e|f|g)(is|es)*[:space:]+\\\\(minor|major|dim)")
