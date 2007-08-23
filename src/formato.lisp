@@ -13,9 +13,9 @@
 ;; eventos, e representam esses eventos, e os manipulam de forma
 ;; básica.
 
-(defparameter *notes-names* '(#\a #\b #\c #\d #\e #\f #\g))
-(defparameter *tonal* '(69 83 0 14 28 41 55))
-(defparameter *tempered* '(9 11 0 2 4 5 7))
+(defparameter *notes-names* '(#\a #\b #\c #\d #\e #\f #\g nil))
+(defparameter *tonal* '(69 83 0 14 28 41 55 nil))
+(defparameter *tempered* '(9 11 0 2 4 5 7 nil))
 
 (defparameter *quarta-tonal* 41)
 
@@ -45,9 +45,12 @@ oitavas uma nota tem."
   (nth (position note codification) *notes-names*))
 
 (defun note-from-string (nota &optional (codification *tonal*))
-  (mod (+ (number-of-accidentals nota)
-          (note-number (char nota 0) codification))
-       96))
+  (let ((number (note-number (char nota 0) codification)))
+    (if number
+     (mod (+ (number-of-accidentals nota)
+             number)
+          96)
+     nil)))
 
 (defun octave-from-string (string)
   (+ 8 (symbol->number string '(("'" #\') ("," #\,)))))
@@ -139,13 +142,15 @@ oitavas uma nota tem."
 
 (defun sequencia-eventos (eventos)
   (when eventos
-    (if (listp (first eventos))
-        (append (first eventos) (movimenta-sequencia
-                                 (rest eventos)
-                                 (evento-dur (first (first eventos)))))
-        (cons (first eventos)
-              (sequencia-eventos
-               (movimenta-sequencia (rest eventos) (evento-dur (first eventos))))))))
+    (remove-if
+     (lambda (x) (null (evento-pitch x)))
+     (if (listp (first eventos))
+         (append (first eventos) (movimenta-sequencia
+                                  (rest eventos)
+                                  (evento-dur (first (first eventos)))))
+         (cons (first eventos)
+               (sequencia-eventos
+                (movimenta-sequencia (rest eventos) (evento-dur (first eventos)))))))))
 
 (defun menos-mod-96 (a b)
   (mod (- a b) 96))

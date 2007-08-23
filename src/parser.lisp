@@ -19,6 +19,9 @@
 
 (deflexer string-lexer
   ("('|,)+" (return (values 'OCTAVE %0)))
+  ("(V|v)oice" (return (values 'VOICE %0)))
+  ("(S|s)taff" (return (values 'STAFF %0)))
+  ("(S|s)core" (return (values 'SCORE %)))
   ("[:alpha:]+"
    (if (notap %0)
        (return (values 'NOTE %0))
@@ -27,15 +30,19 @@
   ("\\\\(T|t)imes" (return (values 'TIMES %0)))
   ("\\d/\\d" (return (values 'NUMBER (read-from-string %0))))
   ("(128|16|32|64|1|2|4|8)" (return (values 'DUR %0)))
+  ("\\*\\d+" (return (values 'MULTIPLICA %0)))
   ("([:space:]+)")
   ("\\\\(V|v)oice((O|o)ne|(T|t)wo|(T|t)hree|(F|f)our)")
   ("-+\n")
   ("\\|")
+  ("\\\\(V|v)ersion( )+\"[^\"]*\"")
   ("\\\\clef (bass|treble|alto|violin|tenor)")
   ("\\\\(T|t)ime \\d/\\d")
+  ("\\\\(T|t)empo[:space:]+\\d+[:space:]+=[:space:]+\\d+")
   ("\\\\key [:alpha:]+ \\\\[:alpha:]+")
   ("\\\\[Vv]ersion \"[^\"]*\"")
   ("%[^\\n]*")
+  ("\\\\(C|c)ontext" (return (values 'CONTEXT %0)))
   ("\\." (return (values 'PONTO %0)))
   ("\\\\(H|h)eader" (return (values 'HEADER %0)))
   ("\"[^\"]*\"" (return (values 'STRING %0)))
@@ -79,9 +86,17 @@
   (declare (ignore a))
   `(STAFF ,@block))
 
+(defun parse-context-staff (a b c d block)
+  (declare (ignore a b c d))
+  (parse-staff-block nil block))
+
 (defun parse-score-block (a block)
   (declare (ignore a))
   `(SCORE ,@block))
+
+(defun parse-context-score (a b c block)
+  (declare (ignore a b c))
+  (parse-score-block nil block))
 
 (defun parse-variable-block (variable)
   `(VARIABLE ,variable))
@@ -93,6 +108,10 @@
   (declare (ignore a))
   `(VOICE ,@block))
 
+(defun parse-context-voice (a b c d block)
+  (declare (ignore a b c d))
+  (parse-voice-block nil block))
+
 (defun parse-relative-block (a relative block)
   (declare (ignore a))
   `(RELATIVE ,relative ,@block))
@@ -102,6 +121,11 @@
 
 (defun parse-expression (atom expression)
   (cons atom expression))
+
+(defun parse-note-multiplica (note multiplica)
+  (setf (evento-dur note) (* (evento-dur note)
+                             (parse-integer (subseq multiplica 1))))
+  note)
 
 (defun parse-lilypond-header (header expression)
   (declare (ignore header))
@@ -122,9 +146,8 @@
 ;; solução mais limpa nesse momento.
 
 (defun do-the-parsing (tree)
-  (let ((*dur* 1/4)
-        (*environment* (make-hash-table :test #'equalp)))
-    (declare (special *dur* *environment*))
+  (let ((*dur* 1/4))
+    (declare (special *dur*))
     (process-tree (ajusta-duracao tree))))
 
 (defun ajusta-duracao (tree)
@@ -200,10 +223,10 @@
           (EXPRESSION
            expr)
           (SET
-           (setf (gethash (first expr) *environment*) (second expr))
+           (push (cons (first expr) (second expr)) *environment*)
            nil)
           (VARIABLE
-           (process-tree (gethash (subseq (first expr) 1) *environment*)))
+           (process-tree (rest (assoc (subseq (first expr) 1) *environment* :test #'equalp))))
           (t tree)))
       tree))
 
@@ -226,6 +249,11 @@
                PONTO
                TIMES
                NUMBER
+               VOICE
+               STAFF
+               SCORE
+               CONTEXT
+               MULTIPLICA
                = |{| |}| |<<| |>>| |<| |>|))
 
   (lilypond
@@ -272,13 +300,16 @@
    (|{| |}| #'parse-empty-block))
 
   (staff-block
-   (NEW-STAFF expression-atom #'parse-staff-block))
+   (NEW-STAFF expression-atom #'parse-staff-block)
+   (CONTEXT STAFF = VARNAME expression-atom #'parse-context-staff))
 
   (score-block
-   (NEW-SCORE expression-atom #'parse-score-block))
+   (NEW-SCORE expression-atom #'parse-score-block)
+   (CONTEXT SCORE = VARNAME expression-atom #'parse-context-score))
 
   (voice-block
-   (NEW-VOICE expression-atom #'parse-voice-block))
+   (NEW-VOICE expression-atom #'parse-voice-block)
+   (CONTEXT VOICE = VARNAME expression-atom #'parse-context-voice))
   
   (relative-block
    (RELATIVE note-expr expression-atom #'parse-relative-block))
@@ -291,6 +322,10 @@
    (note-expr notes #'cons))
 
   (note-expr
+   (note-expr-base #'identity)
+   (note-expr-base MULTIPLICA #'parse-note-multiplica))
+  
+  (note-expr-base
    (NOTE #'cria-nota)
    (NOTE OCTAVE #'cria-nota)
    (NOTE OCTAVE DUR #'cria-nota)
@@ -308,7 +343,9 @@
 )
 
 (defun parse-string (str)
-  (parse-with-lexer (string-lexer str) *expression-parser*))
+  (let ((*environment* nil))
+    (declare (special *environment*))
+    (parse-with-lexer (string-lexer str) *expression-parser*)))
 
 (defun file-string (path)
   "Sucks up an entire file from PATH into a freshly-allocated string,
@@ -321,4 +358,6 @@
 (defun parse-file (filename)
   (parse-string (file-string filename)))
 
-;;(parse-file "/home/top/programas/analise-harmonica/exemplos/quarteto-ravel.ly")
+;;(print (parse-file "/home/top/programas/analise-harmonica/literatura/bach-corais/000206b_.ly"))
+;;(setf token (string-lexer (file-string "/home/top/programas/analise-harmonica/literatura/bach-corais/000206b_.ly")))
+;; (funcall token)
