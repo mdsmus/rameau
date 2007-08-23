@@ -113,7 +113,7 @@
    um template."
   (let ((resultado (max-par-lista (avalia-segmento-notas (rest template)
                                                          segmento
-                                                         *notes-names*))))
+                                                         (butlast *notes-names*)))))
     (cons (first resultado)
           (cons (cons (rest resultado) (first template))
                 nil))))
