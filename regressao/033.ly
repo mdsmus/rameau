@@ -1,0 +1,3 @@
+{
+  \clef tenor
+}
