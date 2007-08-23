@@ -1,0 +1,4 @@
+{
+  \clef "tenor"
+  c
+}

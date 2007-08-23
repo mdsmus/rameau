@@ -1,0 +1,4 @@
+{
+  \key e \major
+  c
+}

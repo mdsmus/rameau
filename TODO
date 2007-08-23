@@ -8,14 +8,18 @@
 ** pequenas tonicizações
 ** acordes de sétima (II, III, IV)
 * [passos] lidar com \header vazio
-* [passos] lidar com arquivos não validos
+* [passos] lidar com arquivos não validos (cl-yacc não lida com isso :-(
 * [passos] lidar com acentos no cl-lexer
+* [passos] parsear 1 coral de bach
 * [passos] descobrir como \context funciona
-* [kroger] organizar testes
 * [marcos] pensar gabarito para função
 * [marcos] criar novo arquivo de quarteto de ravel com \global
 * [marcos] fazer testes de regressão (erros para quebrar parser :-)
-* converter midi do kostka para lilypond usando rosegarden
+* [] escrever notação tempo*modificador nos corais corretamente
+* [] conferir se os corais de bach correspondem aos numeros
+* [givaldo] digitar no lilypond os corais 215 236 308
+* [OK][givaldo] converter midi do kostka para lilypond usando rosegarden
 * [OK] [kroger] baixar midi kostka
 * [OK] [kroger] baixar e converter midi corais de bach para lilypond
 * [OK] [kroger] script para rodar testes a partir do terminal (makefile) com gabaritos
+* [OK] [kroger] organizar testes
