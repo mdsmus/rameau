@@ -346,7 +346,8 @@
 (defun parse-string (str)
   (let ((*environment* nil))
     (declare (special *environment*))
-    (parse-with-lexer (string-lexer str) *expression-parser*)))
+    (remove-if (lambda (x) (null (evento-pitch x)))
+               (parse-with-lexer (string-lexer str) *expression-parser*))))
 
 (defun file-string (path)
   "Sucks up an entire file from PATH into a freshly-allocated string,
