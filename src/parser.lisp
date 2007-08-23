@@ -42,7 +42,7 @@
   ("\\\\[Vv]ersion \"[^\"]*\"")
   ;; FIXME: porque sem o foo nao funciona? (wtf!?) [ver regressao 034]
   ;; acho que \minor está sendo pegado por VARIABLE abaixo (comentar e ver)
-  ("\\\\key[:space:]+(|a|b|c|d|e|f|g|h)+(is|es)*[:space:]+\\\\(minor|major|foo)+")
+  ("\\\\key[:space:]+(|a|b|c|d|e|f|g|h)+(is|es)*[:space:]+\\\\(minor|major)")
   ("%[^\\n]*")
   ("\\\\(C|c)ontext" (return (values 'CONTEXT %0)))
   ("\\." (return (values 'PONTO %0)))
@@ -60,7 +60,7 @@
   (">" (return (values '|>| %0)))
   ("\\{" (return (values '|{| '|{|)))
   ("\\}" (return (values '|}| '|}|)))
-  ;;("\\\\([:alpha:]+)" (return (values 'VARIABLE %0)))
+  ("\\\\([:alpha:]+)" (return (values 'VARIABLE %0)))
   )
 
 (defun parse-music-block (a block b)
@@ -359,6 +359,7 @@
 (defun parse-file (filename)
   (parse-string (file-string filename)))
 
-;;(print (parse-file "/home/top/programas/analise-harmonica/literatura/bach-corais/000206b_.ly"))
+;;(parse-file "/home/top/programas/analise-harmonica/literatura/bach-corais/000206b_.ly")
+;; (parse-file "/home/top/programas/analise-harmonica/regressao/034.ly")
 ;;(setf token (string-lexer (file-string "/home/top/programas/analise-harmonica/literatura/bach-corais/000206b_.ly")))
 ;; (funcall token)
