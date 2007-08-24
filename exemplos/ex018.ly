@@ -1,33 +1,33 @@
 \header {
-  objetivo = "tonica dominante tonica"
+  objetivo = "napolitano e primeira inversao"
 }
 global = {
-  \time 3/4
+  \time 4/4
 }
 \score {
   <<
     \new Staff <<
       \global
       \relative c'' {
-        c b c
+        c des b c
       }
     >>
     \new Staff <<
       \global
       \relative c'' {
-        g g g
+        g a g g
       }
     >>
     \new Staff <<
       \global
       \relative c' {
-        e d e
+        e des f e
       }
     >>
     \new Staff <<
       \global
-      \relative c' {
-        c g c
+      \relative c {
+        e f g c,
       }
     >>
   >>

@@ -1,5 +1,4 @@
 \header {
-  file = "ex002.ly"
   objetivo = "tonica dominante tonica com inversao"
 }
 global = {
