@@ -22,27 +22,33 @@
   ("(V|v)oice" (return (values 'VOICE %0)))
   ("(S|s)taff" (return (values 'STAFF %0)))
   ("(S|s)core" (return (values 'SCORE %)))
+  ("(-|a|\\^)(\\.|\\^|\\+|\\||>|_|-|\"[^\"]*\")*" (return (values 'ARTICULATION %0)))
   ("[:alpha:]+"
    (if (notap %0)
        (return (values 'NOTE %0))
        (return (values 'VARNAME %0))))
-  ("(\-|\a|\\^)." (return (values 'ARTICULATION %0)))
   ("\\\\(T|t)imes" (return (values 'TIMES %0)))
   ("\\d/\\d" (return (values 'NUMBER (read-from-string %0))))
   ("(128|16|32|64|1|2|4|8)" (return (values 'DUR %0)))
   ("\\*\\d+" (return (values 'MULTIPLICA %0)))
   ("([:space:]+)")
+  ("\\\\\\\\") ; contar isso é uma maravilha. Devem ser oito
+  ("\\\\(set|override)[^=]*=[:space:]+[^:space:]*") ; pra ignorar set e override
   ("\\\\(V|v)oice((O|o)ne|(T|t)wo|(T|t)hree|(F|f)our)")
   ("-+\n")
   ("\\|")
+  ("#(t|f)" (return (values 'BOOL %0)))
+  ("#" (return (values 'HASH %0)))
   ("\\\\[Vv]ersion[:space:]+\"[^\"]*\"")
   ("\\\\clef[:space:]+\"?(treble|violin|G|G2|alto|C|tenor|bass|F|french|soprano|mezzosoprano|baritone|varbaritone|subbass)\"?")
   ("\\\\(T|t)ime[:space:]+\\d/\\d")
   ("\\\\(T|t)empo[:space:]+\\d+[:space:]+=[:space:]+\\d+")
+  ("\\\\(T|t)ime[:space:]+\\d+[:space:]+=[:space:]+\\d+")
   ;; FIXME: porque sem o foo nao funciona? (wtf!?) [ver regressao 034]
   ;; acho que \minor está sendo pegado por VARIABLE abaixo (comentar e ver)
   ("\\\\key[:space:]+(a|b|c|d|e|f|g)(is|es)*[:space:]+\\\\(minor|major|dim)")
   ("%[^\\n]*")
+  ("\\\\(S|s)kip" (return (values 'SKIP %0)))
   ("\\\\(C|c)ontext" (return (values 'CONTEXT %0)))
   ("\\." (return (values 'PONTO %0)))
   ("\\\\(H|h)eader" (return (values 'HEADER %0)))
@@ -60,6 +66,9 @@
   ("\\{" (return (values '|{| '|{|)))
   ("\\}" (return (values '|}| '|}|)))
   ("\\\\([:alpha:]+)" (return (values 'VARIABLE %0)))
+  ("\\(" (return (values 'OPEN-PAREN %0)))
+  ("\\)" (return (values 'CLOSE-PAREN %0)))
+  (":" (return (values 'COLON %0)))
   )
 
 (defun parse-music-block (a block b)
@@ -72,6 +81,12 @@
 
 (defun parse-chord (a chord b)
   (declare (ignore a b))
+  `(CHORD ,@chord))
+
+(defun parse-chord-dur (a chord b dur)
+  (declare (ignore a b))
+  (dolist (i chord)
+    (setf (evento-dur i) (parse-integer dur)))
   `(CHORD ,@chord))
 
 (defun parse-simultaneous (a simultaneous b)
@@ -108,6 +123,10 @@
   (declare (ignore a))
   `(VOICE ,@block))
 
+(defun parse-voice-block-string (a b c block)
+  (declare (ignore a b c))
+  `(VOICE ,@block))
+
 (defun parse-context-voice (a b c d block)
   (declare (ignore a b c d))
   (parse-voice-block nil block))
@@ -135,6 +154,13 @@
   (coloca-expressoes-em-sequencia
    (remove-if #'null (list lilypond
                                (do-the-parsing atom)))))
+
+(defun ignora (a)
+  (declare (ignore a)))
+
+(defun ignore-second (a b)
+  (declare (ignore b))
+  a)
 
 (defun parse-assignment (variable equal value)
   (declare (ignore equal))
@@ -229,7 +255,7 @@
       tree))
 
 (define-parser *expression-parser*
-  (:start-symbol lilypond)
+  (:start-symbol start)
   (:terminals (WHITESPACE
                NEW-STAFF
                NEW-SCORE
@@ -252,8 +278,18 @@
                SCORE
                CONTEXT
                MULTIPLICA
+               SKIP
+               HASH
+               OPEN-PAREN
+               CLOSE-PAREN
+               BOOL
+               COLON
                = |{| |}| |<<| |>>| |<| |>|))
 
+  (start
+   ()
+   (lilypond #'identity))
+  
   (lilypond
    (lilypond-header expression-atom #'parse-lilypond-header)
    (expression-atom #'do-the-parsing)
@@ -277,7 +313,8 @@
    (assignment #'identity)
    (variable-block #'identity)
    (relative-block #'identity)
-   (|<| notes |>| #'parse-chord)
+   (chord-block #'identity)
+   (scheme-code #'ignora)
    (|<<| expression |>>| #'parse-simultaneous)
    (SIMULT { expression } #'parse-simult)
    (note-expr #'identity))
@@ -300,22 +337,30 @@
 
   (staff-block
    (NEW-STAFF expression-atom #'parse-staff-block)
-   (CONTEXT STAFF = VARNAME expression-atom #'parse-context-staff))
+   (CONTEXT STAFF = VARNAME expression-atom #'parse-context-staff)
+   (CONTEXT STAFF = STRING expression-atom #'parse-context-staff))
 
   (score-block
    (NEW-SCORE expression-atom #'parse-score-block)
-   (CONTEXT SCORE = VARNAME expression-atom #'parse-context-score))
+   (CONTEXT SCORE = VARNAME expression-atom #'parse-context-score)
+   (CONTEXT SCORE = STRING expression-atom #'parse-context-score))
 
   (voice-block
    (NEW-VOICE expression-atom #'parse-voice-block)
-   (CONTEXT VOICE = VARNAME expression-atom #'parse-context-voice))
+   (NEW-VOICE = STRING expression-atom #'parse-voice-block-string)
+   (CONTEXT VOICE = VARNAME expression-atom #'parse-context-voice)
+   (CONTEXT VOICE = STRING expression-atom #'parse-context-voice))
   
   (relative-block
    (RELATIVE note-expr expression-atom #'parse-relative-block))
 
   (times-block
    (TIMES NUMBER expression-atom #'parse-times-block))
-  
+
+  (chord-block
+   (|<| notes |>| #'parse-chord)
+   (|<| notes |>| DUR #'parse-chord-dur))
+
   (notes
    (note-expr #'list)
    (note-expr notes #'cons))
@@ -333,13 +378,36 @@
    (NOTE DUR PONTO articulation-expr #'cria-nota-com-duracao-articulacao-ponto)
    (NOTE DUR #'cria-nota-com-duracao)
    (NOTE DUR articulation-expr #'cria-nota-com-duracao-articulacao)
-   (NOTE articulation-expr #'cria-nota-com-articulacao))
+   (NOTE articulation-expr #'cria-nota-com-articulacao)
+   (SKIP DUR #'cria-skip)
+   (note-expr OPEN-PAREN #'ignore-second)
+   (note-expr CLOSE-PAREN #'ignore-second))
 
   (articulation-expr
    ARTICULATION
-   (articulation-expr ARTICULATION))
-  
-)
+   (articulation-expr ARTICULATION)
+   (articulation-expr string))
+
+  (scheme-code
+   (HASH scheme-sexp))
+
+  (scheme-sexp
+   (OPEN-PAREN scheme-list CLOSE-PAREN))
+
+  (scheme-list
+   ()
+   (scheme-list scheme-atom))
+
+  (scheme-atom
+   VARNAME
+   STRING
+   BOOL
+   COLON
+   ARTICULATION
+   (OCTAVE scheme-atom)
+   scheme-sexp)
+   
+) 
 
 (defun parse-string (str)
   (let ((*environment* nil)
@@ -360,7 +428,7 @@
   (parse-string (file-string filename)))
 
 ;;(parse-file "/home/top/programas/analise-harmonica/literatura/bach-corais/002.ly")
-;; (parse-file "/home/top/programas/analise-harmonica/regressao/034.ly")
-;;(setf token (string-lexer (file-string "/home/top/programas/analise-harmonica/literatura/bach-corais/000206b_.ly")))
+;; (parse-file "/home/top/programas/analise-harmonica/regressao/0.ly")
+;;(setf token (string-lexer (file-string "/home/top/programas/analise-harmonica/regressao/016.ly")))
 ;; (funcall token)
 ;; (parse-string "\\header { } { a b c }")

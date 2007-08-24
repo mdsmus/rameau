@@ -13,9 +13,9 @@
 ;; eventos, e representam esses eventos, e os manipulam de forma
 ;; básica.
 
-(defparameter *notes-names* '(#\a #\b #\c #\d #\e #\f #\g #\s))
-(defparameter *tonal* '(69 83 0 14 28 41 55 nil))
-(defparameter *tempered* '(9 11 0 2 4 5 7 nil))
+(defparameter *notes-names* '(#\a #\b #\c #\d #\e #\f #\g #\s #\r #\R))
+(defparameter *tonal* '(69 83 0 14 28 41 55 nil nil))
+(defparameter *tempered* '(9 11 0 2 4 5 7 nil nil))
 
 (defparameter *quarta-tonal* 41)
 
@@ -61,6 +61,10 @@ oitavas uma nota tem."
              :octave (octave-from-string octave)
              :dur (when dur (parse-integer dur))
              :inicio 0))
+
+(defun cria-skip (skip dur)
+  (declare (ignore skip))
+  (cria-nota "s" "" dur))
 
 (defun notap (string)
   "Testa se uma dada string pode representar uma nota"
