@@ -42,7 +42,7 @@ globalTempo = {
                 < des' f aes, des, > 8 -\tenuto ees' f' < ees' ges c, > 4 -\tenuto r8  |
 %% 5
                 < des' aes f aes, des, > 8 -\tenuto c' bes < aes ges ees, > -\tenuto bes c'  |
-                < des' f des, aes, > 8 -\tenuto ees' < f' des > < f' aes c aes, > < ees' c' > < bes ees ges, > )  |
+                < des' f des, aes, > 8 -\tenuto ees' < f' des > < f' aes c aes, > < ees' c' > < bes ees ges, >   |
                 < f' a f, > 4 -\tenuto < f' c > 8 < f' bes des bes, > -\tenuto des' bes  |
                 < bes' f' d d, > 4 -\tenuto < bes' bes f > 8 < bes' bes ges ees, > -\tenuto ges' ees'  |
                 < aes' ees' ges c, > 4 -\tenuto < aes' aes ees' ees > 8 < aes' aes f des, > -\tenuto f' < des' f, >  |
@@ -50,7 +50,7 @@ globalTempo = {
                 < aes des' f aes, > 8 -\tenuto f' < ees' c' ges > < des' aes f des > -\tenuto f, r  |
                 \bar "|."
             } % Voice
-        >> % Staff (final)
+        >> % Staff (final) 
     >> % notes
 
     \layout { }

@@ -116,27 +116,40 @@ oitavas uma nota tem."
 (defun coloca-expressoes-em-sequencia (sequencias)
   "Leva uma lista de expressões musicais e as arruma em sequência"
   (when sequencias
-    (let* ((primeiro (car sequencias))
-           (outros (cdr sequencias))
-           (fim-primeiro (reduce #'max (mapcar #'fim-evento primeiro)))
-           (inicio-primeiro (evento-inicio (car primeiro)))
-           (movimentador (- fim-primeiro inicio-primeiro)))
-      (append primeiro
+    (let
+        ((primeiro (car sequencias))
+         (outros (cdr sequencias)))
+      (cond ((atom primeiro)
+             (cons
+              primeiro
               (coloca-expressoes-em-sequencia
-               (mapcar (lambda (x) (movimenta-sequencia x movimentador))
-                       outros))))))
+               (mapcar (lambda (x)
+                         (movimenta-sequencia
+                          x
+                          (- (fim-evento primeiro)
+                             (evento-inicio primeiro))))))))
+            ((listp (car primeiro))
+             (if (null (cdr primeiro))
+                 (coloca-expressoes-em-sequencia primeiro)
+                 (error "ops")))
+            (t
+             (let* ((fim-primeiro (reduce #'max (mapcar #'fim-evento primeiro)))
+                    (inicio-primeiro (evento-inicio (car primeiro)))
+                    (movimentador (- fim-primeiro inicio-primeiro)))
+               (append primeiro
+                       (coloca-expressoes-em-sequencia
+                        (mapcar (lambda (x) (movimenta-sequencia x movimentador))
+                                outros)))))))))
 
 (defun sequencia-eventos (eventos)
   (when eventos
-    (remove-if
-     (lambda (x) (null (evento-pitch x)))
      (if (listp (first eventos))
          (append (first eventos) (movimenta-sequencia
                                   (rest eventos)
                                   (evento-dur (first (first eventos)))))
          (cons (first eventos)
                (sequencia-eventos
-                (movimenta-sequencia (rest eventos) (evento-dur (first eventos)))))))))
+                (movimenta-sequencia (rest eventos) (evento-dur (first eventos))))))))
 
 (defun menos-mod-96 (a b)
   (mod (- a b) 96))

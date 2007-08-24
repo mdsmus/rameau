@@ -220,7 +220,11 @@
         (acerta-times times rest)))))
 
 (defun process-trees (trees)
-  (remove-if #'null (mapcar #'process-tree trees)))
+  (remove-if #'null (mapcar (lambda (x)
+                              (if (atom x)
+                                  (list x)
+                                  (process-tree x)))
+                            trees)))
 
 (defun process-tree (tree)
   (if (listp tree)
@@ -232,9 +236,8 @@
            ;; de expressões que devem ser processadas em sequência
            ;; e depois juntas
            (let ((seq (process-trees expr)))
-             (if (listp (car seq))
-                 (coloca-expressoes-em-sequencia seq)
-                 (sequencia-eventos seq))))
+             (assert (listp (car seq)))
+             (coloca-expressoes-em-sequencia seq)))
           (CHORD
            ;; Se a árvore é um acorde, expr é uma sequência de notas
            ;; que devem ter a mesma duração
@@ -457,7 +460,7 @@
   (parse-string (file-string filename)))
 
 ;;(parse-file "/home/top/programas/analise-harmonica/literatura/bach-corais/002.ly")
-;; (parse-file "/home/top/programas/analise-harmonica/literatura/kostka-payne/ex10a.ly")
+;; (parse-file "/home/top/programas/analise-harmonica/literatura/kostka-payne/ex11a.ly")
 ;;(setf token (string-lexer (file-string "/home/top/programas/analise-harmonica/literatura/kostka-payne/ex10a.ly")))
 ;; (funcall token)
 ;; (parse-string "\\header { } { a b c }")
