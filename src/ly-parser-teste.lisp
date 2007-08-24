@@ -186,8 +186,7 @@
           (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 1/2))))
 
   (assert-equalp
-    (multiple-value-bind
-          (a b)
+    (multiple-value-bind (a b)
         (normaliza-notas
          (list
           (make-evento :pitch 1
@@ -256,24 +255,5 @@
                   :octave 1
                   :inicio 2
                   :dur 3))))
-
-(define-test pardo
-  (corrige-exemplo "ex001")
-  (corrige-exemplo "ex002")
-  (corrige-exemplo "ex003")
-  (corrige-exemplo "ex004")
-  (corrige-exemplo "ex005")
-  (corrige-exemplo "ex006")
-  (corrige-exemplo "ex007")
-  (corrige-exemplo "ex008")
-  (corrige-exemplo "ex009")
-  (corrige-exemplo "ex010")
-  (corrige-exemplo "ex011")
-  (corrige-exemplo "ex012")
-  (corrige-exemplo "ex013")
-  (corrige-exemplo "ex014")
-  (corrige-exemplo "ex015")
-  (corrige-exemplo "ex016")
-  (corrige-exemplo "ex017"))
 
 (run-tests)

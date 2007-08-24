@@ -13,7 +13,7 @@
 ;; eventos, e representam esses eventos, e os manipulam de forma
 ;; básica.
 
-(defparameter *notes-names* '(#\a #\b #\c #\d #\e #\f #\g nil))
+(defparameter *notes-names* '(#\a #\b #\c #\d #\e #\f #\g #\s))
 (defparameter *tonal* '(69 83 0 14 28 41 55 nil))
 (defparameter *tempered* '(9 11 0 2 4 5 7 nil))
 

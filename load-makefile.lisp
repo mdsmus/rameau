@@ -21,13 +21,13 @@
     (if print-only-if-incorrect?
         (unless comparacao
           (format t "~% arquivo: ~a~%" file)
-          (format t "   pardo: ~{~(~a~) ~}~%" pardo)
           (format t "gabarito: ~{~(~a~) ~}~%" gabarito)
+          (format t "   pardo: ~{~(~a~) ~}~%" pardo)
           (format t "correto?: ~:[não~;sim~]~%" comparacao))
         (progn
           (format t "~% arquivo: ~a~%" file)
-          (format t "   pardo: ~{~(~a~) ~}~%" pardo)
           (format t "gabarito: ~{~(~a~) ~}~%" gabarito)
+          (format t "   pardo: ~{~(~a~) ~}~%" pardo)
           (format t "correto?: ~:[não~;sim~]~%" comparacao)))))
 
 (defun regression (arquivos &optional verbose?)
