@@ -44,7 +44,7 @@ globalTempo = {
                 e' 8 -\tenuto c' g c' < g' a f,, f, > -\tenuto < f' d' > < f' a' > < e' a >  |
                 < e' f' > 8 < d' a > < e'' g' g g,, g, > -\tenuto c' e' c' < e' g' > < c' e' >  |
                 < g'' f' d' > 8 -\tenuto < f'' g' > < f'' b' > < e'' g' > < e'' d' f' > < d'' b g' > < g'' c' dis'' c, c > -\tenuto dis'  |
-                g' 8 dis' < dis'' c' > < c'' g > ) < c'' gis g'' f, f > -\tenuto < d' f'' > < f' f'' > < d' dis'' >  |
+                g' 8 dis' < dis'' c' > < c'' g >  < c'' gis g'' f, f > -\tenuto < d' f'' > < f' f'' > < d' dis'' >  |
                 < c'' gis dis'' > 8 < gis' f d'' > < g' g g'' dis' > -\tenuto c'' < dis'' g, > -\tenuto c'' < g' dis'' > < dis' c'' >  |
 %% 10
                 < d' gis, b' g' > 8 -\tenuto < f' f' > < gis' f' > < b' e' > < d'' b' e' > < b' gis' d' > < e'' a, c'' a' > -\tenuto e'' -\tenuto  |
@@ -59,7 +59,7 @@ globalTempo = {
                 \bar "|."
             } % Voice
         >> % Staff (final)
-    >> % notes
+    >>  
+    \layout { } 
+  } 
 
-    \layout { }
-} % score

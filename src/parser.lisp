@@ -23,7 +23,8 @@
   ("(S|s)taff" (return (values 'STAFF %0)))
   ("(S|s)core" (return (values 'SCORE %)))
   ("-\\\\tenuto")
-  ("(-|_|\\^|~|\\?)(\\.|\\^|\\+|\\||>|_|-|\"[^\"]*\")?" (return (values 'ARTICULATION %0)))
+  ("-\\\\staccato")
+  ("(-|_|\\^|~|\\?)(\\.|\\^|\\+|\\||>|_|-|\"[^\"]*\")?" (return (values 'ARTICULATION LEXER::START)))
   ("[:alpha:]+"
    (if (notap %0)
        (return (values 'NOTE %0))
@@ -85,8 +86,8 @@
   (declare (ignore a b))
   nil)
 
-(defun parse-chord-dur (a chord b dur)
-  (declare (ignore a b))
+(defun parse-chord-dur (a chord b dur c)
+  (declare (ignore a b c))
   (when dur
       (dolist (i chord)
         (setf (evento-dur i) dur)))
@@ -135,17 +136,11 @@
 
 (defun parse-dur-ponto (dur ponto)
   (declare (ignore ponto))
-  (let ((dur (parse-integer dur)))
-    (+ dur (/ dur 2))))
+    (+ dur (/ dur 2)))
 
 (defun parse-dur-multiplica (dur mult)
-  (* (parse-integer dur)
-     (eval (read-from-string (subseq mult 1)))))
+  (* dur (eval (read-from-string (subseq mult 1)))))
 
-(defun parse-dur-ponto-multiplica (dur ponto mult)
-  (* (eval (read-from-string (subseq mult 1)))
-     (parse-dur-ponto dur ponto)))
-                            
 (defun parse-context-voice (a b c d block)
   (declare (ignore a b c d))
   (parse-voice-block nil block))
@@ -330,6 +325,8 @@
   
   (expression-atom
    (lilypond-header #'ignora)
+   (OPEN-PAREN #'ignora)
+   (CLOSE-PAREN #'ignora)
    (layout-block #'ignora)
    (music-block #'identity)
    (empty-block #'identity)
@@ -389,7 +386,7 @@
    (TIMES NUMBER expression-atom #'parse-times-block))
 
   (chord-block
-   (|<| notes |>| dur-expr #'parse-chord-dur))
+   (|<| notes |>| dur-expr articulation-expr #'parse-chord-dur))
 
   (notes
    (note-expr #'list)
@@ -397,9 +394,7 @@
   
   (note-expr
    (NOTE octave-expr dur-expr articulation-expr dur-expr #'cria-nota)
-   (SKIP dur-expr #'cria-skip)
-   (note-expr OPEN-PAREN #'ignore-second)
-   (note-expr CLOSE-PAREN #'ignore-second))
+   (SKIP dur-expr #'cria-skip))
 
   (articulation-expr
    ()
@@ -413,9 +408,8 @@
   (dur-expr
    (#'empty-dur)
    (DUR #'parse-dur)
-   (DUR PONTO #'parse-dur-ponto)
-   (DUR MULTIPLICA #'parse-dur-multiplica)
-   (DUR PONTO MULTIPLICA #'parse-dur-ponto-multiplica))
+   (dur-expr PONTO #'parse-dur-ponto)
+   (dur-expr MULTIPLICA #'parse-dur-multiplica))
   
 
   (scheme-code
@@ -463,7 +457,7 @@
   (parse-string (file-string filename)))
 
 ;;(parse-file "/home/top/programas/analise-harmonica/literatura/bach-corais/002.ly")
-;; (parse-file "/home/top/programas/analise-harmonica/literatura/bach-corais/001.ly")
-;;(setf token (string-lexer (file-string "/home/top/programas/analise-harmonica/literatura/kostka-payne/ex10a.ly")))
+;; (parse-file "/home/top/programas/analise-harmonica/literatura/kostka-payne/ex30a.ly")
+;;(setf token (string-lexer (file-string "/home/top/programas/analise-harmonica/literatura/kostka-payne/ex31a.ly")))
 ;; (funcall token)
 ;; (parse-string "\\header { } { a b c }")

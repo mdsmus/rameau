@@ -44,7 +44,7 @@ globalTempo = {
                 < gis' gis dis' fis' gis' c, c > 8 -\tenuto < gis dis' fis' gis' > 4 -\tenuto < gis dis' fis' gis' > 8 < gis c' dis' gis' fis, fis > -\tenuto < gis' gis c' dis' gis' > -\tenuto gis' < gis' gis c' dis' gis' >  |
                 < cis'' gis cis' gis' e, e > 8 -\tenuto < gis cis' gis' > 4 < gis' gis cis' gis' > 8 < dis'' gis dis' fis' gis' c, c > < gis dis' fis' gis' > gis' ) < gis dis' fis' gis' >  |
                 < e'' gis cis' e' gis' cis, cis > 4 -\staccato < e'' e' gis' cis'' e'' cis, cis > < dis'' fis' gis' c'' dis'' dis, dis > < cis'' e' gis' cis'' e, e >  |
-                < b' f' b' d' b g > 4 -\tenuto gis 8 -\tenuto < b' cis' > < cis'' e' fis' cis'' b fis > -\tenuto ais e' b' 16 < dis' fis' b' dis' > )  |
+                < b' f' b' d' b g > 4 -\tenuto gis 8 -\tenuto < b' cis' > < cis'' e' fis' cis'' b fis > -\tenuto ais e' b' 16 < dis' fis' b' dis' >   |
                 < b' b' b'' b,, b, > 8 -\tenuto < b dis' > 4 < b' b dis' > 8 b' < b dis' > cis'' ) < dis'' b dis' >  |
                 \bar "|."
             } % Voice

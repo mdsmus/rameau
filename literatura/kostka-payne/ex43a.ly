@@ -37,7 +37,7 @@ globalTempo = {
                 \clef "alto"
                 \key g \major
                 < b g' b' g d' > 8 -\tenuto b' -\tenuto b' -\tenuto b' -\tenuto b' 8. -\tenuto b' 16 -\tenuto  |
-                d'' 8 < b g' b' g d' > 16 b' ) < b' b g' b' g d' > 8 -\tenuto < b g' b' g d' > < d' g' d'' b d' > g' 16 < e' g' e b > )  |
+                d'' 8 < b g' b' g d' > 16 b' ) < b' b g' b' g d' > 8 -\tenuto < b g' b' g d' > < d' g' d'' b d' > g' 16 < e' g' e b >   |
                 < g' e' g' e b > 8. -\tenuto g' 16 g' 8 g' < c'' e' a' c'' a, a > c''  |
                 < a' d' fis' a' d > 8 -\tenuto r16 < e' a' c'' a c' > < e' a' c'' a c' > 8 < e' a' c'' a c' > < e' a' c'' a c' > < c'' e' a' c'' a c' >  |
 %% 5

@@ -47,7 +47,7 @@ globalTempo = {
                 < b g, > 8 -\tenuto < d'' gis, > -\tenuto g, < d'' b f, > < g' g'' c' e, > 16 r < g' f'' d b d, > r < g' e'' c' c, > r r8  |
                 < a' a d' f > 8 -\tenuto d'' 16. e'' 32 f'' 8 < d'' a' f > < c'' d' g > < b' f' gis > -\tenuto < d'' a > < c'' e' > -\staccato  |
 %% 10
-                < d'' a f > 8 < f'' d' d > 16. -\tenuto < g'' e' > 32 < a'' f' > 8 d 16 < f'' d' > 32 < e f > -\staccato ) < e'' c' g > 16 < g'' e > < f'' b g, > < d'' f > < c'' e g c, > 8 
+                < d'' a f > 8 < f'' d' d > 16. -\tenuto < g'' e' > 32 < a'' f' > 8 d 16 < f'' d' > 32 < e f > -\staccato  < e'' c' g > 16 < g'' e > < f'' b g, > < d'' f > < c'' e g c, > 8 
                 % warning: bar too short, padding with rests
                 r8  |
                 \bar "|."

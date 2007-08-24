@@ -38,7 +38,7 @@ globalTempo = {
                 \key c \major
                 < c' c' e c, > 8 -\tenuto < g' e' > < g' e' > < g' e' > < g' e' > < g' e' > < g' e' > < g' e' >  |
                 < g' e' a, > 8 -\tenuto < g' e' > < g' e' > < g' e' > < g' e' b, > -\tenuto < g' e' > < g' e' cis > -\tenuto < g' e' >  |
-                < a' f' e' d > 8 -\tenuto < f' e' > < f' e' > < f' e' > < b' f' d' > < f' d' > < c'' f' c' > < f' c' > )  |
+                < a' f' e' d > 8 -\tenuto < f' e' > < f' e' > < f' e' > < b' f' d' > < f' d' > < c'' f' c' > < f' c' >   |
                 < d'' f' b g, > 8 -\tenuto < f' b > < f' b > < f' b > < f' c' a, > -\tenuto < f' c' > < f' d' b, > -\tenuto < f' d' >  |
 %% 5
                 < d' c e' g' > 8 -\tenuto e' e' e' < e' a' e' c' c' > -\tenuto < e' c' c' > < b' gis' d' b > -\tenuto < gis' d' b >  |

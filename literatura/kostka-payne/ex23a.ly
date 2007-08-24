@@ -41,7 +41,7 @@ globalTempo = {
                 < a' f' e' d > 8 -\tenuto < f' e' > < f' e' > < f' e' > < b' f' d' > -\tenuto < f' d' > < c'' f' c' > -\tenuto < f' c' >  |
                 < d'' f' b g, > 8 -\tenuto < f' b > < f' b > < f' b > < f' c' a, > -\tenuto < f' c' > < f' d' b, > -\tenuto < f' d' >  |
 %% 5
-                < d' c e' g' > 8 -\tenuto e' e' e' < e' a' e' c' c' > < e' c' c' > < b' gis' d' b > < gis' d' b > )  |
+                < d' c e' g' > 8 -\tenuto e' e' e' < e' a' e' c' c' > < e' c' c' > < b' gis' d' b > < gis' d' b >   |
                 < c'' a' e' a > 8 -\tenuto < a' e' a, > < a' e' a, > < a' e' a, > < b' g' e' b, > -\tenuto < g' e' b, > < g' e' b, > < g' e' b, >  |
                 < ais' g' e' c > 8 -\tenuto < g' e' c > < g' e' c > < g' e' c > < fis' fis' c > < fis' fis' c > < e' g' c > < e' e' c >  |
                 < b' e' fis' b, > 8 -\tenuto < e' fis' > < dis' b > < dis' b > < e' cis' > < e' cis' > < a' fis' dis' > < fis' dis' > )  |

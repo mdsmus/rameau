@@ -44,7 +44,7 @@ globalTempo = {
                 < c'' ees' aes > 8.. -\tenuto aes' 32 < ees'' ees' aes' c aes c' > 8.. -\tenuto c'' 32  |
                 < f'' f' aes' des aes des' > 8.. -\tenuto des'' 32 < aes'' aes' des'' f aes des' f' > 4 -\tenuto  |
                 r16 g'' f'' ees'' < des'' bes' g ees' > 8 < c'' aes' aes ees' >  |
-                < ees'' ees' c' ees > 8 ees' 16 < c'' aes > ) < bes' ees' g ees > 8 -\staccato 
+                < ees'' ees' c' ees > 8 ees' 16 < c'' aes >  < bes' ees' g ees > 8 -\staccato 
                 % warning: bar too short, padding with rests
                 r8  |
                 \bar "|."

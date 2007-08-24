@@ -38,12 +38,12 @@ globalTempo = {
                 \key f \major
                 r2 < a' f'' a'' a f' a' f' f, f > 16 -\tenuto c c' c' < c' d' g' bes bes,, bes, > -\tenuto bes a g  |
                 < f c' f' a c, c > 16 -\tenuto f f f < f c' e' g bes,, bes, > -\tenuto e d c < c c' c'' a,, a, > -\tenuto < c'' c''' c' > < e c'' c''' a' > < f c'' c''' a' > < c'' c''' a' bes,, bes, > -\tenuto < bes' bes'' g' > < c' a' a'' ges' > < bes bes' g'' g' >  |
-                < a' f'' f' c, c > 16 -\tenuto < f' f'' a > < aes f' f'' a > < a f' f'' a > < f' f'' a bes,, bes, > -\tenuto < e' e'' g > < f d' d'' f > < e c' c'' e > < c' c' c'' f a,, a, > < c' f' f > < c' f' f > < c' f' f > ) < a, ees' f' c' a,, a, > -\tenuto < ees' f' c' > < ees' f' c' > < ees' f' c' >  |
+                < a' f'' f' c, c > 16 -\tenuto < f' f'' a > < aes f' f'' a > < a f' f'' a > < f' f'' a bes,, bes, > -\tenuto < e' e'' g > < f d' d'' f > < e c' c'' e > < c' c' c'' f a,, a, > < c' f' f > < c' f' f > < c' f' f >  < a, ees' f' c' a,, a, > -\tenuto < ees' f' c' > < ees' f' c' > < ees' f' c' >  |
                 < bes, d' f' bes bes,, bes, > 16 -\tenuto < d' f' bes > < d' f' bes > < d' f' bes > < d' f' g' d' b,, b, > -\tenuto < f' g' d' > -\tenuto < f' g' d' > -\tenuto < f' g' d' > < c c, c > -\tenuto < f' a' c' > < f' a' c' > < f' a' c' > < g e' g' c' bes,, bes, > -\tenuto < e' g' c' > < e' g' c' > < f e' g' c' > 32 -\tenuto g  |
 %% 5
-                < f a,, a, a > 16 -\staccato < f' c' c' > -\staccato < c' f' c'' a > < f' c'' a > ) < f' c'' a a, a > < f' c'' a > < des' f' des'' a > < f' des'' a > ) < d' f' d'' bes bes, bes > 8 < d' bes d'' > < e' c' e'' > < f' d' f'' >  |
+                < f a,, a, a > 16 -\staccato < f' c' c' > -\staccato < c' f' c'' a > < f' c'' a >  < f' c'' a a, a > < f' c'' a > < des' f' des'' a > < f' des'' a >  < d' f' d'' bes bes, bes > 8 < d' bes d'' > < e' c' e'' > < f' d' f'' >  |
                 < c' c c' > 16 -\tenuto < f' a' c' > -\tenuto < f' a' c' > -\tenuto < f' a' c' > -\tenuto < a'' f'' f' a' c' c c' > -\tenuto < d' f' a' c' > 32 -\tenuto c' < bes f' a' c' > -\tenuto a < g f' a' c' > -\tenuto f < g'' c' g f' g' c' c, c > 16 -\tenuto < f' g' c' > -\tenuto < f' g' c' > -\tenuto < f' g' c' > -\tenuto < e'' e' g' bes c, c > -\tenuto < e' g' bes > < e' g' bes > < e' g' bes >  |
-                < f'' f'' f f' f f' a f, f > 16 < f' f'' > < f' f'' > < f' f'' > ) < f' f' f'' bes bes,, bes, > -\tenuto < d' d'' > < d' d'' > < d' d'' > < d' d'' a a,, a, > -\tenuto < c' c'' > < c' c'' > < c' c'' > < c' c'' d d, d > -\tenuto < bes bes' > < bes bes' > < bes bes' >  |
+                < f'' f'' f f' f f' a f, f > 16 < f' f'' > < f' f'' > < f' f'' > < f' f' f'' bes bes,, bes, > -\tenuto < d' d'' > < d' d'' > < d' d'' > < d' d'' a a,, a, > -\tenuto < c' c'' > < c' c'' > < c' c'' > < c' c'' d d, d > -\tenuto < bes bes' > < bes bes' > < bes bes' >  |
                 < a' c c' f a a' c c, c > 4 -\tenuto r g 4. f 8  |
                 < a f' f'' f f, f > 16 -\tenuto a'' < a' c'' a'' c''' c'' c' > -\tenuto c'' 8. 
                 % warning: bar too short, padding with rests

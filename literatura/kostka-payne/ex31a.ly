@@ -38,7 +38,7 @@ globalTempo = {
                 \key bes \major
                 < ees'' ees' c'' c > 16 ees < c'' aes > c' ) < ees'' c > ees < c'' aes > c' )  |
                 < bes' des' bes' des, > 16 des < des'' f > bes ) < bes' des, > des < des'' f > bes )  |
-                < aes' c' aes' ees, > 16 -\tenuto c ees aes < c'' bes g' ees, > < bes' bes, > 32 < c' aes' > ) < des' bes' des > 16 < aes' g > 32 < ees' c'' > )  |
+                < aes' c' aes' ees, > 16 -\tenuto c ees aes < c'' bes g' ees, > < bes' bes, > 32 < c' aes' >  < des' bes' des > 16 < aes' g > 32 < ees' c'' >   |
                 < aes' c' aes' aes, > 16 c < ees' c'' ees > aes ) < c' aes' aes, > -\tenuto c ees aes  |
 %% 5
                 < c'' aes, > 16 -\tenuto ees' aes' c'' < c'' aes > ees' < c'' aes' > c'' )  |
