@@ -23,7 +23,7 @@
   ("(S|s)taff" (return (values 'STAFF %0)))
   ("(S|s)core" (return (values 'SCORE %)))
   ("-\\\\tenuto")
-  ("(-|_|\\^)(\\.|\\^|\\+|\\||>|_|-|\"[^\"]*\")?" (return (values 'ARTICULATION %0)))
+  ("(-|_|\\^|~|\\?)(\\.|\\^|\\+|\\||>|_|-|\"[^\"]*\")?" (return (values 'ARTICULATION %0)))
   ("[:alpha:]+"
    (if (notap %0)
        (return (values 'NOTE %0))
@@ -32,6 +32,7 @@
   ("\\d/\\d" (return (values 'NUMBER (read-from-string %0))))
   ("(128|16|32|64|1|2|4|8)" (return (values 'DUR %0)))
   ("\\d+" (return (values 'NUMBER %0)))
+  ("\\*\\d+/\\d+" (return (values 'MULTIPLICA %0)))
   ("\\*\\d+" (return (values 'MULTIPLICA %0)))
   ("([:space:]+)")
   ("\\\\\\\\") ; contar isso é uma maravilha. Devem ser oito
@@ -47,6 +48,7 @@
   ("\\\\(T|t)empo[:space:]+\\d+[:space:]+=[:space:]+\\d+")
   ("\\\\(T|t)ime[:space:]+\\d+[:space:]+=[:space:]+\\d+")
   ("\\\\(B|b)ar[:space:]+\"[^\"]*\"")
+  ("\\\\(P|p)artial[:space:]+\\d+")
   ("\\\\(L|l)ayout" (return (values 'LAYOUT %0)))
   ;; FIXME: porque sem o foo nao funciona? (wtf!?) [ver regressao 034]
   ;; acho que \minor está sendo pegado por VARIABLE abaixo (comentar e ver)
@@ -58,7 +60,7 @@
   ("\\\\(H|h)eader" (return (values 'HEADER %0)))
   ("\"[^\"]*\"" (return (values 'STRING %0)))
   ("=" (return (values '= '=)))
-  ("\\\\new[:space:]+(s|S)taff" (return (values 'NEW-STAFF %0)))
+  ("\\\\new[:space:]+(Piano)?(s|S)taff" (return (values 'NEW-STAFF %0)))
   ("\\\\new[:space:]+(v|V)oice" (return (values 'NEW-VOICE %0)))
   ("\\\\(R|r)elative" (return (values 'RELATIVE %0)))
   ("\\\\(S|s)core" (return (values 'NEW-SCORE %0)))
@@ -138,10 +140,10 @@
 
 (defun parse-dur-multiplica (dur mult)
   (* (parse-integer dur)
-     (parse-integer (subseq mult 1))))
+     (eval (read-from-string (subseq mult 1)))))
 
 (defun parse-dur-ponto-multiplica (dur ponto mult)
-  (* (parse-integer (subseq mult 1))
+  (* (eval (read-from-string (subseq mult 1)))
      (parse-dur-ponto dur ponto)))
                             
 (defun parse-context-voice (a b c d block)
@@ -277,6 +279,7 @@
 
 (define-parser *expression-parser*
   (:start-symbol start)
+  (:muffle-conflicts :some)
   (:terminals (WHITESPACE
                NEW-STAFF
                NEW-SCORE
@@ -393,7 +396,7 @@
    (note-expr notes #'cons))
   
   (note-expr
-   (NOTE octave-expr dur-expr articulation-expr #'cria-nota)
+   (NOTE octave-expr dur-expr articulation-expr dur-expr #'cria-nota)
    (SKIP dur-expr #'cria-skip)
    (note-expr OPEN-PAREN #'ignore-second)
    (note-expr CLOSE-PAREN #'ignore-second))
@@ -460,7 +463,7 @@
   (parse-string (file-string filename)))
 
 ;;(parse-file "/home/top/programas/analise-harmonica/literatura/bach-corais/002.ly")
-;; (subseq (file-string "/home/top/programas/analise-harmonica/literatura/kostka-payne/ex8a.ly") 376)
+;; (parse-file "/home/top/programas/analise-harmonica/literatura/bach-corais/001.ly")
 ;;(setf token (string-lexer (file-string "/home/top/programas/analise-harmonica/literatura/kostka-payne/ex10a.ly")))
 ;; (funcall token)
 ;; (parse-string "\\header { } { a b c }")

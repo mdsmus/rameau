@@ -55,12 +55,14 @@ oitavas uma nota tem."
 (defun octave-from-string (string)
   (+ 8 (symbol->number string '(("'" #\') ("," #\,)))))
 
-(defun cria-nota (nota &optional (octave "") dur articulation) 
+(defun cria-nota (nota &optional (octave "") dur articulation dur2) 
   (declare (ignore articulation))
-  (make-evento :pitch (note-from-string nota)
-             :octave (octave-from-string octave)
-             :dur dur
-             :inicio 0))
+  (let ((dur (if dur2 dur2 dur)))
+    (make-evento :pitch (note-from-string nota)
+                 :octave (octave-from-string octave)
+                 :dur dur
+                 :inicio 0)))
+
 
 (defun cria-skip (skip dur)
   (declare (ignore skip))
@@ -124,14 +126,17 @@ oitavas uma nota tem."
         (pb (evento-pitch b))
         (oa (evento-octave a))
         (ob (evento-octave b)))
-    (+ (- ob 8)
-       (if (< pa pb)
-           (if (menos-de-uma-quarta a b)
-               oa
-               (- oa 1))
-           (if (menos-de-uma-quarta b a)
-               oa
-               (+ oa 1))))))
+    (cond ((null pa) 0)
+          ((null pb) 0)
+          (t
+           (+ (- ob 8)
+              (if (< pa pb)
+                  (if (menos-de-uma-quarta a b)
+                      oa
+                      (- oa 1))
+                  (if (menos-de-uma-quarta b a)
+                      oa
+                      (+ oa 1))))))))
 
 (defun relativiza (nota expressao &optional seq oitava)
   (if (not expressao)
