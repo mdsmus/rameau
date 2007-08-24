@@ -78,40 +78,24 @@ oitavas uma nota tem."
            ('|isis| t)
            ('|eses| t)
            (t nil)))))
-
-(defun pontua (dur)
-  (let ((dur (parse-integer dur)))
-    (format nil "~d" (+ dur (/ dur 2)))))
     
-(defun emite-evento (nota duracao inicio oitava)
-  (make-evento :pitch nota
-               :dur (if (numberp duracao)
-                        duracao
-                        (/ 1 (parse-integer duracao)))
-               :inicio inicio
-               :octave oitava))
 
 (defun move-evento-no-tempo (evento tempo)
-  (if (listp evento)
-      (movimenta-sequencia evento tempo)
-      (make-evento :pitch (evento-pitch evento)
-                   :dur (evento-dur evento)
-                   :inicio (+ (evento-inicio evento) tempo)
-                   :octave (evento-octave evento))))
+  (assert (not (listp evento)))
+  (make-evento :pitch (evento-pitch evento)
+               :dur (evento-dur evento)
+               :inicio (+ (evento-inicio evento) tempo)
+               :octave (evento-octave evento)))
 
 (defun movimenta-sequencia (seq tempo)
-  (if (listp seq)
+  (assert (listp seq))
       (mapcar (lambda (x) (move-evento-no-tempo x tempo))
-              seq)
-      (list (move-evento-no-tempo seq tempo))))
+              seq))
   
 
 (defun fim-evento (evento)
   (+ (evento-inicio evento) (evento-dur evento)))
 
-(defun fim-da-execucao (seq)
-  (let ((l (first (last seq))))
-    (fim-evento l)))
 
 (defun coloca-expressoes-em-sequencia (sequencias)
   "Leva uma lista de expressões musicais e as arruma em sequência"
@@ -125,16 +109,6 @@ oitavas uma nota tem."
                 (coloca-expressoes-em-sequencia
                  (mapcar (lambda (x) (movimenta-sequencia x movimentador))
                          outros))))))
-
-(defun sequencia-eventos (eventos)
-  (when eventos
-     (if (listp (first eventos))
-         (append (first eventos) (movimenta-sequencia
-                                  (rest eventos)
-                                  (evento-dur (first (first eventos)))))
-         (cons (first eventos)
-               (sequencia-eventos
-                (movimenta-sequencia (rest eventos) (evento-dur (first eventos))))))))
 
 (defun menos-mod-96 (a b)
   (mod (- a b) 96))
@@ -167,11 +141,11 @@ oitavas uma nota tem."
                          (evento-octave nota)))
              (expressao (rest expressao))
              (evento-novo
-              (emite-evento
-               (evento-pitch prox-nota)
-               (evento-dur prox-nota)
-               (evento-inicio prox-nota)
-               (modificador-oitava nota prox-nota)))
+              (make-evento
+               :pitch (evento-pitch prox-nota)
+               :dur (evento-dur prox-nota)
+               :inicio (evento-inicio prox-nota)
+               :octave (modificador-oitava nota prox-nota)))
              (seq 
               (cons evento-novo seq)))
         (relativiza evento-novo expressao seq oitava))))
