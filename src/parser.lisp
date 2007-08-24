@@ -43,7 +43,7 @@
   ("#" (return (values 'HASH %0)))
   ("\\\\[Vv]ersion[:space:]+\"[^\"]*\"")
   ("\\\\clef[:space:]+\"?(treble|violin|G|G2|alto|C|tenor|bass|F|french|soprano|mezzosoprano|baritone|varbaritone|subbass)\"?")
-  ("\\\\(T|t)ime[:space:]+\\d/\\d")
+  ("\\\\(T|t)ime[:space:]+\\d+/\\d+")
   ("\\\\(T|t)empo[:space:]+\\d+[:space:]+=[:space:]+\\d+")
   ("\\\\(T|t)ime[:space:]+\\d+[:space:]+=[:space:]+\\d+")
   ("\\\\(B|b)ar[:space:]+\"[^\"]*\"")
@@ -460,7 +460,7 @@
   (parse-string (file-string filename)))
 
 ;;(parse-file "/home/top/programas/analise-harmonica/literatura/bach-corais/002.ly")
-;; (parse-file "/home/top/programas/analise-harmonica/literatura/kostka-payne/ex11a.ly")
+;; (subseq (file-string "/home/top/programas/analise-harmonica/literatura/kostka-payne/ex8a.ly") 376)
 ;;(setf token (string-lexer (file-string "/home/top/programas/analise-harmonica/literatura/kostka-payne/ex10a.ly")))
 ;; (funcall token)
 ;; (parse-string "\\header { } { a b c }")
