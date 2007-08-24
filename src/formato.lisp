@@ -59,7 +59,7 @@ oitavas uma nota tem."
   (declare (ignore articulation))
   (make-evento :pitch (note-from-string nota)
              :octave (octave-from-string octave)
-             :dur (when dur (parse-integer dur))
+             :dur dur
              :inicio 0))
 
 (defun cria-skip (skip dur)
@@ -83,27 +83,6 @@ oitavas uma nota tem."
   (let ((dur (parse-integer dur)))
     (format nil "~d" (+ dur (/ dur 2)))))
     
-(defun cria-nota-com-duracao (nota dur)
-  (cria-nota nota  "" dur nil))
-
-(defun cria-nota-com-duracao-ponto (nota dur ponto)
-  (cria-nota nota  "" (pontua dur) nil))
-
-(defun cria-nota-com-oitava-duracao-ponto (nota oitava dur ponto)
-  (cria-nota nota oitava (pontua dur) nil))
-
-(defun cria-nota-com-duracao-articulacao (nota dur artic)
-  (declare (ignore artic))
-  (cria-nota nota  "" dur nil))
-
-(defun cria-nota-com-duracao-articulacao-ponto (nota dur ponto artic)
-  (declare (ignore artic))
-  (cria-nota nota  "" (pontua dur) nil))
-
-(defun cria-nota-com-articulacao (nota artic)
-  (declare (ignore artic))
-  (cria-nota nota))
-
 (defun emite-evento (nota duracao inicio oitava)
   (make-evento :pitch nota
                :dur (if (numberp duracao)
