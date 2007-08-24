@@ -22,7 +22,8 @@
   ("(V|v)oice" (return (values 'VOICE %0)))
   ("(S|s)taff" (return (values 'STAFF %0)))
   ("(S|s)core" (return (values 'SCORE %)))
-  ("(-|a|\\^)(\\.|\\^|\\+|\\||>|_|-|\"[^\"]*\")*" (return (values 'ARTICULATION %0)))
+  ("-\\\\tenuto")
+  ("(-|_|\\^)(\\.|\\^|\\+|\\||>|_|-|\"[^\"]*\")?" (return (values 'ARTICULATION %0)))
   ("[:alpha:]+"
    (if (notap %0)
        (return (values 'NOTE %0))
@@ -30,6 +31,7 @@
   ("\\\\(T|t)imes" (return (values 'TIMES %0)))
   ("\\d/\\d" (return (values 'NUMBER (read-from-string %0))))
   ("(128|16|32|64|1|2|4|8)" (return (values 'DUR %0)))
+  ("\\d+" (return (values 'NUMBER %0)))
   ("\\*\\d+" (return (values 'MULTIPLICA %0)))
   ("([:space:]+)")
   ("\\\\\\\\") ; contar isso é uma maravilha. Devem ser oito
@@ -44,6 +46,8 @@
   ("\\\\(T|t)ime[:space:]+\\d/\\d")
   ("\\\\(T|t)empo[:space:]+\\d+[:space:]+=[:space:]+\\d+")
   ("\\\\(T|t)ime[:space:]+\\d+[:space:]+=[:space:]+\\d+")
+  ("\\\\(B|b)ar[:space:]+\"[^\"]*\"")
+  ("\\\\(L|l)ayout" (return (values 'LAYOUT %0)))
   ;; FIXME: porque sem o foo nao funciona? (wtf!?) [ver regressao 034]
   ;; acho que \minor está sendo pegado por VARIABLE abaixo (comentar e ver)
   ("\\\\key[:space:]+(a|b|c|d|e|f|g)(is|es)*[:space:]+\\\\(minor|major|dim)")
@@ -284,6 +288,8 @@
                CLOSE-PAREN
                BOOL
                COLON
+               LAYOUT
+               NUMBER
                = |{| |}| |<<| |>>| |<| |>|))
 
   (start
@@ -291,7 +297,6 @@
    (lilypond #'identity))
   
   (lilypond
-   (lilypond-header expression-atom #'parse-lilypond-header)
    (expression-atom #'do-the-parsing)
    (lilypond expression-atom #'parse-lilypond))
 
@@ -304,6 +309,8 @@
    (expression-atom expression #'parse-expression))
   
   (expression-atom
+   (lilypond-header #'ignora)
+   (layout-block #'ignora)
    (music-block #'identity)
    (empty-block #'identity)
    (staff-block #'identity)
@@ -334,6 +341,10 @@
 
   (empty-block
    (|{| |}| #'parse-empty-block))
+
+  (layout-block
+   (LAYOUT |{| |}|)
+   (LAYOUT |{| expression |}|))
 
   (staff-block
    (NEW-STAFF expression-atom #'parse-staff-block)
@@ -404,7 +415,12 @@
    BOOL
    COLON
    ARTICULATION
-   (OCTAVE scheme-atom)
+   STAFF
+   SCORE
+   VOICE
+   DUR
+   OCTAVE
+   NUMBER
    scheme-sexp)
    
 ) 
@@ -429,6 +445,6 @@
 
 ;;(parse-file "/home/top/programas/analise-harmonica/literatura/bach-corais/002.ly")
 ;; (parse-file "/home/top/programas/analise-harmonica/regressao/0.ly")
-;;(setf token (string-lexer (file-string "/home/top/programas/analise-harmonica/regressao/016.ly")))
+;;(setf token (string-lexer (file-string "/home/top/programas/analise-harmonica/literatura/kostka-payne/ex10a.ly")))
 ;; (funcall token)
 ;; (parse-string "\\header { } { a b c }")

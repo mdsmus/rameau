@@ -121,8 +121,11 @@ oitavas uma nota tem."
                    :octave (evento-octave evento))))
 
 (defun movimenta-sequencia (seq tempo)
-  (mapcar (lambda (x) (move-evento-no-tempo x tempo))
-          seq))
+  (if (listp seq)
+      (mapcar (lambda (x) (move-evento-no-tempo x tempo))
+              seq)
+      (list (move-evento-no-tempo seq tempo))))
+  
 
 (defun fim-evento (evento)
   (+ (evento-inicio evento) (evento-dur evento)))
