@@ -7,7 +7,6 @@
 ** pequenas tonicizações
 ** acordes de sétima (II, III, IV)
 * [passos] lidar com arquivos não validos (cl-yacc não lida com isso :-(
-* [passos] lidar com acentos no cl-lexer
 * [marcos] pensar gabarito para função
 * [marcos] fazer testes de regressão (erros para quebrar parser :-)
 * [] escrever notação tempo*modificador nos corais corretamente
@@ -25,3 +24,4 @@
 * [OK] [marcos] criar novo arquivo de quarteto de ravel com \global
 * [OK] [marcos] criar exemplos simples:
 ** napolitano
+* [OK] [passos] lidar com acentos no cl-lexer

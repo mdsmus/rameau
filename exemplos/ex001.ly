@@ -1,5 +1,5 @@
 \header {
-  objetivo = "tonica dominante tonica"
+  objetivo = "tônica dominante tonica"
 }
 global = {
   \time 3/4
