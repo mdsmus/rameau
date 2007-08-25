@@ -2,6 +2,7 @@
 (import 'lexer:%0)
 (use-package 'yacc)
 
+(defparameter *filename* nil)
 
 (defun get-exp (exp)
   (if (atom (car exp)) exp (car exp)))
@@ -61,6 +62,7 @@
   ("\\\\(H|h)eader" (return (values 'HEADER %0)))
   ("\"[^\"]*\"" (return (values 'STRING %0)))
   ("=" (return (values '= '=)))
+  ("\\\\include" (return (values 'INCLUDE %0)))
   ("\\\\new[:space:]+(Piano)?(s|S)taff" (return (values 'NEW-STAFF %0)))
   ("\\\\new[:space:]+(v|V)oice" (return (values 'NEW-VOICE %0)))
   ("\\\\(R|r)elative" (return (values 'RELATIVE %0)))
@@ -140,6 +142,17 @@
 
 (defun parse-dur-multiplica (dur mult)
   (* dur (eval (read-from-string (subseq mult 1)))))
+
+(defun parse-include (a file)
+  (declare (ignore a))
+  (parse-file
+   (if *filename*
+       (concatenate 'string
+                    (subseq *filename* 0 (search "/" *filename* :from-end t))
+                    "/"
+                    (read-from-string file))
+       (read-from-string file))))
+
 
 (defun parse-context-voice (a b c d block)
   (declare (ignore a b c d))
@@ -305,6 +318,7 @@
                COLON
                LAYOUT
                NUMBER
+               INCLUDE
                = |{| |}| |<<| |>>| |<| |>|))
 
   (start
@@ -339,6 +353,7 @@
    (relative-block #'identity)
    (chord-block #'identity)
    (scheme-code #'ignora)
+   (include STRING #'parse-include)
    (|<<| expression |>>| #'parse-simultaneous)
    (SIMULT { expression } #'parse-simult)
    (note-expr #'identity))
@@ -454,7 +469,9 @@
       (values data (read-sequence data s)))))
 
 (defun parse-file (filename)
-  (parse-string (file-string filename)))
+  (let ((*filename* filename))
+    (declare (special *filename*))
+    (parse-string (file-string filename))))
 
 ;; (file-string "/home/top/programas/analise-harmonica/exemplos/ex001.ly")
 ;;(parse-file "/home/top/programas/analise-harmonica/literatura/bach-corais/002.ly")
