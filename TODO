@@ -11,8 +11,7 @@
 * [marcos] fazer testes de regressão (erros para quebrar parser :-)
 * [] escrever notação tempo*modificador nos corais corretamente
 * [] conferir se os corais de bach correspondem aos numeros
-* [givaldo] digitar no lilypond os corais 236 308
-* [OK] [givaldo] digitar no lilypond o coral 215
+* [OK] [givaldo] digitar no lilypond os corais 215 236 308
 * [OK] [givaldo] converter midi do kostka para lilypond usando rosegarden
 * [OK] [kroger] baixar midi kostka
 * [OK] [kroger] baixar e converter midi corais de bach para lilypond

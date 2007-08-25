@@ -3,7 +3,7 @@
 % point and click debugging is disabled
 #(ly:set-option 'point-and-click #f)
 \header {
-    copyright = "Copyright ｩ 2001 by -"
+    copyright = "Copyright 2001 by -"
     subtitle = "blank"
     title = "Untitled"
     tagline = "Created using Rosegarden 1.5.1 and LilyPond"
