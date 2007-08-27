@@ -8,7 +8,8 @@
   (pitch)
   (octave)
   (dur)
-  (inicio))
+  (inicio)
+  (passagem?))
 
 (defun symbol->number (string mapping-list)
   "Usa uma lista para mapear strings e caracteres. Essa função conta
@@ -93,3 +94,25 @@ oitavas uma nota tem."
 (defun troca-extensao (file ext)
   (concat (tira-extensao file) ext))
 
+(defun lista-notas (segmento)
+  (labels ((percorre-notas (valor notas)
+             (let ((nota (note-number (car notas) *tonal*)))
+               (intern
+                (string-upcase
+                 (cond ((= valor nota) (string (car notas)))
+                       ((= valor (+ nota 1)) (concatenate 'string (string (car notas)) "is"))
+                       ((= valor (- nota 1)) (concatenate 'string (string (car notas)) "es"))
+                       (t (if notas
+                              (percorre-notas valor (cdr notas))
+                              ""))))))))
+    (mapcar (lambda (x)
+              (percorre-notas (evento-pitch x) *notes-names*))
+            segmento)))
+                     
+                      
+
+(defun no-op (musica)
+  (mapcar #'lista-notas musica))
+
+
+(no-op (segmentos-minimos (parse-file "/home/top/programas/analise-harmonica/exemplos/001.ly")))
