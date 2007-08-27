@@ -109,7 +109,7 @@ oitavas uma nota tem."
                 (get-modo modo)
                 (if baixo
                     (get-inversao-pop (mod6 (- (cons-nota acorde acidente) (cons-nota baixo acc2))))
-                    1)
+                    0)
                 (when setima (parse-integer setima))))))
 
 (defun read-pop-file (file)
