@@ -10,6 +10,9 @@
   (dur)
   (inicio))
 
+(defun concat (&rest args)
+  (apply #'concatenate 'string args))
+
 (defun symbol->number (string mapping-list)
   "Usa uma lista para mapear strings e caracteres. Essa função conta
 quantas ocorrências tem do caractere na lista de mapeamento e retorna
@@ -55,16 +58,69 @@ oitavas uma nota tem."
 (defparameter *acordes* '((maj (0 4 7 11))
                           (min (0 3 7 10))))
 
-(defun get-inversao-pop (modo inversao)
-  ;;(nth inversao (second (assoc modo *acordes*)))
-  (let ((resultado (nth inversao '(0 3 5 7))))
-    (if (/= resultado 0) resultado nil)))
+;; (defun get-inversao-pop (modo inversao)
+;;   ;;(nth inversao (second (assoc modo *acordes*)))
+;;   (let ((resultado (nth inversao '(0 3 5 7))))
+;;     (if (/= resultado 0) resultado nil)))
 
 (defun convert-accidents (tonica)
   (let ((string (string-downcase (symbol-name tonica))))
     (cond ((search "is" string) (cl-ppcre:regex-replace "is" string "#"))
           ((search "es" string) (cl-ppcre:regex-replace "es" string "b"))
           (t tonica))))
+
+(defun get-modo (modo)
+  (if modo
+      (case (char modo 0)
+        (#\m 'min)
+        (#\o 'dim)
+        (#\+ 'aug))
+      'maj))
+
+(defparameter *notas* '(#\c s #\d s #\e #\f s #\g s #\a s #\b))
+
+(defun cons-nota (n a)
+  (funcall (cond ((string= a "#") #'1+)
+                 ((string= a "b") #'1-)
+                 (t #'identity))
+           (position (char n 0) *notas*)))
+
+(defun mod6 (numero)
+  (let ((n (abs numero)))
+    (if (< 6  n) (- 12 n) n)))
+
+(defparameter *inversoes-pop* '((3 1) (4 1) (5 2) (6 2) (2 3) (1 3)))
+
+(defun nota-lily (n a)
+  (intern (format nil "~:@(~a~a~)" n
+                  (cond ((string= a "#") "is")
+                        ((string= a "b") "es")
+                        ((null a) "")))))
+  
+(defun get-inversao-pop (key)
+  (second (assoc key *inversoes-pop*)))
+
+(defun cifra->acorde (cifra)
+  (cl-ppcre:register-groups-bind (acorde acidente modo setima baixo acc2)
+      ("(c|d|e|f|g|a|b)(#|b)*(m|o)?(7)?/?(c|d|e|f|g|a|b)?(#|b)*" (string-downcase (symbol-name cifra)) :sharedp t)
+    (remove-if #'null
+               (list
+                (nota-lily acorde acidente)
+                (get-modo modo)
+                (if baixo
+                    (get-inversao-pop (mod6 (- (cons-nota acorde acidente) (cons-nota baixo acc2))))
+                    1)
+                (when setima (parse-integer setima))))))
+
+(defun read-pop-file (file)
+  (read-from-string (format nil "(~a)" (file-string file))))
+
+(defun gera-gabarito-file (file)
+  (with-open-file (f (concat file ".gab") :direction :output :if-exists :supersede)
+    (loop for c in (read-pop-file (concat file ".pop")) do
+       ;; ignora o que está entre parenteses
+         (unless (listp c)
+           (format f "~(~a~)~%" (cifra->acorde c))))))
 
 (defun acorde->cifra (acorde)
   (destructuring-bind (tonica modo inversao &optional acrescimos &rest resto) acorde
@@ -77,9 +133,6 @@ oitavas uma nota tem."
                 ('aug (format nil "~a+" fundamental)))
               acrescimos
               (get-inversao-pop modo inversao)))))
-
-(defun concat (&rest args)
-  (apply #'concatenate 'string args))
 
 (defun tira-extensao (file)
   (subseq file 0 (position #\. file)))
