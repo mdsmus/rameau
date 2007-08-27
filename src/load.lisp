@@ -3,12 +3,12 @@
 
 (asdf-all '(lexer yacc cl-fad cl-ppcre))
 
-(defparameter *main-dir* 
+(defparameter *main-dir*
   (if (string= (machine-instance) "phoenix")
       "/home/kroger/doc/pesquisa/analise-harmonica/"
       "/home/top/programas/analise-harmonica/"))
 
 (defun load-all (files)
-  (loop for file in files do (load (format nil "src/~(~a~)" file))))
+  (loop for file in files do (load (concatenate 'string *main-dir* (format nil "src/~(~a~).lisp" file)))))
 
 (load-all '(utils lisp-unit formato parser segmento pardo ly-parser-teste))
