@@ -1,6 +1,6 @@
 ; -*- org -*-
 
-* isolar casos problematicos (para o parser) em literatura/* e criar regressoes
-* rodar o lilypond nos *.ly para testar se estão corretos (mais testes)
-* falta melhorar o run-testes
+* problema gabarito coral: repetição
+* novo programa de testes
+
 
