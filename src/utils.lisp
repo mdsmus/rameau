@@ -165,7 +165,5 @@ oitavas uma nota tem."
                       
 
 (defun no-op (musica)
-  (mapcar #'lista-notas musica))
+  (mapcar #'lista-notas (segmentos-minimos musica)))
 
-
-(no-op (segmentos-minimos (parse-file "/home/top/programas/analise-harmonica/exemplos/001.ly")))
