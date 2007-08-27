@@ -1,20 +1,14 @@
-(asdf:oos 'asdf:load-op 'lexer)
-(asdf:oos 'asdf:load-op 'yacc)
+(defun asdf-all (packages)
+  (dolist (package packages) (asdf:oos 'asdf:load-op package :verbose nil)))
+
+(asdf-all '(lexer yacc cl-fad))
 
 (defparameter *main-dir* 
   (if (string= (machine-instance) "phoenix")
       "/home/kroger/doc/pesquisa/analise-harmonica/"
       "/home/top/programas/analise-harmonica/"))
 
-(defparameter *muffle-conflicts* :some)
+(defun load-all (files)
+  (loop for file in files do (load (format nil "src/~(~a~)" file))))
 
-(defun load-all (&rest files)
-  (loop for file in files do
-       (load (concatenate 'string *main-dir* "src/" file))))
-
-(load-all "formato.lisp"
-          "parser.lisp"
-          "lisp-unit.lisp"
-          "segmento.lisp"
-          "pardo.lisp"
-          "ly-parser-teste.lisp")
+(load-all '(lisp-unit formato parser segmento pardo ly-parser-teste))

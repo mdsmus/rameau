@@ -130,7 +130,8 @@
 
 (defun gabarito->sexp (file)
   "Transforma um gabarito de texto em sexp."
-  (read-from-string (format nil "(~a)" (file-string file))))
+  (when (cl-fad:file-exists-p file) 
+    (read-from-string (format nil "(~a)" (file-string file)))))
 
 (defun le-gabarito (gabarito)
   "Abre um arquivo gabarito e lê"
