@@ -2,7 +2,7 @@
 
 Você precisa dos seguintes programas para rodar os testes:
 
-  aptitude install sbcl cl-asdf cl-lexer cl-regex cl-yacc
+  aptitude install sbcl cl-asdf cl-lexer cl-regex cl-yacc cl-getopt
 
 2. COMO RODAR OS TESTES
 

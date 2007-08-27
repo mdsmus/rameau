@@ -287,7 +287,7 @@
 
 (define-parser *expression-parser*
   (:start-symbol start)
-  (:muffle-conflicts :some)
+  (:muffle-conflicts t)
   (:terminals (WHITESPACE
                NEW-STAFF
                NEW-SCORE

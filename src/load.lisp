@@ -6,6 +6,8 @@
       "/home/kroger/doc/pesquisa/analise-harmonica/"
       "/home/top/programas/analise-harmonica/"))
 
+(defparameter *muffle-conflicts* :some)
+
 (defun load-all (&rest files)
   (loop for file in files do
        (load (concatenate 'string *main-dir* "src/" file))))
