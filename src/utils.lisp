@@ -59,10 +59,10 @@ oitavas uma nota tem."
 (defparameter *acordes* '((maj (0 4 7 11))
                           (min (0 3 7 10))))
 
-;; (defun get-inversao-pop (modo inversao)
-;;   ;;(nth inversao (second (assoc modo *acordes*)))
-;;   (let ((resultado (nth inversao '(0 3 5 7))))
-;;     (if (/= resultado 0) resultado nil)))
+(defun get-inversao-pop2 (modo inversao)
+  ;;(nth inversao (second (assoc modo *acordes*)))
+  (let ((resultado (nth inversao '(0 3 5 7))))
+    (if (/= resultado 0) resultado nil)))
 
 (defun convert-accidents (tonica)
   (let ((string (string-downcase (symbol-name tonica))))
@@ -124,17 +124,17 @@ oitavas uma nota tem."
          (unless (listp c)
            (format f "~(~a~)~%" (cifra->acorde c))))))
 
-;; (defun acorde->cifra (acorde)
-;;   (destructuring-bind (tonica modo inversao &optional acrescimos &rest resto) acorde
-;;     (let ((fundamental (convert-accidents tonica)))
-;;       (format nil "~a~@[~a~]~@[/~aa~]"
-;;               (case modo
-;;                 ('maj (format nil "~a" fundamental))
-;;                 ('min (format nil "~am" fundamental))
-;;                 ('dim (format nil "~ao" fundamental))
-;;                 ('aug (format nil "~a+" fundamental)))
-;;               acrescimos
-;;               (get-inversao-pop modo inversao)))))
+(defun acorde->cifra (acorde)
+  (destructuring-bind (tonica modo inversao &optional acrescimos &rest resto) acorde
+    (let ((fundamental (convert-accidents tonica)))
+      (format nil "~a~@[~a~]~@[/~aa~]"
+              (case modo
+                ('maj (format nil "~a" fundamental))
+                ('min (format nil "~am" fundamental))
+                ('dim (format nil "~ao" fundamental))
+                ('aug (format nil "~a+" fundamental)))
+              acrescimos
+              (get-inversao-pop2 modo inversao)))))
 
 (defun tira-extensao (file)
   (subseq file 0 (position #\. file)))
