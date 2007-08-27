@@ -78,13 +78,14 @@ oitavas uma nota tem."
         (#\+ 'aug))
       'maj))
 
-(defparameter *notas* '(#\c s #\d s #\e #\f s #\g s #\a s #\b))
+(defparameter *notas* '("c" "c#" "d" "d#" "e" "f" "f#" "g" "g#" "a" "a#" "b"))
 
 (defun cons-nota (n a)
   (funcall (cond ((string= a "#") #'1+)
                  ((string= a "b") #'1-)
                  (t #'identity))
-           (position (char n 0) *notas*)))
+           (position n *notas* :test #'string=)
+           ))
 
 (defun mod6 (numero)
   (let ((n (abs numero)))
@@ -123,17 +124,17 @@ oitavas uma nota tem."
          (unless (listp c)
            (format f "~(~a~)~%" (cifra->acorde c))))))
 
-(defun acorde->cifra (acorde)
-  (destructuring-bind (tonica modo inversao &optional acrescimos &rest resto) acorde
-    (let ((fundamental (convert-accidents tonica)))
-      (format nil "~a~@[~a~]~@[/~aa~]"
-              (case modo
-                ('maj (format nil "~a" fundamental))
-                ('min (format nil "~am" fundamental))
-                ('dim (format nil "~ao" fundamental))
-                ('aug (format nil "~a+" fundamental)))
-              acrescimos
-              (get-inversao-pop modo inversao)))))
+;; (defun acorde->cifra (acorde)
+;;   (destructuring-bind (tonica modo inversao &optional acrescimos &rest resto) acorde
+;;     (let ((fundamental (convert-accidents tonica)))
+;;       (format nil "~a~@[~a~]~@[/~aa~]"
+;;               (case modo
+;;                 ('maj (format nil "~a" fundamental))
+;;                 ('min (format nil "~am" fundamental))
+;;                 ('dim (format nil "~ao" fundamental))
+;;                 ('aug (format nil "~a+" fundamental)))
+;;               acrescimos
+;;               (get-inversao-pop modo inversao)))))
 
 (defun tira-extensao (file)
   (subseq file 0 (position #\. file)))
@@ -161,9 +162,18 @@ oitavas uma nota tem."
     (mapcar (lambda (x)
               (percorre-notas (evento-pitch x) *notes-names*))
             segmento)))
-                     
-                      
 
 (defun no-op (musica)
   (mapcar #'lista-notas (segmentos-minimos musica)))
 
+;;(no-op (segmentos-minimos (parse-file "/home/kroger/doc/pesquisa/analise-harmonica/exemplos/001.ly")))
+
+(defun numero-nota (n)
+  (intern (string-upcase (nth n *notas*))))
+
+;; poor-man's version
+(defun no-op2 (file)
+  (mapcar (lambda (segmento) (mapcar #'(lambda (x) (numero-nota (mod (evento-pitch x) 12))) segmento))
+          (segmentos-minimos (parse-file file))))
+
+;;(no-op2 "/home/kroger/doc/pesquisa/analise-harmonica/exemplos/001.ly")

@@ -20,11 +20,12 @@
 
 (load-all '(utils lisp-unit formato parser segmento pardo))
 
-(defun print-gabarito (file gabarito algoritmo comparacao)
+(defun print-gabarito (file gabarito algoritmo comparacao &optional notas)
   (progn
     (format t "~% * ~a~%" file)
     (format t "gabarito: ~(~a~) ~%" gabarito)
     (format t "   pardo: ~(~a~) ~%" algoritmo)
+    (when notas (format t "   notas: ~(~a~) ~%" notas))
     (format t "correto?: ~:[não~;sim~]~%" comparacao)))
 
 (defun gera-gabarito (gabarito)
@@ -32,12 +33,13 @@
       (mapcar #'acorde->cifra gabarito)
       gabarito))
 
-(defun print-compara-gabarito (files &optional verbose)
+(defun print-compara-gabarito (files &optional verbose? print-notas?)
   (let (ok no)
     (dolist (file files)
       (let* ((algoritmo (gera-gabarito (gera-gabarito-pardo (parse-file file))))
              (gabarito (gera-gabarito (gabarito->sexp (troca-extensao file ".gab"))))
              (comparacao (equal algoritmo gabarito))
+             (notas (no-op2 file))
              (file-name (pathname-name file)))
         (cond
           (*print-only-wrong*
@@ -46,7 +48,9 @@
           ;; se o arquivo .gab não existir
           ((not gabarito)
            (format t "~&[ERRO] o gabarito de ~a não existe~%" (pathname-name file)))
-          (verbose
+          (print-notas?
+           (print-gabarito file-name gabarito algoritmo comparacao notas))
+          (verbose?
            (print-gabarito file-name gabarito algoritmo comparacao))
           (gabarito
            (if comparacao (push file-name ok) (push file-name no)))
@@ -83,8 +87,9 @@
     (append (list path)
             (multiple-value-list
              (getopt:getopt command-args
-                            '(("-h" :none) ("-g" :none) ("-w" :none) ("-v" :none)
-                              ("-h" :none) ("-l" :none) ("-c" :none) ("t" :required)))))))
+                            '(("-h" :none) ("-g" :none) ("-w" :none)
+                              ("-v" :none) ("-h" :none) ("-l" :none)
+                              ("-c" :none) ("-s" :none) ("t" :required)))))))
 
 (defun get-opt-value (key alist)
   (when alist (char (cdr (assoc key alist :test #'string=)) 0)))
@@ -108,6 +113,7 @@
 -l        lista os testes disponíveis
 -a        gera analise harmonica (sem comparar com gabarito)
 -g        compara com gabarito (implica em -h)
+-s        mostra as notas de cada segmento
 -w        só mostra os testes que tem algum erro (implica em -v)
 -c        mostra cifra dos acordes no lugar de listas
 -v        verbose (mostra tudo)
@@ -155,6 +161,8 @@ gabarito, e mostra resultado em cifras:
         ((find #\l opts) (print-tests))
         ((find #\h opts) (print-help))
         ((find #\a opts) (print-analise-harmonica files))
+        ((and (find #\g opts) (find #\v opts) (find #\s opts))
+         (print-compara-gabarito files t t))
         ((and (find #\g opts) (find #\v opts))
          (print-compara-gabarito files t))
         ((find #\v opts) (parse-verbose files))
