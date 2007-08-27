@@ -3,9 +3,10 @@
 (defun asdf-all (packages)
   (dolist (package packages) (asdf:oos 'asdf:load-op package :verbose nil)))
 
-(asdf-all '(lexer yacc getopt cl-fad))
+(asdf-all '(lexer yacc getopt cl-fad cl-ppcre))
 
 (defparameter *print-only-wrong* nil)
+(defparameter *use-cifras* nil)
 
 (defparameter *testes* '((corais "literatura/bach-corais/")
                          (kostka "literatura/kostka-payne/")
@@ -15,24 +16,9 @@
                          (lily "regressao-lily/")))
 
 (defun load-all (files)
-  (loop for file in files do (load (format nil "src/~(~a~)" file))))
+  (loop for file in files do (load (format nil "src/~(~a~).lisp" file))))
 
-(load-all '(lisp-unit formato parser segmento pardo))
-
-(defun concat (&rest args)
-  (apply #'concatenate 'string args))
-
-(defun tira-extensao (file)
-  (subseq file 0 (position #\. file)))
-
-(defun add-lily-ext (file)
-  (if (tem-ext? file) file (concat file ".ly")))
-
-(defun tem-ext? (file)
-  (find #\. file))
-  
-(defun troca-extensao (file ext)
-  (concat (tira-extensao file) ext))
+(load-all '(utils lisp-unit formato parser segmento pardo))
 
 (defun print-gabarito (file gabarito algoritmo comparacao)
   (progn
@@ -41,11 +27,16 @@
     (format t "   pardo: ~(~a~) ~%" algoritmo)
     (format t "correto?: ~:[não~;sim~]~%" comparacao)))
 
+(defun gera-gabarito (gabarito)
+  (if *use-cifras*
+      (mapcar #'acorde->cifra gabarito)
+      gabarito))
+
 (defun print-compara-gabarito (files &optional verbose)
   (let (ok no)
     (dolist (file files)
-      (let* ((algoritmo (gera-gabarito-pardo (parse-file file)))
-             (gabarito (gabarito->sexp (troca-extensao file ".gab")))
+      (let* ((algoritmo (gera-gabarito (gera-gabarito-pardo (parse-file file))))
+             (gabarito (gera-gabarito (gabarito->sexp (troca-extensao file ".gab"))))
              (comparacao (equal algoritmo gabarito))
              (file-name (pathname-name file)))
         (cond
@@ -55,7 +46,8 @@
           ;; se o arquivo .gab não existir
           ((not gabarito)
            (format t "~&[ERRO] o gabarito de ~a não existe~%" (pathname-name file)))
-          (verbose (print-gabarito file-name gabarito algoritmo comparacao))
+          (verbose
+           (print-gabarito file-name gabarito algoritmo comparacao))
           (gabarito
            (if comparacao (push file-name ok) (push file-name no)))
           (t (error "não sei o que fazer!")))))
@@ -64,7 +56,7 @@
 (defun print-analise-harmonica (files)
   (dolist (file files)
     (format t "~% * ~a~%" (pathname-name file))
-    (format t "   pardo: ~(~a~) ~%" (gera-gabarito-pardo (parse-file file)))))
+    (format t "   pardo: ~(~a~) ~%" (gera-gabarito (gera-gabarito-pardo (parse-file file))))))
 
 (defun parse-summary (files)
   (let (ok no)
@@ -91,9 +83,8 @@
     (append (list path)
             (multiple-value-list
              (getopt:getopt command-args
-                            '(("-p" :none) ("-h" :none) ("-g" :none)
-                              ("-o" :none) ("-w" :none) ("-v" :none)
-                              ("-h" :none) ("-l" :none) ("t" :required)))))))
+                            '(("-h" :none) ("-g" :none) ("-w" :none) ("-v" :none)
+                              ("-h" :none) ("-l" :none) ("-c" :none) ("t" :required)))))))
 
 (defun get-opt-value (key alist)
   (when alist (char (cdr (assoc key alist :test #'string=)) 0)))
@@ -118,15 +109,21 @@
 -a        gera analise harmonica (sem comparar com gabarito)
 -g        compara com gabarito (implica em -h)
 -w        só mostra os testes que tem algum erro (implica em -v)
+-c        mostra cifra dos acordes no lugar de listas
 -v        verbose (mostra tudo)
 -h        help
 
 * EXEMPLOS
-roda todas as regressoes
+roda todas as regressões:
   rameau-tests -t r
 
-roda os corais 031 e 371
-  rameau-tests -t c 031 371"))
+roda os corais 031 e 371:
+  rameau-tests -t c 031 371
+
+roda todos os exemplos, faz comparação das analises harmonicas com
+gabarito, e mostra resultado em cifras:
+  rameau-tests -t e -vcg
+"))
 
 (defun return-path (code)
   (case code
@@ -151,12 +148,15 @@ roda os corais 031 e 371
       (when (find #\w opts)
         (setf *print-only-wrong* t)
         (push #\v opts))
+      (when (find #\c opts)
+        (setf *use-cifras* t))
       (cond
         ((and (null type) (null opts) (null files)) (print-help))
         ((find #\l opts) (print-tests))
         ((find #\h opts) (print-help))
         ((find #\a opts) (print-analise-harmonica files))
-        ((and (find #\g opts) (find #\v opts)) (print-compara-gabarito files t))
+        ((and (find #\g opts) (find #\v opts))
+         (print-compara-gabarito files t))
         ((find #\v opts) (parse-verbose files))
         ((find #\g opts) (print-ok-no-list (print-compara-gabarito files)))
         (t (print-ok-no-list (parse-summary files))))

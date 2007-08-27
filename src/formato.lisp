@@ -13,48 +13,6 @@
 ;; eventos, e representam esses eventos, e os manipulam de forma
 ;; básica.
 
-(defparameter *notes-names* '(#\a #\b #\c #\d #\e #\f #\g #\s #\r #\R))
-(defparameter *tonal* '(69 83 0 14 28 41 55 nil nil))
-(defparameter *tempered* '(9 11 0 2 4 5 7 nil nil))
-
-(defparameter *quarta-tonal* 41)
-
-(defstruct evento
-  (pitch)
-  (octave)
-  (dur)
-  (inicio))
-
-(defun symbol->number (string mapping-list)
-  "Usa uma lista para mapear strings e caracteres. Essa função conta
-quantas ocorrências tem do caractere na lista de mapeamento e retorna
-esse valor. Essa função é usada para contar quantos acidentes ou
-oitavas uma nota tem."
-  (destructuring-bind ((s1 ch1) (s2 ch2)) mapping-list
-    (cond ((search s1 string) (count ch1 string))
-          ((search s2 string) (- (count ch2 string)))
-          (t 0))))
-
-(defun number-of-accidentals (note)
-  (symbol->number note '(("is" #\i) ("es" #\e))))
-
-(defun note-number (note codification)
-  (nth (position note *notes-names*) codification))
-
-(defun note-name (note codification)
-  (nth (position note codification) *notes-names*))
-
-(defun note-from-string (nota &optional (codification *tonal*))
-  (let ((number (note-number (char nota 0) codification)))
-    (if number
-     (mod (+ (number-of-accidentals nota)
-             number)
-          96)
-     nil)))
-
-(defun octave-from-string (string)
-  (+ 8 (symbol->number string '(("'" #\') ("," #\,)))))
-
 (defun cria-nota (nota &optional (octave "") dur articulation dur2) 
   (declare (ignore articulation))
   (let ((dur (if dur2 dur2 dur)))
@@ -62,7 +20,6 @@ oitavas uma nota tem."
                  :octave (octave-from-string octave)
                  :dur dur
                  :inicio 0)))
-
 
 (defun cria-skip (skip dur)
   (declare (ignore skip))

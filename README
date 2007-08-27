@@ -2,33 +2,57 @@
 
 Você precisa dos seguintes programas para rodar os testes:
 
-  aptitude install sbcl cl-asdf cl-lexer cl-regex cl-yacc cl-getopt
+  aptitude install sbcl cl-asdf cl-lexer cl-regex cl-yacc cl-getopt cl-fad cl-ppcre
 
 2. COMO RODAR OS TESTES
 
-se você rodar o script run-tests.sh sem argumentos ele irá rodar todos
-os arquivos .ly no diretório exemplos e mostrar um relatório para cada
-arquivo, por exemplo:
+o programa para rodar os testes é rameau-tests. Eu sugiro fazer um
+link simbolico dele para algum lugar no PATH, por exemplo:
 
-./run-tests.sh
+  ln -s $(pwd)/rameau-tests ~/bin/
 
- arquivo: exemplos/ex012.ly
-   pardo: (d min 0) (gis min 0) (e maj 0) (a min 0) 
-gabarito: (d min 1) (dis fra 1) (e maj 0) (a min 0) 
-correto?: não
+desse modo voce não precisa digitar ./rameau-tests e sim rameau-tests.
 
-se um erro de parseamento ocorrer ele simplesmente mostrará algo como:
+se você rodar o script sem argumentos ele mostrará a lista de
+argumentos que aceita. para determinar o tipo de teste deve-se usar a
+opção -t. o exemplo abaixo roda todos os corais de bach:
 
-=> ERRO em ex014
+  rameau-tests -t c
 
-para ver o erro com mais detalhes voce pode rodar o script com o nome
-do arquivo como primeiro argumento:
+sem outras opções ele parseia os arquivos e mostra um sumário dos
+testes. caso algum teste falhe nesse modo ele lista quais arquivos
+falharam.
 
-./run-tests.sh exemplos/ex014.ly
+  [OK]: 371 [NO]: 0 
 
-3. OPÇÕES
+voce pode rodar apenas um teste identificando o numero no final. o
+exemplo abaixo rodará apenas o coral 003.ly. observe que o script faz
+a busca automatica no diretório.
 
-./run-tests.sh [-w] [arquivos]
-    * sem argumentos run-tests roda todos os testes em exemplos
-    * arquivos determina os arquivos para testar
-    * -w indica que os arquivos corretos não devem ser mostrados
+  rameau-tests -t c 003
+
+para fazer a analise harmonica sem usar um gabarito usa-se a opção -a:
+
+  rameau-tests -t e -a 003
+
+esse comando irá fazer a análise harmonica do exemplo 003.ly e mostrar
+a seguinte saída:
+
+ * 003
+   pardo: ((c maj 0) (g maj 0) (c maj 0)) 
+
+para ver o resultado em cifas use a opção -c
+
+  rameau-tests -t e -a 003 -c
+
+onde o resultado será:
+
+ * 003
+   pardo: (c g c) 
+
+observe que a ordem dos argumentos não importa, os argumentos sem
+valor (como -c, -a, etc) podem ser condensados em um único comando.
+
+  rameau-tests -t e 003 -ac
+
+a opção -t NÂO pode ser condensada com os outros comandos.

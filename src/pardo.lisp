@@ -128,24 +128,11 @@
 (defun gera-gabarito-pardo (musica)
   (mapcar (lambda (x) (second (pardo x))) (segmentos-minimos musica)))
 
-(defun gabarito->sexp (file)
-  "Transforma um gabarito de texto em sexp."
-  (when (cl-fad:file-exists-p file) 
-    (read-from-string (format nil "(~a)" (file-string file)))))
-
-(defun le-gabarito (gabarito)
-  "Abre um arquivo gabarito e lê"
-  (gabarito->sexp (concatenate 'string *main-dir* "exemplos/" gabarito ".gab")))
-
 (defun corrige-exemplo (exemplo &optional (metodo #'gera-gabarito-pardo))
   "Corrige e compara o resultado de um exemplo com o gabarito"
   (let ((resultado (gera-gabarito-pardo
-                    (parse-file (concatenate 'string
-                                             *main-dir*
-                                             "exemplos/"
-                                             exemplo
-                                             ".ly"))))
-        (gabarito (le-gabarito exemplo)))
+                    (parse-file (concat *main-dir* "exemplos/" exemplo ".ly"))))
+        (gabarito (gabarito->sexp (concat *main-dir* "exemplos/" exemplo ".gab"))))
     (assert-equal resultado gabarito)))
 
 (gera-gabarito-pardo

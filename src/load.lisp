@@ -1,7 +1,7 @@
 (defun asdf-all (packages)
   (dolist (package packages) (asdf:oos 'asdf:load-op package :verbose nil)))
 
-(asdf-all '(lexer yacc cl-fad))
+(asdf-all '(lexer yacc cl-fad cl-ppcre))
 
 (defparameter *main-dir* 
   (if (string= (machine-instance) "phoenix")
@@ -11,4 +11,4 @@
 (defun load-all (files)
   (loop for file in files do (load (format nil "src/~(~a~)" file))))
 
-(load-all '(lisp-unit formato parser segmento pardo ly-parser-teste))
+(load-all '(utils lisp-unit formato parser segmento pardo ly-parser-teste))
