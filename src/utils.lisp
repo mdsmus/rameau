@@ -4,6 +4,15 @@
 
 (defparameter *quarta-tonal* 41)
 
+(defparameter *interval-names* '(tonic diminished-second second minor-third major-third fourth
+                                 diminished-fifth fifth minor-sixth major-sixth
+                                 minor-seventh major-seventh))
+
+(defparameter *tonal-intervals* '(0 13 14 27 28 41 54 55 56 68 69 82 83))
+
+(defparameter *tempered-intervals* '(0 1 2 3 4 5 6 7 8 9 10 11))
+
+
 (defstruct evento
   (pitch)
   (octave)
@@ -41,6 +50,18 @@ oitavas uma nota tem."
              number)
           96)
      nil)))
+
+(defun interval-number (interval codification)
+  (nth (position interval *interval-names*) codification))
+
+(defun defchord (chord &optional (codification *tonal-intervals*))
+  (cons (first chord) (mapcar (lambda (x)
+                                (interval-number x codification))
+                              (second chord))))
+
+(defmacro defchords (templates &body chords)
+  `(defparameter ,templates '(,@(mapcar #'defchord chords))))
+
 
 (defun octave-from-string (string)
   (+ 8 (symbol->number string '(("'" #\') ("," #\,)))))

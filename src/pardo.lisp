@@ -1,34 +1,14 @@
 ;; Implementação do algoritmo de pardo.
 
 
-(defparameter *interval-names* '(tonic diminished-second second minor-third major-third fourth
-                                 diminished-fifth fifth minor-sixth major-sixth
-                                 minor-seventh major-seventh))
-
-(defparameter *tonal-intervals* '(0 13 14 27 28 41 54 55 56 68 69 82 83))
-
-(defparameter *tempered-intervals* '(0 1 2 3 4 5 6 7 8 9 10 11))
-
-
-(defun interval-number (interval codification)
-  (nth (position interval *interval-names*) codification))
-
-(defvar *templates* ())
-
-(defun defchord (name intervals &optional (codification *tonal-intervals*))
-  (push (cons name (mapcar (lambda (x)
-                             (interval-number x codification))
-                           intervals))
-        *templates*))
-
-(defun defchords (chords)
-  (mapcar (lambda (x)
-            (defchord (first x) (second x)))
-          chords))
-
-(defchords '(((maj 0) (tonic major-third fifth))
-             ((min 0) (tonic minor-third fifth))
-             ((maj 0 7) (tonic major-third fifth minor-seventh))))
+(defchords *pardo-templates*
+  ((maj 0) (tonic major-third fifth))
+  ((maj 0 7) (tonic major-third fifth minor-seventh))
+  ((min 0) (tonic minor-third fifth))
+  ((min 0 5dim 7min) (tonic minor-third diminished-fifth minor-seventh))
+  ((min 0 5dim 7maj) (tonic minor-third diminished-fifth major-seventh))             
+  ((min 0 5dim) (tonic minor-third diminished-fifth))             
+  )
 
 (defun pula (elemento lista)
   "Pula as ocorrências iniciais de elemento lista"
@@ -123,7 +103,7 @@
                   (lambda (x) (avalia-segmento
                                x
                                (segment-to-template segmento)))
-                  *templates*)))
+                  *pardo-templates*)))
 
 (defun gera-gabarito-pardo (musica)
   (mapcar (lambda (x) (second (pardo x))) (segmentos-minimos musica)))
