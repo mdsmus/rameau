@@ -173,7 +173,10 @@ oitavas uma nota tem."
 
 ;; poor-man's version
 (defun no-op2 (file)
-  (mapcar (lambda (segmento) (mapcar #'(lambda (x) (numero-nota (mod (evento-pitch x) 12))) segmento))
+  (mapcar (lambda (segmento)
+            (mapcar #'(lambda (x)
+                        (numero-nota (mod (evento-pitch x) 12)))
+                    segmento))
           (segmentos-minimos (parse-file file))))
 
-;;(no-op2 "/home/kroger/doc/pesquisa/analise-harmonica/exemplos/001.ly")
+;;(no-op2 "/home/top/programas/analise-harmonica/exemplos/001.ly")
