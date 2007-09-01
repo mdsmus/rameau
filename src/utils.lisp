@@ -2,24 +2,6 @@
 (defparameter *tonal* '(69 83 0 14 28 41 55 nil nil))
 (defparameter *tempered* '(9 11 0 2 4 5 7 nil nil))
 
-(defparameter *sistema-tonal*
-  '((c . 0)  (c . 1)  (c . 2)  (c . 3)  (c . 4)  (c . 5)  (c . 6)
-    (d . -7) (d . -6) (d . -5) (d . -4) (d . -3) (d . -2) (d . -1)
-    (d . 0)  (d . 1)  (d . 2)  (d . 3)  (d . 4)  (d . 5)  (d . 6)
-    (e . -7) (e . -6) (e . -5) (e . -4) (e . -3) (e . -2) (e . -1)
-    (e . 0)  (e . 1)  (e . 2)  (e . 3)  (e . 4)  (e . 5)  (e . 6)
-    (f . -6) (f . -5) (f . -4) (f . -3) (f . -2) (f . -1)
-    (f . 0)  (f . 1)  (f . 2)  (f . 3)  (f . 4)  (f . 5)  (f . 6) (f . 7)
-    (g . -6) (g . -5) (g . -4) (g . -3) (g . -2) (g . -1)
-    (g . 0)  (g . 1)  (g . 2)  (g . 3)  (g . 4)  (g . 5)  (g . 6)
-    (a . -7) (a . -6) (a . -5) (a . -4) (a . -3) (a . -2) (a . -1)
-    (a . 0)  (a . 1)  (a . 2)  (a . 3)  (a . 4)  (a . 5)  (a . 7)
-    (b . -7) (b . -6) (b . -5) (b . -4) (b . -3) (b . -2) (b . -1)
-    (b . 0)  (b . 1)  (b . 2)  (b . 3)  (b . 4)  (b . 5)  (b . 7)
-    (c . -6) (c . -5) (c . -4) (c . -3) (c . -2) (c . -1))
-  "tabela com codificação tonal de jamary usando no format (<nome da
-  nota> . <numero de alterações>).")
-
 (defparameter *quarta-tonal* 41)
 
 (defstruct evento
