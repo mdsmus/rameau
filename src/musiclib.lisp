@@ -80,11 +80,51 @@ accidental."
 (defun inversion (note &optional (index 0) (system 'tonal))
   (module (- (* 2 index) note) system))
 
+(defun rotate (set &optional (n 1))
+  (append (subseq set n) (subseq set 0 n)))
+
 ;;; SETS
 
-(defun inversion-notes (notes &optional (index 0) (system 'tonal))
+(defun set-inversion (notes &optional (index 0) (system 'tonal))
   (mapcar (lambda (note) (inversion note index system)) notes))
 
-(defun transpose-notes (notes &optional (system 'tonal))
+(defun set-transpose (notes &optional (system 'tonal))
   (mapcar (lambda (note) (transpose note system)) notes))
 
+(defun set-rotate (set)
+  (loop for x from 0 to (1- (length set)) collect (rotate set x)))x
+
+;;; TODO ver tabela intervalos tonais jamary
+(defun interval (note1 note2 &optional (system 'tempered))
+  (module (- note1 note2) system))
+
+(defun last1 (list)
+  (first (last list)))
+
+(defun ordenate (set)
+  (sort set #'<))
+
+(defun exclude-repetition (set)
+  )
+
+(defun normal-form (set)
+  "CUIDADO: essa função usa nomes antiquados para extrair elementos de
+listas. Se você não sabe o que caddar significa caia fora! :-)"
+  (let* ((sorted-list
+          (sort (loop
+                   for rotation in (set-rotate (ordenate (exclude-repetition set)))
+                   for set-size = (interval (last1 rotation) (first rotation))
+                   for set-beg-size = (interval (second rotation) (first rotation))
+                   collect (list rotation set-size set-beg-size))
+                #'< :key #'cadr))
+         (set-lesser-size (cadar sorted-list))
+         (smaller-sets (remove-if #'(lambda (x) (> x set-lesser-size)) sorted-list :key #'cadr)))
+    (if (= (length smaller-sets) 1)
+        (caar smaller-sets)
+        smaller-sets)))
+       
+(defun prime-form (set)
+  )
+
+(defun equal-sets (set1 set2)
+  (if (equal (prime-form set1) (prime-form set2)) t nil))
