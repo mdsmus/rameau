@@ -181,6 +181,13 @@ oitavas uma nota tem."
 (defun troca-extensao (file ext)
   (concat (tira-extensao file) ext))
 
+(defun compara-notas (x y)
+  (let ((a (evento-octave x))
+        (b (evento-octave y)))
+    (if (= a b)
+        (< (evento-pitch x) (evento-pitch y))
+        (< (evento-octave x) (evento-octave y)))))
+
 (defun lista-notas (segmento)
   (labels ((percorre-notas (valor notas)
              (let ((nota (note-number (car notas) *tonal*)))
@@ -192,9 +199,10 @@ oitavas uma nota tem."
                        (t (if notas
                               (percorre-notas valor (cdr notas))
                               ""))))))))
-    (mapcar (lambda (x)
-              (percorre-notas (evento-pitch x) *notes-names*))
-            segmento)))
+    (let ((segmento (sort segmento #'compara-notas)))
+      (mapcar (lambda (x)
+                (percorre-notas (evento-pitch x) *notes-names*))
+              segmento))))
 
 (defun no-op (musica)
   (mapcar #'lista-notas (segmentos-minimos musica)))
