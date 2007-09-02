@@ -60,9 +60,11 @@
 
 (defun da-nota-modificada (template segmento nota modificador)
   (cons (avalia-template (transpoe template nota (first modificador)) segmento)
-        (intern
-         (string-upcase
-          (concatenate 'string (string nota) (second modificador))))))
+        (cons
+         (intern
+          (string-upcase
+           (concatenate 'string (string nota) (second modificador))))
+         segmento)))
   
 
 (defun avalia-segmento-notas (template segmento notas &optional resultado)
@@ -77,33 +79,59 @@
         (avalia-segmento-notas template segmento (rest notas) acumula))
       resultado))
 
-(defun max-par-lista (lista)
-  "retorna o maior par de uma lista de pares"
-  (let ((maior (first lista))
-        (maior-valor (first (first lista))))
-    (dolist (par lista)
-      (when (> (first par) maior-valor)
-            (setf maior-valor (first par))
-            (setf maior par)))
-    maior))
+(defun root-weight (res)
+  (let* ((res (first res))
+         (root-note (note-from-string (string (first (first (second res))))))
+         (weight (assoc root-note (rest (first (second res))))))
+    (second weight)))
 
+(defun template-prob (nota)
+  (let ((template (rest (second (first nota)))))
+    (length
+     (member-if (lambda (x)
+               (equal (car x) template))
+             *pardo-templates*))))
+
+(defun dim7? (notas)
+  nil)
+
+(defun dim7-res (template)
+  (first template))
+
+(defun desempata-pardo (notas)
+  (let ((max-root (max-predicado #'root-weight notas))
+        (template-prob (max-predicado #'template-prob notas))
+        (res (when (dim7? notas)
+               (dim7-res notas))))
+    (cond ((= (length max-root 1))
+           (car (max-root)))
+          ((= (length template-prob) 1)
+           (car (template-prob)))
+          (t (car max-root)))))
 
 (defun avalia-segmento (template segmento)
   "Gera as notas de um segmento comparado com todas as transposições de
    um template."
-  (let ((resultado (max-par-lista (avalia-segmento-notas (rest template)
-                                                         segmento
-                                                         (butlast *notes-names* 3)))))
-    (cons (first resultado)
-          (cons (cons (rest resultado) (first template))
-                nil))))
+  (let ((resultados
+          (max-predicado #'first
+                         (avalia-segmento-notas (rest template)
+                                                segmento
+                                                (butlast *notes-names* 3)))))
+    (mapcar
+     (lambda (resultado)
+       (cons (first resultado)
+             (cons (cons (rest resultado) (first template))
+                   nil)))
+     resultados)))
 
 (defun pardo (segmento)
-  (max-par-lista (mapcar
-                  (lambda (x) (avalia-segmento
-                               x
-                               (segment-to-template segmento)))
-                  *pardo-templates*)))
+  (desempata-pardo
+   (max-predicado #'caar
+                  (mapcar
+                   (lambda (x) (avalia-segmento
+                                x
+                                (segment-to-template segmento)))
+                   *pardo-templates*))))
 
 (defun gera-gabarito-pardo (musica)
   (mapcar (lambda (x) (second (pardo x))) (segmentos-minimos musica)))

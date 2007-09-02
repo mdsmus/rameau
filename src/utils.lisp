@@ -62,6 +62,17 @@ oitavas uma nota tem."
 (defmacro defchords (templates &body chords)
   `(defparameter ,templates '(,@(mapcar #'defchord chords))))
 
+(defun max-predicado (predicado lista)
+  "retorna o maior par de uma lista de pares"
+  (let ((maior-valor (funcall predicado (first lista)))
+        (lista-max nil))
+    (dolist (par lista)
+      (cond ((> (funcall predicado par) maior-valor)
+             (setf maior-valor (first par))
+             (setf lista-max (list par)))
+            ((= (first par) maior-valor)
+             (push par lista-max))))
+    lista-max))
 
 (defun octave-from-string (string)
   (+ 8 (symbol->number string '(("'" #\') ("," #\,)))))
