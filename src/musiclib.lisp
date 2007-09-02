@@ -156,8 +156,8 @@ simetrico antes de fazer qualquer coisa."
         (nf-inversion (set-inversion (normal-form set) 0 'tempered)))
     (set-transpose-to-0
      (smallest-set
-      (smaller-sets (sort-sets (append (sets-permutation-sorted nf-inversion)
-                                       (sets-permutation-sorted nf-transposition))))))))
+      (smaller-sets (sort-sets (append (sets-permutations nf-inversion)
+                                       (sets-permutations nf-transposition))))))))
 
 (defun equal-sets? (set1 set2 &optional (form 'normal))
   (if (eql form 'normal)
