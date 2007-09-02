@@ -103,11 +103,11 @@
         (template-prob (max-predicado #'template-prob notas))
         (res (when (dim7? notas)
                (dim7-res notas))))
-    (cond ((= (length max-root 1))
-           (car (max-root)))
+    (cond ((= (length max-root) 1)
+           (caar max-root))
           ((= (length template-prob) 1)
-           (car (template-prob)))
-          (t (car max-root)))))
+           (caar (template-prob)))
+          (t (caaar max-root)))))
 
 (defun avalia-segmento (template segmento)
   "Gera as notas de um segmento comparado com todas as transposições de
@@ -134,7 +134,11 @@
                    *pardo-templates*))))
 
 (defun gera-gabarito-pardo (musica)
-  (mapcar (lambda (x) (second (pardo x))) (segmentos-minimos musica)))
+  (mapcar (lambda (x)
+            (let ((res (second (pardo x))))
+              (cons (first (first res))
+                    (rest res))))
+          (segmentos-minimos musica)))
 
 (defun corrige-exemplo (exemplo &optional (metodo #'gera-gabarito-pardo))
   "Corrige e compara o resultado de um exemplo com o gabarito"

@@ -44,7 +44,8 @@ oitavas uma nota tem."
   (nth (position note codification) *notes-names*))
 
 (defun note-from-string (nota &optional (codification *tonal*))
-  (let ((number (note-number (char nota 0) codification)))
+  (let* ((nota (string-downcase nota))
+         (number (note-number (char nota 0) codification)))
     (if number
      (mod (+ (number-of-accidentals nota)
              number)
@@ -70,7 +71,7 @@ oitavas uma nota tem."
       (cond ((> (funcall predicado par) maior-valor)
              (setf maior-valor (first par))
              (setf lista-max (list par)))
-            ((= (first par) maior-valor)
+            ((= (funcall predicado par) maior-valor)
              (push par lista-max))))
     lista-max))
 
