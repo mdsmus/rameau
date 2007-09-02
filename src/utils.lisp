@@ -199,10 +199,13 @@ oitavas uma nota tem."
 (defun no-op (musica)
   (mapcar #'lista-notas (segmentos-minimos musica)))
 
-;;(no-op (segmentos-minimos (parse-file "/home/kroger/doc/pesquisa/analise-harmonica/exemplos/001.ly")))
+;;(no-op (parse-file "/home/top/programas/analise-harmonica/exemplos/001.ly"))
 
 (defun numero-nota (n)
   (intern (string-upcase (nth n *notas*))))
+
+(defun retorna-n-segmentos (musica)
+  (subseq musica 0 n))
 
 ;; poor-man's version
 (defun no-op2 (file)
