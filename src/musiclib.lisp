@@ -105,8 +105,11 @@ accidental."
   (sort set #'<))
 
 (defun exclude-repetition (set)
-  )
-
+  (let ((novo-set ()))
+    (loop for x in set unless (member x novo-set) do
+         (push x novo-set))
+    novo-set))
+  
 (defun normal-form (set)
   "CUIDADO: essa função usa nomes antiquados para extrair elementos de
 listas. Se você não sabe o que caddar significa caia fora! :-)"
