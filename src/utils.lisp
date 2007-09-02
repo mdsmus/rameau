@@ -5,12 +5,12 @@
 (defparameter *quarta-tonal* 41)
 
 (defparameter *interval-names* '(tonic diminished-second second minor-third major-third fourth
-                                 diminished-fifth fifth minor-sixth major-sixth
+                                 diminished-fifth fifth minor-sixth major-sixth diminished-seventh
                                  minor-seventh major-seventh))
 
-(defparameter *tonal-intervals* '(0 13 14 27 28 41 54 55 56 68 69 82 83))
+(defparameter *tonal-intervals* '(0 13 14 27 28 41 54 55 56 68 69 81 82 83))
 
-(defparameter *tempered-intervals* '(0 1 2 3 4 5 6 7 8 9 10 11))
+(defparameter *tempered-intervals* '(0 1 2 3 4 5 6 7 8 9 9 10 11))
 
 
 (defstruct evento

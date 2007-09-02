@@ -5,9 +5,9 @@
   ((maj 0) (tonic major-third fifth))
   ((maj 0 7) (tonic major-third fifth minor-seventh))
   ((min 0) (tonic minor-third fifth))
-  ((min 0 5dim 7min) (tonic minor-third diminished-fifth minor-seventh))
-  ((min 0 5dim 7maj) (tonic minor-third diminished-fifth major-seventh))             
-  ((min 0 5dim) (tonic minor-third diminished-fifth))             
+  ((min 0 5- 7-) (tonic minor-third diminished-fifth diminished-seventh))
+  ((min 0 5- 7) (tonic minor-third diminished-fifth minor-seventh))             
+  ((min 0 5-) (tonic minor-third diminished-fifth))
   )
 
 (defun pula (elemento lista)
