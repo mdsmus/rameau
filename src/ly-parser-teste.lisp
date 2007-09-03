@@ -5,6 +5,7 @@
    (assert-equal 2 (number-of-accidentals "cisis"))
    (assert-equal 5 (number-of-accidentals "cisisisisis"))
    (assert-equal 0 (number-of-accidentals "c"))
+   (assert-equal -1 (number-of-accidentals "ees"))
    (assert-equal -1 (number-of-accidentals "ces"))
    (assert-equal -2 (number-of-accidentals "ceses"))
    (assert-equal -5 (number-of-accidentals "ceseseseses"))
