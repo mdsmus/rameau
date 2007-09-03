@@ -49,6 +49,18 @@
 (defparameter *systems* '((tonal (*tonal-system* 96 *tonal-intervals*))
                           (tempered (*tempered-system* 12 *tempered-intervals*))))
 
+(defparameter *intervals-name* '((min minor)
+                                 (maj major)
+                                 (aug augmented)
+                                 (dim diminished)))
+
+(defparameter *intervals-quantity* '((2 double)
+                                     (3 triple)
+                                     (4 quadruple)
+                                     (5 pentuple)
+                                     (6 hextuple)
+                                     (7 heptuple)))
+
 (defparameter *accidentals* '((lily ("es" "is"))
                               (latin ("b" "#"))))
 
@@ -135,6 +147,12 @@ EXAMPLE: (get-sharp 'latin) returns #."
 EXAMPLE: (get-flat 'lily) return es."
   (get-accidental representation #'first))
 
+(defun get-interval-name (short)
+  (assoc-item short *intervals-name*))
+
+(defun get-interval-quantity (num)
+  (assoc-item num *intervals-quantity*))
+
 (defun code->note (number &optional (system 'tonal))
   "Retorna o nome da nota dado o seu código numérico."
   (nth number (get-system-notes system)))
@@ -220,6 +238,12 @@ must have a numeric value."
   "Returns an interval-code of an interval. The interval must have a
 numeric value."
   (nth interval (get-system-intervals system)))
+
+(defun print-interval (interval &optional (system 'tonal))
+  "Returns the name of an interval. EXAMPLE: (print-interval 16)
+returns double augmented second."
+  (destructuring-bind (int type &optional quantity) (interval-name interval)
+    (format nil "~@[~(~a~) ~]~(~a~) ~:r" (get-interval-quantity quantity)(get-interval-name type) int)))
 
 ;;; SETS
 
