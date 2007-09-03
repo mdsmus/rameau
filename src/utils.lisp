@@ -4,6 +4,15 @@
 
 (defparameter *quarta-tonal* 41)
 
+(defparameter *interval-names* '(tonic diminished-second second minor-third major-third fourth
+                                 diminished-fifth fifth minor-sixth major-sixth diminished-seventh
+                                 minor-seventh major-seventh))
+
+(defparameter *tonal-intervals* '(0 13 14 27 28 41 54 55 56 68 69 81 82 83))
+
+(defparameter *tempered-intervals* '(0 1 2 3 4 5 6 7 8 9 9 10 11))
+
+
 (defstruct evento
   (pitch)
   (octave)
@@ -35,12 +44,36 @@ oitavas uma nota tem."
   (nth (position note codification) *notes-names*))
 
 (defun note-from-string (nota &optional (codification *tonal*))
-  (let ((number (note-number (char nota 0) codification)))
+  (let* ((nota (string-downcase nota))
+         (number (note-number (char nota 0) codification)))
     (if number
      (mod (+ (number-of-accidentals nota)
              number)
           96)
      nil)))
+
+(defun interval-number (interval codification)
+  (nth (position interval *interval-names*) codification))
+
+(defun defchord (chord &optional (codification *tonal-intervals*))
+  (cons (first chord) (mapcar (lambda (x)
+                                (interval-number x codification))
+                              (second chord))))
+
+(defmacro defchords (templates &body chords)
+  `(defparameter ,templates '(,@(mapcar #'defchord chords))))
+
+(defun max-predicado (predicado lista)
+  "retorna o maior par de uma lista de pares"
+  (let ((maior-valor (funcall predicado (first lista)))
+        (lista-max nil))
+    (dolist (par lista)
+      (cond ((> (funcall predicado par) maior-valor)
+             (setf maior-valor (first par))
+             (setf lista-max (list par)))
+            ((= (funcall predicado par) maior-valor)
+             (push par lista-max))))
+    lista-max))
 
 (defun octave-from-string (string)
   (+ 8 (symbol->number string '(("'" #\') ("," #\,)))))
@@ -148,6 +181,13 @@ oitavas uma nota tem."
 (defun troca-extensao (file ext)
   (concat (tira-extensao file) ext))
 
+(defun compara-notas (x y)
+  (let ((a (evento-octave x))
+        (b (evento-octave y)))
+    (if (= a b)
+        (< (evento-pitch x) (evento-pitch y))
+        (< (evento-octave x) (evento-octave y)))))
+
 (defun lista-notas (segmento)
   (labels ((percorre-notas (valor notas)
              (let ((nota (note-number (car notas) *tonal*)))
@@ -159,21 +199,28 @@ oitavas uma nota tem."
                        (t (if notas
                               (percorre-notas valor (cdr notas))
                               ""))))))))
-    (mapcar (lambda (x)
-              (percorre-notas (evento-pitch x) *notes-names*))
-            segmento)))
+    (let ((segmento (sort segmento #'compara-notas)))
+      (mapcar (lambda (x)
+                (percorre-notas (evento-pitch x) *notes-names*))
+              segmento))))
 
 (defun no-op (musica)
   (mapcar #'lista-notas (segmentos-minimos musica)))
 
-;;(no-op (segmentos-minimos (parse-file "/home/kroger/doc/pesquisa/analise-harmonica/exemplos/001.ly")))
+;;(no-op (parse-file "/home/top/programas/analise-harmonica/exemplos/001.ly"))
 
 (defun numero-nota (n)
   (intern (string-upcase (nth n *notas*))))
 
+(defun retorna-n-segmentos (musica)
+  (subseq musica 0 n))
+
 ;; poor-man's version
 (defun no-op2 (file)
-  (mapcar (lambda (segmento) (mapcar #'(lambda (x) (numero-nota (mod (evento-pitch x) 12))) segmento))
+  (mapcar (lambda (segmento)
+            (mapcar #'(lambda (x)
+                        (numero-nota (mod (evento-pitch x) 12)))
+                    segmento))
           (segmentos-minimos (parse-file file))))
 
-;;(no-op2 "/home/kroger/doc/pesquisa/analise-harmonica/exemplos/001.ly")
+;;(no-op2 "/home/top/programas/analise-harmonica/exemplos/001.ly")

@@ -1,34 +1,14 @@
 ;; Implementação do algoritmo de pardo.
 
 
-(defparameter *interval-names* '(tonic diminished-second second minor-third major-third fourth
-                                 diminished-fifth fifth minor-sixth major-sixth
-                                 minor-seventh major-seventh))
-
-(defparameter *tonal-intervals* '(0 13 14 27 28 41 54 55 56 68 69 82 83))
-
-(defparameter *tempered-intervals* '(0 1 2 3 4 5 6 7 8 9 10 11))
-
-
-(defun interval-number (interval codification)
-  (nth (position interval *interval-names*) codification))
-
-(defvar *templates* ())
-
-(defun defchord (name intervals &optional (codification *tonal-intervals*))
-  (push (cons name (mapcar (lambda (x)
-                             (interval-number x codification))
-                           intervals))
-        *templates*))
-
-(defun defchords (chords)
-  (mapcar (lambda (x)
-            (defchord (first x) (second x)))
-          chords))
-
-(defchords '(((maj 0) (tonic major-third fifth))
-             ((min 0) (tonic minor-third fifth))
-             ((maj 0 7) (tonic major-third fifth minor-seventh))))
+(defchords *pardo-templates*
+  ((maj 0) (tonic major-third fifth))
+  ((maj 0 7) (tonic major-third fifth minor-seventh))
+  ((min 0) (tonic minor-third fifth))
+  ((min 0 5- 7-) (tonic minor-third diminished-fifth diminished-seventh))
+  ((min 0 5- 7) (tonic minor-third diminished-fifth minor-seventh))             
+  ((min 0 5-) (tonic minor-third diminished-fifth))
+  )
 
 (defun pula (elemento lista)
   "Pula as ocorrências iniciais de elemento lista"
@@ -80,9 +60,11 @@
 
 (defun da-nota-modificada (template segmento nota modificador)
   (cons (avalia-template (transpoe template nota (first modificador)) segmento)
-        (intern
-         (string-upcase
-          (concatenate 'string (string nota) (second modificador))))))
+        (cons
+         (intern
+          (string-upcase
+           (concatenate 'string (string nota) (second modificador))))
+         segmento)))
   
 
 (defun avalia-segmento-notas (template segmento notas &optional resultado)
@@ -97,36 +79,66 @@
         (avalia-segmento-notas template segmento (rest notas) acumula))
       resultado))
 
-(defun max-par-lista (lista)
-  "retorna o maior par de uma lista de pares"
-  (let ((maior (first lista))
-        (maior-valor (first (first lista))))
-    (dolist (par lista)
-      (when (> (first par) maior-valor)
-            (setf maior-valor (first par))
-            (setf maior par)))
-    maior))
+(defun root-weight (res)
+  (let* ((res (first res))
+         (root-note (note-from-string (string (first (first (second res))))))
+         (weight (assoc root-note (rest (first (second res))))))
+    (second weight)))
 
+(defun template-prob (nota)
+  (let ((template (rest (second (first nota)))))
+    (length
+     (member-if (lambda (x)
+               (equal (car x) template))
+             *pardo-templates*))))
+
+(defun dim7? (notas)
+  nil)
+
+(defun dim7-res (template)
+  (first template))
+
+(defun desempata-pardo (notas)
+  (let ((max-root (max-predicado #'root-weight notas))
+        (template-prob (max-predicado #'template-prob notas))
+        (res (when (dim7? notas)
+               (dim7-res notas))))
+    (cond ((= (length max-root) 1)
+           (caar max-root))
+          ((= (length template-prob) 1)
+           (caar (template-prob)))
+          (t (caaar max-root)))))
 
 (defun avalia-segmento (template segmento)
   "Gera as notas de um segmento comparado com todas as transposições de
    um template."
-  (let ((resultado (max-par-lista (avalia-segmento-notas (rest template)
-                                                         segmento
-                                                         (butlast *notes-names* 3)))))
-    (cons (first resultado)
-          (cons (cons (rest resultado) (first template))
-                nil))))
+  (let ((resultados
+          (max-predicado #'first
+                         (avalia-segmento-notas (rest template)
+                                                segmento
+                                                (butlast *notes-names* 3)))))
+    (mapcar
+     (lambda (resultado)
+       (cons (first resultado)
+             (cons (cons (rest resultado) (first template))
+                   nil)))
+     resultados)))
 
 (defun pardo (segmento)
-  (max-par-lista (mapcar
-                  (lambda (x) (avalia-segmento
-                               x
-                               (segment-to-template segmento)))
-                  *templates*)))
+  (desempata-pardo
+   (max-predicado #'caar
+                  (mapcar
+                   (lambda (x) (avalia-segmento
+                                x
+                                (segment-to-template segmento)))
+                   *pardo-templates*))))
 
 (defun gera-gabarito-pardo (musica)
-  (mapcar (lambda (x) (second (pardo x))) (segmentos-minimos musica)))
+  (mapcar (lambda (x)
+            (let ((res (second (pardo x))))
+              (cons (first (first res))
+                    (rest res))))
+          (segmentos-minimos musica)))
 
 (defun corrige-exemplo (exemplo &optional (metodo #'gera-gabarito-pardo))
   "Corrige e compara o resultado de um exemplo com o gabarito"
