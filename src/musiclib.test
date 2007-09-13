@@ -1,0 +1,188 @@
+;; -*- lisp -*-
+
+;;(use-package :lisp-unit)
+
+(lisp-unit:define-test get-system-item
+  (lisp-unit:assert-equal '(*TONAL-SYSTEM* 96 *TONAL-INTERVALS*) (get-system-item 'tonal))
+  (lisp-unit:assert-equal '(*TEMPERED-SYSTEM* 12 *TEMPERED-INTERVALS*) (get-system-item 'tempered)))
+
+(lisp-unit:define-test get-system-notes
+  (lisp-unit:assert-equal
+   '((C 0) (C 1) (C 2) (C 3) (C 4) (C 5) (C 6) (D -7) (D -6) (D -5) (D -4) (D -3)
+     (D -2) (D -1) (D 0) (D 1) (D 2) (D 3) (D 4) (D 5) (D 6) (E -7) (E -6) (E -5)
+     (E -4) (E -3) (E -2) (E -1) (E 0) (E 1) (E 2) (E 3) (E 4) (E 5) (E 6) (F -6)
+     (F -5) (F -4) (F -3) (F -2) (F -1) (F 0) (F 1) (F 2) (F 3) (F 4) (F 5) (F 6)
+     (F 7) (G -6) (G -5) (G -4) (G -3) (G -2) (G -1) (G 0) (G 1) (G 2) (G 3) (G 4)
+     (G 5) (G 6) (A -7) (A -6) (A -5) (A -4) (A -3) (A -2) (A -1) (A 0) (A 1) (A 2)
+     (A 3) (A 4) (A 5) (A 7) (B -7) (B -6) (B -5) (B -4) (B -3) (B -2) (B -1) (B 0)
+     (B 1) (B 2) (B 3) (B 4) (B 5) (B 7) (C -6) (C -5) (C -4) (C -3) (C -2) (C -1))
+   (get-system-notes 'tonal))
+  (lisp-unit:assert-equal '(C (C 1) D (D 1) E F (F 1) G (G 1) A (A 1) B)
+                          (get-system-notes 'tempered)))
+
+(lisp-unit:define-test get-system-module
+    (lisp-unit:assert-equal 96 (get-system-module 'tonal))
+    (lisp-unit:assert-equal 12 (get-system-module 'tempered)))
+
+(lisp-unit:define-test get-system-intervals
+    (lisp-unit:assert-equal
+     '((1 JUST) (1 AUG) (1 AUG 2) (1 AUG 3) (1 AUG 4) (1 AUG 5) (1 AUG 6) (2 DIM 6)
+       (2 DIM 5) (2 DIM 4) (2 DIM 3) (2 DIM 2) (2 DIM) (2 MIN) (2 MAJ) (2 AUG)
+       (2 AUG 2) (2 AUG 3) (2 AUG 4) (2 AUG 5) (2 AUG 6) (3 DIM 6) (3 DIM 5)
+       (3 DIM 4) (3 DIM 3) (3 DIM 2) (3 DIM) (3 MIN) (3 MAJ) (3 AUG) (3 AUG 2)
+       (3 AUG 3) (3 AUG 4) (3 AUG 5) (3 AUG 6) (4 DIM 6) (4 DIM 5) (4 DIM 4)
+       (4 DIM 3) (4 DIM 2) (4 DIM) (4 JUST) (4 AUG) (4 AUG 2) (4 AUG 3) (4 AUG 4)
+       (4 AUG 5) (4 AUG 6) (4 AUG 7) (5 DIM 6) (5 DIM 5) (5 DIM 4) (5 DIM 3)
+       (5 DIM 2) (5 DIM) (5 JUST) (5 AUG) (5 AUG 2) (5 AUG 3) (5 AUG 4) (5 AUG 5)
+       (5 AUG 6) (6 DIM 6) (6 DIM 5) (6 DIM 4) (6 DIM 3) (6 DIM 2) (6 DIM) (6 MIN)
+       (6 MAJ) (6 AUG) (6 AUG 2) (6 AUG 3) (6 AUG 4) (6 AUG 5) (6 AUG 6) (7 DIM 6)
+       (7 DIM 5) (7 DIM 4) (7 DIM 3) (7 DIM 2) (7 DIM) (7 MIN) (7 MAJ) (7 AUG)
+       (7 AUG 2) (7 AUG 3) (7 AUG 4) (7 AUG 5) (7 AUG 6) (8 DIM 6) (8 DIM 5)
+       (8 DIM 4) (8 DIM 3) (8 DIM 2) (8 DIM) (8 JUST))
+     (get-system-intervals 'tonal))
+    (lisp-unit:assert-equal
+     '((1 JUST) (2 MIN) (2 MAJ) (3 MIN) (3 MAJ) (4 JUST)
+       (5 DIM) (5 JUST) (6 MIN) (6 MAJ) (7 MIN) (7 MAJ) (8 JUST))
+     (get-system-intervals 'tempered)))
+
+(lisp-unit:define-test get-accidentals
+    (lisp-unit:assert-equal '("es" "is") (get-accidentals 'lily))
+    (lisp-unit:assert-equal '("b" "#") (get-accidentals 'latin)))
+
+(lisp-unit:define-test get-accidental
+    (lisp-unit:assert-equal "es" (get-accidental 'lily #'first))
+    (lisp-unit:assert-equal "is" (get-accidental 'lily #'second))
+    (lisp-unit:assert-equal nil (get-accidental 'lily #'third))
+    (lisp-unit:assert-equal "b" (get-accidental 'latin #'first))
+    (lisp-unit:assert-equal "#" (get-accidental 'latin #'second))
+    (lisp-unit:assert-equal nil (get-accidental 'latin #'third)))
+    
+(lisp-unit:define-test get-sharp
+  (lisp-unit:assert-equal "is" (get-sharp 'lily))
+  (lisp-unit:assert-equal "#" (get-sharp 'latin)))
+
+(lisp-unit:define-test get-flat
+  (lisp-unit:assert-equal "es" (get-flat 'lily))
+  (lisp-unit:assert-equal "b" (get-flat 'latin)))
+
+(lisp-unit:define-test get-interval-name
+  (lisp-unit:assert-equal 'diminished (get-interval-name 'dim))
+  (lisp-unit:assert-equal 'augmented (get-interval-name 'aug))
+  (lisp-unit:assert-equal 'major (get-interval-name 'maj))
+  (lisp-unit:assert-equal 'minor (get-interval-name 'min)))
+
+(lisp-unit:define-test get-interval-quantity
+  (lisp-unit:assert-equal nil (get-interval-quantity 0))
+  (lisp-unit:assert-equal nil (get-interval-quantity 1))
+  (lisp-unit:assert-equal 'double (get-interval-quantity 2))
+  (lisp-unit:assert-equal 'triple (get-interval-quantity 3))
+  (lisp-unit:assert-equal 'quadruple (get-interval-quantity 4))
+  (lisp-unit:assert-equal 'pentuple (get-interval-quantity 5))
+  (lisp-unit:assert-equal 'hextuple (get-interval-quantity 6))
+  (lisp-unit:assert-equal 'heptuple (get-interval-quantity 7)))
+
+(lisp-unit:define-test code->note
+  (lisp-unit:assert-equal '(c 0) (code->note 0 'tonal))
+  (lisp-unit:assert-equal '(c -1) (code->note 95 'tonal))
+  (lisp-unit:assert-equal '(d 0) (code->note 14 'tonal))
+  (lisp-unit:assert-equal '(c 0) (code->note 96 'tonal))
+  (lisp-unit:assert-equal 'c (code->note 0 'tempered))
+  (lisp-unit:assert-equal 'b (code->note 95 'tempered))
+  (lisp-unit:assert-equal 'd (code->note 14 'tempered))
+  (lisp-unit:assert-equal c (code->note 96 'tempered)))
+
+(lisp-unit:define-test note->code-basic
+  (lisp-unit:assert-equal 0 (note->code-basic 'c 'tonal))
+  (lisp-unit:assert-equal 7 (note->code-basic 'd 'tonal))
+  (lisp-unit:assert-equal 0 (note->code-basic 'c 'tempered))
+  (lisp-unit:assert-equal 2 (note->code-basic 'd 'tempered)))
+
+(lisp-unit:define-test number-of-accidentals
+   (lisp-unit:assert-equal 1 (number-of-accidentals "cis" 'tonal))
+   (lisp-unit:assert-equal 2 (number-of-accidentals "cisis" 'tonal))
+   (lisp-unit:assert-equal 5 (number-of-accidentals "cisisisisis" 'tonal))
+   (lisp-unit:assert-equal 0 (number-of-accidentals "c" 'tonal))
+   (lisp-unit:assert-equal -1 (number-of-accidentals "ees" 'tonal))
+   (lisp-unit:assert-equal -1 (number-of-accidentals "ces" 'tonal))
+   (lisp-unit:assert-equal -2 (number-of-accidentals "ceses" 'tonal))
+   (lisp-unit:assert-equal -5 (number-of-accidentals "ceseseseses" 'tonal))
+  )
+
+(lisp-unit:define-test match-note-representation
+  (lisp-unit:assert-equal (match-note-representation ))
+  )
+(lisp-unit:define-test parse-note
+  (lisp-unit:assert-equal (parse-note ))
+  )
+(lisp-unit:define-test note->code
+  (lisp-unit:assert-equal (note->code ))
+  )
+(lisp-unit:define-test print-accidentals
+  (lisp-unit:assert-equal (print-accidentals ))
+  )
+(lisp-unit:define-test print-note
+  (lisp-unit:assert-equal (print-note ))
+  )
+(lisp-unit:define-test module
+  (lisp-unit:assert-equal (module ))
+  )
+(lisp-unit:define-test transpose
+  (lisp-unit:assert-equal (transpose ))
+  )
+(lisp-unit:define-test inversion
+  (lisp-unit:assert-equal (inversion ))
+  )
+(lisp-unit:define-test interval
+  (lisp-unit:assert-equal (interval ))
+  )
+(lisp-unit:define-test interval-name
+  (lisp-unit:assert-equal (interval-name ))
+  )
+(lisp-unit:define-test print-interval
+  (lisp-unit:assert-equal (print-interval ))
+  )
+(lisp-unit:define-test rotate
+  (lisp-unit:assert-equal (rotate ))
+  )
+(lisp-unit:define-test set-rotate
+  (lisp-unit:assert-equal (set-rotate ))
+  )
+(lisp-unit:define-test set-inversion
+  (lisp-unit:assert-equal (set-inversion ))
+  )
+(lisp-unit:define-test set-transpose
+  (lisp-unit:assert-equal (set-transpose ))
+  )
+(lisp-unit:define-test set-transpose-to-0
+  (lisp-unit:assert-equal (set-transpose-to-0 ))
+  )
+(lisp-unit:define-test set-intervals
+  (lisp-unit:assert-equal (set-intervals ))
+  )
+(lisp-unit:define-test set-symmetric?
+  (lisp-unit:assert-equal (set-symmetric? ))
+  )
+(lisp-unit:define-test set-form-list
+  (lisp-unit:assert-equal (set-form-list ))
+  )
+(lisp-unit:define-test sort-form-list
+  (lisp-unit:assert-equal (sort-form-list ))
+  )
+(lisp-unit:define-test smaller-sets
+  (lisp-unit:assert-equal (smaller-sets ))
+  )
+(lisp-unit:define-test smaller-sets-comparisson
+  (lisp-unit:assert-equal (smaller-sets-comparisson ))
+  )
+(lisp-unit:define-test smallest-set
+  (lisp-unit:assert-equal (smallest-set ))
+  )
+(lisp-unit:define-test normal-form
+  (lisp-unit:assert-equal (normal-form ))
+  )
+(lisp-unit:define-test prime-form
+  (lisp-unit:assert-equal (prime-form ))
+  )
+(lisp-unit:define-test equal-sets?
+  (lisp-unit:assert-equal (equal-sets? ))
+  )

@@ -68,48 +68,6 @@
 ;; get-system-notes, get-sharp, get-flat, etc.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun concat (&rest strings)
-  "Concatenate a bunch of strings."
-  (apply #'concatenate 'string strings))
-
-(defun last1 (list)
-  "Retuns the last element of a list."
-  (first (last list)))
-
-(defun sort-set (set)
-  "Sort a set in crescent order. "
-  (sort set #'<))
-
-(defun exclude-repetition (set)
-  "Exclude all repetitions from a set."
-  (let ((novo-set ()))
-    (loop for x in set unless (member x novo-set)
-       do (push x novo-set))
-    (nreverse novo-set)))
-
-(defun symbol->number (string string-list)
-  "Essa função conta quantas ocorrências tem do caractere na lista de
-mapeamento e retorna esse valor. Essa função é usada para contar
-quantos acidentes ou oitavas uma nota tem."
-  (destructuring-bind (flat sharp) string-list
-    (cond ((search sharp string) (count (char sharp 0) string))
-          ((search flat string) (- (count (char flat 0) string)))
-          (t 0))))
-
-(defun repeat-string (n string)
-  "Repeat a string n times. EXAMPLE: (repeat-string 3 \"foo\") returns
-  \"foofoofoo\"."
-  (with-output-to-string (s)
-    (loop for x from 1 to (abs n) do (format s string))))
-
-(defun string->symbol (string)
-  "Convert a string to a symbol."
-  (intern (string-upcase string)))
-
-(defun assoc-item (item alist)
-  "Returns an item from a alist. "
-  (second (assoc item alist)))
-
 (defun get-system-item (item)
   "Get the value list from *systems*."
   (assoc-item item *systems*))
@@ -155,7 +113,7 @@ EXAMPLE: (get-flat 'lily) return es."
 
 (defun code->note (number &optional (system 'tonal))
   "Retorna o nome da nota dado o seu código numérico."
-  (nth number (get-system-notes system)))
+  (nth (module number system) (get-system-notes system)))
 
 (defun note->code-basic (note &optional (system 'tonal))
   "Aceita um símbolo representando uma nota e retorna seu código
@@ -242,8 +200,8 @@ numeric value."
 (defun print-interval (interval &optional (system 'tonal))
   "Returns the name of an interval. EXAMPLE: (print-interval 16)
 returns double augmented second."
-  (destructuring-bind (int type &optional quantity) (interval-name interval)
-    (format nil "~@[~(~a~) ~]~(~a~) ~:r" (get-interval-quantity quantity)(get-interval-name type) int)))
+  (destructuring-bind (int type &optional quantity) (interval-name interval system)
+    (format nil "~@[~(~a~) ~]~(~a~) ~:r" (get-interval-quantity quantity) (get-interval-name type) int)))
 
 ;;; SETS
 
