@@ -49,13 +49,13 @@
     (lisp-unit:assert-equal '("es" "is") (get-accidentals 'lily))
     (lisp-unit:assert-equal '("b" "#") (get-accidentals 'latin)))
 
-(lisp-unit:define-test get-accidental
-    (lisp-unit:assert-equal "es" (get-accidental 'lily #'first))
-    (lisp-unit:assert-equal "is" (get-accidental 'lily #'second))
-    (lisp-unit:assert-equal nil (get-accidental 'lily #'third))
-    (lisp-unit:assert-equal "b" (get-accidental 'latin #'first))
-    (lisp-unit:assert-equal "#" (get-accidental 'latin #'second))
-    (lisp-unit:assert-equal nil (get-accidental 'latin #'third)))
+(lisp-unit:define-test %get-accidental
+    (lisp-unit:assert-equal "es" (%get-accidental 'lily #'first))
+    (lisp-unit:assert-equal "is" (%get-accidental 'lily #'second))
+    (lisp-unit:assert-equal nil (%get-accidental 'lily #'third))
+    (lisp-unit:assert-equal "b" (%get-accidental 'latin #'first))
+    (lisp-unit:assert-equal "#" (%get-accidental 'latin #'second))
+    (lisp-unit:assert-equal nil (%get-accidental 'latin #'third)))
     
 (lisp-unit:define-test get-sharp
   (lisp-unit:assert-equal "is" (get-sharp 'lily))
@@ -113,10 +113,10 @@
     (lisp-unit:assert-equal 1 (match-note-representation "c#" 'latin))
     (lisp-unit:assert-equal 1 (match-note-representation "cis" 'lily)))
 
-(lisp-unit:define-test parse-note
-  (lisp-unit:assert-equal 95 (parse-note "ces" 'lily 'tonal))
-  (lisp-unit:assert-equal 0 (parse-note "c" 'lily 'tonal))
-  (lisp-unit:assert-equal 1 (parse-note "c#" 'latin 'tonal)))
+(lisp-unit:define-test %parse-note
+  (lisp-unit:assert-equal 95 (%parse-note "ces" 'lily 'tonal))
+  (lisp-unit:assert-equal 0 (%parse-note "c" 'lily 'tonal))
+  (lisp-unit:assert-equal 1 (%parse-note "c#" 'latin 'tonal)))
 
 (lisp-unit:define-test note->code
   (lisp-unit:assert-equal 0 (note->code "c" 'tonal))
@@ -156,7 +156,7 @@
   (lisp-unit:assert-equal 4 (interval 7 3))
   (lisp-unit:assert-equal 52 (interval 13 57)))
 
-(lisp-unit:define-test interval-name
+(lisp-unit:define-test interval->code
   (let ((intervals '((1 just) (1 aug) (1 aug 2) (1 aug 3) (1 aug 4) (1 aug 5) (1 aug 6)
                    (2 dim 6) (2 dim 5) (2 dim 4) (2 dim 3) (2 dim 2) (2 dim) (2 min) (2 maj) (2 aug)
                    (2 aug 2) (2 aug 3) (2 aug 4) (2 aug 5) (2 aug 6) 
@@ -174,7 +174,10 @@
     (loop
        for i in intervals
        for n from 0 to (length intervals) do
-         (lisp-unit:assert-equal i (interval-name n)))))
+         (lisp-unit:assert-equal i (interval->code n)))))
+
+(lisp-unit:define-test code->interval
+  (lisp-unit:assert-equal 29 (code->interval '(3 aug))))
 
 (lisp-unit:define-test print-interval
   (lisp-unit:assert-equal "double augmented second" (print-interval 16)))
@@ -231,6 +234,6 @@
 (lisp-unit:define-test prime-form
   (lisp-unit:assert-equal '(0 3 7) (prime-form '(4 7 0))))
 
-(lisp-unit:define-test set-equal
-  (lisp-unit:assert-equal nil (set-equal '(0 3 7) '(0 4 7) 'normal))
-  (lisp-unit:assert-equal t (set-equal '(0 3 7) '(0 4 7) 'prime)))
+(lisp-unit:define-test set-equal?
+  (lisp-unit:assert-equal nil (set-equal? '(0 3 7) '(0 4 7) 'normal))
+  (lisp-unit:assert-equal t (set-equal? '(0 3 7) '(0 4 7) 'prime)))

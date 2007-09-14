@@ -62,6 +62,9 @@ quantos acidentes ou oitavas uma nota tem."
   "Returns an item from a alist. "
   (second (assoc item alist)))
 
+;;; o que está abaixo vai embora
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defun number-of-accidentals (note)
   (symbol->number note '(("is" #\i) ("es" #\e))))
 

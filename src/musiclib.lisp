@@ -89,7 +89,7 @@ system."
   "Retorna os acidentes de uma representação específica."
   (assoc-item representation *accidentals*))
 
-(defun get-accidental (representation fn)
+(defun %get-accidental (representation fn)
   "Retorna um acidente específico dentro da representação. Fn deve ser
 ou #'first ou #'second. Essa é uma função de baixo nível. As funções
 get-shap ou get-flat devem ser usadas no lugar."
@@ -98,23 +98,27 @@ get-shap ou get-flat devem ser usadas no lugar."
 (defun get-sharp (representation)
   "Returns a string with a sharp in representation.
 EXAMPLE: (get-sharp 'latin) returns #."
-  (get-accidental representation #'second))
+  (%get-accidental representation #'second))
 
 (defun get-flat (representation)
   "Returns a string with a flat in representation.
 EXAMPLE: (get-flat 'lily) return es."
-  (get-accidental representation #'first))
+  (%get-accidental representation #'first))
 
 (defun get-interval-name (short)
+  "Retorna o nome completo representando um acorde dado uma representação abreviada.
+Exemplo: (get-interval-name 'dim) retorna diminished."
   (assoc-item short *intervals-name*))
 
 (defun get-interval-quantity (num)
+  "Retorna uma palavra que representa a quantidade numérica de um
+acorde. EXEMPLO: (get-interval-quantity 3) retorna TRIPLE."
   (assoc-item num *intervals-quantity*))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun code->note "Retorna o nome da nota dado o seu código numérico."
-  (number &optional (system 'tonal))
+(defun code->note (number &optional (system 'tonal))
+  "Retorna o nome da nota dado o seu código numérico."
   (nth (module number system) (get-system-notes system)))
 
 (defun note->code-basic (note &optional (system 'tonal))
@@ -140,9 +144,9 @@ EXAMPLE: (match-note-representation \"cis\" 'latin) returns nil."
     (or (search (get-flat representation) note)
         (search (get-sharp representation) note)))
 
-(defun parse-note (note representation system)
+(defun %parse-note (note representation system)
   "Returns the numeric code for a note according with the representation and system.
-EXAMPLE: (parse-note \"ces\" 'lily 'tonal) returns 95. This is a low
+EXAMPLE: (%parse-note \"ces\" 'lily 'tonal) returns 95. This is a low
 level function, you should use note->code instead."
   (let ((note-code-tonal
          (position (list (string->symbol (subseq note 0 1))
@@ -158,8 +162,8 @@ level function, you should use note->code instead."
 string. Essa função é inteligente o suficiente para saber que 'aes'
 usa a representação do lilypond e 'd#' usa a representação 'latin'."
   (cond ((eql (length note) 1) (note->code-basic (string->symbol note) system))
-        ((match-note-representation note 'lily) (parse-note note 'lily system))
-        ((match-note-representation note 'latin) (parse-note note 'latin system))
+        ((match-note-representation note 'lily) (%parse-note note 'lily system))
+        ((match-note-representation note 'latin) (%parse-note note 'latin system))
         (t (error "tipo de nota não conhecida"))))
 
 (defun print-accidentals (acc repr)
@@ -194,15 +198,20 @@ value."
 must have a numeric value."
   (module (- note1 note2) system))
 
-(defun interval-name (interval &optional (system 'tonal))
+(defun interval->code (interval &optional (system 'tonal))
   "Returns an interval-code of an interval. The interval must have a
 numeric value."
   (nth interval (get-system-intervals system)))
 
+(defun code->interval (code &optional (system 'tonal))
+  "Retuns a interval of an interval-code.
+EXAMPLE: (code->interval '(3 aug)) returns 29."
+  (position code *tonal-intervals* :test #'equal))
+
 (defun print-interval (interval &optional (system 'tonal))
   "Returns the name of an interval. EXAMPLE: (print-interval 16)
 returns double augmented second."
-  (destructuring-bind (int type &optional quantity) (interval-name interval system)
+  (destructuring-bind (int type &optional quantity) (interval->code interval system)
     (format nil "~@[~(~a~) ~]~(~a~) ~:r" (get-interval-quantity quantity) (get-interval-name type) int)))
 
 ;;; SETS
