@@ -140,8 +140,8 @@ EXAMPLE: (match-note-representation \"cis\" 'latin) returns nil."
 
 (defun parse-note (note representation system)
   "Returns the numeric code for a note according with the representation and system.
-EXAMPLE: (parse-note \"ces\" 'tonal) returns 95. This is a low level
-function, you should use note->code instead."
+EXAMPLE: (parse-note \"ces\" 'lily 'tonal) returns 95. This is a low
+level function, you should use note->code instead."
   (let ((note-code-tonal
          (position (list (string->symbol (subseq note 0 1))
                          (number-of-accidentals (subseq note 1) representation))
@@ -206,8 +206,10 @@ returns double augmented second."
 ;;; SETS
 
 (defun rotate (set &optional (n 1))
-  "Retuns the n rotation of a set."
-  (append (subseq set n) (subseq set 0 n)))
+  "Retuns the n rotation of a set. 0 means no rotation, 1 the first
+rotation, and so on. This function is cyclic."
+  (let ((mod-n (mod n (length set))))
+    (append (subseq set mod-n) (subseq set 0 mod-n))))
 
 (defun set-rotate (set)
   "Retuns a list with all rotations of a set."

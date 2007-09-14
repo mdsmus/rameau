@@ -89,7 +89,7 @@
   (lisp-unit:assert-equal 'c (code->note 0 'tempered))
   (lisp-unit:assert-equal 'b (code->note 95 'tempered))
   (lisp-unit:assert-equal 'd (code->note 14 'tempered))
-  (lisp-unit:assert-equal c (code->note 96 'tempered)))
+  (lisp-unit:assert-equal 'c (code->note 96 'tempered)))
 
 (lisp-unit:define-test note->code-basic
   (lisp-unit:assert-equal 0 (note->code-basic 'c 'tonal))
@@ -105,84 +105,132 @@
    (lisp-unit:assert-equal -1 (number-of-accidentals "ees" 'tonal))
    (lisp-unit:assert-equal -1 (number-of-accidentals "ces" 'tonal))
    (lisp-unit:assert-equal -2 (number-of-accidentals "ceses" 'tonal))
-   (lisp-unit:assert-equal -5 (number-of-accidentals "ceseseseses" 'tonal))
-  )
+   (lisp-unit:assert-equal -5 (number-of-accidentals "ceseseseses" 'tonal)))
 
 (lisp-unit:define-test match-note-representation
-  (lisp-unit:assert-equal (match-note-representation ))
-  )
+    (lisp-unit:assert-equal nil (match-note-representation "cis" 'latin))
+    (lisp-unit:assert-equal nil (match-note-representation "c#" 'lily))
+    (lisp-unit:assert-equal 1 (match-note-representation "c#" 'latin))
+    (lisp-unit:assert-equal 1 (match-note-representation "cis" 'lily)))
+
 (lisp-unit:define-test parse-note
-  (lisp-unit:assert-equal (parse-note ))
-  )
+  (lisp-unit:assert-equal 95 (parse-note "ces" 'lily 'tonal))
+  (lisp-unit:assert-equal 0 (parse-note "c" 'lily 'tonal))
+  (lisp-unit:assert-equal 1 (parse-note "c#" 'latin 'tonal)))
+
 (lisp-unit:define-test note->code
-  (lisp-unit:assert-equal (note->code ))
-  )
+  (lisp-unit:assert-equal 0 (note->code "c" 'tonal))
+  (lisp-unit:assert-equal 13 (note->code "db" 'tonal))
+  (lisp-unit:assert-equal 1 (note->code "db" 'tempered))
+  (lisp-unit:assert-equal 2 (note->code "c##" 'tonal))
+  (lisp-unit:assert-equal 1 (note->code "c#" 'tempered)))
+
 (lisp-unit:define-test print-accidentals
-  (lisp-unit:assert-equal (print-accidentals ))
-  )
+  (lisp-unit:assert-equal "isisis" (print-accidentals 3 'lily))
+  (lisp-unit:assert-equal "eseses" (print-accidentals -3 'lily))
+  (lisp-unit:assert-equal "###" (print-accidentals 3 'latin))
+  (lisp-unit:assert-equal "bbb" (print-accidentals -3 'latin)))
+
 (lisp-unit:define-test print-note
-  (lisp-unit:assert-equal (print-note ))
-  )
+  (lisp-unit:assert-equal "cis" (print-note '(c 1) 'lily))
+  (lisp-unit:assert-equal "c#" (print-note '(c 1) 'latin))
+  (lisp-unit:assert-equal "ceseses" (print-note '(c -3) 'lily))
+  (lisp-unit:assert-equal "dbbb" (print-note '(d -3) 'latin)))
+
 (lisp-unit:define-test module
-  (lisp-unit:assert-equal (module ))
-  )
+  (lisp-unit:assert-equal 1 (module 97 'tonal))
+  (lisp-unit:assert-equal 1 (module 1 'tonal))
+  (lisp-unit:assert-equal 1 (module 97 'tempered))
+  (lisp-unit:assert-equal 1 (module 13 'tempered)))
+
 (lisp-unit:define-test transpose
-  (lisp-unit:assert-equal (transpose ))
-  )
+  (lisp-unit:assert-equal 3 (transpose 0 3 'tonal))
+  (lisp-unit:assert-equal 1 (transpose 0 13 'tempered))
+  (lisp-unit:assert-equal 32 (transpose 0 320 'tonal)))
+
 (lisp-unit:define-test inversion
-  (lisp-unit:assert-equal (inversion ))
-  )
+  (lisp-unit:assert-equal 7 (inversion 5 0 'tempered))
+  (lisp-unit:assert-equal 91 (inversion 5 0 'tonal)))
+
 (lisp-unit:define-test interval
-  (lisp-unit:assert-equal (interval ))
-  )
+  (lisp-unit:assert-equal 4 (interval 7 3))
+  (lisp-unit:assert-equal 52 (interval 13 57)))
+
 (lisp-unit:define-test interval-name
-  (lisp-unit:assert-equal (interval-name ))
-  )
+  (let ((intervals '((1 just) (1 aug) (1 aug 2) (1 aug 3) (1 aug 4) (1 aug 5) (1 aug 6)
+                   (2 dim 6) (2 dim 5) (2 dim 4) (2 dim 3) (2 dim 2) (2 dim) (2 min) (2 maj) (2 aug)
+                   (2 aug 2) (2 aug 3) (2 aug 4) (2 aug 5) (2 aug 6) 
+                   (3 dim 6) (3 dim 5) (3 dim 4) (3 dim 3) (3 dim 2) (3 dim)
+                   (3 min) (3 maj) (3 aug) (3 aug 2) (3 aug 3) (3 aug 4) (3 aug 5) (3 aug 6)
+                   (4 dim 6) (4 dim 5) (4 dim 4) (4 dim 3) (4 dim 2) (4 dim)
+                   (4 just) (4 aug) (4 aug 2) (4 aug 3) (4 aug 4) (4 aug 5) (4 aug 6) (4 aug 7)
+                   (5 dim 6) (5 dim 5) (5 dim 4) (5 dim 3) (5 dim 2) (5 dim)
+                   (5 just) (5 aug) (5 aug 2) (5 aug 3) (5 aug 4) (5 aug 5) (5 aug 6)
+                   (6 dim 6) (6 dim 5) (6 dim 4) (6 dim 3) (6 dim 2) (6 dim)
+                   (6 min) (6 maj) (6 aug) (6 aug 2) (6 aug 3) (6 aug 4) (6 aug 5) (6 aug 6)
+                   (7 dim 6) (7 dim 5) (7 dim 4) (7 dim 3) (7 dim 2) (7 dim)
+                   (7 min) (7 maj) (7 aug) (7 aug 2) (7 aug 3) (7 aug 4) (7 aug 5) (7 aug 6)
+                   (8 dim 6) (8 dim 5) (8 dim 4) (8 dim 3) (8 dim 2) (8 dim) (8 just))))
+    (loop
+       for i in intervals
+       for n from 0 to (length intervals) do
+         (lisp-unit:assert-equal i (interval-name n)))))
+
 (lisp-unit:define-test print-interval
-  (lisp-unit:assert-equal (print-interval ))
-  )
+  (lisp-unit:assert-equal "double augmented second" (print-interval 16)))
+
 (lisp-unit:define-test rotate
-  (lisp-unit:assert-equal (rotate ))
-  )
+  (lisp-unit:assert-equal '(0 3 4 7) (rotate '(0 3 4 7) 1))
+  (lisp-unit:assert-equal '(3 4 7 0) (rotate '(0 3 4 7) 1))
+  (lisp-unit:assert-equal '(4 7 0 3) (rotate '(0 3 4 7) 2))
+  (lisp-unit:assert-equal '(7 0 3 4) (rotate '(0 3 4 7) 3))
+  (lisp-unit:assert-equal '(0 3 4 7) (rotate '(0 3 4 7) 4))
+  (lisp-unit:assert-equal '(3 4 7 0) (rotate '(0 3 4 7) 5))
+  (lisp-unit:assert-equal '(7 0 3 4) (rotate '(0 3 4 7) -1)))
+
 (lisp-unit:define-test set-rotate
-  (lisp-unit:assert-equal (set-rotate ))
-  )
+  (lisp-unit:assert-equal '((0 3 7) (3 7 0) (7 0 3)) (set-rotate '(0 3 7))))
+
 (lisp-unit:define-test set-inversion
-  (lisp-unit:assert-equal (set-inversion ))
-  )
+  (lisp-unit:assert-equal '(0 9 5) (set-inversion '(0 3 7) 0 'tempered))
+  (lisp-unit:assert-equal '(0 93 89) (set-inversion '(0 3 7) 0 'tonal)))
+
 (lisp-unit:define-test set-transpose
-  (lisp-unit:assert-equal (set-transpose ))
-  )
+  (lisp-unit:assert-equal '(3 6 10) (set-transpose '(0 3 7) 3 'tempered))
+  (lisp-unit:assert-equal '(3 17 24) (set-transpose '(0 14 21) 3 'tonal)))
+
 (lisp-unit:define-test set-transpose-to-0
-  (lisp-unit:assert-equal (set-transpose-to-0 ))
-  )
+  (lisp-unit:assert-equal '(0 10 8) (set-transpose-to-0 '(9 7 5))))
+
 (lisp-unit:define-test set-intervals
-  (lisp-unit:assert-equal (set-intervals ))
-  )
+  (lisp-unit:assert-equal '(3 4 5) (set-intervals '(0 3 7))))
+
 (lisp-unit:define-test set-symmetric?
-  (lisp-unit:assert-equal (set-symmetric? ))
-  )
+  (lisp-unit:assert-equal nil (set-symmetric? '(0 4 7)))
+  (lisp-unit:assert-equal t (set-symmetric? '(0 3 6 9))))
+
 (lisp-unit:define-test set-form-list
-  (lisp-unit:assert-equal (set-form-list ))
-  )
+  (lisp-unit:assert-equal '(((0 3 7) 7 3) ((3 7 0) 9 4) ((7 0 3) 8 5)) (set-form-list '(0 3 7))))
+
 (lisp-unit:define-test sort-form-list
-  (lisp-unit:assert-equal (sort-form-list ))
-  )
+  (lisp-unit:assert-equal '(((0 3 7) 7 3) ((7 0 3) 8 5) ((3 7 0) 9 4))
+                          (sort-form-list '(((0 3 7) 7 3) ((3 7 0) 9 4) ((7 0 3) 8 5)))))
+
 (lisp-unit:define-test smaller-sets
-  (lisp-unit:assert-equal (smaller-sets ))
-  )
+  (lisp-unit:assert-equal '(((0 3 7) 7 3)) (smaller-sets '(((0 3 7) 7 3) ((7 0 3) 8 5) ((3 7 0) 9 4)))))
+
 (lisp-unit:define-test smaller-sets-comparisson
-  (lisp-unit:assert-equal (smaller-sets-comparisson ))
-  )
+  (lisp-unit:assert-equal '(0 3 7) (smaller-sets-comparisson '(((0 3 7) 7 3) ((0 4 7) 7 4)))))
+
 (lisp-unit:define-test smallest-set
-  (lisp-unit:assert-equal (smallest-set ))
-  )
+  (lisp-unit:assert-equal '(0 3 7) (smallest-set '(((0 3 7) 7 3) ((0 4 7) 7 4)))))
+
 (lisp-unit:define-test normal-form
-  (lisp-unit:assert-equal (normal-form ))
-  )
+  (lisp-unit:assert-equal '(0 4 7) (normal-form '(7 4 0))))
+
 (lisp-unit:define-test prime-form
-  (lisp-unit:assert-equal (prime-form ))
-  )
+  (lisp-unit:assert-equal '(0 3 7) (prime-form '(4 7 0))))
+
 (lisp-unit:define-test equal-sets?
-  (lisp-unit:assert-equal (equal-sets? ))
-  )
+  (lisp-unit:assert-equal nil (equal-sets? '(0 3 7) '(0 4 7) 'normal))
+  (lisp-unit:assert-equal t (equal-sets? '(0 3 7) '(0 4 7) 'prime)))
