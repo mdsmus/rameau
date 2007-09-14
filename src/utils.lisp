@@ -69,7 +69,7 @@ oitavas uma nota tem."
         (lista-max nil))
     (dolist (par lista)
       (cond ((> (funcall predicado par) maior-valor)
-             (setf maior-valor (first par))
+             (setf maior-valor (funcall predicado par))
              (setf lista-max (list par)))
             ((= (funcall predicado par) maior-valor)
              (push par lista-max))))

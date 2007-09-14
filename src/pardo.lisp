@@ -83,7 +83,7 @@
   (let* ((res (first res))
          (root-note (note-from-string (string (first (first (second res))))))
          (weight (assoc root-note (rest (first (second res))))))
-    (second weight)))
+    (or (second weight) 0)))
 
 (defun template-prob (nota)
   (let ((template (rest (second (first nota)))))
@@ -100,13 +100,13 @@
 
 (defun desempata-pardo (notas)
   (let ((max-root (max-predicado #'root-weight notas))
-        (template-prob (max-predicado #'template-prob notas))
+        (temp-prob (max-predicado #'template-prob notas))
         (res (when (dim7? notas)
                (dim7-res notas))))
     (cond ((= (length max-root) 1)
            (caar max-root))
-          ((= (length template-prob) 1)
-           (caar (template-prob)))
+          ((= (length temp-prob) 1)
+           (caar temp-prob))
           (t (caaar max-root)))))
 
 (defun avalia-segmento (template segmento)
