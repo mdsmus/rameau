@@ -101,7 +101,7 @@
    (parse-string "
 \\header {
   file = \"ex001.ly\"
-  objetivo = \"tonica dominante tonica\"
+  objetivo = \"tonica dominante tônica\"
 }
 \\score {
   <<
