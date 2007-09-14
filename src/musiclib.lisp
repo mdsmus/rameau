@@ -111,8 +111,10 @@ EXAMPLE: (get-flat 'lily) return es."
 (defun get-interval-quantity (num)
   (assoc-item num *intervals-quantity*))
 
-(defun code->note (number &optional (system 'tonal))
-  "Retorna o nome da nota dado o seu código numérico."
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun code->note "Retorna o nome da nota dado o seu código numérico."
+  (number &optional (system 'tonal))
   (nth (module number system) (get-system-notes system)))
 
 (defun note->code-basic (note &optional (system 'tonal))
@@ -289,7 +291,7 @@ EXAMPLE: (prime-form '(1 7 3)) returns (0 2 6)."
       (smaller-sets (sort-form-list (append (set-form-list nf-inversion)
                                             (set-form-list nf-transposition))))))))
 
-(defun equal-sets? (set1 set2 &optional (form 'normal))
+(defun set-equal? (set1 set2 &optional (form 'normal))
   "Test if two sets are the same. The default option is to see if the
 sets are equal by transposition. The option 'prime tests if the sets
 are also equal by inversion.

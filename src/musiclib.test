@@ -93,7 +93,7 @@
 
 (lisp-unit:define-test note->code-basic
   (lisp-unit:assert-equal 0 (note->code-basic 'c 'tonal))
-  (lisp-unit:assert-equal 7 (note->code-basic 'd 'tonal))
+  (lisp-unit:assert-equal 14 (note->code-basic 'd 'tonal))
   (lisp-unit:assert-equal 0 (note->code-basic 'c 'tempered))
   (lisp-unit:assert-equal 2 (note->code-basic 'd 'tempered)))
 
@@ -231,6 +231,6 @@
 (lisp-unit:define-test prime-form
   (lisp-unit:assert-equal '(0 3 7) (prime-form '(4 7 0))))
 
-(lisp-unit:define-test equal-sets?
-  (lisp-unit:assert-equal nil (equal-sets? '(0 3 7) '(0 4 7) 'normal))
-  (lisp-unit:assert-equal t (equal-sets? '(0 3 7) '(0 4 7) 'prime)))
+(lisp-unit:define-test set-equal
+  (lisp-unit:assert-equal nil (set-equal '(0 3 7) '(0 4 7) 'normal))
+  (lisp-unit:assert-equal t (set-equal '(0 3 7) '(0 4 7) 'prime)))
