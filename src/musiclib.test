@@ -91,11 +91,11 @@
   (lisp-unit:assert-equal 'd (code->note 14 'tempered))
   (lisp-unit:assert-equal 'c (code->note 96 'tempered)))
 
-(lisp-unit:define-test note->code-basic
-  (lisp-unit:assert-equal 0 (note->code-basic 'c 'tonal))
-  (lisp-unit:assert-equal 14 (note->code-basic 'd 'tonal))
-  (lisp-unit:assert-equal 0 (note->code-basic 'c 'tempered))
-  (lisp-unit:assert-equal 2 (note->code-basic 'd 'tempered)))
+(lisp-unit:define-test %note->code
+  (lisp-unit:assert-equal 0 (%note->code 'c 'tonal))
+  (lisp-unit:assert-equal 14 (%note->code 'd 'tonal))
+  (lisp-unit:assert-equal 0 (%note->code 'c 'tempered))
+  (lisp-unit:assert-equal 2 (%note->code 'd 'tempered)))
 
 (lisp-unit:define-test number-of-accidentals
    (lisp-unit:assert-equal 1 (number-of-accidentals "cis" 'lily))
@@ -177,7 +177,10 @@
          (lisp-unit:assert-equal i (interval->code n)))))
 
 (lisp-unit:define-test code->interval
-  (lisp-unit:assert-equal 29 (code->interval '(3 aug))))
+  (lisp-unit:assert-equal 29 (code->interval '(3 aug)))
+  (lisp-unit:assert-equal 0 (code->interval '(1 just)))
+  (lisp-unit:assert-equal 3 (code->interval '(2 aug) 'tempered))
+  (lisp-unit:assert-equal 3 (code->interval '(3 min) 'tempered)))
 
 (lisp-unit:define-test print-interval
   (lisp-unit:assert-equal "double augmented second" (print-interval 16)))

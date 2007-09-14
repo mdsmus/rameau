@@ -121,13 +121,6 @@ acorde. EXEMPLO: (get-interval-quantity 3) retorna TRIPLE."
   "Retorna o nome da nota dado o seu código numérico."
   (nth (module number system) (get-system-notes system)))
 
-(defun note->code-basic (note &optional (system 'tonal))
-  "Aceita um símbolo representando uma nota e retorna seu código
-numérico."
-  (case system
-    (tonal (position note (get-system-notes system) :key #'first))
-    (tempered (position note (get-system-notes system)))))
-
 (defun number-of-accidentals (acc-string representation)
   "Returns the numeric value of a string of accidentals according to
 representation. For instance, if acc-string is 'eseses' the function
@@ -157,11 +150,20 @@ level function, you should use note->code instead."
       (tonal note-code-tonal)
       (tempered (module note-code-tonal 'tempered)))))
 
+(defun %note->code (note &optional (system 'tonal))
+  "Aceita um símbolo representando uma nota e retorna seu código
+numérico. Essa é uma função auxiliar que funciona apenas para notas
+sem acidentes, como 'd', 'e', etc. EXEMPLO: (%note->code \"d\")
+retorna 14."
+  (case system
+    (tonal (position (list note 0) (get-system-notes system) :test #'equal))
+    (tempered (position note (get-system-notes system)))))
+
 (defun note->code (note &optional (system 'tonal))
   "Retorna o código numérico da nota, dada sua representação em
 string. Essa função é inteligente o suficiente para saber que 'aes'
 usa a representação do lilypond e 'd#' usa a representação 'latin'."
-  (cond ((eql (length note) 1) (note->code-basic (string->symbol note) system))
+  (cond ((eql (length note) 1) (%note->code (string->symbol note) system))
         ((match-note-representation note 'lily) (%parse-note note 'lily system))
         ((match-note-representation note 'latin) (%parse-note note 'latin system))
         (t (error "tipo de nota não conhecida"))))
@@ -206,7 +208,7 @@ numeric value."
 (defun code->interval (code &optional (system 'tonal))
   "Retuns a interval of an interval-code.
 EXAMPLE: (code->interval '(3 aug)) returns 29."
-  (position code *tonal-intervals* :test #'equal))
+  (module (position code (get-system-intervals 'tonal) :test #'equal) system))
 
 (defun print-interval (interval &optional (system 'tonal))
   "Returns the name of an interval. EXAMPLE: (print-interval 16)
