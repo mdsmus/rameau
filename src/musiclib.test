@@ -98,14 +98,14 @@
   (lisp-unit:assert-equal 2 (note->code-basic 'd 'tempered)))
 
 (lisp-unit:define-test number-of-accidentals
-   (lisp-unit:assert-equal 1 (number-of-accidentals "cis" 'tonal))
-   (lisp-unit:assert-equal 2 (number-of-accidentals "cisis" 'tonal))
-   (lisp-unit:assert-equal 5 (number-of-accidentals "cisisisisis" 'tonal))
-   (lisp-unit:assert-equal 0 (number-of-accidentals "c" 'tonal))
-   (lisp-unit:assert-equal -1 (number-of-accidentals "ees" 'tonal))
-   (lisp-unit:assert-equal -1 (number-of-accidentals "ces" 'tonal))
-   (lisp-unit:assert-equal -2 (number-of-accidentals "ceses" 'tonal))
-   (lisp-unit:assert-equal -5 (number-of-accidentals "ceseseseses" 'tonal)))
+   (lisp-unit:assert-equal 1 (number-of-accidentals "cis" 'lily))
+   (lisp-unit:assert-equal 2 (number-of-accidentals "cisis" 'lily))
+   (lisp-unit:assert-equal 5 (number-of-accidentals "cisisisisis" 'lily))
+   (lisp-unit:assert-equal 0 (number-of-accidentals "c" 'lily))
+   (lisp-unit:assert-equal -1 (number-of-accidentals "ees" 'lily))
+   (lisp-unit:assert-equal -1 (number-of-accidentals "ces" 'lily))
+   (lisp-unit:assert-equal -2 (number-of-accidentals "ceses" 'lily))
+   (lisp-unit:assert-equal -5 (number-of-accidentals "ceseseseses" 'lily)))
 
 (lisp-unit:define-test match-note-representation
     (lisp-unit:assert-equal nil (match-note-representation "cis" 'latin))
@@ -180,7 +180,7 @@
   (lisp-unit:assert-equal "double augmented second" (print-interval 16)))
 
 (lisp-unit:define-test rotate
-  (lisp-unit:assert-equal '(0 3 4 7) (rotate '(0 3 4 7) 1))
+  (lisp-unit:assert-equal '(0 3 4 7) (rotate '(0 3 4 7) 0))
   (lisp-unit:assert-equal '(3 4 7 0) (rotate '(0 3 4 7) 1))
   (lisp-unit:assert-equal '(4 7 0 3) (rotate '(0 3 4 7) 2))
   (lisp-unit:assert-equal '(7 0 3 4) (rotate '(0 3 4 7) 3))
