@@ -27,7 +27,7 @@
   ("-\\\\staccato")
   ("(-|_|\\^|~|\\?)(\\.|\\^|\\+|\\||>|_|-|\"[^\"]*\")?" (return (values 'ARTICULATION LEXER::START)))
   ("[:alpha:]+"
-   (if (notap %0)
+   (if (or (note? %0) (rest? %0))
        (return (values 'NOTE %0))
        (return (values 'VARNAME %0))))
   ("\\\\(T|t)imes" (return (values 'TIMES %0)))

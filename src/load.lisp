@@ -11,4 +11,5 @@
 (defun load-all (files)
   (loop for file in files do (load (concatenate 'string *main-dir* (format nil "src/~(~a~).lisp" file)))))
 
-(load-all '(utils lisp-unit formato parser segmento pardo ly-parser-teste))
+(load-all '(formato utils musiclib lisp-unit  parser segmento pardo ly-parser-teste))
+
