@@ -12,12 +12,6 @@
 
 (defparameter *tempered-intervals* '(0 1 2 3 4 5 6 7 8 9 9 10 11))
 
-(defstruct evento
-  (pitch)
-  (octave)
-  (dur)
-  (inicio)
-  (passagem?))
 
 #|
 ;;; o que está abaixo vai embora
@@ -43,17 +37,6 @@
 (defmacro defchords (templates &body chords)
   `(defparameter ,templates '(,@(mapcar #'defchord chords))))
 
-(defun max-predicado (predicado lista)
-  "retorna o maior par de uma lista de pares"
-  (let ((maior-valor (funcall predicado (first lista)))
-        (lista-max nil))
-    (dolist (par lista)
-      (cond ((> (funcall predicado par) maior-valor)
-             (setf maior-valor (first par))
-             (setf lista-max (list par)))
-            ((= (funcall predicado par) maior-valor)
-             (push par lista-max))))
-    lista-max))
 
 (defun octave-from-string (string)
   (+ 8 (symbol->number string '(("'" #\') ("," #\,)))))

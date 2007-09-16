@@ -1,13 +1,14 @@
 ;; Implementação do algoritmo de pardo.
 
 
-(defchords *pardo-templates*
-  ((maj 0) (tonic major-third fifth))
-  ((maj 0 7) (tonic major-third fifth minor-seventh))
-  ((min 0) (tonic minor-third fifth))
-  ((min 0 5- 7-) (tonic minor-third diminished-fifth diminished-seventh))
-  ((min 0 5- 7) (tonic minor-third diminished-fifth minor-seventh))             
-  ((min 0 5-) (tonic minor-third diminished-fifth))
+
+(deftemplates *pardo-templates* 
+  ((maj) (0 4 7))
+  ((maj 7) (0 4 7 10))
+  ((min) (0 3 7))
+  ((min 5- 7-) (0 3 6 9))
+  ((min 5- 7) (0 3 6 10))
+  ((min 5-) (0 3 6))
   )
 
 (defun pula (elemento lista)
@@ -51,39 +52,35 @@
         (incf encontrados)))
     (+ score encontrados)))
 
-(defun transpoe (template nota &optional (modificador 0) (codification *tonal*))
+(defun transpoe (template nota)
   (mapcar (lambda (x) (mod (+ x
-                              (note-number nota codification)
-                              modificador)
-                          96))
+                              (position nota *tempered-system*))
+                          12))
           template))
 
-(defun da-nota-modificada (template segmento nota modificador)
-  (cons (avalia-template (transpoe template nota (first modificador)) segmento)
+(defun da-nota-modificada (template segmento nota)
+  (cons (avalia-template (transpoe template nota) segmento)
         (cons
-         (intern
-          (string-upcase
-           (concatenate 'string (string nota) (second modificador))))
+         (string->symbol
+          (print-note nota 'latin))
          segmento)))
   
 
 (defun avalia-segmento-notas (template segmento notas &optional resultado)
   (if notas
       (let* ((nota (first notas))
-             (acumula (append
-                       (mapcar 
-                        (lambda (x)
-                          (da-nota-modificada template segmento nota x))
-                        '((-1 "es") (0 "") (1 "is")))
+             (acumula (cons
+                       (da-nota-modificada template segmento nota)
                        resultado)))
         (avalia-segmento-notas template segmento (rest notas) acumula))
       resultado))
 
 (defun root-weight (res)
-  (let* ((res (first res))
-         (root-note (note-from-string (string (first (first (second res))))))
-         (weight (assoc root-note (rest (first (second res))))))
-    (second weight)))
+  ;(let* ((res (first res))
+  ;       (root-note (code->note (string (first (first (second res))))))
+  ;       (weight (assoc root-note (rest (first (second res))))))
+  ;  (second weight))
+  1)
 
 (defun template-prob (nota)
   (let ((template (rest (second (first nota)))))
@@ -114,9 +111,9 @@
    um template."
   (let ((resultados
           (max-predicado #'first
-                         (avalia-segmento-notas (rest template)
+                         (avalia-segmento-notas (second template)
                                                 segmento
-                                                (butlast *notes-names* 3)))))
+                                                *tempered-system*))))
     (mapcar
      (lambda (resultado)
        (cons (first resultado)
@@ -147,19 +144,24 @@
         (gabarito (gabarito->sexp (concat *main-dir* "exemplos/" exemplo ".gab"))))
     (assert-equal resultado gabarito)))
 
-(gera-gabarito-pardo
+(defun algoritmo-pardo (string)
+  (with-system tempered
+    (gera-gabarito-pardo (parse-string musica))))
+
+(with-system tempered
+  (gera-gabarito-pardo
    (list (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0)
-         (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-         (make-evento :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+         (make-evento :PITCH 7 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+         (make-evento :PITCH 4 :OCTAVE 9 :DUR 1/4 :INICIO 0)
          (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-         (make-evento :PITCH 83 :OCTAVE 9 :DUR 1/4 :INICIO 1/4)
-         (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 1/4)
-         (make-evento :PITCH 14 :OCTAVE 9 :DUR 1/4 :INICIO 1/4)
-         (make-evento :PITCH 55 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)
+         (make-evento :PITCH 11 :OCTAVE 9 :DUR 1/4 :INICIO 1/4)
+         (make-evento :PITCH 7 :OCTAVE 9 :DUR 1/4 :INICIO 1/4)
+         (make-evento :PITCH 2 :OCTAVE 9 :DUR 1/4 :INICIO 1/4)
+         (make-evento :PITCH 7 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)
          (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 1/2)
-         (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 1/2)
-         (make-evento :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 1/2)
-         (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 1/2)))
+         (make-evento :PITCH 7 :OCTAVE 9 :DUR 1/4 :INICIO 1/2)
+         (make-evento :PITCH 4 :OCTAVE 9 :DUR 1/4 :INICIO 1/2)
+         (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 1/2))))
 
 
 ;(transpoe '(0 14 69) '#\d)

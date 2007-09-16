@@ -13,10 +13,21 @@
 ;; eventos, e representam esses eventos, e os manipulam de forma
 ;; básica.
 
+
+;; *notes-names* é útil para o parser
+
+(defstruct evento
+  (pitch)
+  (octave)
+  (dur)
+  (inicio)
+  (passagem?))
+
+
 (defun cria-nota (nota &optional (octave "") dur articulation dur2) 
   (declare (ignore articulation))
   (let ((dur (if dur2 dur2 dur)))
-    (make-evento :pitch (note-from-string nota)
+    (make-evento :pitch (note->code nota)
                  :octave (octave-from-string octave)
                  :dur dur
                  :inicio 0)))
@@ -25,19 +36,6 @@
   (declare (ignore skip))
   (cria-nota "s" "" dur))
 
-(defun notap (string)
-  "Testa se uma dada string pode representar uma nota"
-  (let ((nome (aref string 0))
-        (resto (subseq string 1)))
-    (and (find nome *notes-names*)
-         (case (intern resto)
-           ('|| t)
-           ('|is| t)
-           ('|es| t)
-           ('|isis| t)
-           ('|eses| t)
-           (t nil)))))
-    
 
 (defun move-evento-no-tempo (evento tempo)
   (assert (not (listp evento)))

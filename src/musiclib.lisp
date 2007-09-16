@@ -3,6 +3,10 @@
 ;;             (d -1) is Db (d flat)
 ;; interval-code is alist representing an interval
 
+(defparameter *notes* '(#\c #\d #\e #\f #\g #\a #\b))
+
+(defparameter *rests* '(#\r #\s #\S #\R))
+
 (defparameter *tonal-system*
   '((c 0)  (c 1)  (c 2)  (c 3)  (c 4)  (c 5)  (c 6)
     (d -7) (d -6) (d -5) (d -4) (d -3) (d -2) (d -1)
@@ -44,10 +48,13 @@
   '((1 just) (2 min) (2 maj) (3 min) (3 maj) (4 just)
     (5 dim) (5 just) (6 min) (6 maj) (7 min) (7 maj) (8 just)))
 
-(defparameter *tempered-system* '(c (c 1) d (d 1) e f (f 1) g (g 1) a (a 1) b))
+(defparameter *tempered-system* '((c 0) (c 1) (d 0) (d 1) (e 0) (f 0)
+                                  (f 1) (g 0) (g 1) (a 0) (a 1) (b 0)))
 
 (defparameter *systems* '((tonal (*tonal-system* 96 *tonal-intervals*))
                           (tempered (*tempered-system* 12 *tempered-intervals*))))
+
+(defparameter *system* 'tonal)
 
 (defparameter *intervals-name* '((min minor)
                                  (maj major)
@@ -63,6 +70,11 @@
 
 (defparameter *accidentals* '((lily ("es" "is"))
                               (latin ("b" "#"))))
+
+(defmacro with-system (system &body body)
+  `(let ((*system* ',system))
+     (declare (special *system*))
+     ,@body))
 
 ;; As variáveis acima não devem ser acessadas diretamente. Use
 ;; get-system-notes, get-sharp, get-flat, etc.
@@ -117,9 +129,9 @@ acorde. EXEMPLO: (get-interval-quantity 3) retorna TRIPLE."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun code->note (number &optional (system 'tonal))
+(defun code->note (number)
   "Retorna o nome da nota dado o seu código numérico."
-  (nth (module number system) (get-system-notes system)))
+  (nth (module number) (get-system-notes *system*)))
 
 (defun number-of-accidentals (acc-string representation)
   "Returns the numeric value of a string of accidentals according to
@@ -145,28 +157,53 @@ level function, you should use note->code instead."
          (position (list (string->symbol (subseq note 0 1))
                          (number-of-accidentals (subseq note 1) representation))
                    (get-system-notes 'tonal)
-                   :test #'equal)))
+                   :test #'equal))
+        (note-code-tempered
+         (+ (position (list (string->symbol (subseq note 0 1)) 0)
+                   (get-system-notes 'tempered)
+                   :test #'equal)
+            (number-of-accidentals (subseq note 1) representation))))
     (case system
       (tonal note-code-tonal)
-      (tempered (module note-code-tonal 'tempered)))))
+      (tempered note-code-tempered))))
 
-(defun %note->code (note &optional (system 'tonal))
+(defun %note->code (note)
   "Aceita um símbolo representando uma nota e retorna seu código
 numérico. Essa é uma função auxiliar que funciona apenas para notas
 sem acidentes, como 'd', 'e', etc. EXEMPLO: (%note->code \"d\")
 retorna 14."
-  (case system
-    (tonal (position (list note 0) (get-system-notes system) :test #'equal))
-    (tempered (position note (get-system-notes system)))))
+  (case *system*
+    (tonal (position (list note 0) (get-system-notes *system*) :test #'equal))
+    (tempered (position (list note 0) (get-system-notes *system*) :test #'equal))))
 
-(defun note->code (note &optional (system 'tonal))
+
+(defun note? (string)
+  "Testa se uma dada string pode representar uma nota"
+  (let ((nome (aref string 0))
+        (resto (subseq string 1)))
+    (and (find nome *notes*)
+         (case (intern resto)
+           ('|| t)
+           ('|is| t)
+           ('|es| t)
+           ('|isis| t)
+           ('|eses| t)
+           (t nil)))))
+
+(defun rest? (string)
+  "Testa se uma string pode representar um silêncio"
+  (and (= 1 (length string))
+       (find (aref string 0) *rests)))
+
+(defun note->code (note)
   "Retorna o código numérico da nota, dada sua representação em
 string. Essa função é inteligente o suficiente para saber que 'aes'
 usa a representação do lilypond e 'd#' usa a representação 'latin'."
-  (cond ((eql (length note) 1) (%note->code (string->symbol note) system))
-        ((match-note-representation note 'lily) (%parse-note note 'lily system))
-        ((match-note-representation note 'latin) (%parse-note note 'latin system))
-        (t (error "tipo de nota não conhecida"))))
+  (when (note? note)
+    (cond ((eql (length note) 1) (%note->code (string->symbol note)))
+          ((match-note-representation note 'lily) (%parse-note note 'lily *system*))
+          ((match-note-representation note 'latin) (%parse-note note 'latin *system*))
+          (t (error "tipo de nota não conhecida")))))
 
 (defun print-accidentals (acc repr)
   "Return a string of a note according to the numeric value of an
@@ -179,42 +216,43 @@ returns isisis."
 Example: (print-note '(c 1) 'lily) return cis."
   (format nil "~(~a~)~a" (first note-code) (print-accidentals (second note-code) representation)))
 
-(defun module (n &optional (system 'tonal))
+(defun module (n)
   "Returns the module according to a system.
 EXAMPLE: (module 96 'tonal) returns 96 and (module 96 'tempered)
 returns 0."
-  (mod n (get-system-module system)))
+  (mod n (get-system-module *system*)))
 
-(defun transpose (note index &optional (system 'tonal))
+(defun transpose (note index)
   "Transpose one note according to a transposition index. The note
 must have a numeric value."
-  (module (+ note index) system))
+  (module (+ note index)))
 
-(defun inversion (note &optional (index 0) (system 'tonal))
+(defun inversion (note &optional (index 0))
   "Invert one note according to an index. The note must have a numeric
 value."
-  (module (- (* 2 index) note) system))
+  (module (- (* 2 index) note)))
 
-(defun interval (note1 note2 &optional (system 'tonal))
+(defun interval (note1 note2)
   "Returns the interval of two notes according to a system. The notes
 must have a numeric value."
-  (module (- note1 note2) system))
+  (module (- note1 note2)))
 
-(defun interval->code (interval &optional (system 'tonal))
+(defun interval->code (interval)
   "Returns an interval-code of an interval. The interval must have a
 numeric value."
-  (nth interval (get-system-intervals system)))
+  (nth interval (get-system-intervals *system*)))
 
-(defun code->interval (code &optional (system 'tonal))
+(defun code->interval (code)
   "Retuns a interval of an interval-code.
 EXAMPLE: (code->interval '(3 aug)) returns 29."
-  (module (position code (get-system-intervals 'tonal) :test #'equal) system))
+  (module (position code (get-system-intervals 'tonal) :test #'equal)))
 
-(defun print-interval (interval &optional (system 'tonal))
+(defun print-interval (interval)
   "Returns the name of an interval. EXAMPLE: (print-interval 16)
 returns double augmented second."
-  (destructuring-bind (int type &optional quantity) (interval->code interval system)
-    (format nil "~@[~(~a~) ~]~(~a~) ~:r" (get-interval-quantity quantity) (get-interval-name type) int)))
+  (destructuring-bind (int type &optional quantity) (interval->code interval *system*)
+    (format nil "~@[~(~a~) ~]~(~a~) ~:r" (get-interval-quantity quantity)
+            (get-interval-name type) int)))
 
 ;;; SETS
 
@@ -228,23 +266,25 @@ rotation, and so on. This function is cyclic."
   "Retuns a list with all rotations of a set."
   (loop for x from 0 to (1- (length set)) collect (rotate set x)))
 
-(defun set-inversion (set &optional (index 0) (system 'tonal))
+(defun set-inversion (set &optional (index 0))
   "Retuns a new set that is the invertion of the input set."
-  (mapcar (lambda (note) (inversion note index system)) set))
+  (mapcar (lambda (note) (inversion note index *system*)) set))
 
-(defun set-transpose (set index &optional (system 'tonal))
+(defun set-transpose (set index)
   "Retuns a new set that is the transposition of the input set."
-  (mapcar (lambda (note) (transpose note index system)) set))
+  (mapcar (lambda (note) (transpose note index *system*)) set))
 
 (defun set-transpose-to-0 (set)
-  "Transpose a set so it begins with 0."
-  (set-transpose set (- (first set)) 'tempered))
+  "Transpose a set so it begins with 0. Only on a tempered system."
+  (assert (eq *system* 'tempered))
+  (set-transpose set (- (first set))))
   
 (defun set-intervals (set)
   "Retuns a list with the intervals between the consecutive notes of a set.
 EXAMPLE: (set-intervals '(0 3 7)) returns (3 4 5). In this list 5 is
 the interval between the last and first note."
-  (mapcar (lambda (a b) (module (- b a) 'tempered)) set (rotate set)))
+  (assert (eq *system* 'tempered))
+  (mapcar (lambda (a b) (module (- b a))) set (rotate set)))
 
 (defun set-symmetric? (set)
   "Test if a set is symmetric, i.e. if all its intervals are equal. (0
@@ -312,3 +352,7 @@ EXAMPLE: (equal-sets? '(0 3 7) '(8 1 4)) returns T."
                          (set-transpose-to-0 (normal-form set2)))
               t))
     (prime (when (equal (prime-form set1) (prime-form set2)) t))))
+
+
+(defmacro deftemplates (name &body templates)
+  `(defparameter ,name ',templates))

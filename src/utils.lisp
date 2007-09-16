@@ -1,3 +1,4 @@
+
 (defun concat (&rest strings)
   "Concatenate a bunch of strings."
   (apply #'concatenate 'string strings))
@@ -40,3 +41,23 @@ quantos acidentes ou oitavas uma nota tem."
   "Returns an item from a alist. "
   (second (assoc item alist)))
 
+(defun max-predicado (predicado lista)
+  "retorna o maior par de uma lista de pares"
+  (let ((maior-valor (funcall predicado (first lista)))
+        (lista-max nil))
+    (dolist (par lista)
+      (cond ((> (funcall predicado par) maior-valor)
+             (setf maior-valor (first par))
+             (setf lista-max (list par)))
+            ((= (funcall predicado par) maior-valor)
+             (push par lista-max))))
+    lista-max))
+
+(defun octave-from-string (string)
+  (+ 8 (symbol->number string '("," "'"))))
+
+(defun no-op (musica)
+  (mapcar #'lista-notas (segmentos-minimos musica)))
+
+(defun retorna-n-segmentos (musica)
+  (subseq musica 0 n))
