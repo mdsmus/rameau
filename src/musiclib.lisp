@@ -139,9 +139,7 @@ representation. For instance, if acc-string is 'eseses' the function
 returns -3. Be careful not to pass a string representing a note as the
 first argument to this function, otherwise it could mistakenly return
 -2 for 'ees'."
-  (case representation
-    (lily (symbol->number acc-string (get-accidentals 'lily)))
-    (latin (symbol->number acc-string (get-accidentals 'latin)))))
+  (symbol->number acc-string (get-accidentals representation)))
 
 (defun match-note-representation (note representation)
   "Returns non-nil if a note matches the representation.
@@ -188,6 +186,10 @@ retorna 14."
            ('|es| t)
            ('|isis| t)
            ('|eses| t)
+           ('|#| t)
+           ('|##| t)
+           ('|b| t)
+           ('|bb| t)
            (t nil)))))
 
 (defun rest? (string)
@@ -250,7 +252,7 @@ EXAMPLE: (code->interval '(3 aug)) returns 29."
 (defun print-interval (interval)
   "Returns the name of an interval. EXAMPLE: (print-interval 16)
 returns double augmented second."
-  (destructuring-bind (int type &optional quantity) (interval->code interval *system*)
+  (destructuring-bind (int type &optional quantity) (interval->code interval)
     (format nil "~@[~(~a~) ~]~(~a~) ~:r" (get-interval-quantity quantity)
             (get-interval-name type) int)))
 
@@ -268,11 +270,11 @@ rotation, and so on. This function is cyclic."
 
 (defun set-inversion (set &optional (index 0))
   "Retuns a new set that is the invertion of the input set."
-  (mapcar (lambda (note) (inversion note index *system*)) set))
+  (mapcar (lambda (note) (inversion note index)) set))
 
 (defun set-transpose (set index)
   "Retuns a new set that is the transposition of the input set."
-  (mapcar (lambda (note) (transpose note index *system*)) set))
+  (mapcar (lambda (note) (transpose note index)) set))
 
 (defun set-transpose-to-0 (set)
   "Transpose a set so it begins with 0. Only on a tempered system."
@@ -299,9 +301,9 @@ determine the normal and prime form. EXAMPLE: (set-form-list '(0 3 7))
 returns (((0 3 7) 7 3) ((3 7 0) 9 4) ((7 0 3) 8 5))."
   (loop
      for rotation in (set-rotate (sort-set (exclude-repetition set)))
-     for set-size = (interval (last1 rotation) (first rotation) 'tempered)
-     for set-beg-size = (interval (second rotation) (first rotation) 'tempered)
-     collect (list rotation set-size set-beg-size)))
+     for set-size = (interval (last1 rotation) (first rotation))
+     for set-beg-size = (interval (second rotation) (first rotation))
+     collect (list rotation (module set-size) (module set-beg-size))))
 
 (defun sort-form-list (set)
   "Sort a form-list by the overall interval of the set."
@@ -333,10 +335,11 @@ EXAMPLE: (normal-form '(1 7 3)) returns (1 3 7)."
       (smallest-set (smaller-sets (sort-form-list (set-form-list set))))))
 
 (defun prime-form (set)
-  "Retuns the prime form of a set.
-EXAMPLE: (prime-form '(1 7 3)) returns (0 2 6)."
-  (let ((nf-transposition (set-transpose (normal-form set) 0 'tempered))
-        (nf-inversion (set-inversion (normal-form set) 0 'tempered)))
+  "Retuns the prime form of a set. Only on a tempered system.
+EXAMPLE: (prime-form '(1 7 3)) returns (0 2 6). "
+  (assert (eq *system* 'tempered))
+  (let ((nf-transposition (set-transpose (normal-form set) 0))
+        (nf-inversion (set-inversion (normal-form set) 0)))
     (set-transpose-to-0
      (smallest-set
       (smaller-sets (sort-form-list (append (set-form-list nf-inversion)

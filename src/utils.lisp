@@ -18,13 +18,20 @@
        do (push x novo-set))
     (nreverse novo-set)))
 
+(defun count-subseq (sub seq &optional (start -1) (acumula 0))
+  (let ((s (search sub seq :start2 (+ start 1))))
+    (if (null s)
+        acumula
+        (count-subseq sub seq s (+ acumula 1)))))
+        
+
 (defun symbol->number (string string-list)
   "Essa função conta quantas ocorrências tem do caractere na lista de
 mapeamento e retorna esse valor. Essa função é usada para contar
 quantos acidentes ou oitavas uma nota tem."
   (destructuring-bind (flat sharp) string-list
-    (cond ((search sharp string) (count (char sharp 0) string))
-          ((search flat string) (- (count (char flat 0) string)))
+    (cond ((search sharp string) (count-subseq sharp string))
+          ((search flat string) (- (count-subseq flat string)))
           (t 0))))
 
 (defun repeat-string (n string)

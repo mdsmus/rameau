@@ -6,19 +6,6 @@
   (lisp-unit:assert-equal '(*TONAL-SYSTEM* 96 *TONAL-INTERVALS*) (get-system-item 'tonal))
   (lisp-unit:assert-equal '(*TEMPERED-SYSTEM* 12 *TEMPERED-INTERVALS*) (get-system-item 'tempered)))
 
-(lisp-unit:define-test get-system-notes
-  (lisp-unit:assert-equal
-   '((C 0) (C 1) (C 2) (C 3) (C 4) (C 5) (C 6) (D -7) (D -6) (D -5) (D -4) (D -3)
-     (D -2) (D -1) (D 0) (D 1) (D 2) (D 3) (D 4) (D 5) (D 6) (E -7) (E -6) (E -5)
-     (E -4) (E -3) (E -2) (E -1) (E 0) (E 1) (E 2) (E 3) (E 4) (E 5) (E 6) (F -6)
-     (F -5) (F -4) (F -3) (F -2) (F -1) (F 0) (F 1) (F 2) (F 3) (F 4) (F 5) (F 6)
-     (F 7) (G -6) (G -5) (G -4) (G -3) (G -2) (G -1) (G 0) (G 1) (G 2) (G 3) (G 4)
-     (G 5) (G 6) (A -7) (A -6) (A -5) (A -4) (A -3) (A -2) (A -1) (A 0) (A 1) (A 2)
-     (A 3) (A 4) (A 5) (A 7) (B -7) (B -6) (B -5) (B -4) (B -3) (B -2) (B -1) (B 0)
-     (B 1) (B 2) (B 3) (B 4) (B 5) (B 7) (C -6) (C -5) (C -4) (C -3) (C -2) (C -1))
-   (get-system-notes 'tonal))
-  (lisp-unit:assert-equal '(C (C 1) D (D 1) E F (F 1) G (G 1) A (A 1) B)
-                          (get-system-notes 'tempered)))
 
 (lisp-unit:define-test get-system-module
     (lisp-unit:assert-equal 96 (get-system-module 'tonal))
@@ -82,20 +69,20 @@
   (lisp-unit:assert-equal 'heptuple (get-interval-quantity 7)))
 
 (lisp-unit:define-test code->note
-  (lisp-unit:assert-equal '(c 0) (code->note 0 'tonal))
-  (lisp-unit:assert-equal '(c -1) (code->note 95 'tonal))
-  (lisp-unit:assert-equal '(d 0) (code->note 14 'tonal))
-  (lisp-unit:assert-equal '(c 0) (code->note 96 'tonal))
-  (lisp-unit:assert-equal 'c (code->note 0 'tempered))
-  (lisp-unit:assert-equal 'b (code->note 95 'tempered))
-  (lisp-unit:assert-equal 'd (code->note 14 'tempered))
-  (lisp-unit:assert-equal 'c (code->note 96 'tempered)))
+  (lisp-unit:assert-equal '(c 0) (code->note 0))
+  (lisp-unit:assert-equal '(c -1) (code->note 95))
+  (lisp-unit:assert-equal '(d 0) (code->note 14))
+  (lisp-unit:assert-equal '(c 0) (code->note 96))
+  (lisp-unit:assert-equal '(c 0) (with-system tempered (code->note 0)))
+  (lisp-unit:assert-equal '(b 0) (with-system tempered (code->note 95)))
+  (lisp-unit:assert-equal '(d 0) (with-system tempered (code->note 14)))
+  (lisp-unit:assert-equal '(c 0) (with-system tempered (code->note 96))))
 
 (lisp-unit:define-test %note->code
-  (lisp-unit:assert-equal 0 (%note->code 'c 'tonal))
-  (lisp-unit:assert-equal 14 (%note->code 'd 'tonal))
-  (lisp-unit:assert-equal 0 (%note->code 'c 'tempered))
-  (lisp-unit:assert-equal 2 (%note->code 'd 'tempered)))
+  (lisp-unit:assert-equal 0 (%note->code 'c))
+  (lisp-unit:assert-equal 14 (%note->code 'd))
+  (lisp-unit:assert-equal 0 (with-system tempered (%note->code 'c)))
+  (lisp-unit:assert-equal 2 (with-system tempered (%note->code 'd))))
 
 (lisp-unit:define-test number-of-accidentals
    (lisp-unit:assert-equal 1 (number-of-accidentals "cis" 'lily))
@@ -119,11 +106,11 @@
   (lisp-unit:assert-equal 1 (%parse-note "c#" 'latin 'tonal)))
 
 (lisp-unit:define-test note->code
-  (lisp-unit:assert-equal 0 (note->code "c" 'tonal))
-  (lisp-unit:assert-equal 13 (note->code "db" 'tonal))
-  (lisp-unit:assert-equal 1 (note->code "db" 'tempered))
-  (lisp-unit:assert-equal 2 (note->code "c##" 'tonal))
-  (lisp-unit:assert-equal 1 (note->code "c#" 'tempered)))
+  (lisp-unit:assert-equal 0 (note->code "c"))
+  (lisp-unit:assert-equal 13 (note->code "des"))
+  (lisp-unit:assert-equal 1 (with-system tempered (note->code "db")))
+  (lisp-unit:assert-equal 2 (with-system tempered (note->code "c##")))
+  (lisp-unit:assert-equal 1 (with-system tempered (note->code "c#"))))
 
 (lisp-unit:define-test print-accidentals
   (lisp-unit:assert-equal "isisis" (print-accidentals 3 'lily))
@@ -138,19 +125,19 @@
   (lisp-unit:assert-equal "dbbb" (print-note '(d -3) 'latin)))
 
 (lisp-unit:define-test module
-  (lisp-unit:assert-equal 1 (module 97 'tonal))
-  (lisp-unit:assert-equal 1 (module 1 'tonal))
-  (lisp-unit:assert-equal 1 (module 97 'tempered))
-  (lisp-unit:assert-equal 1 (module 13 'tempered)))
+  (lisp-unit:assert-equal 1 (module 97))
+  (lisp-unit:assert-equal 1 (module 1))
+  (lisp-unit:assert-equal 1 (with-system tempered (module 97)))
+  (lisp-unit:assert-equal 1 (with-system tempered (module 13))))
 
 (lisp-unit:define-test transpose
-  (lisp-unit:assert-equal 3 (transpose 0 3 'tonal))
-  (lisp-unit:assert-equal 1 (transpose 0 13 'tempered))
-  (lisp-unit:assert-equal 32 (transpose 0 320 'tonal)))
+  (lisp-unit:assert-equal 3 (transpose 0 3))
+  (lisp-unit:assert-equal 1 (with-system tempered (transpose 0 13)))
+  (lisp-unit:assert-equal 32 (transpose 0 320)))
 
 (lisp-unit:define-test inversion
-  (lisp-unit:assert-equal 7 (inversion 5 0 'tempered))
-  (lisp-unit:assert-equal 91 (inversion 5 0 'tonal)))
+  (lisp-unit:assert-equal 7 (with-system tempered (inversion 5 0)))
+  (lisp-unit:assert-equal 91 (inversion 5 0)))
 
 (lisp-unit:define-test interval
   (lisp-unit:assert-equal 4 (interval 7 3))
@@ -179,8 +166,8 @@
 (lisp-unit:define-test code->interval
   (lisp-unit:assert-equal 29 (code->interval '(3 aug)))
   (lisp-unit:assert-equal 0 (code->interval '(1 just)))
-  (lisp-unit:assert-equal 3 (code->interval '(2 aug) 'tempered))
-  (lisp-unit:assert-equal 3 (code->interval '(3 min) 'tempered)))
+  (lisp-unit:assert-equal 3 (with-system tempered (code->interval '(2 aug))))
+  (lisp-unit:assert-equal 3 (with-system tempered (code->interval '(3 min)))))
 
 (lisp-unit:define-test print-interval
   (lisp-unit:assert-equal "double augmented second" (print-interval 16)))
@@ -195,48 +182,56 @@
   (lisp-unit:assert-equal '(7 0 3 4) (rotate '(0 3 4 7) -1)))
 
 (lisp-unit:define-test set-rotate
-  (lisp-unit:assert-equal '((0 3 7) (3 7 0) (7 0 3)) (set-rotate '(0 3 7))))
+  (lisp-unit:assert-equal '((0 3 7) (3 7 0) (7 0 3)) (with-system tempered (set-rotate '(0 3 7)))))
 
 (lisp-unit:define-test set-inversion
-  (lisp-unit:assert-equal '(0 9 5) (set-inversion '(0 3 7) 0 'tempered))
-  (lisp-unit:assert-equal '(0 93 89) (set-inversion '(0 3 7) 0 'tonal)))
+  (lisp-unit:assert-equal '(0 9 5) (with-system tempered (set-inversion '(0 3 7) 0)))
+  (lisp-unit:assert-equal '(0 93 89) (set-inversion '(0 3 7) 0)))
 
 (lisp-unit:define-test set-transpose
-  (lisp-unit:assert-equal '(3 6 10) (set-transpose '(0 3 7) 3 'tempered))
-  (lisp-unit:assert-equal '(3 17 24) (set-transpose '(0 14 21) 3 'tonal)))
+  (lisp-unit:assert-equal '(3 6 10) (with-system tempered (set-transpose '(0 3 7) 3)))
+  (lisp-unit:assert-equal '(3 17 24) (with-system tonal (set-transpose '(0 14 21) 3))))
 
 (lisp-unit:define-test set-transpose-to-0
-  (lisp-unit:assert-equal '(0 10 8) (set-transpose-to-0 '(9 7 5))))
+  (lisp-unit:assert-equal '(0 10 8) (with-system tempered (set-transpose-to-0 '(9 7 5)))))
 
 (lisp-unit:define-test set-intervals
-  (lisp-unit:assert-equal '(3 4 5) (set-intervals '(0 3 7))))
+  (lisp-unit:assert-equal '(3 4 5) (with-system tempered (set-intervals '(0 3 7)))))
 
 (lisp-unit:define-test set-symmetric?
-  (lisp-unit:assert-equal nil (set-symmetric? '(0 4 7)))
-  (lisp-unit:assert-equal t (set-symmetric? '(0 3 6 9))))
+  (lisp-unit:assert-equal nil (with-system tempered (set-symmetric? '(0 4 7))))
+  (lisp-unit:assert-equal t (with-system tempered (set-symmetric? '(0 3 6 9)))))
 
 (lisp-unit:define-test set-form-list
-  (lisp-unit:assert-equal '(((0 3 7) 7 3) ((3 7 0) 9 4) ((7 0 3) 8 5)) (set-form-list '(0 3 7))))
+  (lisp-unit:assert-equal '(((0 3 7) 7 3) ((3 7 0) 9 4) ((7 0 3) 8 5))
+                          (with-system tempered (set-form-list '(0 3 7)))))
 
 (lisp-unit:define-test sort-form-list
   (lisp-unit:assert-equal '(((0 3 7) 7 3) ((7 0 3) 8 5) ((3 7 0) 9 4))
                           (sort-form-list '(((0 3 7) 7 3) ((3 7 0) 9 4) ((7 0 3) 8 5)))))
 
 (lisp-unit:define-test smaller-sets
-  (lisp-unit:assert-equal '(((0 3 7) 7 3)) (smaller-sets '(((0 3 7) 7 3) ((7 0 3) 8 5) ((3 7 0) 9 4)))))
+  (lisp-unit:assert-equal '(((0 3 7) 7 3))
+                          (with-system tempered
+                            (smaller-sets '(((0 3 7) 7 3) ((7 0 3) 8 5) ((3 7 0) 9 4))))))
 
 (lisp-unit:define-test smaller-sets-comparisson
-  (lisp-unit:assert-equal '(0 3 7) (smaller-sets-comparisson '(((0 3 7) 7 3) ((0 4 7) 7 4)))))
+  (lisp-unit:assert-equal '(0 3 7)
+                          (with-system tempered
+                            (smaller-sets-comparisson '(((0 3 7) 7 3) ((0 4 7) 7 4))))))
 
 (lisp-unit:define-test smallest-set
-  (lisp-unit:assert-equal '(0 3 7) (smallest-set '(((0 3 7) 7 3) ((0 4 7) 7 4)))))
+  (lisp-unit:assert-equal '(0 3 7) (with-system tempered
+                                     (smallest-set '(((0 3 7) 7 3) ((0 4 7) 7 4))))))
 
 (lisp-unit:define-test normal-form
-  (lisp-unit:assert-equal '(0 4 7) (normal-form '(7 4 0))))
+  (lisp-unit:assert-equal '(0 4 7) (with-system tempered (normal-form '(7 4 0)))))
 
 (lisp-unit:define-test prime-form
-  (lisp-unit:assert-equal '(0 3 7) (prime-form '(4 7 0))))
+  (lisp-unit:assert-equal '(0 3 7) (with-system tempered (prime-form '(4 7 0)))))
 
 (lisp-unit:define-test set-equal?
-  (lisp-unit:assert-equal nil (set-equal? '(0 3 7) '(0 4 7) 'normal))
-  (lisp-unit:assert-equal t (set-equal? '(0 3 7) '(0 4 7) 'prime)))
+  (lisp-unit:assert-equal nil (with-system tempered (set-equal? '(0 3 7) '(0 4 7) 'normal)))
+  (lisp-unit:assert-equal t (with-system tempered (set-equal? '(0 3 7) '(0 4 7) 'prime))))
+
+(lisp-unit:run-tests)
