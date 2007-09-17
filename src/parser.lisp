@@ -25,7 +25,7 @@
   ("(S|s)core" (return (values 'SCORE %)))
   ("-\\\\tenuto")
   ("-\\\\staccato")
-  ("(-|_|\\^|~|\\?)(\\.|\\^|\\+|\\||>|_|-|\"[^\"]*\")?" (return (values 'ARTICULATION LEXER::START)))
+  ("(-|_|\\^|~|\\?)(\\.|\\^|\\+|\\||>|_|-|\"[^\"]*\")?")
   ("[:alpha:]+"
    (if (or (note? %0) (rest? %0))
        (return (values 'NOTE %0))
@@ -114,12 +114,8 @@
   (declare (ignore a b))
   (make-instance 'music-block :expr block))
 
-(defun parse-empty-block (a b)
+(defun parse-chord-dur (a chord b dur)
   (declare (ignore a b))
-  nil)
-
-(defun parse-chord-dur (a chord b dur c)
-  (declare (ignore a b c))
   (when dur
       (dolist (i chord)
         (setf (evento-dur i) dur)))
@@ -192,17 +188,6 @@
   (declare (ignore a))
   (make-instance 'relative :expr block :start relative))
 
-
-(defun parse-expression-atom (atom)
-  (cons atom nil))
-
-(defun parse-expression (atom expression)
-  (cons atom expression))
-
-(defun parse-lilypond-header (header expression)
-  (declare (ignore header))
-  (do-the-parsing expression))
-
 (defun parse-lilypond (lilypond atom)
   (coloca-expressoes-em-sequencia
    (remove-if #'null (list lilypond
@@ -211,24 +196,14 @@
 (defun empty-octave ()
   "")
 
-(defun empty-dur ()
+(defun do-nothing (&rest args)
+  (declare (ignore args))
   nil)
 
-(defun ignora (a)
-  (declare (ignore a)))
-
-(defun ignore-second (a b)
-  (declare (ignore b))
-  a)
 
 (defun parse-assignment (variable equal value)
   (declare (ignore equal))
   (make-instance 'set-variable :varname variable :value value))
-
-;; do-the-parsing estabelece o ambiente global
-;; onde a duração está definida e onde o parsing
-;; vai acontecer. Tá, é feio, mas eu não imagino
-;; solução mais limpa nesse momento.
 
 (defun do-the-parsing (tree)
   (process-ast (ajusta-duracao tree)))
@@ -260,7 +235,7 @@
   (:documentation "Multiplica um pedaco de música por um tempo especificado"))
 
 (defmethod acerta-times (times (tree ast-node))
-  (mapcar (lambda (x) (acerta-times times x)) (node-expr tree)))
+  (acerta-times times (node-expr tree)))
 
 (defmethod acerta-times (times (e evento))
   (setf (evento-dur e) (* times (evento-dur e))))
@@ -299,7 +274,7 @@
   (let ((dur (node-times node))
         (expr (node-expr node)))
     (acerta-times dur expr)
-    (process-tree expr)))
+    (process-ast expr)))
 
 (defmethod process-ast ((node relative))
   (relativiza (node-start node) (process-ast (node-expr node))))
@@ -318,7 +293,6 @@
       
 (define-parser *expression-parser*
   (:start-symbol start)
-  (:muffle-conflicts t)
   (:terminals (WHITESPACE
                NEW-STAFF
                NEW-SCORE
@@ -326,7 +300,6 @@
                DUR
                NOTE
                OCTAVE
-               ARTICULATION
                RELATIVE
                STRING
                HEADER
@@ -365,14 +338,14 @@
    (HEADER |{| |}|))
 
   (expression
-   (expression-atom #'parse-expression-atom)
-   (expression-atom expression #'parse-expression))
+   (expression-atom #'list)
+   (expression-atom expression #'cons))
   
   (expression-atom
-   (lilypond-header #'ignora)
-   (OPEN-PAREN #'ignora)
-   (CLOSE-PAREN #'ignora)
-   (layout-block #'ignora)
+   (lilypond-header #'do-nothing)
+   (OPEN-PAREN #'do-nothing)
+   (CLOSE-PAREN #'do-nothing)
+   (layout-block #'do-nothing)
    (music-block #'identity)
    (empty-block #'identity)
    (staff-block #'identity)
@@ -383,7 +356,7 @@
    (variable-block #'identity)
    (relative-block #'identity)
    (chord-block #'identity)
-   (scheme-code #'ignora)
+   (scheme-code #'do-nothing)
    (include STRING #'parse-include)
    (|<<| expression |>>| #'parse-simultaneous)
    (SIMULT { expression } #'parse-simult)
@@ -403,7 +376,7 @@
    (|{| expression |}| #'parse-music-block))
 
   (empty-block
-   (|{| |}| #'parse-empty-block))
+   (|{| |}| #'do-nothing))
 
   (layout-block
    (LAYOUT |{| |}|)
@@ -432,27 +405,22 @@
    (TIMES NUMBER expression-atom #'parse-times-block))
 
   (chord-block
-   (|<| notes |>| dur-expr articulation-expr #'parse-chord-dur))
+   (|<| notes |>| dur-expr  #'parse-chord-dur))
 
   (notes
    (note-expr #'list)
    (note-expr notes #'cons))
   
   (note-expr
-   (NOTE octave-expr dur-expr articulation-expr dur-expr #'cria-nota)
+   (NOTE octave-expr dur-expr  #'cria-nota)
    (SKIP dur-expr #'cria-skip))
-
-  (articulation-expr
-   ()
-   (articulation-expr ARTICULATION)
-   (articulation-expr string))
 
   (octave-expr
    (#'empty-octave)
    (OCTAVE #'identity))
 
   (dur-expr
-   (#'empty-dur)
+   (#'do-nothing)
    (DUR #'parse-dur)
    (dur-expr PONTO #'parse-dur-ponto)
    (dur-expr MULTIPLICA #'parse-dur-multiplica))
@@ -473,7 +441,6 @@
    STRING
    BOOL
    COLON
-   ARTICULATION
    STAFF
    SCORE
    VOICE
@@ -504,7 +471,7 @@
     (declare (special *filename*))
     (parse-string (file-string filename))))
 
-;; (file-string "/home/top/programas/analise-harmonica/exemplos/001.ly")
+;; (parse-file "/home/top/programas/analise-harmonica/literatura/bach-corais/009.ly")
 ;;(parse-file "/home/top/programas/analise-harmonica/literatura/bach-corais/002.ly")
 ;; (parse-file "/home/top/programas/analise-harmonica/literatura/kostka-payne/ex30a.ly")
 ;;(setf token (string-lexer (file-string "/home/top/programas/analise-harmonica/literatura/kostka-payne/ex30a.ly")))

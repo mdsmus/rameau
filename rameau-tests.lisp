@@ -15,10 +15,16 @@
                          (regressao "regressao/")
                          (lily "regressao-lily/")))
 
+(defun add-lily-ext (file)
+  (if (tem-ext? file) file (concat file ".ly")))
+
+(defun tem-ext? (file)
+  (find #\. file))
+  
 (defun load-all (files)
   (loop for file in files do (load (format nil "src/~(~a~).lisp" file))))
 
-(load-all '(utils lisp-unit formato parser segmento pardo))
+(load-all '(utils musiclib lisp-unit formato parser segmento pardo))
 
 (defun print-gabarito (file gabarito algoritmo comparacao &optional notas)
   (progn
@@ -72,7 +78,7 @@
 
 (defun print-ok-no-list (list)
   (destructuring-bind (ok no) list
-    (format t "[OK]: ~a [NO]: ~a ~@[~a ~]" (length ok) (length no) no)))
+    (format t "[OK]: ~a [NO]: ~a ~@[~a ~]~%" (length ok) (length no) no)))
 
 (defun parse-verbose (files)
   (dolist (file files)

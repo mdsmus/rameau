@@ -135,12 +135,6 @@
 (defun tira-extensao (file)
   (subseq file 0 (position #\. file)))
 
-(defun add-lily-ext (file)
-  (if (tem-ext? file) file (concat file ".ly")))
-
-(defun tem-ext? (file)
-  (find #\. file))
-  
 (defun troca-extensao (file ext)
   (concat (tira-extensao file) ext))
 
