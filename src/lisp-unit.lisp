@@ -383,17 +383,17 @@ For more information, see lisp-unit.html.
     (:error "~&~@[Should have signalled ~{~S~^; ~} but saw~] ~{~S~^; ~}")
     (:macro "~&Should have expanded to ~{~S~^; ~} ~<~%~:;but saw ~{~S~^; ~}~>")
     (:output "~&Should have printed ~{~S~^; ~} ~<~%~:;but saw ~{~S~^; ~}~>")
-    (t "~&Expected ~{~S~^; ~} ~<~%~:;but saw ~{~S~^; ~}~>")
+    (t "~&                               Expected ~{~S~^; ~} ~<~%~:;but saw ~{~S~^; ~}~>")
     ))
 
 (defun show-failure (type msg name form expected actual extras)
-  (format t "~&~@[~S: ~]~S failed: " name form)
+  (format t "~&~@[~(~30S~) ~]~(~S~) failed " name form)
   (format t msg expected actual)
   (format t "~{~&   ~S => ~S~}~%" extras)
   type)
 
 (defun show-summary (name test-count pass-count &optional error-count)
-  (format t "~&~A: ~S assertions passed, ~S failed~@[, ~S execution errors~]."
+  (format t "~&~(~30A~) [~3S passed] [~3S failed]~@[ [~3S errors]~]"
           name pass-count (- test-count pass-count) error-count))
 
 (defun collect-form-values (form values)
