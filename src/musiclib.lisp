@@ -195,7 +195,7 @@ retorna 14."
 (defun rest? (string)
   "Testa se uma string pode representar um silêncio"
   (and (= 1 (length string))
-       (find (aref string 0) *rests)))
+       (find (aref string 0) *rests*)))
 
 (defun note->code (note)
   "Retorna o código numérico da nota, dada sua representação em

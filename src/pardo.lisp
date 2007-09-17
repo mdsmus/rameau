@@ -77,7 +77,7 @@
 
 (defun root-weight (res)
   (let* ((res (first res))
-         (root-note (note-from-string (string (first (first (second res))))))
+         (root-note (note->code (string (first (first (second res))))))
          (weight (assoc root-note (rest (first (second res))))))
     (or (second weight) 0)))
 
