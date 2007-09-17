@@ -23,7 +23,9 @@
 (* 2 ((d maj 0) (d maj 0 7)))
 (e min 0)
 (g maj 2)
-; 3 segmentos mínimos em falta: como indicar antecipação de resolução seguida de bordadura?
+(a min 1 7)
+(:mel fis)
+(a min 0)
 (* 3 ((d maj 0) (d maj 0 7)))
 (g maj 0)
 (a maj 3 7)
@@ -33,8 +35,7 @@
 (a maj 1)
 (d maj 0)
 (* 2 ((b maj 1) (b maj 1 7)))
-; como indicar suspensão?
-(* 2 (:sus fis (e min 0)) (:mel fis))
+(* 2 (:mel fis))
 (e min 1)
 (e min 0)
 (a maj 1)
