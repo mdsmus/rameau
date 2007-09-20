@@ -63,8 +63,38 @@ quantos acidentes ou oitavas uma nota tem."
 (defun octave-from-string (string)
   (+ 8 (symbol->number string '("," "'"))))
 
+(defun compara-notas (x y)
+  (let ((a (evento-octave x))
+        (b (evento-octave y)))
+    (if (= a b)
+        (< (evento-pitch x) (evento-pitch y))
+        (< (evento-octave x) (evento-octave y)))))
+
+
+(defun lista-notas (segmento)
+  (let ((segmento (sort segmento #'compara-notas)))
+      (mapcar (lambda (x)
+                (print-note (code->note (evento-pitch x)) 'latin))
+              segmento)))
+
 (defun no-op (musica)
   (mapcar #'lista-notas (segmentos-minimos musica)))
 
 (defun retorna-n-segmentos (musica)
   (subseq musica 0 n))
+
+(defun expande-multiplicacoes (gab)
+  (when gab
+    (let ((atual (first gab))
+          (resto (rest gab)))
+      (cons (if (eq '* (first atual))
+                (second atual)
+                atual)
+            (expande-multiplicacoes resto)))))
+
+(defun processa-gabarito (file)
+  "Transforma um gabarito de texto em sexp."
+  (let ((gabarito (when (cl-fad:file-exists-p file) 
+                    (read-from-string
+                     (format nil "(~a)" (file-string file))))))
+    (expande-multiplicacoes gabarito)))

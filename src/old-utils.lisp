@@ -41,10 +41,6 @@
 (defun octave-from-string (string)
   (+ 8 (symbol->number string '(("'" #\') ("," #\,)))))
 
-(defun gabarito->sexp (file)
-  "Transforma um gabarito de texto em sexp."
-  (when (cl-fad:file-exists-p file) 
-    (read-from-string (format nil "(~a)" (file-string file)))))
 
 (defparameter *inversoes* '((3 (5 6 6/4))
                             (7 (7 6/5 4/3 4/2))))
@@ -132,34 +128,7 @@
               acrescimos
               (get-inversao-pop2 modo inversao)))))
 
-(defun tira-extensao (file)
-  (subseq file 0 (position #\. file)))
 
-(defun troca-extensao (file ext)
-  (concat (tira-extensao file) ext))
-
-(defun compara-notas (x y)
-  (let ((a (evento-octave x))
-        (b (evento-octave y)))
-    (if (= a b)
-        (< (evento-pitch x) (evento-pitch y))
-        (< (evento-octave x) (evento-octave y)))))
-
-(defun lista-notas (segmento)
-  (labels ((percorre-notas (valor notas)
-             (let ((nota (note-number (car notas) *tonal*)))
-               (intern
-                (string-upcase
-                 (cond ((= valor nota) (string (car notas)))
-                       ((= valor (+ nota 1)) (concatenate 'string (string (car notas)) "is"))
-                       ((= valor (- nota 1)) (concatenate 'string (string (car notas)) "es"))
-                       (t (if notas
-                              (percorre-notas valor (cdr notas))
-                              ""))))))))
-    (let ((segmento (sort segmento #'compara-notas)))
-      (mapcar (lambda (x)
-                (percorre-notas (evento-pitch x) *notes-names*))
-              segmento))))
 
 (defun no-op (musica)
   (mapcar #'lista-notas (segmentos-minimos musica)))

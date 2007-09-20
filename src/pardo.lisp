@@ -136,16 +136,40 @@
                     (rest res))))
           (segmentos-minimos musica)))
 
+(defun compara-gabarito-pardo-individual (resultado gabarito)
+  (let ((nota (first resultado))
+        (nota-certa (first gabarito))
+        (acorde (rest resultado))
+        (acorde-certo (rest (butlast gabarito))))
+    (and (eq nota nota-certa)
+         (equal acorde acorde-certo))))
+
+(defun compara-gabarito-pardo (resultado gabarito)
+  (if
+   (and (null resultado)
+        (null gabarito))
+   t
+   (and
+    (let ((res (first resultado))
+          (gab (first gabarito)))
+      (if (atom (first gab))
+          (compara-gabarito-pardo-individual res gab)
+          (some (lambda (x)
+                  (compara-gabarito-pardo-individual res x))
+                gabarito)))
+    (compara-gabarito-pardo (rest resultado) (rest gabarito)))))
+                  
+
 (defun corrige-exemplo (exemplo &optional (metodo #'gera-gabarito-pardo))
   "Corrige e compara o resultado de um exemplo com o gabarito"
-  (let ((resultado (gera-gabarito-pardo
-                    (parse-file (concat *main-dir* "exemplos/" exemplo ".ly"))))
-        (gabarito (gabarito->sexp (concat *main-dir* "exemplos/" exemplo ".gab"))))
-    (assert-equal resultado gabarito)))
+  (let ((resultado (algoritmo-pardo (file-string
+                                     (concat *main-dir* "exemplos/" exemplo ".ly"))))
+        (gabarito (processa-gabarito (concat *main-dir* "exemplos/" exemplo ".gab"))))
+    (compara-gabarito-pardo resultado gabarito)))
 
 (defun algoritmo-pardo (string)
   (with-system tempered
-    (gera-gabarito-pardo (parse-string musica))))
+    (gera-gabarito-pardo (parse-string string))))
 
 (with-system tempered
   (gera-gabarito-pardo
@@ -162,13 +186,12 @@
          (make-evento :PITCH 4 :OCTAVE 9 :DUR 1/4 :INICIO 1/2)
          (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 1/2))))
 
-
 ;(transpoe '(0 14 69) '#\d)
 ;(da-nota-modificada '(0 14 69) '((95  1) (13  1) (68  1)) #\c -1)
 ;(avalia-segmento '((maj 0) 0 14 69) '((95  1) (13  1) (68  1)))
 ;(pardo '((95  1) (13  1) (68  1)))
 ;*templates*
 ;(pardo '((0 1) (28 2) (55 3)))
-;(corrige-exemplo "ex001")
+;(corrige-exemplo "001")
 ;(parse-file "/home/top/programas/analise-harmonica/exemplos/ex001.ly")
 

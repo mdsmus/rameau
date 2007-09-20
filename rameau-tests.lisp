@@ -15,6 +15,7 @@
                          (regressao "regressao/")
                          (lily "regressao-lily/")))
 
+
 (defun add-lily-ext (file)
   (if (tem-ext? file) file (concat file ".ly")))
 
@@ -39,13 +40,24 @@
       (mapcar #'acorde->cifra gabarito)
       gabarito))
 
+(defun tira-extensao (file)
+  (subseq file 0 (position #\. file)))
+
+
+(defun troca-extensao (file ext)
+  (concat (tira-extensao file) ext))
+
+
 (defun print-compara-gabarito (files &optional verbose? print-notas?)
   (let (ok no)
     (dolist (file files)
-      (let* ((algoritmo (gera-gabarito (gera-gabarito-pardo (parse-file file))))
-             (gabarito (gera-gabarito (gabarito->sexp (troca-extensao file ".gab"))))
-             (comparacao (equal algoritmo gabarito))
-             (notas (no-op2 file))
+      (let* ((algoritmo (gera-gabarito
+                         (with-system tempered
+                           (gera-gabarito-pardo (parse-file file)))))
+             (gabarito (gera-gabarito (processa-gabarito
+                                       (troca-extensao file ".gab"))))
+             (comparacao (compara-gabarito-pardo algoritmo gabarito))
+             (notas (no-op (parse-file file)))
              (file-name (pathname-name file)))
         (cond
           (*print-only-wrong*
@@ -66,7 +78,9 @@
 (defun print-analise-harmonica (files)
   (dolist (file files)
     (format t "~% * ~a~%" (pathname-name file))
-    (format t "   pardo: ~(~a~) ~%" (gera-gabarito (gera-gabarito-pardo (parse-file file))))))
+    (format t "   pardo: ~(~a~) ~%" (gera-gabarito
+                                     (with-system tempered
+                                       (gera-gabarito-pardo (parse-file file)))))))
 
 (defun parse-summary (files)
   (let (ok no)
