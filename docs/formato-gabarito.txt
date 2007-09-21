@@ -30,10 +30,11 @@ A estrutura do formato de gabarito é simples:
  <adições>...), onde
 
    0.0: <tônica> representa a nota tônica do acorde (em codificação
-   tonal)
+   tonal, usando a sintaxe do lilypond)
 
    0.1: <tipo> representa o tipo da tríade: maj para maior, min para
-   menor, dim para diminuto e aug para aumentada.
+   menor, dim para diminuto, ita para sexta italiana, ale para sexta
+   alemã, fra para sexta francesa e aug para aumentada.
   
    0.2: <inversão> é um número inteiro representando a inversão do
    acorde. 0 é a forma natural, 1 a primeira inversão e assim
