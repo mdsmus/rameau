@@ -6,9 +6,9 @@
   ((maj) (0 4 7))
   ((maj 7) (0 4 7 10))
   ((min) (0 3 7))
-  ((min 5- 7-) (0 3 6 9))
-  ((min 5- 7) (0 3 6 10))
-  ((min 5-) (0 3 6))
+  ((dim 7-) (0 3 6 9))
+  ((dim 7) (0 3 6 10))
+  ((dim) (0 3 6))
   )
 
 (defun pula (elemento lista)
@@ -62,7 +62,7 @@
   (cons (avalia-template (transpoe template nota) segmento)
         (cons
          (string->symbol
-          (print-note nota 'latin))
+          (print-note nota 'lily))
          segmento)))
   
 
@@ -140,7 +140,8 @@
   (let ((nota (first resultado))
         (nota-certa (first gabarito))
         (acorde (rest resultado))
-        (acorde-certo (rest (butlast gabarito))))
+        (acorde-certo (cons (second gabarito)
+                            (rest (rest (rest gabarito))))))
     (and (eq nota nota-certa)
          (equal acorde acorde-certo))))
 
@@ -186,6 +187,25 @@
          (make-evento :PITCH 4 :OCTAVE 9 :DUR 1/4 :INICIO 1/2)
          (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 1/2))))
 
+
+(mapcar #'pardo
+ (segmentos-minimos
+  (list
+   (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0 :PASSAGEM? NIL)
+   (make-evento :PITCH 7 :OCTAVE 10 :DUR 1/4 :INICIO 0 :PASSAGEM? NIL)
+   (make-evento :PITCH 4 :OCTAVE 9 :DUR 1/4 :INICIO 0 :PASSAGEM? NIL)
+   (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0 :PASSAGEM? NIL)
+   (make-evento :PITCH 2 :OCTAVE 10 :DUR 1/4 :INICIO 1/4 :PASSAGEM? NIL)
+   (make-evento :PITCH 8 :OCTAVE 10 :DUR 1/4 :INICIO 1/4 :PASSAGEM? NIL)
+   (make-evento :PITCH 5 :OCTAVE 9 :DUR 1/4 :INICIO 1/4 :PASSAGEM? NIL)
+   (make-evento :PITCH 11 :OCTAVE 9 :DUR 1/4 :INICIO 1/4 :PASSAGEM? NIL)
+   (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 1/2 :PASSAGEM? NIL)
+   (make-evento :PITCH 7 :OCTAVE 10 :DUR 1/4 :INICIO 1/2 :PASSAGEM? NIL)
+   (make-evento :PITCH 4 :OCTAVE 9 :DUR 1/4 :INICIO 1/2 :PASSAGEM? NIL)
+   (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 1/2 :PASSAGEM? NIL))))
+
+
+
 ;(transpoe '(0 14 69) '#\d)
 ;(da-nota-modificada '(0 14 69) '((95  1) (13  1) (68  1)) #\c -1)
 ;(avalia-segmento '((maj 0) 0 14 69) '((95  1) (13  1) (68  1)))
@@ -193,5 +213,5 @@
 ;*templates*
 ;(pardo '((0 1) (28 2) (55 3)))
 ;(corrige-exemplo "001")
-;(parse-file "/home/top/programas/analise-harmonica/exemplos/ex001.ly")
+;(print (with-system tempered (parse-file "/home/top/programas/analise-harmonica/exemplos/017.ly")))
 
