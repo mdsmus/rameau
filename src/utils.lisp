@@ -80,7 +80,7 @@ quantos acidentes ou oitavas uma nota tem."
 (defun no-op (musica)
   (mapcar #'lista-notas (segmentos-minimos musica)))
 
-(defun retorna-n-segmentos (musica)
+(defun retorna-n-segmentos (musica n)
   (subseq musica 0 n))
 
 (defun expande-multiplicacoes (gab)
