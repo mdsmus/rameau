@@ -1,6 +1,5 @@
 ;; Implementação do algoritmo de pardo.
-
-
+(in-package #:rameau)
 
 (deftemplates *pardo-templates* 
   ((maj) (0 4 7))
@@ -160,7 +159,6 @@
                 gabarito)))
     (compara-gabarito-pardo (rest resultado) (rest gabarito)))))
                   
-
 (defun corrige-exemplo (exemplo &optional (metodo #'gera-gabarito-pardo))
   "Corrige e compara o resultado de um exemplo com o gabarito"
   (let ((resultado (algoritmo-pardo (file-string
@@ -187,7 +185,6 @@
          (make-evento :PITCH 4 :OCTAVE 9 :DUR 1/4 :INICIO 1/2)
          (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 1/2))))
 
-
 (mapcar #'pardo
  (segmentos-minimos
   (list
@@ -203,15 +200,4 @@
    (make-evento :PITCH 7 :OCTAVE 10 :DUR 1/4 :INICIO 1/2 :PASSAGEM? NIL)
    (make-evento :PITCH 4 :OCTAVE 9 :DUR 1/4 :INICIO 1/2 :PASSAGEM? NIL)
    (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 1/2 :PASSAGEM? NIL))))
-
-
-
-;(transpoe '(0 14 69) '#\d)
-;(da-nota-modificada '(0 14 69) '((95  1) (13  1) (68  1)) #\c -1)
-;(avalia-segmento '((maj 0) 0 14 69) '((95  1) (13  1) (68  1)))
-;(pardo '((95  1) (13  1) (68  1)))
-;*templates*
-;(pardo '((0 1) (28 2) (55 3)))
-;(corrige-exemplo "001")
-;(print (with-system tempered (parse-file "/home/top/programas/analise-harmonica/exemplos/017.ly")))
 

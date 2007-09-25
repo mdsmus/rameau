@@ -3,6 +3,8 @@
 ;;             (d -1) is Db (d flat)
 ;; interval-code is alist representing an interval
 
+(in-package #:rameau)
+
 (defparameter *notes* '(#\c #\d #\e #\f #\g #\a #\b))
 
 (defparameter *rests* '(#\r #\s #\S #\R))

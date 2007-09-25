@@ -1,3 +1,5 @@
+(in-package #:rameau)
+
 (defun concat (&rest strings)
   "Concatenate a bunch of strings."
   (apply #'concatenate 'string strings))

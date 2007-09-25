@@ -1,6 +1,4 @@
-(import 'lexer:deflexer)
-(import 'lexer:%0)
-(use-package 'yacc)
+(in-package #:rameau)
 
 (defparameter *filename* nil)
 
@@ -18,32 +16,39 @@
       (expmerge (first exprs) (merge-exprs (rest exprs)))
       (car exprs)))
 
-(deflexer string-lexer
-  ("('|,)+" (return (values 'OCTAVE %0)))
-  ("(V|v)oice" (return (values 'VOICE %0)))
-  ("(S|s)taff" (return (values 'STAFF %0)))
+;; RAMEAU::%
+;; RAMEAU::*DUR*
+;; REGEX::*END*
+;; RAMEAU::*ENVIRONMENT*
+;; RAMEAU::*EXPRESSION-PARSER*
+;; RAMEAU::*MAIN-DIR*
+
+(deflexer:deflexer string-lexer
+  ("('|,)+" (return (values 'OCTAVE deflexer:%0)))
+  ("(V|v)oice" (return (values 'VOICE deflexer:%0)))
+  ("(S|s)taff" (return (values 'STAFF deflexer:%0)))
   ("(S|s)core" (return (values 'SCORE %)))
   ("-\\\\tenuto")
   ("-\\\\staccato")
   ("(-|_|\\^|~|\\?)(\\.|\\^|\\+|\\||>|_|-|\"[^\"]*\")?")
   ("[:alpha:]+"
-   (if (or (note? %0) (rest? %0))
-       (return (values 'NOTE %0))
-       (return (values 'VARNAME %0))))
-  ("\\\\(T|t)imes" (return (values 'TIMES %0)))
-  ("\\d/\\d" (return (values 'NUMBER (read-from-string %0))))
-  ("(128|16|32|64|1|2|4|8)" (return (values 'DUR %0)))
-  ("\\d+" (return (values 'NUMBER %0)))
-  ("\\*\\d+/\\d+" (return (values 'MULTIPLICA %0)))
-  ("\\*\\d+" (return (values 'MULTIPLICA %0)))
+   (if (or (note? deflexer:%0) (rest? deflexer:%0))
+       (return (values 'NOTE deflexer:%0))
+       (return (values 'VARNAME deflexer:%0))))
+  ("\\\\(T|t)imes" (return (values 'TIMES deflexer:%0)))
+  ("\\d/\\d" (return (values 'NUMBER (read-from-string deflexer:%0))))
+  ("(128|16|32|64|1|2|4|8)" (return (values 'DUR deflexer:%0)))
+  ("\\d+" (return (values 'NUMBER deflexer:%0)))
+  ("\\*\\d+/\\d+" (return (values 'MULTIPLICA deflexer:%0)))
+  ("\\*\\d+" (return (values 'MULTIPLICA deflexer:%0)))
   ("([:space:]+)")
   ("\\\\\\\\") ; contar isso é uma maravilha. Devem ser oito
   ("\\\\(set|override)[^=]*=[:space:]+[^:space:]*") ; pra ignorar set e override
   ("\\\\(V|v)oice((O|o)ne|(T|t)wo|(T|t)hree|(F|f)our)")
   ("-+\n")
   ("\\|")
-  ("#(t|f)" (return (values 'BOOL %0)))
-  ("#" (return (values 'HASH %0)))
+  ("#(t|f)" (return (values 'BOOL deflexer:%0)))
+  ("#" (return (values 'HASH deflexer:%0)))
   ("\\\\[Vv]ersion[:space:]+\"[^\"]*\"")
   ("\\\\clef[:space:]+\"?(treble|violin|G|G2|alto|C|tenor|bass|F|french|soprano|mezzosoprano|baritone|varbaritone|subbass)\"?")
   ("\\\\(T|t)ime[:space:]+\\d+/\\d+")
@@ -51,33 +56,33 @@
   ("\\\\(T|t)ime[:space:]+\\d+[:space:]+=[:space:]+\\d+")
   ("\\\\(B|b)ar[:space:]+\"[^\"]*\"")
   ("\\\\(P|p)artial[:space:]+\\d+")
-  ("\\\\(L|l)ayout" (return (values 'LAYOUT %0)))
+  ("\\\\(L|l)ayout" (return (values 'LAYOUT deflexer:%0)))
   ;; FIXME: porque sem o foo nao funciona? (wtf!?) [ver regressao 034]
   ;; acho que \minor está sendo pegado por VARIABLE abaixo (comentar e ver)
   ("\\\\key[:space:]+(a|b|c|d|e|f|g)(is|es)*[:space:]+\\\\(minor|major|dim)")
   ("%[^\\n]*")
-  ("\\\\(S|s)kip" (return (values 'SKIP %0)))
-  ("\\\\(C|c)ontext" (return (values 'CONTEXT %0)))
-  ("\\." (return (values 'PONTO %0)))
-  ("\\\\(H|h)eader" (return (values 'HEADER %0)))
-  ("\"[^\"]*\"" (return (values 'STRING %0)))
+  ("\\\\(S|s)kip" (return (values 'SKIP deflexer:%0)))
+  ("\\\\(C|c)ontext" (return (values 'CONTEXT deflexer:%0)))
+  ("\\." (return (values 'PONTO deflexer:%0)))
+  ("\\\\(H|h)eader" (return (values 'HEADER deflexer:%0)))
+  ("\"[^\"]*\"" (return (values 'STRING deflexer:%0)))
   ("=" (return (values '= '=)))
-  ("\\\\include" (return (values 'INCLUDE %0)))
-  ("\\\\new[:space:]+(Piano)?(s|S)taff" (return (values 'NEW-STAFF %0)))
-  ("\\\\new[:space:]+(v|V)oice" (return (values 'NEW-VOICE %0)))
-  ("\\\\(R|r)elative" (return (values 'RELATIVE %0)))
-  ("\\\\(S|s)core" (return (values 'NEW-SCORE %0)))
-  ("\\\\(S|s)imultaneous" (return (values 'SIMULT %0)))
+  ("\\\\include" (return (values 'INCLUDE deflexer:%0)))
+  ("\\\\new[:space:]+(Piano)?(s|S)taff" (return (values 'NEW-STAFF deflexer:%0)))
+  ("\\\\new[:space:]+(v|V)oice" (return (values 'NEW-VOICE deflexer:%0)))
+  ("\\\\(R|r)elative" (return (values 'RELATIVE deflexer:%0)))
+  ("\\\\(S|s)core" (return (values 'NEW-SCORE deflexer:%0)))
+  ("\\\\(S|s)imultaneous" (return (values 'SIMULT deflexer:%0)))
   ("<<" (return (values '|<<| '|<<|)))
   (">>" (return (values '|>>| '|>>|)))
-  ("<" (return (values '|<| %0)))
-  (">" (return (values '|>| %0)))
+  ("<" (return (values '|<| deflexer:%0)))
+  (">" (return (values '|>| deflexer:%0)))
   ("\\{" (return (values '|{| '|{|)))
   ("\\}" (return (values '|}| '|}|)))
-  ("\\\\([:alpha:]+)" (return (values 'VARIABLE %0)))
-  ("\\(" (return (values 'OPEN-PAREN %0)))
-  ("\\)" (return (values 'CLOSE-PAREN %0)))
-  (":" (return (values 'COLON %0)))
+  ("\\\\([:alpha:]+)" (return (values 'VARIABLE deflexer:%0)))
+  ("\\(" (return (values 'OPEN-PAREN deflexer:%0)))
+  ("\\)" (return (values 'CLOSE-PAREN deflexer:%0)))
+  (":" (return (values 'COLON deflexer:%0)))
   )
 
 (defclass ast-node ()
@@ -291,7 +296,7 @@
       (remove-if #'null node)
       node))
       
-(define-parser *expression-parser*
+(yacc:define-parser *expression-parser*
   (:start-symbol start)
   (:terminals (WHITESPACE
                NEW-STAFF
@@ -448,7 +453,6 @@
    OCTAVE
    NUMBER
    scheme-sexp)
-   
 ) 
 
 (defun parse-string (str)
@@ -456,7 +460,7 @@
         (*dur* 1/4))
     (declare (special *environment* *dur*))
     (remove-if (lambda (x) (null (evento-pitch x)))
-               (parse-with-lexer (string-lexer str) *expression-parser*))))
+               (yacc:parse-with-lexer (string-lexer str) *expression-parser*))))
 
 (defun file-string (path)
   "Sucks up an entire file from PATH into a freshly-allocated string,
@@ -470,10 +474,3 @@
   (let ((*filename* filename))
     (declare (special *filename*))
     (parse-string (file-string filename))))
-
-;; (parse-file "/home/top/programas/analise-harmonica/literatura/bach-corais/009.ly")
-;;(parse-file "/home/top/programas/analise-harmonica/literatura/bach-corais/002.ly")
-;; (parse-file "/home/top/programas/analise-harmonica/literatura/kostka-payne/ex30a.ly")
-;;(setf token (string-lexer (file-string "/home/top/programas/analise-harmonica/literatura/kostka-payne/ex30a.ly")))
-;; (funcall token)
-;; (parse-string "\\header { } { a b c }")

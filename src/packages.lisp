@@ -1,21 +1,9 @@
 (in-package :cl-user)
 
-(defpackage #:formato
-  (:export 
-   #:emite-evento
-   #:move-evento-no-tempo
-   #:movimenta-sequencia
-   #:emite-sequencia
-   #:emite-acorde
-   #:cria-nota
-   #:cria-nota-artic
-   #:inicio
-   #:concatena-sequencias)
+(defpackage #:rameau
+  ;;(:export #:emite-evento)
   (:use #:cl))
 
-(defpackage #:segment
-  (:use #:cl))
-
-(defpackage #:parser
-  (:use #:cl #:yacc #:lexer #:formato)
-  (:export #:parse-string #:parse-file))
+(defpackage #:rameau-test
+  (:use #:cl #:rameau)
+  (:export #:test))
