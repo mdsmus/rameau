@@ -1,2 +1,2 @@
-(asdf 'rameau-tests)
-(lisp-unit:run-all-tests :rameau-tests)
+(asdf 'rameau)
+(lisp-unit:run-all-tests :rameau)
