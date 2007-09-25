@@ -78,6 +78,7 @@
   (":" (return (values 'COLON lexer:%0)))
   )
 
+
 (defclass ast-node ()
   ((expr :accessor node-expr :initarg :expr :initform nil)))
 
@@ -111,6 +112,9 @@
 (defun parse-music-block (a block b)
   (declare (ignore a b))
   (make-instance 'music-block :expr block))
+
+(defun do-the-parsing (tree)
+  (process-ast (ajusta-duracao tree)))
 
 (defun parse-chord-dur (a chord b dur)
   (declare (ignore a b))
@@ -147,6 +151,7 @@
   (make-instance 'read-variable :varname variable))
 
 (defun parse-times-block (a number expr)
+  (declare (ignore a))
   (make-instance 'times :times number :expr expr))
 
 (defun parse-voice-block (a block)
@@ -189,7 +194,7 @@
 (defun parse-lilypond (lilypond atom)
   (coloca-expressoes-em-sequencia
    (remove-if #'null (list lilypond
-                           (do-the-parsing atom)))))
+                           (rameau:do-the-parsing atom)))))
 
 (defun empty-octave ()
   "")
@@ -198,13 +203,9 @@
   (declare (ignore args))
   nil)
 
-
 (defun parse-assignment (variable equal value)
   (declare (ignore equal))
   (make-instance 'set-variable :varname variable :value value))
-
-(defun do-the-parsing (tree)
-  (process-ast (ajusta-duracao tree)))
 
 (defgeneric ajusta-duracao (tree) 
     (:documentation "Acerta as durações das notas em uma música"))
@@ -242,7 +243,6 @@
   (acerta-times times (node-value tree)))
 
 (defmethod acerta-times (times tree))
-
 
 (defgeneric process-ast (astnode)
   (:documentation "Processa um nó na AST e retorna a parte correspondente"))
@@ -288,171 +288,13 @@
   (if (listp node)
       (remove-if #'null node)
       node))
-      
-(yacc:define-parser *expression-parser*
-  (:start-symbol start)
-  (:terminals (WHITESPACE
-               NEW-STAFF
-               NEW-SCORE
-               NEW-VOICE
-               DUR
-               NOTE
-               OCTAVE
-               RELATIVE
-               STRING
-               HEADER
-               VARNAME
-               VARIABLE
-               SIMULT
-               PONTO
-               TIMES
-               NUMBER
-               VOICE
-               STAFF
-               SCORE
-               CONTEXT
-               MULTIPLICA
-               SKIP
-               HASH
-               OPEN-PAREN
-               CLOSE-PAREN
-               BOOL
-               COLON
-               LAYOUT
-               NUMBER
-               INCLUDE
-               = |{| |}| |<<| |>>| |<| |>|))
-
-  (start
-   ()
-   (lilypond #'identity))
-  
-  (lilypond
-   (expression-atom #'do-the-parsing)
-   (lilypond expression-atom #'parse-lilypond))
-
-  (lilypond-header
-   (HEADER |{| expression |}|)
-   (HEADER |{| |}|))
-
-  (expression
-   (expression-atom #'list)
-   (expression-atom expression #'cons))
-  
-  (expression-atom
-   (lilypond-header #'do-nothing)
-   (OPEN-PAREN #'do-nothing)
-   (CLOSE-PAREN #'do-nothing)
-   (layout-block #'do-nothing)
-   (music-block #'identity)
-   (empty-block #'identity)
-   (staff-block #'identity)
-   (score-block #'identity)
-   (voice-block #'identity)
-   (times-block #'identity)
-   (assignment #'identity)
-   (variable-block #'identity)
-   (relative-block #'identity)
-   (chord-block #'identity)
-   (scheme-code #'do-nothing)
-   (include STRING #'parse-include)
-   (|<<| expression |>>| #'parse-simultaneous)
-   (SIMULT { expression } #'parse-simult)
-   (note-expr #'identity))
-
-  (assignment
-   (VARNAME = value #'parse-assignment))
-
-  (value
-   (STRING #'identity)
-   (expression-atom #'identity))
-
-  (variable-block
-   (VARIABLE #'parse-variable-block))
-   
-  (music-block
-   (|{| expression |}| #'parse-music-block))
-
-  (empty-block
-   (|{| |}| #'do-nothing))
-
-  (layout-block
-   (LAYOUT |{| |}|)
-   (LAYOUT |{| expression |}|))
-
-  (staff-block
-   (NEW-STAFF expression-atom #'parse-staff-block)
-   (CONTEXT STAFF = VARNAME expression-atom #'parse-context-staff)
-   (CONTEXT STAFF = STRING expression-atom #'parse-context-staff))
-
-  (score-block
-   (NEW-SCORE expression-atom #'parse-score-block)
-   (CONTEXT SCORE = VARNAME expression-atom #'parse-context-score)
-   (CONTEXT SCORE = STRING expression-atom #'parse-context-score))
-
-  (voice-block
-   (NEW-VOICE expression-atom #'parse-voice-block)
-   (NEW-VOICE = STRING expression-atom #'parse-voice-block-string)
-   (CONTEXT VOICE = VARNAME expression-atom #'parse-context-voice)
-   (CONTEXT VOICE = STRING expression-atom #'parse-context-voice))
-  
-  (relative-block
-   (RELATIVE note-expr expression-atom #'parse-relative-block))
-
-  (times-block
-   (TIMES NUMBER expression-atom #'parse-times-block))
-
-  (chord-block
-   (|<| notes |>| dur-expr  #'parse-chord-dur))
-
-  (notes
-   (note-expr #'list)
-   (note-expr notes #'cons))
-  
-  (note-expr
-   (NOTE octave-expr dur-expr  #'cria-nota)
-   (SKIP dur-expr #'cria-skip))
-
-  (octave-expr
-   ( #'empty-octave)
-   (OCTAVE #'identity))
-
-  (dur-expr
-   ( #'do-nothing)
-   (DUR #'parse-dur)
-   (dur-expr PONTO #'parse-dur-ponto)
-   (dur-expr MULTIPLICA #'parse-dur-multiplica))
-  
-  (scheme-code
-   (HASH scheme-sexp))
-
-  (scheme-sexp
-   (OPEN-PAREN scheme-list CLOSE-PAREN))
-
-  (scheme-list
-   ()
-   (scheme-list scheme-atom))
-
-  (scheme-atom
-   VARNAME
-   STRING
-   BOOL
-   COLON
-   STAFF
-   SCORE
-   VOICE
-   DUR
-   OCTAVE
-   NUMBER
-   scheme-sexp)
-) 
 
 (defun parse-string (str)
   (let ((*environment* nil)
         (*dur* 1/4))
     (declare (special *environment* *dur*))
     (remove-if (lambda (x) (null (evento-pitch x)))
-               (yacc:parse-with-lexer (string-lexer str) *expression-parser*))))
+               (parse-with-lexer (string-lexer str) *expression-parser*))))
 
 (defun file-string (path)
   "Sucks up an entire file from PATH into a freshly-allocated string,

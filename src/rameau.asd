@@ -9,10 +9,11 @@
   :components (
                (:file "packages")
                (:file "utils")
-               (:file "musiclib")
                (:file "formato")
-               (:file "parser")
+               (:file "musiclib")
                (:file "segmento")
+               (:file "parser")
+               (:file "parser-grammar")
                (:file "pardo")
                ;;(:file "test-utils")
                (:file "test-musiclib")
