@@ -1,4 +1,4 @@
-(in-package #:rameau-tests)
+(in-package #:rameau)
 
 (define-test note->code
   (assert-equal 0  (note->code "c"))

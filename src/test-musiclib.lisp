@@ -1,4 +1,4 @@
-(in-package #:rameau-tests)
+(in-package #:rameau)
 
 (define-test get-system-item
   (assert-equal '(*TONAL-SYSTEM* 96 *TONAL-INTERVALS*) (get-system-item 'tonal))
