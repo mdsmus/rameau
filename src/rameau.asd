@@ -17,7 +17,7 @@
                ;;(:file "test-utils")
                (:file "test-musiclib")
                ;;(:file "test-formato")
-               ;;(:file "test-parser")
+               (:file "test-parser")
                ;;(:file "test-segmento")
                ;;(:file "test-pardo")
                ))
