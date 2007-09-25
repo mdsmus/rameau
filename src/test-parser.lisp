@@ -1,32 +1,32 @@
 (in-package #:rameau)
 
-(define-test note->code
-  (assert-equal 0  (note->code "c"))
-  (assert-equal 14 (note->code "d"))
-  (assert-equal 1  (note->code "cis"))
-  (assert-equal 0  (with-system tempered (note->code "c")))
-  (assert-equal 2  (with-system tempered (note->code "d")))
-  (assert-equal 1  (with-system tempered (note->code "cis")))
+(lisp-unit:define-test note->code
+  (lisp-unit:assert-equal 0  (note->code "c"))
+  (lisp-unit:assert-equal 14 (note->code "d"))
+  (lisp-unit:assert-equal 1  (note->code "cis"))
+  (lisp-unit:assert-equal 0  (with-system tempered (note->code "c")))
+  (lisp-unit:assert-equal 2  (with-system tempered (note->code "d")))
+  (lisp-unit:assert-equal 1  (with-system tempered (note->code "cis")))
   )
 
-(define-test octave-from-string
-  (assert-equal 8  (octave-from-string ""))
-  (assert-equal 7  (octave-from-string ","))
-  (assert-equal 6  (octave-from-string ",,"))
-  (assert-equal 9  (octave-from-string "'"))
-  (assert-equal 10 (octave-from-string "''"))
+(lisp-unit:define-test octave-from-string
+  (lisp-unit:assert-equal 8  (octave-from-string ""))
+  (lisp-unit:assert-equal 7  (octave-from-string ","))
+  (lisp-unit:assert-equal 6  (octave-from-string ",,"))
+  (lisp-unit:assert-equal 9  (octave-from-string "'"))
+  (lisp-unit:assert-equal 10 (octave-from-string "''"))
   )
 
-(define-test cria-nota
-  (assert-equal 0 (evento-pitch (cria-nota "c")))
-  (assert-equal nil (evento-dur (cria-nota "c")))
-  (assert-equal 8 (evento-octave (cria-nota "c")))
-  (assert-equal 0 (evento-inicio (cria-nota "c")))
+(lisp-unit:define-test cria-nota
+  (lisp-unit:assert-equal 0 (evento-pitch (cria-nota "c")))
+  (lisp-unit:assert-equal nil (evento-dur (cria-nota "c")))
+  (lisp-unit:assert-equal 8 (evento-octave (cria-nota "c")))
+  (lisp-unit:assert-equal 0 (evento-inicio (cria-nota "c")))
   )
 
 
-(define-test parser
-  (assert-equalp
+(lisp-unit:define-test parser
+  (lisp-unit:assert-equalp
    (list
     (make-evento :PITCH 0 :OCTAVE 8 :DUR 1/4 :INICIO 0)
     (make-evento :PITCH 0 :OCTAVE 8 :DUR 1/4 :INICIO 0)
@@ -40,7 +40,7 @@
 \\new Staff { c d e f }
 \\new Staff { c d e f }
 >> }"))
-  (assert-equalp
+  (lisp-unit:assert-equalp
    (list
     (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
     (make-evento :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)
@@ -56,7 +56,7 @@
     c
   }
 >>"))
-  (assert-equalp
+  (lisp-unit:assert-equalp
    (list
     (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
     (make-evento :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)
@@ -78,7 +78,7 @@
     c
   }
 >>"))
-  (assert-equalp
+  (lisp-unit:assert-equalp
    (parse-string "
 \\header {
   file = \"ex001.ly\"
@@ -124,21 +124,21 @@
          (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 1/2)
          (make-evento :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 1/2)
          (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 1/2)))
-  (assert-equalp
+  (lisp-unit:assert-equalp
    (parse-string "{ foo = { c d e} \\foo }")
    (list
     (make-evento :PITCH 0 :OCTAVE 8 :DUR 1/4 :INICIO 0)
     (make-evento :PITCH 14 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)
     (make-evento :PITCH 28 :OCTAVE 8 :DUR 1/4 :INICIO 1/2)))
-  (assert-equalp
+  (lisp-unit:assert-equalp
    (parse-string "{ foo = { c } \\foo foo = { d } \\foo }")
    (list
     (make-evento :PITCH 0 :OCTAVE 8 :DUR 1/4 :INICIO 0)
     (make-evento :PITCH 14 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)))
   )
 
-(define-test segmentacao
-  (assert-equalp
+(lisp-unit:define-test segmentacao
+  (lisp-unit:assert-equalp
    (segmentos-minimos
     (list (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0)
           (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
@@ -166,7 +166,7 @@
           (make-evento :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 1/2)
           (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 1/2))))
 
-  (assert-equalp
+  (lisp-unit:assert-equalp
     (multiple-value-bind (a b)
         (normaliza-notas
          (list
@@ -205,7 +205,7 @@
                   :inicio 0
                   :dur 2)))
 
-  (assert-equalp
+  (lisp-unit:assert-equalp
     (multiple-value-bind
           (a b)
         (normaliza-notas
