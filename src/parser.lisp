@@ -16,39 +16,32 @@
       (expmerge (first exprs) (merge-exprs (rest exprs)))
       (car exprs)))
 
-;; RAMEAU::%
-;; RAMEAU::*DUR*
-;; REGEX::*END*
-;; RAMEAU::*ENVIRONMENT*
-;; RAMEAU::*EXPRESSION-PARSER*
-;; RAMEAU::*MAIN-DIR*
-
-(deflexer:deflexer string-lexer
-  ("('|,)+" (return (values 'OCTAVE deflexer:%0)))
-  ("(V|v)oice" (return (values 'VOICE deflexer:%0)))
-  ("(S|s)taff" (return (values 'STAFF deflexer:%0)))
+(lexer:deflexer string-lexer
+  ("('|,)+" (return (values 'OCTAVE lexer:%0)))
+  ("(V|v)oice" (return (values 'VOICE lexer:%0)))
+  ("(S|s)taff" (return (values 'STAFF lexer:%0)))
   ("(S|s)core" (return (values 'SCORE %)))
   ("-\\\\tenuto")
   ("-\\\\staccato")
   ("(-|_|\\^|~|\\?)(\\.|\\^|\\+|\\||>|_|-|\"[^\"]*\")?")
   ("[:alpha:]+"
-   (if (or (note? deflexer:%0) (rest? deflexer:%0))
-       (return (values 'NOTE deflexer:%0))
-       (return (values 'VARNAME deflexer:%0))))
-  ("\\\\(T|t)imes" (return (values 'TIMES deflexer:%0)))
-  ("\\d/\\d" (return (values 'NUMBER (read-from-string deflexer:%0))))
-  ("(128|16|32|64|1|2|4|8)" (return (values 'DUR deflexer:%0)))
-  ("\\d+" (return (values 'NUMBER deflexer:%0)))
-  ("\\*\\d+/\\d+" (return (values 'MULTIPLICA deflexer:%0)))
-  ("\\*\\d+" (return (values 'MULTIPLICA deflexer:%0)))
+   (if (or (note? lexer:%0) (rest? lexer:%0))
+       (return (values 'NOTE lexer:%0))
+       (return (values 'VARNAME lexer:%0))))
+  ("\\\\(T|t)imes" (return (values 'TIMES lexer:%0)))
+  ("\\d/\\d" (return (values 'NUMBER (read-from-string lexer:%0))))
+  ("(128|16|32|64|1|2|4|8)" (return (values 'DUR lexer:%0)))
+  ("\\d+" (return (values 'NUMBER lexer:%0)))
+  ("\\*\\d+/\\d+" (return (values 'MULTIPLICA lexer:%0)))
+  ("\\*\\d+" (return (values 'MULTIPLICA lexer:%0)))
   ("([:space:]+)")
   ("\\\\\\\\") ; contar isso é uma maravilha. Devem ser oito
   ("\\\\(set|override)[^=]*=[:space:]+[^:space:]*") ; pra ignorar set e override
   ("\\\\(V|v)oice((O|o)ne|(T|t)wo|(T|t)hree|(F|f)our)")
   ("-+\n")
   ("\\|")
-  ("#(t|f)" (return (values 'BOOL deflexer:%0)))
-  ("#" (return (values 'HASH deflexer:%0)))
+  ("#(t|f)" (return (values 'BOOL lexer:%0)))
+  ("#" (return (values 'HASH lexer:%0)))
   ("\\\\[Vv]ersion[:space:]+\"[^\"]*\"")
   ("\\\\clef[:space:]+\"?(treble|violin|G|G2|alto|C|tenor|bass|F|french|soprano|mezzosoprano|baritone|varbaritone|subbass)\"?")
   ("\\\\(T|t)ime[:space:]+\\d+/\\d+")
@@ -56,33 +49,33 @@
   ("\\\\(T|t)ime[:space:]+\\d+[:space:]+=[:space:]+\\d+")
   ("\\\\(B|b)ar[:space:]+\"[^\"]*\"")
   ("\\\\(P|p)artial[:space:]+\\d+")
-  ("\\\\(L|l)ayout" (return (values 'LAYOUT deflexer:%0)))
+  ("\\\\(L|l)ayout" (return (values 'LAYOUT lexer:%0)))
   ;; FIXME: porque sem o foo nao funciona? (wtf!?) [ver regressao 034]
   ;; acho que \minor está sendo pegado por VARIABLE abaixo (comentar e ver)
   ("\\\\key[:space:]+(a|b|c|d|e|f|g)(is|es)*[:space:]+\\\\(minor|major|dim)")
   ("%[^\\n]*")
-  ("\\\\(S|s)kip" (return (values 'SKIP deflexer:%0)))
-  ("\\\\(C|c)ontext" (return (values 'CONTEXT deflexer:%0)))
-  ("\\." (return (values 'PONTO deflexer:%0)))
-  ("\\\\(H|h)eader" (return (values 'HEADER deflexer:%0)))
-  ("\"[^\"]*\"" (return (values 'STRING deflexer:%0)))
+  ("\\\\(S|s)kip" (return (values 'SKIP lexer:%0)))
+  ("\\\\(C|c)ontext" (return (values 'CONTEXT lexer:%0)))
+  ("\\." (return (values 'PONTO lexer:%0)))
+  ("\\\\(H|h)eader" (return (values 'HEADER lexer:%0)))
+  ("\"[^\"]*\"" (return (values 'STRING lexer:%0)))
   ("=" (return (values '= '=)))
-  ("\\\\include" (return (values 'INCLUDE deflexer:%0)))
-  ("\\\\new[:space:]+(Piano)?(s|S)taff" (return (values 'NEW-STAFF deflexer:%0)))
-  ("\\\\new[:space:]+(v|V)oice" (return (values 'NEW-VOICE deflexer:%0)))
-  ("\\\\(R|r)elative" (return (values 'RELATIVE deflexer:%0)))
-  ("\\\\(S|s)core" (return (values 'NEW-SCORE deflexer:%0)))
-  ("\\\\(S|s)imultaneous" (return (values 'SIMULT deflexer:%0)))
+  ("\\\\include" (return (values 'INCLUDE lexer:%0)))
+  ("\\\\new[:space:]+(Piano)?(s|S)taff" (return (values 'NEW-STAFF lexer:%0)))
+  ("\\\\new[:space:]+(v|V)oice" (return (values 'NEW-VOICE lexer:%0)))
+  ("\\\\(R|r)elative" (return (values 'RELATIVE lexer:%0)))
+  ("\\\\(S|s)core" (return (values 'NEW-SCORE lexer:%0)))
+  ("\\\\(S|s)imultaneous" (return (values 'SIMULT lexer:%0)))
   ("<<" (return (values '|<<| '|<<|)))
   (">>" (return (values '|>>| '|>>|)))
-  ("<" (return (values '|<| deflexer:%0)))
-  (">" (return (values '|>| deflexer:%0)))
+  ("<" (return (values '|<| lexer:%0)))
+  (">" (return (values '|>| lexer:%0)))
   ("\\{" (return (values '|{| '|{|)))
   ("\\}" (return (values '|}| '|}|)))
-  ("\\\\([:alpha:]+)" (return (values 'VARIABLE deflexer:%0)))
-  ("\\(" (return (values 'OPEN-PAREN deflexer:%0)))
-  ("\\)" (return (values 'CLOSE-PAREN deflexer:%0)))
-  (":" (return (values 'COLON deflexer:%0)))
+  ("\\\\([:alpha:]+)" (return (values 'VARIABLE lexer:%0)))
+  ("\\(" (return (values 'OPEN-PAREN lexer:%0)))
+  ("\\)" (return (values 'CLOSE-PAREN lexer:%0)))
+  (":" (return (values 'COLON lexer:%0)))
   )
 
 (defclass ast-node ()
@@ -421,16 +414,15 @@
    (SKIP dur-expr #'cria-skip))
 
   (octave-expr
-   (#'empty-octave)
+   ( #'empty-octave)
    (OCTAVE #'identity))
 
   (dur-expr
-   (#'do-nothing)
+   ( #'do-nothing)
    (DUR #'parse-dur)
    (dur-expr PONTO #'parse-dur-ponto)
    (dur-expr MULTIPLICA #'parse-dur-multiplica))
   
-
   (scheme-code
    (HASH scheme-sexp))
 
