@@ -5,7 +5,7 @@
   :version "0.2"
   :author "Alexandre Passos e Pedro Kroger"
   :serial t
-  :depends-on (:yacc :lexer :cl-fad :cl-ppcre :lisp-unit)
+  :depends-on (:yacc :lexer :cl-fad :cl-ppcre)
   :components (
                (:file "packages")
                (:file "utils")

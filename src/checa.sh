@@ -5,6 +5,12 @@ testes=$(grep lisp-unit:define-test tests/*.lisp | awk '{print $2}' | sort | uni
 
 conta=$(echo "$funcoes" | wc -l)
 
+for f in $funcoes
+do
+    echo -n "#:$f "
+done
+exit
+
 echo "As seguintes funções [$conta] estão sem testes de unidade:"
 echo 
 for f in $funcoes

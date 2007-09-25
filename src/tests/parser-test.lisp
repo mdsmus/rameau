@@ -1,6 +1,4 @@
-(use-package :lisp-unit)
-
-
+(in-package #:rameau-tests)
 
 (define-test note->code
   (assert-equal 0  (note->code "c"))
@@ -238,5 +236,3 @@
                   :octave 1
                   :inicio 2
                   :dur 3))))
-
-(run-tests)

@@ -24,7 +24,6 @@
   (inicio)
   (passagem?))
 
-
 (defun cria-nota (nota &optional (octave "") dur articulation dur2) 
   (declare (ignore articulation))
   (let ((dur (if dur2 dur2 dur)))
@@ -36,7 +35,6 @@
 (defun cria-skip (skip dur)
   (declare (ignore skip))
   (cria-nota "s" "" dur))
-
 
 (defun move-evento-no-tempo (evento tempo)
   (assert (not (listp evento)))
@@ -50,10 +48,8 @@
       (mapcar (lambda (x) (move-evento-no-tempo x tempo))
               seq))
   
-
 (defun fim-evento (evento)
   (+ (evento-inicio evento) (evento-dur evento)))
-
 
 (defun coloca-expressoes-em-sequencia (sequencias)
   "Leva uma lista de expressões musicais e as arruma em sequência"
