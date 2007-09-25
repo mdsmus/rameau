@@ -1,4 +1,3 @@
-
 (defun concat (&rest strings)
   "Concatenate a bunch of strings."
   (apply #'concatenate 'string strings))
@@ -20,10 +19,9 @@
 
 (defun count-subseq (sub seq &optional (start -1) (acumula 0))
   (let ((s (search sub seq :start2 (+ start 1))))
-    (if (null s)
-        acumula
-        (count-subseq sub seq s (+ acumula 1)))))
-        
+    (if s
+        (count-subseq sub seq s (+ acumula 1))
+        acumula)))
 
 (defun symbol->number (string string-list)
   "Essa função conta quantas ocorrências tem do caractere na lista de
@@ -70,12 +68,10 @@ quantos acidentes ou oitavas uma nota tem."
         (< (evento-pitch x) (evento-pitch y))
         (< (evento-octave x) (evento-octave y)))))
 
-
 (defun lista-notas (segmento)
-  (let ((segmento (sort segmento #'compara-notas)))
-      (mapcar (lambda (x)
-                (print-note (code->note (evento-pitch x)) 'latin))
-              segmento)))
+  (mapcar (lambda (x)
+            (print-note (code->note (evento-pitch x)) 'latin))
+          (sort segmento #'compara-notas)))
 
 (defun no-op (musica)
   (mapcar #'lista-notas (segmentos-minimos musica)))
@@ -95,6 +91,5 @@ quantos acidentes ou oitavas uma nota tem."
 (defun processa-gabarito (file)
   "Transforma um gabarito de texto em sexp."
   (let ((gabarito (when (cl-fad:file-exists-p file) 
-                    (read-from-string
-                     (format nil "(~a)" (file-string file))))))
+                    (read-from-string (format nil "(~a)" (file-string file))))))
     (expande-multiplicacoes gabarito)))
