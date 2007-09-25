@@ -125,32 +125,6 @@
   (let ((palavra (format nil "~(~a~)" letra)))
     (format nil "(~a)~a" (subseq palavra 0 1) (subseq palavra 1))))
 
-(defun print-help ()
-  (format t "uso: rameau-tests [opções] [arquivos]
-
-* OPÇÕES
--t <nome> indica o nome do teste
--l        lista os testes disponíveis
--a        gera analise harmonica (sem comparar com gabarito)
--g        compara com gabarito (implica em -h)
--s        mostra as notas de cada segmento
--w        só mostra os testes que tem algum erro (implica em -v)
--c        mostra cifra dos acordes no lugar de listas
--v        verbose (mostra tudo)
--h        help
-
-* EXEMPLOS
-roda todas as regressões:
-  rameau-tests -t r
-
-roda os corais 031 e 371:
-  rameau-tests -t c 031 371
-
-roda todos os exemplos, faz comparação das analises harmonicas com
-gabarito, e mostra resultado em cifras:
-  rameau-tests -t e -vcg
-"))
-
 (defun return-path (code)
   (case code
     (#\c (get-test 'corais))
@@ -177,9 +151,7 @@ gabarito, e mostra resultado em cifras:
       (when (find #\c opts)
         (setf *use-cifras* t))
       (cond
-        ((and (null type) (null opts) (null files)) (print-help))
         ((find #\l opts) (print-tests))
-        ((find #\h opts) (print-help))
         ((find #\a opts) (print-analise-harmonica files))
         ((and (find #\g opts) (find #\v opts) (find #\s opts))
          (print-compara-gabarito files t t))

@@ -13,8 +13,9 @@
 ;; eventos, e representam esses eventos, e os manipulam de forma
 ;; básica.
 
-
 ;; *notes-names* é útil para o parser
+
+(in-package #:rameau)
 
 (defstruct evento
   (pitch)

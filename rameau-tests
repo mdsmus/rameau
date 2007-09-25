@@ -1,3 +1,44 @@
 #!/bin/sh
 
+help="uso: rameau-tests [opções] [arquivos] \n
+ \n
+ OPÇÕES \n
+-t <nome> indica o nome do teste \n
+-l        lista os testes disponíveis \n
+-a        gera analise harmonica (sem comparar com gabarito) \n
+-g        compara com gabarito (implica em -h) \n
+-s        mostra as notas de cada segmento \n
+-w        só mostra os testes que tem algum erro (implica em -v) \n
+-c        mostra cifra dos acordes no lugar de listas \n
+-v        verbose (mostra tudo) \n
+-h        help \n
+ \n
+ EXEMPLOS \n
+roda todas as regressões: \n
+  rameau-tests -t r \n
+ \n
+roda os corais 031 e 371: \n
+  rameau-tests -t c 031 371 \n
+ \n
+roda todos os exemplos, faz comparação das analises harmonicas com \n
+gabarito, e mostra resultado em cifras: \n
+  rameau-tests -t e -vcg \n
+"
+
+if [ "$#" == "0" ]
+then
+    echo -e $help
+    exit
+fi
+
+for f in "$@"
+do
+    if [ "$f" == "-h" ]
+    then
+        echo -e $help
+        exit
+    fi
+done
+
 sbcl --noinform --noprint --disable-debugger --load rameau-tests.lisp --eval "(progn (main) (quit))" $(pwd) $@
+

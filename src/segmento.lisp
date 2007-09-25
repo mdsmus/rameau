@@ -1,5 +1,6 @@
 ;; Implementação da segmentação
 
+(in-package #:rameau)
 
 (defun agrupa-por (inicio resto)
   (if resto
@@ -12,8 +13,6 @@
            resto))
       (values nil nil)))
   
-
-
 (defun agrupa-inicio (musica)
   "Separa a musica em pedaços com inicio igual, primeira etapa da segmentação"
   (when musica
