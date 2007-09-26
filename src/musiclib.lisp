@@ -5,7 +5,7 @@
 
 (in-package #:rameau)
 
-(defparameter *notes* '(#\c #\d #\e #\f #\g #\a #\b))
+(defparameter *notes* '(#\c #\d #\e #\f #\g #\a #\b #\C #\D #\E #\F #\G #\A #\B))
 
 (defparameter *rests* '(#\r #\s #\S #\R))
 
@@ -219,6 +219,16 @@ returns isisis."
   "Retuns a string of a note according to a note-code and representation.
 Example: (print-note '(c 1) 'lily) return cis."
   (format nil "~(~a~)~a" (first note-code) (print-accidentals (second note-code) representation)))
+
+(defun latin->lily (nota)
+  "Aceita uma string com o nome da nota em latin e retorna a
+representação do lilypond. Exemplo: (latin->lily \"Eb\") => \"ees\""
+  (print-note (code->note (note->code nota)) 'lily))
+
+(defun lily->latin (nota)
+  "Aceita uma string com o nome da nota em lily e retorna a
+representação em latin. Exemplo: (lily->latin \"cis\") => \"C#\""
+  (string-capitalize (print-note (code->note (note->code nota)) 'latin)))
 
 (defun module (n)
   "Returns the module according to a system.
