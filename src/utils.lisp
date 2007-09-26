@@ -44,6 +44,10 @@ quantos acidentes ou oitavas uma nota tem."
   "Convert a string to a symbol."
   (intern (string-upcase string)))
 
+(defun symbol->string (string)
+  "Convert a string to a symbol."
+  (string-downcase (symbol-name string)))
+
 (defun assoc-item (item alist)
   "Returns an item from a alist. "
   (second (assoc item alist)))
