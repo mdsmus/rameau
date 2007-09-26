@@ -22,7 +22,9 @@
   (octave)
   (dur)
   (inicio)
-  (passagem?))
+  (passagem?)
+  (penalidade-dissonancia)
+  (voice-leading-neighbor))
 
 (defun cria-nota (nota &optional (octave "") dur articulation dur2) 
   (declare (ignore articulation))
