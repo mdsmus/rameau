@@ -56,3 +56,4 @@ valor (como -c, -a, etc) podem ser condensados em um único comando.
   rameau-tests -t e 003 -ac
 
 a opção -t NÂO pode ser condensada com os outros comandos.
+
