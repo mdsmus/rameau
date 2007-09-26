@@ -236,27 +236,27 @@ double ornamental_dissonance_penalty(double delta) {
    when there is no resolving note */
 
 void label_notes_with_ornamental_dissonance_penalties(Note * nl) {
-    Note * note, *f_note;
-    double delta_t;
-    if (verbosity >= 4) printf("Ornamental dissonance penalties:\n");
-    for (note = nl; note != NULL; note = note->next) {
-	note->orn_dis_penalty = ornamental_dissonance_penalty(DEFAULT_TIME);
-	delta_t = DEFAULT_TIME;
-	for (f_note = note->next; f_note != NULL; f_note = f_note->next) {
+  Note * note, *f_note;
+  double delta_t;
+  if (verbosity >= 4) printf("Ornamental dissonance penalties:\n");
+  for (note = nl; note != NULL; note = note->next) {
+    note->orn_dis_penalty = ornamental_dissonance_penalty(DEFAULT_TIME);
+    delta_t = DEFAULT_TIME;
+    for (f_note = note->next; f_note != NULL; f_note = f_note->next) {
 	    /* use this value only if you don't find any real note to define the penalty */
 	    if (note->start == f_note->start) continue;  /* skip all notes that start when I do */
 	    if (note->pitch == f_note->pitch + 1  ||  note->pitch == f_note->pitch - 1  ||
-		note->pitch == f_note->pitch + 2  ||  note->pitch == f_note->pitch - 2) {
-		delta_t = (f_note->start - note->start)/(1000.0);  /* time in seconds */
-		note->orn_dis_penalty = ornamental_dissonance_penalty(delta_t);
-		break;  /* make it find the nearest note with dissonance */
+          note->pitch == f_note->pitch + 2  ||  note->pitch == f_note->pitch - 2) {
+        delta_t = (f_note->start - note->start)/(1000.0);  /* time in seconds */
+        note->orn_dis_penalty = ornamental_dissonance_penalty(delta_t);
+        break;  /* make it find the nearest note with dissonance */
 	    }
-	}
-	if (verbosity >= 4) {
-	    printf("pitch = %2d  start = %4d  duration = %4d  delta_t = %6.3f  od = %6.3f\n",
-		   note->pitch, note->start, note->duration, delta_t, note->orn_dis_penalty);
-	}
     }
+    if (verbosity >= 4) {
+	    printf("pitch = %2d  start = %4d  duration = %4d  delta_t = %6.3f  od = %6.3f\n",
+             note->pitch, note->start, note->duration, delta_t, note->orn_dis_penalty);
+    }
+  }
 }
 
 /* Modify the ornamental dissonance according to the level_times
@@ -280,31 +280,31 @@ void modify_ornamental_dissonance_penalties(Chord *m_clist) {
 }
 
 void label_notes_with_voice_leading_neighbor(Note *nl) {
-    Note * note, *f_note;
-    double delta_t;
-    if (verbosity >= 4) printf("Voice Leading Neighbors:\n");
-    for (note = nl; note != NULL; note = note->next) {
-	note->voice_leading_neighbor = 0; /* default unless we find a neighbor */
-	for (f_note = note->next; f_note != NULL; f_note = f_note->next) {
+  Note * note, *f_note;
+  double delta_t;
+  if (verbosity >= 4) printf("Voice Leading Neighbors:\n");
+  for (note = nl; note != NULL; note = note->next) {
+    note->voice_leading_neighbor = 0; /* default unless we find a neighbor */
+    for (f_note = note->next; f_note != NULL; f_note = f_note->next) {
 	    delta_t = (f_note->start - (note->start + note->duration))/(1000.0);  /* time in seconds */
 	    if (delta_t < 0) continue;
 	    if (delta_t > voice_leading_time) break;
 	    if (note->pitch == f_note->pitch + 1) {
-		/* note is an upper neighbor */
-		note->voice_leading_neighbor = 1;
-		break;
+        /* note is an upper neighbor */
+        note->voice_leading_neighbor = 1;
+        break;
 	    }
 	    if (note->pitch == f_note->pitch - 1) {
-		/* note is a lower neighbor */
-		note->voice_leading_neighbor = -1;
-		break;
+        /* note is a lower neighbor */
+        note->voice_leading_neighbor = -1;
+        break;
 	    }
-	}
-	if (verbosity >= 4) {
-	    printf("pitch = %2d  start = %4d  duration = %4d  voice_leading_neighbor = %2d\n",
-		   note->pitch, note->start, note->duration, note->voice_leading_neighbor);
-	}
     }
+    if (verbosity >= 4) {
+	    printf("pitch = %2d  start = %4d  duration = %4d  voice_leading_neighbor = %2d\n",
+             note->pitch, note->start, note->duration, note->voice_leading_neighbor);
+    }
+  }
 }
 	
 double compatibility(TPC root, TPC note) {
@@ -564,164 +564,172 @@ void initialize_first_harmonic_column(void) {
 }
 
 void compute_harmonic_table(void) {
-    int column;
-    int my_root;
-    TPC window;
-    double har_variance, score, note_relable_penalty, local_voice_leading_penalty;
-    double current_cog;
-    double new_cog;
-    double delta_cog;
-    Bucket * bu, *bu1;
-    int int_har_cog, int_tpc_cog, new_guy, h;
+  int column;
+  int my_root;
+  TPC window;
+  double har_variance, score, note_relable_penalty, local_voice_leading_penalty;
+  double current_cog;
+  double new_cog;
+  double delta_cog;
+  Bucket * bu, *bu1;
+  int int_har_cog, int_tpc_cog, new_guy, h;
     
-    initialize_first_harmonic_column();
-    for (column = 1; column<N_chords; column++) {
-	/* compute this column of the table */
-	for (window = LOWEST_TPC; window <= HIGHEST_TPC-11; window++) {
+  initialize_first_harmonic_column();
+  for (column = 1; column<N_chords; column++) {
+    /* compute this column of the table */
+    for (window = LOWEST_TPC; window <= HIGHEST_TPC-11; window++) {
 	    if (!is_canonical_window(column_table[column].chord->note, window)) continue;
 	    for (h=0; h<table_size; h++) {
-		for (bu = column_table[column-1].table[h]; bu != NULL; bu = bu->next) {
-		    for (my_root = floor(bu->har_cog-12.0); my_root <= ceil(bu->har_cog+12.0); my_root++) {
-			current_cog = (double) my_root;
+        for (bu = column_table[column-1].table[h]; bu != NULL; bu = bu->next) {
+          for (my_root = floor(bu->har_cog-12.0); my_root <= ceil(bu->har_cog+12.0); my_root++) {
+            current_cog = (double) my_root;
 
-			/* compute variance */
-			delta_cog = (current_cog - bu->har_cog);
-			/*	  har_variance = delta_cog * column_table[column].my_mass * column_table[column-1].chord_mass; */
-			har_variance = fabs(delta_cog * column_table[column].my_mass * har_var_factor); 
-			/* instead of total mass, use har_var_factor parameter value (normally 3.0) */
+            /* compute variance */
+            delta_cog = (current_cog - bu->har_cog);
+            /*	  har_variance = delta_cog * column_table[column].my_mass * column_table[column-1].chord_mass; */
+            har_variance = fabs(delta_cog * 
+                                column_table[column].my_mass * 
+                                har_var_factor); 
+            /* instead of total mass, use har_var_factor parameter value (normally 3.0) */
 
-			/* the following computes the compatibility, strong_beat_penalty, and ornamental dissonance penalty */
-			tpc_choice_score(my_root, window, bu->root == my_root, column_table[column].chord,
-					 column_table[column].my_mass, column_table[column].decayed_prior_note_mass, bu->tpc_cog);
+            /* the following computes the compatibility, strong_beat_penalty, and ornamental dissonance penalty */
+            tpc_choice_score(my_root, window, bu->root == my_root, column_table[column].chord,
+                             column_table[column].my_mass, 
+                             column_table[column].decayed_prior_note_mass, bu->tpc_cog);
 
-			note_relable_penalty = 0.0;
-			if (windows_differ_in_chord(bu->window, window, column_table[column].chord)) {
-			    note_relable_penalty = NOTE_RELABLE_PENALTY;
-			}
+            note_relable_penalty = 0.0;
+            if (windows_differ_in_chord(bu->window, window, 
+                                        column_table[column].chord)) {
+              note_relable_penalty = NOTE_RELABLE_PENALTY;
+            }
 
-			local_voice_leading_penalty = compute_voice_leading_penalty(column_table[column].chord, side_effect.tpc_cog, window);
+            local_voice_leading_penalty = compute_voice_leading_penalty(column_table[column].chord, 
+                                                                        side_effect.tpc_cog, window);
 
-			score = bu->score
-			    + side_effect.compatibility
-			    - side_effect.orn_diss_penalty
-			    - har_variance
-			    - tpc_var_factor * side_effect.tpc_variance
-			    - side_effect.strong_beat_penalty
-			    - note_relable_penalty
-			    - local_voice_leading_penalty;
+            score = bu->score
+              + side_effect.compatibility
+              - side_effect.orn_diss_penalty
+              - har_variance
+              - tpc_var_factor * side_effect.tpc_variance
+              - side_effect.strong_beat_penalty
+              - note_relable_penalty
+              - local_voice_leading_penalty;
 
-			new_cog = (bu->har_cog * column_table[column].decayed_prior_chord_mass
-				   + current_cog * column_table[column].my_mass) /column_table[column].chord_mass;
+            new_cog = (bu->har_cog * column_table[column].decayed_prior_chord_mass
+                       + current_cog * column_table[column].my_mass) /column_table[column].chord_mass;
 
-			int_tpc_cog = discrete_cog(side_effect.tpc_cog);
-			int_har_cog = discrete_cog(new_cog);
-			bu1 = lookup_in_table(int_tpc_cog, int_har_cog, my_root, window, column_table[column].table);
-			new_guy = (bu1 == NULL);
-			if (bu1 == NULL) bu1 = insert_into_table(int_tpc_cog, int_har_cog, my_root, window, column_table[column].table);
+            int_tpc_cog = discrete_cog(side_effect.tpc_cog);
+            int_har_cog = discrete_cog(new_cog);
+            bu1 = lookup_in_table(int_tpc_cog, int_har_cog, my_root, window, 
+                                  column_table[column].table);
+            new_guy = (bu1 == NULL);
+            if (bu1 == NULL) 
+              bu1 = insert_into_table(int_tpc_cog, int_har_cog, my_root, 
+                                      window, column_table[column].table);
 
-			/* now we look in that bucket and update what's there if this is a better solution */
-			if (new_guy || score > bu1->score) {
-			    bu1->score = score;
-			    bu1->har_variance = har_variance;
-			    bu1->tpc_variance = side_effect.tpc_variance;
-			    bu1->prev_bucket = bu;
-			    bu1->har_cog = new_cog;
-			    bu1->tpc_cog = side_effect.tpc_cog;
-			}
-		    }
-		}
+            /* now we look in that bucket and update what's there if this is a better solution */
+            if (new_guy || score > bu1->score) {
+              bu1->score = score;
+              bu1->har_variance = har_variance;
+              bu1->tpc_variance = side_effect.tpc_variance;
+              bu1->prev_bucket = bu;
+              bu1->har_cog = new_cog;
+              bu1->tpc_cog = side_effect.tpc_cog;
+            }
+          }
+        }
 	    }
-	}
-	prune_table(column_table[column].table, column);
     }
+    prune_table(column_table[column].table, column);
+  }
 }
 
 void print_harmonic(void) { 
-    Note * note;
-    Chord *chord;
-    double loc_voice_leading_penalty;
-    int i, j, h;
-    Bucket ** bucket_choice;
-    Bucket * best_b, *bb, *bu;
+  Note * note;
+  Chord *chord;
+  double loc_voice_leading_penalty;
+  int i, j, h;
+  Bucket ** bucket_choice;
+  Bucket * best_b, *bb, *bu;
     
-    bucket_choice = (Bucket **) xalloc(N_chords * sizeof (Bucket *));
+  bucket_choice = (Bucket **) xalloc(N_chords * sizeof (Bucket *));
     
-    best_b = NULL;
+  best_b = NULL;
     
-    for (h=0; h<table_size; h++) {
-	for (bu = column_table[N_chords-1].table[h]; bu != NULL; bu = bu->next) {
+  for (h=0; h<table_size; h++) {
+    for (bu = column_table[N_chords-1].table[h]; bu != NULL; bu = bu->next) {
 	    if(best_b == NULL || best_b->score < bu->score) best_b = bu;
-	}
     }
+  }
     
-    if (best_b == NULL) {
-	fprintf(stderr, "%s: No bucket used\n", this_program);
-	my_exit(1);
-    }
+  if (best_b == NULL) {
+    fprintf(stderr, "%s: No bucket used\n", this_program);
+    my_exit(1);
+  }
     
-    for (i = N_chords-1; i >= 0; i--) {
-	bucket_choice[i] = best_b;
-	best_b = best_b->prev_bucket;
-    }
+  for (i = N_chords-1; i >= 0; i--) {
+    bucket_choice[i] = best_b;
+    best_b = best_b->prev_bucket;
+  }
     
-    printf("Harmonic analysis:\n");
+  printf("Harmonic analysis:\n");
 
     
-    for (i=0; i<N_chords; i++) {
-	chord = column_table[i].chord;
-	bb = bucket_choice[i];
+  for (i=0; i<N_chords; i++) {
+    chord = column_table[i].chord;
+    bb = bucket_choice[i];
 	
-	printf(" ");
-	for (j=0; j<N_beatlevel; j++) if (chord->level >= j) printf("x "); else printf("  ");
+    printf(" ");
+    for (j=0; j<N_beatlevel; j++) if (chord->level >= j) printf("x "); else printf("  ");
 
 	
-	if (i == 0) {
+    if (i == 0) {
 	    tpc_choice_score(bb->root, bb->window, 0, chord,
-			     column_table[i].my_mass, 1.0, (double) bb->tpc_prime);
-	} else {
+                       column_table[i].my_mass, 1.0, (double) bb->tpc_prime);
+    } else {
 	    tpc_choice_score(bb->root, bb->window, bucket_choice[i-1]->root == bb->root, chord,
-			     column_table[i].my_mass, column_table[i].decayed_prior_note_mass, bucket_choice[i-1]->tpc_cog);
-	}
+                       column_table[i].my_mass, column_table[i].decayed_prior_note_mass, bucket_choice[i-1]->tpc_cog);
+    }
 
     /*
       Use the score that's in the bucket already, so when this changes, the below
       code still works.
-OBS 	score =   side_effect.compatibility
-OBS 	    - side_effect.orn_diss_penalty
-OBS 	    - bb->har_variance
-OBS 	    - tpc_var_factor * bb->tpc_variance
-OBS 	    - side_effect.strong_beat_penalty;
+      OBS 	score =   side_effect.compatibility
+      OBS 	    - side_effect.orn_diss_penalty
+      OBS 	    - bb->har_variance
+      OBS 	    - tpc_var_factor * bb->tpc_variance
+      OBS 	    - side_effect.strong_beat_penalty;
     */
 	
-	printf("start = %5d  duration = %5d  notes: {", chord->start, chord->duration);
-	for (j=0, note = chord->note; note != NULL; note = note->next, j++) {
-	  printf("(%2d,%2d)", note->pitch, side_effect.tpc_choice[j]);
-	}
-	printf("}\n");
-	
-	/* note side_effect.tpc_variance == bb->tpc_variance  */
-
-	loc_voice_leading_penalty = compute_voice_leading_penalty(chord, side_effect.tpc_cog, bb->window);
-	
-	printf("    root=%d(%-3s) score=%6.3f  score/sec=%6.3f com=%6.3f  har_cog=%6.3f  har_var=%6.3f\n"
-	       "    sbp=%6.3f  odp=%6.3f  tpc_cog=%6.3f  scaled tpc_var=%6.3f  vlp = %3.1f\n",
-	       bb->root, tpc_string(bb->root), bb->score, (bb->score*1000) / chord->duration,
-	       side_effect.compatibility, bb->har_cog, bb->har_variance,
-	       side_effect.strong_beat_penalty, side_effect.orn_diss_penalty, bb->tpc_cog,
-	       tpc_var_factor * bb->tpc_variance, loc_voice_leading_penalty);
-	
+    printf("start = %5d  duration = %5d  notes: {", chord->start, chord->duration);
+    for (j=0, note = chord->note; note != NULL; note = note->next, j++) {
+      printf("(%2d,%2d)", note->pitch, side_effect.tpc_choice[j]);
     }
+    printf("}\n");
+	
+    /* note side_effect.tpc_variance == bb->tpc_variance  */
+
+    loc_voice_leading_penalty = compute_voice_leading_penalty(chord, side_effect.tpc_cog, bb->window);
+	
+    printf("    root=%d(%-3s) score=%6.3f  score/sec=%6.3f com=%6.3f  har_cog=%6.3f  har_var=%6.3f\n"
+           "    sbp=%6.3f  odp=%6.3f  tpc_cog=%6.3f  scaled tpc_var=%6.3f  vlp = %3.1f\n",
+           bb->root, tpc_string(bb->root), bb->score, (bb->score*1000) / chord->duration,
+           side_effect.compatibility, bb->har_cog, bb->har_variance,
+           side_effect.strong_beat_penalty, side_effect.orn_diss_penalty, bb->tpc_cog,
+           tpc_var_factor * bb->tpc_variance, loc_voice_leading_penalty);
+	
+  }
     
-    if (verbosity >= 3)  {
-	printf("Scores chord by chord:\n");
-	for (i=0; i<N_chords; i++) {
+  if (verbosity >= 3)  {
+    printf("Scores chord by chord:\n");
+    for (i=0; i<N_chords; i++) {
 	    chord = column_table[i].chord;
 	    bb = bucket_choice[i];
 	    printf("  chord = %3d  Score = %50.30f\n", i, bb->score);
-	}
     }
+  }
     
-    xfree(bucket_choice);
+  xfree(bucket_choice);
 }
 
 void print_prechords(void) { 

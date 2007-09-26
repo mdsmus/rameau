@@ -74,6 +74,8 @@
 (defun rotula-voice-leading (musica)
   (mapl #'rotula-voice-leading-nota musica))
 
+(defun metrifica (segmentos)
+  
 
 (defun temperley (musica)
   (let* ((musica (rotula-dissonancia musica))
