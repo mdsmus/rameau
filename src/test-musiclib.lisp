@@ -1,11 +1,8 @@
 (in-package #:rameau)
 
-(defconstant %resultado-set-form-list% '(((0 3 7) 7 3) ((3 7 0) 9 4) ((7 0 3) 8 5)))
-
 (lisp-unit:define-test get-system-item
   (lisp-unit:assert-equal '(*TONAL-SYSTEM* 96 *TONAL-INTERVALS*) (get-system-item 'tonal))
   (lisp-unit:assert-equal '(*TEMPERED-SYSTEM* 12 *TEMPERED-INTERVALS*) (get-system-item 'tempered)))
-
 
 (lisp-unit:define-test get-system-module
     (lisp-unit:assert-equal 96 (get-system-module 'tonal))
@@ -203,7 +200,7 @@
   (lisp-unit:assert-equal t (with-system tempered (set-symmetric? '(0 3 6 9)))))
 
 (lisp-unit:define-test set-form-list
-  (lisp-unit:assert-equal %resultado-set-form-list%
+  (lisp-unit:assert-equal (list '((0 3 7) 7 3) '((3 7 0) 9 4) '((7 0 3) 8 5))
                           (with-system tempered (set-form-list '(0 3 7)))))
 
 (lisp-unit:define-test sort-form-list
