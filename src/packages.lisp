@@ -2,6 +2,11 @@
 
 (defpackage #:rameau
   (:export #:acerta-times #:agrupa-inicio #:agrupa-por
+  #:parse-acrescimos #:get-modo #:parse-fundamental
+  #:%chord-interval-code #:qual-inversao? #:qual-intervalo-no-baixo?
+  #:cifra->acorde #:get-intervalo-inversao-pop #:get-inversao-pop
+  #:acorde->cifra #:read-pop-file #:7+ #:extract-cifra
+  #:expande-cifra-setima #:expand-mel #:gera-gabarito-file
   #:ajusta-duracao #:algoritmo-pardo #:assoc-item #:avalia-segmento
   #:avalia-segmento-notas #:avalia-template #:code->interval
   #:code->note #:coloca-expressoes-em-sequencia
