@@ -16,11 +16,12 @@
       (expmerge (first exprs) (merge-exprs (rest exprs)))
       (car exprs)))
 
+
 (lexer:deflexer string-lexer
   ("('|,)+" (return (values 'OCTAVE lexer:%0)))
   ("(V|v)oice" (return (values 'VOICE lexer:%0)))
   ("(S|s)taff" (return (values 'STAFF lexer:%0)))
-  ("(S|s)core" (return (values 'SCORE %)))
+  ("(S|s)core" (return (values 'SCORE lexer:%0)))
   ("-\\\\tenuto")
   ("-\\\\staccato")
   ("(-|_|\\^|~|\\?)(\\.|\\^|\\+|\\||>|_|-|\"[^\"]*\")?")
@@ -308,3 +309,6 @@
   (let ((*filename* filename))
     (declare (special *filename*))
     (parse-string (file-string filename))))
+
+
+;; (print (with-system tempered (parse-file "/home/top/programas/analise-harmonica/exemplos/001.ly")))

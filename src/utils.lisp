@@ -42,8 +42,11 @@ quantos acidentes ou oitavas uma nota tem."
 
 (defun string->symbol (string)
   "Convert a string to a symbol."
-  (intern (string-upcase string)))
+  (intern (string-upcase string) :rameau))
 
+(defun stringify (symb)
+  (format nil "~a" symb))
+  
 (defun symbol->string (string)
   "Convert a string to a symbol."
   (string-downcase (symbol-name string)))
@@ -89,10 +92,15 @@ quantos acidentes ou oitavas uma nota tem."
   (when gab
     (let ((atual (first gab))
           (resto (rest gab)))
-      (cons (if (eq '* (first atual))
-                (second atual)
-                atual)
-            (expande-multiplicacoes resto)))))
+      (if (eq '* (first atual))
+          (cons (third atual)
+                (expande-multiplicacoes
+                 (if (> (second atual) 1)                    
+                     (cons
+                      (list '* (- (second atual) 1) (third atual))
+                      resto)
+                     resto)))
+          (cons atual (expande-multiplicacoes resto))))))
 
 (defun processa-gabarito (file)
   "Transforma um gabarito de texto em sexp."

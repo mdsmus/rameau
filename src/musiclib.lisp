@@ -60,6 +60,7 @@
 
 (defparameter *intervals-name* '((min minor)
                                  (maj major)
+                                 (just just)
                                  (aug augmented)
                                  (dim diminished)))
 
@@ -179,20 +180,14 @@ retorna 14."
 
 (defun note? (string)
   "Testa se uma dada string pode representar uma nota"
-  (let ((nome (aref string 0))
-        (resto (subseq string 1)))
-    (and (find nome *notes*)
-         (case (intern resto)
-           ('|| t)
-           ('|is| t)
-           ('|es| t)
-           ('|isis| t)
-           ('|eses| t)
-           ('|#| t)
-           ('|##| t)
-           ('|b| t)
-           ('|bb| t)
-           (t nil)))))
+  (let ((nome (aref (string-downcase string) 0))
+        (resto (subseq (string-downcase string) 1)))
+    (when (find (intern resto :rameau)
+              '(|| |is| |es| |isis| |eses| |#| |##| |b| |bb|))
+        (find nome rameau:*notes*))))
+
+(note? "c")
+
 
 (defun rest? (string)
   "Testa se uma string pode representar um silêncio"
@@ -204,10 +199,11 @@ retorna 14."
 string. Essa função é inteligente o suficiente para saber que 'aes'
 usa a representação do lilypond e 'd#' usa a representação 'latin'."
   (when (note? note)
-    (cond ((eql (length note) 1) (%note->code (string->symbol note)))
-          ((match-note-representation note 'lily) (%parse-note note 'lily *system*))
-          ((match-note-representation note 'latin) (%parse-note note 'latin *system*))
-          (t (error "tipo de nota não conhecida")))))
+    (let ((note (string-downcase note)))
+      (cond ((eql (length note) 1) (%note->code (string->symbol note)))
+            ((match-note-representation note 'lily) (%parse-note note 'lily *system*))
+            ((match-note-representation note 'latin) (%parse-note note 'latin *system*))
+            (t (error "tipo de nota não conhecida"))))))
 
 (defun print-accidentals (acc repr)
   "Return a string of a note according to the numeric value of an
@@ -371,3 +367,5 @@ EXAMPLE: (equal-sets? '(0 3 7) '(8 1 4)) returns T."
 
 (defmacro deftemplates (name &body templates)
   `(defparameter ,name ',templates))
+
+

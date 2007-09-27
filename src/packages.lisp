@@ -45,5 +45,5 @@
   #:evento-dur #:evento-octave #:evento-inicio #:evento-passagem?
   #:*notes* #:*rests* #:*tonal-system* #:*tonal-intervals*
   #:*tempered-intervals* #:*tempered-system* #:*systems* #:*system*
-  #:*intervals-name* #:*intervals-quantity* #:*accidentals*)
+  #:*intervals-name* #:*intervals-quantity* #:*accidentals* #:tempered #:tonal)
   (:use #:cl #:yacc #:lisp-unit))

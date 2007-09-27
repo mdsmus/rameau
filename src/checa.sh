@@ -15,6 +15,9 @@ do
     fi
 done
 
+echo 
+exit
+
 echo
 echo
 echo "As seguintes funções estão sem documentação:"
