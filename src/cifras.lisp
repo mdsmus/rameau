@@ -63,6 +63,7 @@ fundamental do acorde."
   
 (defun acorde->cifra (acorde)
   (destructuring-bind (tonica modo inversao &optional acrescimos &rest resto) acorde
+    (declare (ignore resto))
     (let ((fundamental (lily->latin  (symbol->string tonica))))
       (format nil "~a~@[~a~]~@[/~:(~a~)~]"
               (case modo
@@ -76,11 +77,34 @@ fundamental do acorde."
 (defun read-pop-file (file)
   (read-from-string (format nil "(~a)" (file-string file))))
 
+(defun 7+ (gabarito)
+  (append gabarito (list 7)))
+
+(defun extract-cifra (cifra-string pos)
+  (cifra->acorde (string->symbol (subseq cifra-string 0 pos))))
+
+(defun expande-cifra-setima (cifra)
+  (let* ((cifra-string (symbol->string cifra))
+         (pos (search "--7" cifra-string)))
+    (when pos
+      (let ((cifra1 (extract-cifra cifra-string pos)))
+        (list '* 2 (list cifra1 (7+ cifra1)))))))
+
+(defun expand-mel (stream char)
+  (declare (ignore char))
+  `(:mel ,@(read-delimited-list #\] stream t)))
+
+(set-macro-character #\[ #'expand-mel)
+(set-macro-character #\] (get-macro-character #\)))
+
 (defun gera-gabarito-file (file)
   (with-open-file (f (concat file ".gab") :direction :output :if-exists :supersede)
-    (loop for c in (read-pop-file (concat file ".pop")) do
-       ;; ignora o que está entre parenteses
-         (unless (listp c)
-           (format f "~(~a~)~%" (cifra->acorde c))))))
+    (loop for cifra in (read-pop-file (concat file ".pop")) do
+         (if (listp cifra)
+             cifra
+             (let ((expande-cifra (expande-cifra-setima cifra)))
+               (if expande-cifra
+                   (format f "~(~a~)~%" expande-cifra)
+                   (format f "~(~a~)~%" (cifra->acorde cifra))))))))
 
 ;;(gera-gabarito-file "/home/kroger/doc/pesquisa/analise-harmonica/literatura/bach-corais/001")
