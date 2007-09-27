@@ -37,7 +37,10 @@ fundamental do acorde."
 
 ;; (cifra->acorde 'Cm7.9b.13/Eb)
 ;; (cifra->acorde 'C#m7/G#)
+;; 
 
+;; bug aqui
+;; (rameau::cifra->acorde 'c)
 (defun cifra->acorde (cifra)
   (let ((cifra-list (cl-ppcre:split "/" (symbol->string cifra))))
     (cl-ppcre:register-groups-bind (fundamental modo acrescimos)
@@ -101,10 +104,11 @@ fundamental do acorde."
   (with-open-file (f (concat file ".gab") :direction :output :if-exists :supersede)
     (loop for cifra in (read-pop-file (concat file ".pop")) do
          (if (listp cifra)
-             cifra
+             (format f "~(~s~)~%" cifra)
              (let ((expande-cifra (expande-cifra-setima cifra)))
                (if expande-cifra
                    (format f "~(~a~)~%" expande-cifra)
                    (format f "~(~a~)~%" (cifra->acorde cifra))))))))
 
 ;;(gera-gabarito-file "/home/kroger/doc/pesquisa/analise-harmonica/literatura/bach-corais/001")
+;;(gera-gabarito-file "/home/kroger/doc/pesquisa/analise-harmonica/literatura/bach-corais/002")
