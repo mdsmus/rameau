@@ -66,14 +66,15 @@
                  (mapcar (lambda (x) (movimenta-sequencia x movimentador))
                          outros))))))
 
-(defun menos-mod-96 (a b)
-  (mod (- a b) 96))
+(defun menos-mod (a b)
+  (module (- a b)))
 
 (defun menos-de-uma-quarta (a b)
   (let ((a (evento-pitch a))
         (b (evento-pitch b)))
-    (< (menos-mod-96 b a)
-       41)))
+    (< (menos-mod b a)
+       (code->interval '(4 just)))))
+
 
 (defun modificador-oitava (a b)
   (let ((pa (evento-pitch a))

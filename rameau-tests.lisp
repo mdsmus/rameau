@@ -3,7 +3,11 @@
 (defun asdf-all (packages)
   (dolist (package packages) (asdf:oos 'asdf:load-op package :verbose nil)))
 
-(asdf-all '(lexer yacc getopt cl-fad cl-ppcre))
+(load "src/rameau.asd")
+
+(asdf-all '(lexer yacc getopt cl-fad cl-ppcre rameau))
+
+(use-package :rameau)
 
 (defparameter *print-only-wrong* nil)
 (defparameter *use-cifras* nil)
@@ -22,10 +26,6 @@
 (defun tem-ext? (file)
   (find #\. file))
   
-(defun load-all (files)
-  (loop for file in files do (load (format nil "src/~(~a~).lisp" file))))
-
-(load-all '(utils musiclib lisp-unit formato parser segmento pardo))
 
 (defun print-gabarito (file gabarito algoritmo comparacao &optional notas)
   (progn
@@ -47,12 +47,11 @@
 (defun troca-extensao (file ext)
   (concat (tira-extensao file) ext))
 
-
 (defun print-compara-gabarito (files &optional verbose? print-notas?)
   (let (ok no)
     (dolist (file files)
       (let* ((algoritmo (gera-gabarito
-                         (with-system tempered
+                         (with-system rameau:tempered
                            (gera-gabarito-pardo (parse-file file)))))
              (gabarito (gera-gabarito (processa-gabarito
                                        (troca-extensao file ".gab"))))
@@ -79,7 +78,7 @@
   (dolist (file files)
     (format t "~% * ~a~%" (pathname-name file))
     (format t "   pardo: ~(~a~) ~%" (gera-gabarito
-                                     (with-system tempered
+                                     (with-system rameau:tempered
                                        (gera-gabarito-pardo (parse-file file)))))))
 
 (defun parse-summary (files)

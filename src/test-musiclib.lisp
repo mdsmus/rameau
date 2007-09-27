@@ -231,4 +231,3 @@
   (lisp-unit:assert-equal nil (with-system tempered (set-equal? '(0 3 7) '(0 4 7) 'normal)))
   (lisp-unit:assert-equal t (with-system tempered (set-equal? '(0 3 7) '(0 4 7) 'prime))))
 
-(lisp-unit:run-all-tests :rameau)

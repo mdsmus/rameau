@@ -1,15 +1,15 @@
 #!/bin/sh
 
 funcoes=$(egrep -ho "\((defun|defmethod)[ ]+[0-9a-zA-Z><%\!\$&\*\?/-]+ " *.lisp | sed 's/(\(defun\|defmethod\) //g' | sort |uniq)
-testes=$(grep lisp-unit:define-test tests/*.lisp | awk '{print $2}' | sort | uniq)
+testes=$(grep define-test test*.lisp | awk '{print $2}' | sort | uniq)
 
 conta=$(echo "$funcoes" | wc -l)
 
-for f in $funcoes
-do
-    echo -n "#:$f "
-done
-exit
+#for f in $funcoes
+#do
+    #echo -n "#:$f "
+#done
+#exit
 
 echo "As seguintes funções [$conta] estão sem testes de unidade:"
 echo 
@@ -20,6 +20,9 @@ do
         echo -n "$f "
     fi
 done
+
+echo 
+exit
 
 echo
 echo
