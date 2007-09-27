@@ -1,0 +1,38 @@
+O formato 'pop' foi pensado para entrar gabaritos de acordes de
+maneira simples e rápida. Ele tem limitações, mas deve ser suficiente
+para corais de Bach.
+
+A sintaxe básica é <acorde><tipo do acorde><acrescimos>/<inversão>,
+por exemplo:
+
+G
+C/E
+C7/E
+Cm7/Eb
+
+* notas melódicas
+
+A forma [<notas>] expande em (:mel <notas>), por exemplo:
+
+[f#] => (mel :fis)
+
+* acorde de sétima
+
+A forma <acorde>--7 significa que são 2 segmentos onde o segundo pode
+ser visto como um acode de sétima do primeiro, mas a sétima também
+pode ser uma nota melódica. Essa forma expande para 
+(* 2 (<acorde> <acorde com sétima)), por exemplo:
+
+C--7 => (* 2 ((C MAJ 0) (C MAJ 0 7)))
+
+* Exemplo
+
+Segue abaixo o coral 001 de Bach como exemplo. Cada frase está em uma
+linha separada:
+
+G G C/E--7 D/F G Bm/D--7 Em C [B D] C7/B F#O/A G D
+G D/F# E7/G F#O/A G/B Am7/C D--7 G
+G G [F#] Am [F#] G/B [A] G/B [C A] G/B D7/A G D
+Em Em Bm/D [g] Am/C [A] G/B [C] [G] D7 G [A] G/B G7 C
+G D/F#--7 [A] G F#O7/A G/B G D--7 [F#] Em7 C [B] [A] G D
+G [G] D/F# C/E [F#] Em--7 Am7/C D--7 G
