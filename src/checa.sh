@@ -1,15 +1,9 @@
 #!/bin/sh
 
 funcoes=$(egrep -ho "\((defun|defmethod)[ ]+[0-9a-zA-Z><%\!\$&\*\?/-]+ " *.lisp | sed 's/(\(defun\|defmethod\) //g' | sort |uniq)
-testes=$(grep define-test test*.lisp | awk '{print $2}' | sort | uniq)
+testes=$(grep lisp-unit:define-test test-*.lisp | awk '{print $2}' | sort | uniq)
 
 conta=$(echo "$funcoes" | wc -l)
-
-#for f in $funcoes
-#do
-    #echo -n "#:$f "
-#done
-#exit
 
 echo "As seguintes funções [$conta] estão sem testes de unidade:"
 echo 
@@ -32,7 +26,7 @@ echo
 sbcl --noinform --noprint --disable-debugger --eval "
 (progn 
 (declaim (sb-ext:muffle-conditions warning style-warning sb-ext:compiler-note))
-(asdf:oos 'asdf:load-op 'rameau)
+(asdf:oos 'asdf:load-op 'rameau :verbose nil)
 (in-package :rameau)
 (defparameter funcoes '($funcoes))
 (format t \"~{~(~a ~)~}\" (loop for f in funcoes unless (documentation f 'function) collect f))
