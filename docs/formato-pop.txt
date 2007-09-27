@@ -14,9 +14,9 @@ Cm7/Eb
 
 A forma [<notas>] expande em (:mel <notas>), por exemplo:
 
-[f#] => (mel :fis)
+[f#] => (:mel fis)
 
-* acorde de sétima
+* acorde de sétima e extensões
 
 A forma <acorde>--7 significa que são 2 segmentos onde o segundo pode
 ser visto como um acode de sétima do primeiro, mas a sétima também
@@ -24,6 +24,12 @@ pode ser uma nota melódica. Essa forma expande para
 (* 2 (<acorde> <acorde com sétima)), por exemplo:
 
 C--7 => (* 2 ((C MAJ 0) (C MAJ 0 7)))
+
+Outras extensões podem ser entradas separadas por ponto. [esse recurso
+ainda não foi completamente implementado. outras extensões além da
+sétima serão silenciosamente ignoradas] Por exemplo:
+
+Cm7.9b.13/Eb
 
 * Exemplo
 

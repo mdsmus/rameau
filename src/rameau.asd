@@ -15,6 +15,7 @@
                (:file "parser")
                (:file "parser-grammar")
                (:file "pardo")
+               (:file "cifras")
                (:file "test-utils")
                (:file "test-musiclib")
                (:file "test-formato")
