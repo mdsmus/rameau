@@ -51,7 +51,7 @@
 (* 2 ((d maj 1) (d maj 1 7)))
 (:mel a)
 (g maj 0)
-(fis dim 7 1)
+(fis dim 7- 1)
 (g maj 1)
 (g maj 0)
 (* 2 ((d maj 0) (d maj 0 7)))
