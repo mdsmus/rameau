@@ -136,8 +136,8 @@
           (segmentos-minimos musica)))
 
 (defun compara-gabarito-pardo-individual (resultado gabarito)
-  (let ((nota (string (first resultado)))
-        (nota-certa (string (first gabarito)))
+  (let ((nota (note->code (string (first resultado))))
+        (nota-certa (note->code (string (first gabarito))))
         (acorde (rest resultado))
         (acorde-certo (cons (second gabarito)
                             (rest (rest (rest gabarito))))))

@@ -55,7 +55,8 @@
                            (gera-gabarito-pardo (parse-file file)))))
              (gabarito (gera-gabarito (processa-gabarito
                                        (troca-extensao file ".gab"))))
-             (comparacao (compara-gabarito-pardo algoritmo gabarito))
+             (comparacao (with-system rameau:tempered
+                           (compara-gabarito-pardo algoritmo gabarito)))
              (notas (no-op (parse-file file)))
              (file-name (pathname-name file)))
         (cond
