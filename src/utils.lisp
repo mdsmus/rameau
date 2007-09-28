@@ -1,5 +1,16 @@
 (in-package #:rameau)
 
+(defun change-it-package (form)
+  (subst 'it (find-symbol "IT" *package*) form))
+
+(defmacro aif (test-form then-form &optional else-form)
+  "Macro anafófica que retorna o elemento no predicado ('it') se for
+verdadeiro."
+  `(let ((it ,test-form))
+     (if it 
+         ,(change-it-package then-form) 
+         ,(change-it-package else-form))))
+
 (defun concat (&rest strings)
   "Concatenate a bunch of strings."
   (apply #'concatenate 'string strings))
