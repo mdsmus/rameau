@@ -10,6 +10,9 @@ C/E
 C7/E
 Cm7/Eb
 
+Os tipos de acordes são (nada) para maior, m para menor, o para
+diminuto, ~ para meio-diminuto.
+
 * notas melódicas
 
 A forma [<notas>] expande em (:mel <notas>), por exemplo:
