@@ -75,34 +75,48 @@
       resultado))
 
 (defun root-weight (res)
-  (let* ((res (first res))
-         (root-note (note->code (string (first (first (second res))))))
+  (let* ((root-note (note->code (string (first (first (second res))))))
          (weight (assoc root-note (rest (first (second res))))))
     (or (second weight) 0)))
 
+
 (defun template-prob (nota)
-  (let ((template (rest (second (first nota)))))
+  (let ((template (rest (second nota))))
     (length
      (member-if (lambda (x)
                (equal (car x) template))
              *pardo-templates*))))
-
 (defun dim7? (notas)
-  nil)
+  (every (lambda (x)
+           (equal "DIM" (stringify (second (second x)))))
+         notas))
 
-(defun dim7-res (template)
-  (first template))
+(defun dim7-res (segmento proximo)
+  (let* ((proxima-tonica (first (first (second proximo))))
+         (cod (- (note->code (stringify proxima-tonica)) 1))
+         (nota (string-upcase (print-note (code->note cod) 'lily))))
+    (or (find-if
+         (lambda (x)
+           (equal nota (stringify (first (first (second x))))))
+              segmento)
+        (first segmento))))
+                 
 
-(defun desempata-pardo (notas)
-  (let ((max-root (max-predicado #'root-weight notas))
-        (temp-prob (max-predicado #'template-prob notas))
-        (res (when (dim7? notas)
-               (dim7-res notas))))
-    (cond ((= (length max-root) 1)
-           (caar max-root))
-          ((= (length temp-prob) 1)
-           (caar temp-prob))
-          (t (caaar max-root)))))
+(defun desempata-pardo (segmento resto)
+  (let* ((proximo (first resto))
+         (max-root (max-predicado #'root-weight (first segmento)))
+         (temp-prob (max-predicado #'template-prob (first segmento))))
+    (cons 
+     (cond ((= (length max-root) 1)
+            (car max-root))
+           ((= (length temp-prob) 1)
+            (car temp-prob))
+           ((dim7? (first segmento))
+            (dim7-res (first segmento) proximo))
+           (t (car max-root)))
+     resto)))
+
+
 
 (defun avalia-segmento (template segmento)
   "Gera as notas de um segmento comparado com todas as transposições de
@@ -120,24 +134,23 @@
      resultados)))
 
 (defun pardo (segmento)
-  (desempata-pardo
-   (max-predicado #'caar
-                  (mapcar
-                   (lambda (x) (avalia-segmento
-                                x
-                                (segment-to-template segmento)))
-                   *pardo-templates*))))
+  (max-predicado #'caar
+                 (mapcar
+                  (lambda (x) (avalia-segmento
+                               x
+                               (segment-to-template segmento)))
+                  *pardo-templates*)))
 
 (defun gera-gabarito-pardo (musica)
   (mapcar (lambda (x)
-            (let ((res (second (pardo x))))
-              (cons (first (first res))
-                    (rest res))))
-          (segmentos-minimos musica)))
+            (cons (first (first (second x))) (rest (second x))))
+          (reduce #'desempata-pardo
+           (mapcar #'pardo (segmentos-minimos musica))
+           :from-end t :initial-value nil)))
 
 (defun compara-gabarito-pardo-individual (resultado gabarito)
-  (let ((nota (note->code (string (first resultado))))
-        (nota-certa (note->code (string (first gabarito))))
+  (let ((nota (note->code (stringify (first resultado))))
+        (nota-certa (note->code (stringify (first gabarito))))
         (acorde (rest resultado))
         (acorde-certo (cons (second gabarito)
                             (rest (rest (rest gabarito))))))
@@ -145,19 +158,18 @@
          (equal (mapcar #'stringify acorde) (mapcar #'stringify acorde-certo)))))
 
 (defun compara-gabarito-pardo (resultado gabarito)
-  (if
-   (and (null resultado)
-        (null gabarito))
-   t
-   (and
-    (let ((res (first resultado))
-          (gab (first gabarito)))
-      (if (atom (first gab))
-          (compara-gabarito-pardo-individual res gab)
-          (some (lambda (x)
-                  (compara-gabarito-pardo-individual res x))
-                gabarito)))
-    (compara-gabarito-pardo (rest resultado) (rest gabarito)))))
+  (if (and (null resultado)
+           (null gabarito))
+      t
+      (and
+       (let ((res (first resultado))
+             (gab (first gabarito)))
+         (if (atom (first gab))
+             (compara-gabarito-pardo-individual res gab)
+             (some (lambda (x)
+                     (compara-gabarito-pardo-individual res x))
+                   gab)))
+       (compara-gabarito-pardo (rest resultado) (rest gabarito)))))
                   
 (defun corrige-exemplo (exemplo &optional (metodo #'gera-gabarito-pardo))
   "Corrige e compara o resultado de um exemplo com o gabarito"
@@ -169,6 +181,8 @@
 (defun algoritmo-pardo (string)
   (with-system tempered
     (gera-gabarito-pardo (parse-string string))))
+
+
 
 (with-system tempered
   (gera-gabarito-pardo
