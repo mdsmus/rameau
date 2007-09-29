@@ -103,7 +103,10 @@
                  
 
 (defun desempata-pardo (segmento resto)
-  (let* ((proximo (first resto))
+  (let* ((segmento (if (< 1 (length segmento))
+                       (list (apply #'append segmento))
+                       segmento))
+         (proximo (first resto))
          (max-root (max-predicado #'root-weight (first segmento)))
          (temp-prob (max-predicado #'template-prob (first segmento))))
     (cons 
@@ -181,8 +184,6 @@
 (defun algoritmo-pardo (string)
   (with-system tempered
     (gera-gabarito-pardo (parse-string string))))
-
-
 
 (with-system tempered
   (gera-gabarito-pardo
