@@ -2,7 +2,7 @@
 
 (require 'cl)
 (require 'slime)
-(require 'skeleton)
+(require 'snippet)
 
 (defvar rameau-mode-map (make-sparse-keymap)
   "Keymap for the Redshank minor mode.")
@@ -131,6 +131,7 @@
       (snippet-insert "(assert-equal $${resultado} (foo $${argumentos}))"))))
 
 (define-key slime-mode-map [(alt control u)] 'rameau-cria-teste-defun)
+(define-key slime-mode-map [(alt control r)] 'rameau-run-test)
 (define-key slime-mode-map [(control return)] 'rameau-new-test)
 
 (defun rameau-get-defun-name ()

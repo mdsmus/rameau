@@ -1,0 +1,29 @@
+Para rodar o modo rameau.el você precisa instalar o snippet.el
+disponível em:
+
+http://www.kazmier.com/computer/snippet.el
+
+Carregue o rameau e rode in-package:
+
+  (asdf:oos 'asdf:load-op 'rameau)
+  (in-package 'rameau)
+
+A partir disso os comandos do rameau-mode devem funcionar
+corretamente. As funções básicas são:
+
+rameau-cria-teste-defun
+   o cursor deve estar no meio ou final da função que se deseja criar
+   o teste. rameau-cria-teste-defun vai abrir o arquivo de teste
+   correto e criar o código de testes, se ele não existir. Atribuido a
+   tecla A-C-u
+
+rameau-new-test
+   cria uma nova linha de testes dentro de define-test. Atribuido a
+   tecla C-<enter>
+
+rameau-run-test
+   roda o teste onde o cursor está. (deve estar no arquivo de testes).
+   Atribuído a A-C-r  
+
+rameau-mel
+   insere notas melódicas em um gabarito pop. atribuído a tecla A-m
