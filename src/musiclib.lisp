@@ -186,9 +186,6 @@ retorna 14."
               '(|| |is| |es| |isis| |eses| |#| |##| |b| |bb|))
         (find nome rameau:*notes*))))
 
-(note? "c")
-
-
 (defun rest? (string)
   "Testa se uma string pode representar um silêncio"
   (and (= 1 (length string))

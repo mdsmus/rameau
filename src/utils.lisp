@@ -56,7 +56,7 @@ quantos acidentes ou oitavas uma nota tem."
   (intern (string-upcase string) :rameau))
 
 (defun stringify (symb)
-  (format nil "~a" symb))
+  (format nil "~s" symb))
   
 (defun symbol->string (string)
   "Convert a string to a symbol."
@@ -67,7 +67,6 @@ quantos acidentes ou oitavas uma nota tem."
   (second (assoc item alist)))
 
 (defun max-predicado (predicado lista)
-  "retorna o maior par de uma lista de pares"
   (let ((maior-valor (funcall predicado (first lista)))
         (lista-max nil))
     (dolist (par lista)
