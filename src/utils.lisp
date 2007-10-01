@@ -1,5 +1,20 @@
 (in-package #:rameau)
 
+(defun add-lily-ext (file)
+  (if (tem-ext? file) file (concat file ".ly")))
+
+(defun add-pop-ext (file)
+  (if (tem-ext? file) file (concat file ".pop")))
+
+(defun tem-ext? (file)
+  (find #\. file))
+
+(defun tira-extensao (file)
+  (subseq file 0 (position #\. file)))
+
+(defun troca-extensao (file ext)
+  (if (tem-ext? file) file (concat (tira-extensao file) ext)))
+  
 (defun change-it-package (form)
   (subst 'it (find-symbol "IT" *package*) form))
 

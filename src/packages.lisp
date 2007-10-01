@@ -1,7 +1,8 @@
 (in-package #:cl-user)
 
 (defpackage #:rameau
-  (:export #:acerta-times #:agrupa-inicio #:agrupa-por
+  (:export #:acerta-times #:agrupa-inicio #:agrupa-por #:add-lily-ext
+           #:add-pop-ext #:tem-ext? #:tira-extensao #:troca-extensao
            #:*dur* #:*environment* #:*expression-parser* #:*main-dir*
            #:parse-acrescimos #:get-modo #:parse-fundamental
            #:%chord-interval-code #:qual-inversao? #:qual-intervalo-no-baixo?
