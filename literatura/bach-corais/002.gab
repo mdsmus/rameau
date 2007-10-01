@@ -1,4 +1,4 @@
-(* 2 ((a maj 0) (a maj 0 7)))
+(* 2 ((a maj 0) (a maj 0 7+)))
 (fis min 0)
 (a maj 1)
 (:mel b)

@@ -1,9 +1,9 @@
 (in-package #:rameau)
 
-(defun parse-acrescimos (modo cifra)
+(defun parse-acrescimos (modo acrescimos)
   ;; por enquanto só funciona com acordes simples, como Cm7
-  (when cifra
-    (let* ((set (first (cl-ppcre:split "\\." cifra)))
+  (when acrescimos
+    (let* ((set (first (cl-ppcre:split "\\." acrescimos)))
            (setima (cond ((string= "~" modo) set)
                          ((string= "o" modo) (concat set "-"))
                          (t set))))
@@ -96,21 +96,21 @@ fundamental do acorde."
   (append (processa-cifra (first lista))
           (list (second lista))))
 
-(defun add7 (gabarito)
-  (append gabarito (list 7)))
-
 (defun expande-cifra-setima (cifra)
-  (let ((cifra1 (cifra->acorde (first cifra))))
-    (list '* 2 (list cifra1 (add7 cifra1)))))
+  (let* ((cifra1 (cifra->acorde (first cifra)))
+         (modo (second cifra1))
+         (setima (parse-acrescimos modo (second cifra))))
+    (list '* 2 (list cifra1 (append cifra1 (list setima))))))
 
-(defun setima-no-baixo (acorde)
+(defun setima-no-baixo (acorde setima)
   (destructuring-bind (fund modo inversao &rest resto) acorde
     (declare (ignore inversao))
-      (remove-if #'null (list fund modo 3 7 resto))))
+    (remove-if #'null (list fund modo 3 (parse-acrescimos modo setima) resto))))
 
 (defun expande-cifra-setima-baixo (cifra)
-  (let ((cifra1 (cifra->acorde (first cifra))))
-    (format nil "~a~%~a" cifra1 (setima-no-baixo cifra1))))
+  (let ((cifra1 (cifra->acorde (first cifra)))
+        (setima (second cifra)))
+    (format nil "~a~%~a" cifra1 (setima-no-baixo cifra1 setima))))
 
 (defun multiplica-cifra (cifra)
   (list '* (second cifra) (cifra->acorde (first cifra))))
@@ -146,3 +146,5 @@ fundamental do acorde."
 
 ;;(gera-gabarito-file "/home/kroger/doc/pesquisa/analise-harmonica/literatura/bach-corais/001")
 ;;(gera-gabarito-file "/home/kroger/doc/pesquisa/analise-harmonica/literatura/bach-corais/002")
+;;(gera-gabarito-file "/home/kroger/doc/pesquisa/analise-harmonica/literatura/bach-corais/003")
+;;(gera-gabarito-file "/home/kroger/doc/pesquisa/analise-harmonica/literatura/bach-corais/004")
