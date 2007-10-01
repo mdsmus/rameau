@@ -1,11 +1,13 @@
 (declaim (sb-ext:muffle-conditions warning style-warning sb-ext:compiler-note))
 
-(defun asdf-all (packages)
-  (dolist (package packages) (asdf:oos 'asdf:load-op package :verbose nil)))
+(declaim (optimize (compilation-speed 0)
+                   (debug 1)
+                   (safety 1)
+                   (space 3)
+                   (speed 3)))
 
-(load "src/rameau.asd")
-
-(asdf-all '(lexer yacc getopt cl-fad cl-ppcre rameau))
+(asdf:oos 'asdf:load-op 'rameau :verbose nil)
+(asdf:oos 'asdf:load-op 'getopt :verbose nil)
 
 (use-package :rameau)
 
@@ -43,6 +45,31 @@
 (defun tira-extensao (file)
   (subseq file 0 (position #\. file)))
 
+(defun print-help ()
+  (format t "uso: rameau-tests [opções] [arquivos]
+
+* OPÇÕES
+-t <nome> indica o nome do teste
+-l        lista os testes disponíveis
+-a        gera analise harmonica (sem comparar com gabarito)
+-g        compara com gabarito (implica em -h)
+-s        mostra as notas de cada segmento
+-w        só mostra os testes que tem algum erro (implica em -v)
+-c        mostra cifra dos acordes no lugar de listas
+-v        verbose (mostra tudo)
+-h        help
+
+* EXEMPLOS
+roda todas as regressões:
+  rameau-tests -t r
+
+roda os corais 031 e 371:
+  rameau-tests -t c 031 371
+
+roda todos os exemplos, faz comparação das analises harmonicas com
+gabarito, e mostra resultado em cifras:
+  rameau-tests -t e -vcg
+"))
 
 (defun troca-extensao (file ext)
   (concat (tira-extensao file) ext))
@@ -102,8 +129,8 @@
   
 (defun handle-args ()
   "O script passa os argumentos na ordem: sbcl path comandos"
-  (let ((command-args (subseq *posix-argv* 2))
-        (path (second *posix-argv*)))
+  (let ((command-args (rest *posix-argv*))
+        (path (format nil "~a" *default-pathname-defaults*)))
     (append (list path)
             (multiple-value-list
              (getopt:getopt command-args
@@ -151,6 +178,8 @@
       (when (find #\c opts)
         (setf *use-cifras* t))
       (cond
+        ((and (null type) (null opts) (null files)) (print-help))
+        ((find #\h opts) (print-help))
         ((find #\l opts) (print-tests))
         ((find #\a opts) (print-analise-harmonica files))
         ((and (find #\g opts) (find #\v opts) (find #\s opts))
@@ -159,5 +188,5 @@
          (print-compara-gabarito files t))
         ((find #\v opts) (parse-verbose files))
         ((find #\g opts) (print-ok-no-list (print-compara-gabarito files)))
-        (t (print-ok-no-list (parse-summary files))))
-      )))
+        (t (print-ok-no-list (parse-summary files))))))
+  0)
