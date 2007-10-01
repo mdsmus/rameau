@@ -221,7 +221,7 @@ representação do lilypond. Exemplo: (latin->lily \"Eb\") => \"ees\""
 (defun lily->latin (nota)
   "Aceita uma string com o nome da nota em lily e retorna a
 representação em latin. Exemplo: (lily->latin \"cis\") => \"C#\""
-  (string-capitalize (print-note (code->note (note->code nota)) 'latin)))
+  (print-note (code->note (note->code nota)) 'latin))
 
 (defun module (n)
   "Returns the module according to a system.

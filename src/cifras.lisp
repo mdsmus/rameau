@@ -1,27 +1,27 @@
 (in-package #:rameau)
 
-(defun parse-acrescimos (modo cifra)
+(defun parse-acrescimos (modo acrescimos)
   ;; por enquanto só funciona com acordes simples, como Cm7
-  (when cifra
-    (let* ((set (first (cl-ppcre:split "\\." cifra)))
+  (when acrescimos
+    (let* ((set (first (cl-ppcre:split "\\." acrescimos)))
            (setima (cond ((string= "~" modo) set)
                          ((string= "o" modo) (concat set "-"))
                          (t set))))
       (if (= (length setima) 1)
-          (parse-integer setima)
-          (string->symbol (substitute #\+ #\m setima))))))
+          setima
+          (substitute #\+ #\m setima)))))
 
 (defun get-modo (abrev)
   (case (string->symbol abrev)
-    (m 'min)
-    (o 'dim)
-    (~ 'dim)
-    (+ 'aug)
-    (t 'maj)))
+    (m "min")
+    (o "dim")
+    (~ "dim")
+    (+ "aug")
+    (t "maj")))
 
 (defun parse-fundamental (fundamental)
   (when fundamental
-    (string->symbol (latin->lily fundamental))))
+    (latin->lily fundamental)))
 
 (defun %chord-interval-code (fundamental baixo)
   "Retorna uma lista com o intervalo tonal entre o baixo e a
@@ -42,20 +42,18 @@ fundamental do acorde."
 (defun qual-intervalo-no-baixo? (inversao)
   (first (find inversao *inversoes-pop* :key #'second)))
 
-;; (cifra->acorde 'Cm7.9b.13/Eb)
-;; (cifra->acorde 'C#m7/G#)
-;; (cifra->acorde 'C7M)
+;; (cifra->acorde "Cm7.9b.13/Eb")
+;; (cifra->acorde "C#M7/G#")
+;; (cifra->acorde "C7M")
 
-;; bug aqui
-;; (rameau::cifra->acorde 'c)
 (defun cifra->acorde (cifra)
-  (let ((cifra-list (cl-ppcre:split "/" (symbol->string cifra))))
+  (let ((cifra-list (cl-ppcre:split "/" cifra)))
     (cl-ppcre:register-groups-bind (fundamental modo acrescimos)
         ("([cdefgab]+[#b]?)(m|o|~|\\+)?([0-9\\.mb\\+]+)?" (first cifra-list) :sharedp t)
       (remove-if #'null (list (parse-fundamental fundamental)
                               (get-modo modo)
-                              (parse-acrescimos modo acrescimos)
-                              (qual-inversao? fundamental (second cifra-list)))))))
+                              (qual-inversao? fundamental (second cifra-list))
+                              (parse-acrescimos modo acrescimos))))))
 
 ;; TODO: lidar com 7m 7M, 5+, etc
 (defun get-intervalo-inversao-pop (modo inversao)
@@ -84,22 +82,6 @@ fundamental do acorde."
               acrescimos
               (get-inversao-pop fundamental modo inversao)))))
 
-(defun read-pop-file (file)
-  (read-from-string (format nil "(~a)" (file-string file))))
-
-(defun add7 (gabarito)
-  (append gabarito (list 7)))
-
-(defun extract-cifra (cifra-string pos)
-  (cifra->acorde (string->symbol (subseq cifra-string 0 pos))))
-
-(defun expande-cifra-setima (cifra)
-  (let* ((cifra-string (symbol->string cifra))
-         (pos (search "--7" cifra-string)))
-    (when pos
-      (let ((cifra1 (extract-cifra cifra-string pos)))
-        (list '* 2 (list cifra1 (add7 cifra1)))))))
-
 (defun expand-mel (stream char)
   (declare (ignore char))
   `(:mel ,@(read-delimited-list #\] stream t)))
@@ -114,22 +96,55 @@ fundamental do acorde."
   (append (processa-cifra (first lista))
           (list (second lista))))
 
-(defun processa-cifra (cifra)
-  (aif (expande-cifra-setima cifra)
-       it
-       (cifra->acorde cifra)))
+(defun expande-cifra-setima (cifra)
+  (let* ((cifra1 (cifra->acorde (first cifra)))
+         (modo (second cifra1))
+         (setima (parse-acrescimos modo (second cifra))))
+    (list '* 2 (list cifra1 (append cifra1 (list setima))))))
 
-(defun print-cifra (stream cifra)
-  (format stream "~(~s~)~%" cifra))
-  
+(defun setima-no-baixo (acorde setima)
+  (destructuring-bind (fund modo inversao &rest resto) acorde
+    (declare (ignore inversao))
+    (remove-if #'null (list fund modo 3 (parse-acrescimos modo setima) resto))))
+
+(defun expande-cifra-setima-baixo (cifra)
+  (let ((cifra1 (cifra->acorde (first cifra)))
+        (setima (second cifra)))
+    (format nil "~a~%~a" cifra1 (setima-no-baixo cifra1 setima))))
+
+(defun multiplica-cifra (cifra)
+  (list '* (second cifra) (cifra->acorde (first cifra))))
+
+(defun processa-cifra (cifra)
+  (let* ((cifra-string (symbol->string cifra))
+         (cifra7 (cl-ppcre:split "--" cifra-string))
+         (cifra7b (cl-ppcre:split "__" cifra-string))
+         (cifra* (cl-ppcre:split "\\*" cifra-string)))
+    (cond ((> (length cifra7) 1) (expande-cifra-setima cifra7))
+          ((> (length cifra7b) 1) (expande-cifra-setima-baixo cifra7b))
+          ((> (length cifra*) 1) (multiplica-cifra cifra*))
+          (t (cifra->acorde cifra-string)))))
+
+(defun print-mel (pop)
+  (destructuring-bind (s &rest notas) pop
+    (declare (ignore s))
+    (format nil "(:mel ~{~(~a~)~^ ~})" notas)))
+
+(defun pop2cifra (pop)
+  (if (listp pop)
+      (if (nota-melodica? pop)
+          (print-mel pop)
+          (anotacao pop))
+      (processa-cifra pop)))
+
+(defun read-pop-file (file)
+  (read-from-string (format nil "(~a)" (file-string file))))
+
 (defun gera-gabarito-file (file)
   (with-open-file (f (concat file ".gab") :direction :output :if-exists :supersede)
-    (loop for cifra in (read-pop-file (concat file ".pop")) do
-         (if (listp cifra)
-             (if (nota-melodica? cifra)
-                 (print-cifra f cifra)
-                 (print-cifra f (anotacao cifra)))
-             (print-cifra f (processa-cifra cifra))))))
+    (format f "~{~(~a~)~%~}" (mapcar #'pop2cifra (read-pop-file (concat file ".pop"))))))
 
 ;;(gera-gabarito-file "/home/kroger/doc/pesquisa/analise-harmonica/literatura/bach-corais/001")
 ;;(gera-gabarito-file "/home/kroger/doc/pesquisa/analise-harmonica/literatura/bach-corais/002")
+;;(gera-gabarito-file "/home/kroger/doc/pesquisa/analise-harmonica/literatura/bach-corais/003")
+;;(gera-gabarito-file "/home/kroger/doc/pesquisa/analise-harmonica/literatura/bach-corais/004")
