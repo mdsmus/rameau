@@ -28,11 +28,22 @@ pode ser uma nota melódica. Essa forma expande para
 
 C--7 => (* 2 ((C MAJ 0) (C MAJ 0 7)))
 
+A forma <acorde>__7 funciona como <acorde>--7 mas no segundo segmento
+a sétima está no baixo. A expansão, contudo, é diferente:
+
+C__7 => (C MAJ 0) (C MAJ 3 7)
+
 Outras extensões podem ser entradas separadas por ponto. [esse recurso
 ainda não foi completamente implementado. outras extensões além da
 sétima serão silenciosamente ignoradas] Por exemplo:
 
 Cm7.9b.13/Eb
+
+* Repetição
+
+A forma <acorde>*2 expande para (* 2 <acorde>), exemplo:
+
+C7*2 => (* 2 (C MAJ 0 7))
 
 * Exemplo
 
