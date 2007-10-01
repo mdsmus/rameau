@@ -6,18 +6,19 @@ Você precisa dos seguintes programas para rodar os testes:
 
 2. COMO RODAR OS TESTES
 
-o programa para rodar os testes é rameau-tests. Eu sugiro fazer um
-link simbolico dele para algum lugar no PATH, por exemplo:
+o programa para rodar os testes é rameau. Para compilar o programa
+você deve digitar 'make' no terminal. Eu sugiro fazer um link
+simbolico dele para algum lugar no PATH, por exemplo:
 
-  ln -s $(pwd)/rameau-tests ~/bin/
+  ln -s $(pwd)/rameau ~/bin/
 
-desse modo voce não precisa digitar ./rameau-tests e sim rameau-tests.
+desse modo voce não precisa digitar ./rameau e sim rameau.
 
 se você rodar o script sem argumentos ele mostrará a lista de
 argumentos que aceita. para determinar o tipo de teste deve-se usar a
 opção -t. o exemplo abaixo roda todos os corais de bach:
 
-  rameau-tests -t c
+  rameau -t c
 
 sem outras opções ele parseia os arquivos e mostra um sumário dos
 testes. caso algum teste falhe nesse modo ele lista quais arquivos
@@ -29,11 +30,11 @@ voce pode rodar apenas um teste identificando o numero no final. o
 exemplo abaixo rodará apenas o coral 003.ly. observe que o script faz
 a busca automatica no diretório.
 
-  rameau-tests -t c 003
+  rameau -t c 003
 
 para fazer a analise harmonica sem usar um gabarito usa-se a opção -a:
 
-  rameau-tests -t e -a 003
+  rameau -t e -a 003
 
 esse comando irá fazer a análise harmonica do exemplo 003.ly e mostrar
 a seguinte saída:
@@ -43,7 +44,7 @@ a seguinte saída:
 
 para ver o resultado em cifas use a opção -c
 
-  rameau-tests -t e -a 003 -c
+  rameau -t e -a 003 -c
 
 onde o resultado será:
 
@@ -53,6 +54,14 @@ onde o resultado será:
 observe que a ordem dos argumentos não importa, os argumentos sem
 valor (como -c, -a, etc) podem ser condensados em um único comando.
 
-  rameau-tests -t e 003 -ac
+  rameau -t e 003 -ac
 
 a opção -t NÂO pode ser condensada com os outros comandos.
+
+3. COMO GERAR GABARITOS USANDO O FORMATO 'POP'
+
+A opção -p gera um arquivo .gab a partir do arquivo .pop. Por enquanto
+rameau considera que os arquivos .gab e .pop devem estar em
+literatura/bach-corais/
+
+  rameau -p 001

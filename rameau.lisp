@@ -136,6 +136,7 @@ gabarito, e mostra resultado em cifras:
              (getopt:getopt command-args
                             '(("-h" :none) ("-g" :none) ("-w" :none)
                               ("-v" :none) ("-h" :none) ("-l" :none)
+                              ("-p" :none)
                               ("-c" :none) ("-s" :none) ("t" :required)))))))
 
 (defun get-opt-value (key alist)
@@ -166,6 +167,13 @@ gabarito, e mostra resultado em cifras:
       (loop for f in flist collect (concat path (return-path type) (add-lily-ext f)))
       (loop for f in (directory (concat path (return-path type) "*.ly")) collect (format nil "~a" f))))
 
+(defun pop->cifra (path files)
+  (loop for file in files do
+     (let ((full-file (format nil "~a~a~a" path "literatura/bach-corais/" file)))
+       (if (cl-fad:file-exists-p (concat full-file ".gab"))
+           (gera-gabarito-file full-file)
+           (format t "arquivo ~a.pop não existe" full-file)))))
+
 (defun main ()
   (destructuring-bind (raw-path (&rest file-list) opts-value raw-opts) (handle-args)
     (let* ((type (get-opt-value "t" opts-value))
@@ -188,5 +196,6 @@ gabarito, e mostra resultado em cifras:
          (print-compara-gabarito files t))
         ((find #\v opts) (parse-verbose files))
         ((find #\g opts) (print-ok-no-list (print-compara-gabarito files)))
+        ((find #\p opts) (pop->cifra raw-path file-list))
         (t (print-ok-no-list (parse-summary files))))))
   0)
