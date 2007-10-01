@@ -141,10 +141,10 @@ fundamental do acorde."
   (read-from-string (format nil "(~a)" (file-string file))))
 
 (defun gera-gabarito-file (file)
-  (with-open-file (f (concat file ".gab") :direction :output :if-exists :supersede)
-    (format f "~{~(~a~)~%~}" (mapcar #'pop2cifra (read-pop-file (concat file ".pop"))))))
+  (with-open-file (f (troca-extensao file ".gab") :direction :output :if-exists :supersede)
+    (format f "~{~(~a~)~%~}" (mapcar #'pop2cifra (read-pop-file file)))))
 
-;;(gera-gabarito-file "/home/kroger/doc/pesquisa/analise-harmonica/literatura/bach-corais/001")
-;;(gera-gabarito-file "/home/kroger/doc/pesquisa/analise-harmonica/literatura/bach-corais/002")
-;;(gera-gabarito-file "/home/kroger/doc/pesquisa/analise-harmonica/literatura/bach-corais/003")
-;;(gera-gabarito-file "/home/kroger/doc/pesquisa/analise-harmonica/literatura/bach-corais/004")
+;;(gera-gabarito-file "/home/kroger/doc/pesquisa/analise-harmonica/literatura/bach-corais/001.pop")
+;;(gera-gabarito-file "/home/kroger/doc/pesquisa/analise-harmonica/literatura/bach-corais/002.pop")
+;;(gera-gabarito-file "/home/kroger/doc/pesquisa/analise-harmonica/literatura/bach-corais/003.pop")
+;;(gera-gabarito-file "/home/kroger/doc/pesquisa/analise-harmonica/literatura/bach-corais/004.pop")

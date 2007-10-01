@@ -21,14 +21,6 @@
                          (regressao "regressao/")
                          (lily "regressao-lily/")))
 
-
-(defun add-lily-ext (file)
-  (if (tem-ext? file) file (concat file ".ly")))
-
-(defun tem-ext? (file)
-  (find #\. file))
-  
-
 (defun print-gabarito (file gabarito algoritmo comparacao &optional notas)
   (progn
     (format t "~% * ~a~%" file)
@@ -42,13 +34,11 @@
       (mapcar #'acorde->cifra gabarito)
       gabarito))
 
-(defun tira-extensao (file)
-  (subseq file 0 (position #\. file)))
-
 (defun print-help ()
   (format t "uso: rameau-tests [opções] [arquivos]
 
 * OPÇÕES
+-p        gera gabaritos a partir de arquivos .pop
 -t <nome> indica o nome do teste
 -l        lista os testes disponíveis
 -a        gera analise harmonica (sem comparar com gabarito)
@@ -167,12 +157,18 @@ gabarito, e mostra resultado em cifras:
       (loop for f in flist collect (concat path (return-path type) (add-lily-ext f)))
       (loop for f in (directory (concat path (return-path type) "*.ly")) collect (format nil "~a" f))))
 
-(defun pop->cifra (path files)
-  (loop for file in files do
-     (let ((full-file (format nil "~a~a~a" path "literatura/bach-corais/" file)))
-       (if (cl-fad:file-exists-p (concat full-file ".gab"))
-           (gera-gabarito-file full-file)
-           (format t "arquivo ~a.pop não existe" full-file)))))
+(defun pop->cifra (path f)
+  (let* ((full-path (concat path "literatura/bach-corais/"))
+         (files (if f
+                    (loop for file in f collect (concat full-path (add-pop-ext file)))
+                    (loop for file in (directory (concat full-path "*.pop"))
+                       collect (format nil "~a" file)))))
+    (loop for file in files do
+         (if (cl-fad:file-exists-p file)
+             (progn
+               (format t "... gerando gabarito ~a~%" (pathname-name file))
+               (gera-gabarito-file file))
+             (format t "arquivo ~a não existe~%" file)))))
 
 (defun main ()
   (destructuring-bind (raw-path (&rest file-list) opts-value raw-opts) (handle-args)
