@@ -1,14 +1,24 @@
 (declaim (sb-ext:muffle-conditions warning style-warning sb-ext:compiler-note))
-(asdf:oos 'asdf:load-op 'rameau :verbose nil)
 
-(in-package :rameau)
+(declaim (optimize (compilation-speed 0)
+                   (debug 1)
+                   (safety 1)
+                   (space 3)
+                   (speed 3)))
+
+(asdf:oos 'asdf:load-op 'rameau :verbose nil)
+(use-package :rameau)
 
 (defun main ()
-  (let* ((arg sb-ext:*posix-argv*)
-         (pwd *default-pathname-defaults*))
-    (if (string= "./pop2gab" (first arg))
-        (gera-gabarito-file (format nil "~a~a~a" pwd "literatura/bach-corais/" (second arg)))
-        (gera-gabarito-file (format nil "~a~a~a" pwd "literatura/bach-corais/" (third arg))))))
+  (let ((file (format nil "~a~a~a" *default-pathname-defaults*
+                      "literatura/bach-corais/" (second sb-ext:*posix-argv*))))
+    (if (cl-fad:file-exists-p (concatenate 'string file ".gab"))
+        (progn (gera-gabarito-file file)
+               0)
+        (progn
+          (format t "arquivo ~a.pop não existe" file)
+          1))))
 
-(main)
-(sb-ext:quit)
+(sb-ext:save-lisp-and-die "pop2gab"
+                          :executable t
+                          :toplevel #'main)
