@@ -58,9 +58,9 @@ quantos acidentes ou oitavas uma nota tem."
 (defun stringify (symb)
   (format nil "~s" symb))
   
-(defun symbol->string (string)
-  "Convert a string to a symbol."
-  (string-downcase (symbol-name string)))
+(defun symbol->string (symbol)
+  "Convert a symbol to a string."
+  (string-downcase (symbol-name symbol)))
 
 (defun assoc-item (item alist)
   "Returns an item from a alist. "
