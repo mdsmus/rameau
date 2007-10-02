@@ -21,10 +21,7 @@
   (pitch)
   (octave)
   (dur)
-  (inicio)
-  (passagem?)
-  (penalidade-dissonancia)
-  (voice-leading-neighbor))
+  (inicio))
 
 (defun cria-nota (nota &optional (octave "") dur articulation dur2) 
   (declare (ignore articulation))

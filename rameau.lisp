@@ -24,8 +24,8 @@
 (defun print-gabarito (file gabarito algoritmo comparacao &optional notas)
   (progn
     (format t "~% * ~a~%" file)
-    (format t "gabarito: ~(~a~) ~%" gabarito)
-    (format t "   pardo: ~(~a~) ~%" algoritmo)
+    (format t "gabarito (tamanho: ~a): ~(~a~) ~%" (length gabarito) gabarito)
+    (format t "   pardo (tamanho: ~a): ~(~a~) ~%" (length algoritmo) algoritmo)
     (when notas (format t "   notas: ~(~a~) ~%" notas))
     (format t "correto?: ~:[não~;sim~]~%" comparacao)))
 
@@ -185,6 +185,7 @@ gabarito, e mostra resultado em cifras:
         ((and (null type) (null opts) (null files)) (print-help))
         ((find #\h opts) (print-help))
         ((find #\l opts) (print-tests))
+        ((find #\u opts) (lisp-unit:run-all-tests :rameau) (format t "~%"))
         ((find #\a opts) (print-analise-harmonica files))
         ((and (find #\g opts) (find #\v opts) (find #\s opts))
          (print-compara-gabarito files t t))

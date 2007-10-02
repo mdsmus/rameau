@@ -1,4 +1,24 @@
 
+(defstruct evento-temperley
+  (evento)
+  (penalidade-dissonancia)
+  (voice-leading-neighbor))
+
+(defun converte-pra-evento-temperley (evento)
+  (make-evento-temperley :evento evento))
+
+(defun evento-temperley-dur (e)
+  (evento-dur (evento-temperley-evento e)))
+
+(defun evento-temperley-inicio (e)
+  (evento-inicio (evento-temperley-evento e)))
+
+(defun evento-temperley-pitch (e)
+  (evento-pitch (evento-temperley-evento e)))
+
+(defun evento-temperley-octave (e)
+  (evento-octave (evento-temperley-evento e)))
+
 (in-package :rameau)
 
 (defparameter verbosity 2)

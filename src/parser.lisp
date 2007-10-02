@@ -164,7 +164,7 @@
   (make-instance 'voice :expr block))
 
 (defun parse-dur (dur)
-  (parse-integer dur))
+  (/ 1 (parse-integer dur)))
 
 (defun parse-dur-ponto (dur ponto)
   (declare (ignore ponto))

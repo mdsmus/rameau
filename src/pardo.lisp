@@ -209,17 +209,17 @@
 (mapcar #'pardo
  (segmentos-minimos
   (list
-   (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0 :PASSAGEM? NIL)
-   (make-evento :PITCH 7 :OCTAVE 10 :DUR 1/4 :INICIO 0 :PASSAGEM? NIL)
-   (make-evento :PITCH 4 :OCTAVE 9 :DUR 1/4 :INICIO 0 :PASSAGEM? NIL)
-   (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0 :PASSAGEM? NIL)
-   (make-evento :PITCH 2 :OCTAVE 10 :DUR 1/4 :INICIO 1/4 :PASSAGEM? NIL)
-   (make-evento :PITCH 8 :OCTAVE 10 :DUR 1/4 :INICIO 1/4 :PASSAGEM? NIL)
-   (make-evento :PITCH 5 :OCTAVE 9 :DUR 1/4 :INICIO 1/4 :PASSAGEM? NIL)
-   (make-evento :PITCH 11 :OCTAVE 9 :DUR 1/4 :INICIO 1/4 :PASSAGEM? NIL)
-   (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 1/2 :PASSAGEM? NIL)
-   (make-evento :PITCH 7 :OCTAVE 10 :DUR 1/4 :INICIO 1/2 :PASSAGEM? NIL)
-   (make-evento :PITCH 4 :OCTAVE 9 :DUR 1/4 :INICIO 1/2 :PASSAGEM? NIL)
-   (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 1/2 :PASSAGEM? NIL))))
+   (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0 )
+   (make-evento :PITCH 7 :OCTAVE 10 :DUR 1/4 :INICIO 0 )
+   (make-evento :PITCH 4 :OCTAVE 9 :DUR 1/4 :INICIO 0 )
+   (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0 )
+   (make-evento :PITCH 2 :OCTAVE 10 :DUR 1/4 :INICIO 1/4 )
+   (make-evento :PITCH 8 :OCTAVE 10 :DUR 1/4 :INICIO 1/4 )
+   (make-evento :PITCH 5 :OCTAVE 9 :DUR 1/4 :INICIO 1/4 )
+   (make-evento :PITCH 11 :OCTAVE 9 :DUR 1/4 :INICIO 1/4 )
+   (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 1/2 )
+   (make-evento :PITCH 7 :OCTAVE 10 :DUR 1/4 :INICIO 1/2 )
+   (make-evento :PITCH 4 :OCTAVE 9 :DUR 1/4 :INICIO 1/2 )
+   (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 1/2 ))))
 
 

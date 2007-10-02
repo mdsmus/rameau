@@ -44,7 +44,7 @@
            #:smaller-sets-comparisson #:smallest-set #:sort-form-list
            #:sort-set #:string->symbol #:symbol->number #:template-prob
            #:transpoe #:transpose #:with-system #:make-evento #:evento-pitch
-           #:evento-dur #:evento-octave #:evento-inicio #:evento-passagem?
+           #:evento-dur #:evento-octave #:evento-inicio
            #:*notes* #:*rests* #:*tonal-system* #:*tonal-intervals*
            #:*tempered-intervals* #:*tempered-system* #:*systems* #:*system*
            #:*intervals-name* #:*intervals-quantity* #:*accidentals* #:tempered #:tonal)
