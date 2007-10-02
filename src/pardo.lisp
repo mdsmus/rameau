@@ -10,6 +10,13 @@
   ((dim) (0 3 6))
   )
 
+(defstruct nota-pardo
+  (root)
+  (resultado)
+  (template)
+  (gabarito)
+  (segmento))
+
 (defun pula (elemento lista)
   "Pula as ocorrências iniciais de elemento lista"
   (if (equal elemento (first lista))
@@ -58,12 +65,12 @@
           template))
 
 (defun da-nota-modificada (template segmento nota)
-  (cons (avalia-template (transpoe template nota) segmento)
-        (cons
-         (string->symbol
-          (print-note nota 'lily))
-         segmento)))
-  
+  (let ((note-symb (string->symbol (print-note nota 'lily))))
+    (make-nota-pardo :root note-symb
+                     :template template
+                     :resultado (avalia-template (transpoe template nota)
+                                                 segmento)
+                     :segmento segmento)))
 
 (defun avalia-segmento-notas (template segmento notas &optional resultado)
   (if notas
@@ -75,47 +82,45 @@
       resultado))
 
 (defun root-weight (res)
-  (let* ((root-note (note->code (string (first (first (second res))))))
-         (weight (assoc root-note (rest (first (second res))))))
-    (or (second weight) 0)))
+  (let* ((root-note (nota-pardo-root res))
+         (weight (assoc-item (note->code root-note)
+                             (nota-pardo-segmento res))))
+    (or weight 0)))
 
 
 (defun template-prob (nota)
-  (let ((template (rest (second nota))))
+  (let ((template (rest (nota-pardo-gabarito nota))))
     (length
      (member-if (lambda (x)
-               (equal (car x) template))
-             *pardo-templates*))))
+                  (equal (car x) template))
+                *pardo-templates*))))
+
 (defun dim7? (notas)
   (every (lambda (x)
-           (equal "DIM" (stringify (second (second x)))))
+           (equal "dim" (stringify (second (nota-pardo-gabarito x)))))
          notas))
 
 (defun dim7-res (segmento proximo)
-  (let* ((proxima-tonica (first (first (second proximo))))
+  (let* ((proxima-tonica (nota-pardo-root proximo))
          (cod (- (note->code (stringify proxima-tonica)) 1))
-         (nota (string-upcase (print-note (code->note cod) 'lily))))
+         (nota (print-note (code->note cod) 'lily)))
     (or (find-if
          (lambda (x)
-           (equal nota (stringify (first (first (second x))))))
+           (equal nota (stringify (nota-pardo-root x))))
               segmento)
         (first segmento))))
-                 
 
 (defun desempata-pardo (segmento resto)
-  (let* ((segmento (if (< 1 (length segmento))
-                       (list (apply #'append segmento))
-                       segmento))
-         (proximo (first resto))
-         (max-root (max-predicado #'root-weight (first segmento)))
-         (temp-prob (max-predicado #'template-prob (first segmento))))
+  (let* ((proximo (first resto))
+         (max-root (max-predicado #'root-weight segmento))
+         (temp-prob (max-predicado #'template-prob segmento)))
     (cons 
      (cond ((= (length max-root) 1)
             (car max-root))
            ((= (length temp-prob) 1)
             (car temp-prob))
-           ((dim7? (first segmento))
-            (dim7-res (first segmento) proximo))
+           ((dim7? segmento)
+            (dim7-res segmento proximo))
            (t (car max-root)))
      resto)))
 
@@ -125,30 +130,29 @@
   "Gera as notas de um segmento comparado com todas as transposições de
    um template."
   (let ((resultados
-          (max-predicado #'first
-                         (avalia-segmento-notas (second template)
-                                                segmento
-                                                *tempered-system*))))
-    (mapcar
-     (lambda (resultado)
-       (cons (first resultado)
-             (cons (cons (rest resultado) (first template))
-                   nil)))
-     resultados)))
+         (max-predicado (lambda (x)
+                          (nota-pardo-resultado x))
+                        (avalia-segmento-notas (second template)
+                                               segmento
+                                               *tempered-system*))))
+    (dolist (r resultados)
+      (setf (nota-pardo-gabarito r) (cons (nota-pardo-root r)
+                                          (first template))))
+    resultados))
 
 (defun pardo (segmento)
-  (max-predicado #'caar
-                 (mapcar
-                  (lambda (x) (avalia-segmento
-                               x
-                               (segment-to-template segmento)))
-                  *pardo-templates*)))
+  (max-predicado (lambda (x) (nota-pardo-resultado x))
+                 (reduce #'append
+                         (mapcar
+                          (lambda (x) (avalia-segmento
+                                       x
+                                       (segment-to-template segmento)))
+                          *pardo-templates*))))
 
 (defun gera-gabarito-pardo (musica)
-  (mapcar (lambda (x)
-            (cons (first (first (second x))) (rest (second x))))
+  (mapcar #'nota-pardo-gabarito
           (reduce #'desempata-pardo
-           (mapcar #'pardo (segmentos-minimos musica))
+                  (mapcar #'pardo (segmentos-minimos musica))
            :from-end t :initial-value nil)))
 
 (defun compara-gabarito-pardo-individual (resultado gabarito)
@@ -185,6 +189,8 @@
   (with-system tempered
     (gera-gabarito-pardo (parse-string string))))
 
+
+
 (with-system tempered
   (gera-gabarito-pardo
    (list (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0)
@@ -215,4 +221,5 @@
    (make-evento :PITCH 7 :OCTAVE 10 :DUR 1/4 :INICIO 1/2 :PASSAGEM? NIL)
    (make-evento :PITCH 4 :OCTAVE 9 :DUR 1/4 :INICIO 1/2 :PASSAGEM? NIL)
    (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 1/2 :PASSAGEM? NIL))))
+
 

@@ -72,7 +72,7 @@ fundamental do acorde."
 (defun acorde->cifra (acorde)
   (destructuring-bind (tonica modo inversao &optional acrescimos &rest resto) acorde
     (declare (ignore resto))
-    (let ((fundamental (lily->latin  (symbol->string tonica))))
+    (let ((fundamental (lily->latin  (stringify tonica))))
       (format nil "~a~@[~a~]~@[/~:(~a~)~]"
               (case modo
                 (maj (format nil "~a" fundamental))
@@ -116,7 +116,7 @@ fundamental do acorde."
   (list '* (second cifra) (cifra->acorde (first cifra))))
 
 (defun processa-cifra (cifra)
-  (let* ((cifra-string (symbol->string cifra))
+  (let* ((cifra-string (stringify cifra))
          (cifra7 (cl-ppcre:split "--" cifra-string))
          (cifra7b (cl-ppcre:split "__" cifra-string))
          (cifra* (cl-ppcre:split "\\*" cifra-string)))
