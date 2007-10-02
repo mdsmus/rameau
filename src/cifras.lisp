@@ -139,7 +139,7 @@ fundamental do acorde."
 
 (defun print-repeat (pop)
   (destructuring-bind (s valor &rest cifras) pop
-    (format nil "(~a ~a~%~{~( ~a~%~)~})" s valor (mapcar #'processa-cifra cifras))))
+    (format nil "(~a ~a~%~{~( ~a~%~)~})" s valor (mapcar #'pop2cifra cifras))))
 
 (defun pop2cifra (pop)
   (if (listp pop)
