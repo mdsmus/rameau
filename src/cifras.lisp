@@ -67,12 +67,12 @@ fundamental do acorde."
   (unless (= inversao 0)
     (print-note (code->note (+ (note->code tonica)
                                (get-intervalo-inversao-pop modo inversao)))
-                'latin)))
+                'lily)))
   
 (defun acorde->cifra (acorde)
   (destructuring-bind (tonica modo inversao &optional acrescimos &rest resto) acorde
     (declare (ignore resto))
-    (let ((fundamental (lily->latin  (stringify tonica))))
+    (let ((fundamental (stringify tonica)))
       (format nil "~a~@[~a~]~@[/~:(~a~)~]"
               (case modo
                 (maj (format nil "~a" fundamental))
@@ -128,7 +128,7 @@ fundamental do acorde."
 (defun print-mel (pop)
   (destructuring-bind (s &rest notas) pop
     (declare (ignore s))
-    (format nil "(:mel ~{~(~a~)~^ ~})" notas)))
+    (format nil "(:mel ~{~(~a~)~^ ~})" (mapcar #'latin->lily notas))))
 
 (defun pop2cifra (pop)
   (if (listp pop)

@@ -24,7 +24,7 @@
 (defun print-gabarito (file gabarito algoritmo comparacao &optional notas)
   (progn
     (format t "~% * ~a~%" file)
-    (format t "gabarito (tamanho: ~a): ~(~a~) ~%" (length gabarito) gabarito)
+    (format t "gabarito (tamanho: ~a): ~(~s~) ~%" (length gabarito) gabarito)
     (format t "   pardo (tamanho: ~a): ~(~a~) ~%" (length algoritmo) algoritmo)
     (when notas (format t "   notas: ~(~a~) ~%" notas))
     (format t "correto?: ~:[não~;sim~]~%" comparacao)))
@@ -69,7 +69,7 @@ gabarito, e mostra resultado em cifras:
                          (with-system rameau:tempered
                            (gera-gabarito-pardo (parse-file file)))))
              (gabarito (gera-gabarito (processa-gabarito
-                                       (troca-extensao file ".gab"))))
+                                       (tira-extensao file))))
              (comparacao (with-system rameau:tempered
                            (compara-gabarito-pardo algoritmo gabarito)))
              (notas (no-op (parse-file file)))
@@ -89,7 +89,7 @@ gabarito, e mostra resultado em cifras:
            (if comparacao (push file-name ok) (push file-name no)))
           (t (error "não sei o que fazer!")))))
     (list (reverse ok) (reverse no))))
-      
+
 (defun print-analise-harmonica (files)
   (dolist (file files)
     (format t "~% * ~a~%" (pathname-name file))

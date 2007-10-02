@@ -72,7 +72,21 @@ quantos acidentes ou oitavas uma nota tem."
 
 (defun stringify (symb)
   (format nil "~(~a~)" symb))
-  
+
+(defun destringify (coisa)
+  (cond ((numberp coisa) coisa)
+        ((stringp coisa) (read-from-string (string-upcase coisa)))
+        (t coisa)))
+
+(defun converte-strings (coisas)
+  (when coisas
+    (let ((atual (first coisas))
+          (resto (rest coisas)))
+      (cons (if (listp atual)
+                (converte-strings atual)
+                (destringify atual))
+            (converte-strings resto)))))
+
 (defun assoc-item (item alist)
   "Returns an item from a alist. "
   (second (assoc item alist)))
@@ -123,8 +137,21 @@ quantos acidentes ou oitavas uma nota tem."
                      resto)))
           (cons atual (expande-multiplicacoes resto))))))
 
+(defun processa-gabarito-pop (file)
+  (mapcar (lambda (x)
+            (let ((cifra (pop2cifra x)))
+              (if (stringp cifra)
+                  (read-from-string (string-upcase cifra))
+                  (converte-strings cifra))))
+          (read-pop-file file)))
+
 (defun processa-gabarito (file)
   "Transforma um gabarito de texto em sexp."
-  (let ((gabarito (when (cl-fad:file-exists-p file) 
-                    (read-from-string (format nil "(~a)" (file-string file))))))
+  (let* ((nome-gab (concat file ".gab"))
+         (nome-pop (concat file ".pop"))
+         (gabarito (cond ((cl-fad:file-exists-p nome-gab) 
+                          (read-from-string (format nil "(~a)" (file-string file))))
+                         ((cl-fad:file-exists-p nome-pop)
+                          (processa-gabarito-pop nome-pop))
+                         (t (error "gabarito inexistente: ~a" file)))))
     (expande-multiplicacoes gabarito)))
