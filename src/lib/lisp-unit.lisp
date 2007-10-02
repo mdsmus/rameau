@@ -387,13 +387,13 @@ For more information, see lisp-unit.html.
     ))
 
 (defun show-failure (type msg name form expected actual extras)
-  (format t "~&~@[~(~30S~) ~]~(~S~) failed " name form)
+  (format t "~&~@[~(~35S~) ~]~(~S~) failed " name form)
   (format t msg expected actual)
   (format t "~{~&   ~S => ~S~}~%" extras)
   type)
 
 (defun show-summary (name test-count pass-count &optional error-count)
-  (format t "~&~(~30A~) [~3S passed] [~3S failed]~@[ [~3S errors]~]"
+  (format t "~&~(~35A~) [~3S passed] [~3S failed]~@[ [~3S errors]~]"
           name pass-count (- test-count pass-count) error-count))
 
 (defun collect-form-values (form values)
