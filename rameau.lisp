@@ -47,6 +47,7 @@
 -w        só mostra os testes que tem algum erro (implica em -v)
 -c        mostra cifra dos acordes no lugar de listas
 -v        verbose (mostra tudo)
+-u        roda os testes de unidade
 -h        help
 
 * EXEMPLOS
@@ -123,7 +124,7 @@ gabarito, e mostra resultado em cifras:
              (getopt:getopt command-args
                             '(("-h" :none) ("-g" :none) ("-w" :none)
                               ("-v" :none) ("-h" :none) ("-l" :none)
-                              ("-p" :none)
+                              ("-p" :none) ("-u" :none)
                               ("-c" :none) ("-s" :none) ("t" :required)))))))
 
 (defun get-opt-value (key alist)
