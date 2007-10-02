@@ -45,6 +45,12 @@ verdadeiro."
        do (push x novo-set))
     (nreverse novo-set)))
 
+(defun pula (elemento lista)
+  "Pula as ocorrências iniciais de elemento na lista"
+  (if (equal elemento (first lista))
+      (pula elemento (rest lista))
+      lista))
+
 (defun count-subseq (sub seq &optional (start -1) (acumula 0))
   (let ((s (search sub seq :start2 (+ start 1))))
     (if s
@@ -150,7 +156,7 @@ quantos acidentes ou oitavas uma nota tem."
   (let* ((nome-gab (concat file ".gab"))
          (nome-pop (concat file ".pop"))
          (gabarito (cond ((cl-fad:file-exists-p nome-gab) 
-                          (read-from-string (format nil "(~a)" (file-string file))))
+                          (read-from-string (format nil "(~a)" (file-string nome-gab))))
                          ((cl-fad:file-exists-p nome-pop)
                           (processa-gabarito-pop nome-pop))
                          (t (error "gabarito inexistente: ~a" file)))))
