@@ -160,5 +160,5 @@ quantos acidentes ou oitavas uma nota tem."
                           (read-from-string (format nil "(~a)" (file-string nome-gab))))
                          ((cl-fad:file-exists-p nome-pop)
                           (processa-gabarito-pop nome-pop))
-                         (t (error "gabarito inexistente: ~a" file)))))
+                         (t nil))))
     (expande-multiplicacoes gabarito)))

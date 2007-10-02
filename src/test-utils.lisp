@@ -83,7 +83,7 @@
   (assert-equal "mel" (stringify :mel))
   (assert-equal "11" (stringify 11))
   (assert-equal "foo" (stringify 'foo))
-  (assert-equal "foo" (stringify "FoF")))
+  (assert-equal "fof" (stringify "FoF")))
 
 (define-test string->symbol
   (assert-equal '|123| (string->symbol "123"))
