@@ -88,7 +88,7 @@ fundamental do acorde."
 
 (defun expand-repeat (stream char)
   (declare (ignore char))
-  `(:repeat ,@(read-delimited-list #\} stream t)))
+  `(* 2 ,@(read-delimited-list #\} stream t)))
 
 (set-macro-character #\[ #'expand-mel)
 (set-macro-character #\] (get-macro-character #\)))
@@ -98,9 +98,6 @@ fundamental do acorde."
 
 (defun nota-melodica? (lista)
   (when (eql (first lista) :mel) t))
-
-(defun repeticao? (lista)
-  (when (eql (first lista) :repeat) t))
 
 (defun anotacao (lista)
   (append (processa-cifra (first lista))
@@ -141,14 +138,13 @@ fundamental do acorde."
     (format nil "(:mel ~{~(~a~)~^ ~})" (mapcar #'latin->lily notas))))
 
 (defun print-repeat (pop)
-  (destructuring-bind (s &rest cifras) pop
-    (declare (ignore s))
-    (format nil "(:repeat~%~{~( ~a~%~)~})" (mapcar #'processa-cifra cifras))))
+  (destructuring-bind (s valor &rest cifras) pop
+    (format nil "(~a ~a~%~{~( ~a~%~)~})" s valor (mapcar #'processa-cifra cifras))))
 
 (defun pop2cifra (pop)
   (if (listp pop)
       (cond ((nota-melodica? pop) (print-mel pop))
-            ((repeticao? pop) (print-repeat pop))
+            ((eql '* (first pop)) (print-repeat pop))
             (t (anotacao pop)))
       (processa-cifra pop)))
 
