@@ -168,31 +168,49 @@ gabarito, e mostra resultado em cifras:
                (gera-gabarito-file file))
              (format t "arquivo ~a não existe~%" file)))))
 
+(defun run-unit-tests ()
+  (lisp-unit:run-all-tests :rameau)
+  (format t "~%"))
+
+(defmacro opt-cond (opts help-fn null-vars &body body)
+  "Gera um cond para lidar com opções do programa. opts indica a
+variável que guarda as opções, help-fn a função caso as variáveis em
+null-vars sejam nulas (ou seja, o usuário não as especificou. body
+deve obedecer ao formato (<opção> <função> <argumentos>). Se <opção>
+for uma lista assume que é para concetar com 'and'."
+  `(cond ((and ,@(mapcar (lambda (item) `(null ,item)) null-vars)) (,help-fn))
+         ,@(mapcar (lambda (item)
+                     (destructuring-bind (opt fn &rest args) item
+                       (cond ((listp opt)
+                              `((and ,@(mapcar (lambda (o) `(find ,o ,opts)) opt)) (,fn ,@args)))
+                             ((eql opt t)
+                              `(,opt (,fn ,@args)))
+                              (t `((find ,opt ,opts) (,fn ,@args))))))
+                   body)))
+
 (defun main ()
   (destructuring-bind (raw-path (&rest file-list) opts-value raw-opts) (handle-args)
     (let* ((type (get-opt-value "t" opts-value))
            (path (concat raw-path "/"))
            (opts (apply #'append (mapcar (lambda (c) (coerce c 'list)) raw-opts)))
            (files (make-list-of-files path type file-list)))
+
       (when (find #\w opts)
         (setf *print-only-wrong* t)
         (push #\v opts))
       (when (find #\c opts)
         (setf *use-cifras* t))
-      (cond
-        ((and (null type) (null opts) (null files)) (print-help))
-        ((find #\h opts) (print-help))
-        ((find #\l opts) (print-tests))
-        ((find #\u opts) (lisp-unit:run-all-tests :rameau) (format t "~%"))
-        ((find #\a opts) (print-analise-harmonica files))
-        ((and (find #\g opts) (find #\v opts) (find #\s opts))
-         (print-compara-gabarito files t t))
-        ((and (find #\g opts) (find #\v opts))
-         (print-compara-gabarito files t))
-        ((and (find #\v opts) (find #\s opts))
-         (print-compara-gabarito files nil t))
-        ((find #\v opts) (parse-verbose files))
-        ((find #\g opts) (print-ok-no-list (print-compara-gabarito files)))
-        ((find #\p opts) (pop->cifra raw-path file-list))
-        (t (print-ok-no-list (parse-summary files))))))
-  0)
+
+      (opt-cond opts print-help (type opts files)
+        (#\h           print-help)
+        (#\l           print-tests)
+        (#\u           run-unit-tests)
+        (#\a           print-analise-harmonica files)
+        ((#\g #\v #\s) print-compara-gabarito files t t)
+        ((#\g #\v)     print-compara-gabarito files t)
+        ((#\v #\s)     print-compara-gabarito files nil t)
+        (#\v           parse-verbose files)
+        (#\g           print-ok-no-list (print-compara-gabarito files))
+        (#\p           pop->cifra raw-path file-list)
+        (t             print-ok-no-list (parse-summary files)))
+  0)))
