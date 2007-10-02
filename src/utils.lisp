@@ -13,7 +13,7 @@
   (subseq file 0 (position #\. file)))
 
 (defun troca-extensao (file ext)
-  (if (tem-ext? file) file (concat (tira-extensao file) ext)))
+  (if (tem-ext? file) (concat (tira-extensao file) ext) file))
   
 (defun change-it-package (form)
   (subst 'it (find-symbol "IT" *package*) form))

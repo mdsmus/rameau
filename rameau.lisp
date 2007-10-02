@@ -61,9 +61,6 @@ gabarito, e mostra resultado em cifras:
   rameau-tests -t e -vcg
 "))
 
-(defun troca-extensao (file ext)
-  (concat (tira-extensao file) ext))
-
 (defun print-compara-gabarito (files &optional verbose? print-notas?)
   (let (ok no)
     (dolist (file files)
@@ -191,6 +188,8 @@ gabarito, e mostra resultado em cifras:
          (print-compara-gabarito files t t))
         ((and (find #\g opts) (find #\v opts))
          (print-compara-gabarito files t))
+        ((and (find #\v opts) (find #\s opts))
+         (print-compara-gabarito files nil t))
         ((find #\v opts) (parse-verbose files))
         ((find #\g opts) (print-ok-no-list (print-compara-gabarito files)))
         ((find #\p opts) (pop->cifra raw-path file-list))
