@@ -139,7 +139,8 @@ quantos acidentes ou oitavas uma nota tem."
           (resto (rest gab)))
       (if (eq '* (first atual))
           (append
-           (reduce #'append (repeat-list (second atual) (rest (rest atual))))
+           (reduce #'append (repeat-list (second atual)
+                                         (expande-multiplicacoes (rest (rest atual)))))
            (expande-multiplicacoes resto))
           (cons atual (expande-multiplicacoes resto))))))
 
