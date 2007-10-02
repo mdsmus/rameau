@@ -129,18 +129,18 @@ quantos acidentes ou oitavas uma nota tem."
 (defun retorna-n-segmentos (musica n)
   (subseq musica 0 n))
 
+(defun repeat-list (n list)
+  (if (> n 0)
+      (cons list (repeat-list (- n 1) list))))
+
 (defun expande-multiplicacoes (gab)
   (when gab
     (let ((atual (first gab))
           (resto (rest gab)))
       (if (eq '* (first atual))
-          (cons (third atual)
-                (expande-multiplicacoes
-                 (if (> (second atual) 1)                    
-                     (cons
-                      (list '* (- (second atual) 1) (third atual))
-                      resto)
-                     resto)))
+          (append
+           (reduce #'append (repeat-list (second atual) (rest (rest atual))))
+           (expande-multiplicacoes resto))
           (cons atual (expande-multiplicacoes resto))))))
 
 (defun processa-gabarito-pop (file)

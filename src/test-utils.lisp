@@ -35,7 +35,10 @@
 (define-test expande-multiplicacoes
   (assert-equal
    '(foo foo foo bar bar (foo))
-   (expande-multiplicacoes '((* 3 foo) (* 2 bar) (foo)))))
+   (expande-multiplicacoes '((* 3 foo) (* 2 bar) (foo))))
+  (assert-equal
+   '(foo bar foo bar (foo))
+   (expande-multiplicacoes '((* 2 foo bar) (foo)))))
 
 (define-test last1
   (assert-equal
