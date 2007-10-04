@@ -178,12 +178,4 @@
       (insert (concat "(run-tests " test-name ")"))
       (slime-repl-return))))
 
-(defun rameau-mel ()
-  (interactive)
-  (let ((buffer (get-buffer (buffer-name)))
-        (notas (read-from-minibuffer "notas melódicas: ")))
-    (princ (concat "[" notas "] ") buffer)))
-
-(global-set-key [(alt m)] 'rameau-mel)
-
 (provide 'rameau)

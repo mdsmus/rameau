@@ -45,6 +45,12 @@ verdadeiro."
        do (push x novo-set))
     (nreverse novo-set)))
 
+(defun pula (elemento lista)
+  "Pula as ocorrências iniciais de elemento na lista"
+  (if (equal elemento (first lista))
+      (pula elemento (rest lista))
+      lista))
+
 (defun count-subseq (sub seq &optional (start -1) (acumula 0))
   (let ((s (search sub seq :start2 (+ start 1))))
     (if s
@@ -123,18 +129,19 @@ quantos acidentes ou oitavas uma nota tem."
 (defun retorna-n-segmentos (musica n)
   (subseq musica 0 n))
 
+(defun repeat-list (n list)
+  (if (> n 0)
+      (cons list (repeat-list (- n 1) list))))
+
 (defun expande-multiplicacoes (gab)
   (when gab
     (let ((atual (first gab))
           (resto (rest gab)))
       (if (eq '* (first atual))
-          (cons (third atual)
-                (expande-multiplicacoes
-                 (if (> (second atual) 1)                    
-                     (cons
-                      (list '* (- (second atual) 1) (third atual))
-                      resto)
-                     resto)))
+          (append
+           (reduce #'append (repeat-list (second atual)
+                                         (expande-multiplicacoes (rest (rest atual)))))
+           (expande-multiplicacoes resto))
           (cons atual (expande-multiplicacoes resto))))))
 
 (defun processa-gabarito-pop (file)
@@ -150,8 +157,8 @@ quantos acidentes ou oitavas uma nota tem."
   (let* ((nome-gab (concat file ".gab"))
          (nome-pop (concat file ".pop"))
          (gabarito (cond ((cl-fad:file-exists-p nome-gab) 
-                          (read-from-string (format nil "(~a)" (file-string file))))
+                          (read-from-string (format nil "(~a)" (file-string nome-gab))))
                          ((cl-fad:file-exists-p nome-pop)
                           (processa-gabarito-pop nome-pop))
-                         (t (error "gabarito inexistente: ~a" file)))))
+                         (t nil))))
     (expande-multiplicacoes gabarito)))

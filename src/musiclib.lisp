@@ -180,16 +180,11 @@ retorna 14."
 
 (defun note? (string)
   "Testa se uma dada string pode representar uma nota"
-  (let ((nome (aref (string-downcase string) 0))
-        (resto (subseq (string-downcase string) 1)))
-    (when (find (intern resto :rameau)
-              '(|| |is| |es| |isis| |eses| |#| |##| |b| |bb|))
-        (find nome rameau:*notes*))))
+  (cl-ppcre:scan "^[a-g]((es)*|(is)*|#*|b*)$" (string-downcase string)))
 
 (defun rest? (string)
   "Testa se uma string pode representar um silêncio"
-  (and (= 1 (length string))
-       (find (aref string 0) *rests*)))
+  (cl-ppcre:scan "^[sSRr]$" string))
 
 (defun note->code (note)
   "Retorna o código numérico da nota, dada sua representação em

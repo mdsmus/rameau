@@ -82,6 +82,15 @@
   (assert-equal 0 (with-system tempered (%note->code 'c)))
   (assert-equal 2 (with-system tempered (%note->code 'd))))
 
+(define-test note?
+  (assert-true (note? "cis"))
+  (assert-true (note? "cIs"))
+  (assert-true (note? "c##"))
+  (assert-false (note? "c##is#"))
+  (assert-false (note? "cis#"))
+  (assert-false (note? "s"))
+  (assert-false (note? "foo")))
+
 (define-test number-of-accidentals
    (assert-equal 1 (number-of-accidentals "cis" 'lily))
    (assert-equal 2 (number-of-accidentals "cisis" 'lily))
@@ -232,3 +241,16 @@
   (assert-equal nil (with-system tempered (set-equal? '(0 3 7) '(0 4 7) 'normal)))
   (assert-equal t (with-system tempered (set-equal? '(0 3 7) '(0 4 7) 'prime))))
 
+(define-test latin->lily
+  (assert-equal "ces" (latin->lily "cb"))
+  (assert-equal "cisis" (latin->lily "c##")))
+
+(define-test lily->latin
+  (assert-equal "cb" (lily->latin "ces"))
+  (assert-equal "c##" (lily->latin "cisis")))
+
+
+(define-test rest?
+  (assert-false (rest? "c"))
+  (assert-false (rest? "cis"))
+  (assert-true (rest? "R")))
