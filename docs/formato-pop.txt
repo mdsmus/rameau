@@ -21,6 +21,8 @@ A forma [<notas>] expande em (:mel <notas>), por exemplo:
 
 * acorde de sétima e extensões
 
+C7m é do com setima maior e C7 é do com setima menor
+
 A forma <acorde>--7 significa que são 2 segmentos onde o segundo pode
 ser visto como um acode de sétima do primeiro, mas a sétima também
 pode ser uma nota melódica. Essa forma expande para 
