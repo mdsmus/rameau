@@ -35,7 +35,7 @@
       gabarito))
 
 (defun print-help ()
-  (format t "uso: rameau-tests [opções] [arquivos]
+  (format t "uso: rameau [opções] [arquivos]
 
 * OPÇÕES
 -p        gera gabaritos a partir de arquivos .pop
@@ -52,14 +52,14 @@
 
 * EXEMPLOS
 roda todas as regressões:
-  rameau-tests -t r
+  rameau -t r
 
 roda os corais 031 e 371:
-  rameau-tests -t c 031 371
+  rameau -t c 031 371
 
 roda todos os exemplos, faz comparação das analises harmonicas com
 gabarito, e mostra resultado em cifras:
-  rameau-tests -t e -vcg
+  rameau -t e -vcg
 "))
 
 (defun print-compara-gabarito (files &optional verbose? print-notas?)
