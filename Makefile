@@ -8,7 +8,7 @@ rameau: $(lisp-files)
 	${sbcl} --eval "(progn (load \"tools/rameau.lisp\") (sb-ext:save-lisp-and-die \"rameau\" :executable t :toplevel #'main))"
 
 update:
-	git pull && git rebase origin/master
+	git fetch && git rebase origin/master
 
 clean:
 	-rm rameau
