@@ -1,11 +1,11 @@
 sbcl = /usr/bin/sbcl --noinform --noprint --disable-debugger
 
-lisp-files = $(wildcard src/*.lisp src/lib/*.lisp)
+lisp-files = $(wildcard src/*.lisp src/lib/*.lisp tools/*.lisp)
 
 .PHONY: update clean
 
-rameau: rameau.lisp $(lisp-files)
-	${sbcl} --eval "(progn (load \"rameau.lisp\") (sb-ext:save-lisp-and-die \"rameau\" :executable t :toplevel #'main))"
+rameau: $(lisp-files)
+	${sbcl} --eval "(progn (load \"tools/rameau.lisp\") (sb-ext:save-lisp-and-die \"rameau\" :executable t :toplevel #'main))"
 
 update:
 	git pull && git rebase origin/master
