@@ -1,3 +1,4 @@
 src/cpc
-pdf
+*.pdf
+*.ps
 rameau
