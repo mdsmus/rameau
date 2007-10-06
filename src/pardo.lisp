@@ -72,7 +72,7 @@
       resultado))
 
 (defun root-weight (res)
-  (let* ((root-note (nota-pardo-root res))
+  (let* ((root-note (stringify (nota-pardo-root res)))
          (weight (assoc-item (note->code root-note)
                              (nota-pardo-segmento res))))
     (or weight 0)))
@@ -168,7 +168,6 @@
                    gab)))
        (compara-gabarito-pardo (rest resultado) (rest gabarito)))))
                   
-
 (with-system tempered
   (gera-gabarito-pardo
    (list (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0)

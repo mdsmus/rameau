@@ -76,6 +76,7 @@
 
 (defmacro with-system (system &body body)
   `(let ((*system* ',system))
+     (declare (special *system*))
      ,@body))
 
 ;; As variáveis acima não devem ser acessadas diretamente. Use
@@ -176,10 +177,10 @@ retorna 14."
     (tonal (position (list note 0) (get-system-notes *system*) :test #'equal))
     (tempered (position (list note 0) (get-system-notes *system*) :test #'equal))))
 
-
-(defun note? (string)
-  "Testa se uma dada string pode representar uma nota"
-  (cl-ppcre:scan "^[a-g]((es)*|(is)*|#*|b*)$" (string-downcase string)))
+(let ((testa-nota (cl-ppcre:create-scanner "^[a-g]((es)*|(is)*|#*|b*)$" :case-insensitive-mode t)))
+  (defun note? (string)
+    "Testa se uma dada string pode representar uma nota"
+    (cl-ppcre:scan testa-nota string)))
 
 (defun rest? (string)
   "Testa se uma string pode representar um silêncio"
@@ -201,16 +202,25 @@ usa a representação do lilypond e 'd#' usa a representação 'latin'."
 accidental and a representation. EXAMPLE: (print-accidentals 3 'lily)
 returns isisis."
   (repeat-string acc (funcall (if (>= acc 0) #'get-sharp #'get-flat) repr)))
-  
-(defun print-note (note-code representation)
+
+(defun %print-note (note-code representation)
   "Retuns a string of a note according to a note-code and representation.
 Example: (print-note '(c 1) 'lily) return cis."
   (format nil "~(~a~)~a" (first note-code) (print-accidentals (second note-code) representation)))
 
+(defvar *printed-notes* (make-hash-table :test #'equal))
+
+(defun print-note (note-code representation)
+  "Caches the result of calling %print-note on a hash table"
+  (let ((hash (cons note-code representation)))
+    (aif (gethash hash *printed-notes*)
+         it
+         (setf (gethash hash *printed-notes*) (%print-note note-code representation)))))
+
 (defun latin->lily (nota)
   "Aceita uma string com o nome da nota em latin e retorna a
 representação do lilypond. Exemplo: (latin->lily \"Eb\") => \"ees\""
-  (print-note (code->note (note->code nota)) 'lily))
+  (print-note (code->note (note->code (stringify nota))) 'lily))
 
 (defun lily->latin (nota)
   "Aceita uma string com o nome da nota em lily e retorna a

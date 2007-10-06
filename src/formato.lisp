@@ -36,16 +36,12 @@
   (cria-nota "s" "" dur))
 
 (defun move-evento-no-tempo (evento tempo)
-  (assert (not (listp evento)))
-  (make-evento :pitch (evento-pitch evento)
-               :dur (evento-dur evento)
-               :inicio (+ (evento-inicio evento) tempo)
-               :octave (evento-octave evento)))
+  (setf (evento-inicio evento) (+ (evento-inicio evento) tempo))
+  evento)
 
 (defun movimenta-sequencia (seq tempo)
-  (assert (listp seq))
-      (mapcar (lambda (x) (move-evento-no-tempo x tempo))
-              seq))
+  (mapcar (lambda (x) (move-evento-no-tempo x tempo))
+          seq))
   
 (defun fim-evento (evento)
   (+ (evento-inicio evento) (evento-dur evento)))
@@ -55,10 +51,10 @@
   (when sequencias
       (let* ((primeiro (car sequencias))
              (outros (cdr sequencias))
-             (fim-primeiro (reduce #'max (mapcar #'fim-evento primeiro)))
+             (fim-primeiro (fim-evento (last1 primeiro)))
              (inicio-primeiro (evento-inicio (car primeiro)))
              (movimentador (- fim-primeiro inicio-primeiro)))
-        (append primeiro
+        (nconc primeiro
                 (coloca-expressoes-em-sequencia
                  (mapcar (lambda (x) (movimenta-sequencia x movimentador))
                          outros))))))

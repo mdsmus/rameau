@@ -15,16 +15,15 @@
 (defun troca-extensao (file ext)
   (if (tem-ext? file) (concat (tira-extensao file) ext) file))
   
-(defun change-it-package (form)
-  (subst 'it (find-symbol "IT" *package*) form))
-
 (defmacro aif (test-form then-form &optional else-form)
   "Macro anafófica que retorna o elemento no predicado ('it') se for
 verdadeiro."
-  `(let ((it ,test-form))
-     (if it 
-         ,(change-it-package then-form) 
-         ,(change-it-package else-form))))
+  (labels ((change-it-package (form)
+             (subst 'it (find-symbol "IT" *package*) form)))
+    `(let ((it ,test-form))
+       (if it
+           ,(change-it-package then-form)
+           ,(change-it-package else-form)))))
 
 (defun concat (&rest strings)
   "Concatenate a bunch of strings."
@@ -70,14 +69,22 @@ quantos acidentes ou oitavas uma nota tem."
   "Repeat a string n times. EXAMPLE: (repeat-string 3 \"foo\") returns
   \"foofoofoo\"."
   (with-output-to-string (s)
-    (loop for x from 1 to (abs n) do (format s string))))
+    (dotimes (i (abs n)) (format s string))))
 
 (defun string->symbol (string)
   "Convert a string to a symbol."
   (intern (string-upcase string) :rameau))
 
-(defun stringify (symb)
+(defun %stringify (symb)
   (format nil "~(~a~)" symb))
+
+(defvar *stringify-cache*
+  (make-hash-table :test #'equal))
+
+(defun stringify (symb)
+  (aif (gethash symb *stringify-cache*)
+       it
+       (setf (gethash symb *stringify-cache*) (%stringify symb))))
 
 (defun destringify (coisa)
   (cond ((numberp coisa) coisa)
@@ -137,10 +144,10 @@ quantos acidentes ou oitavas uma nota tem."
   (when gab
     (let ((atual (first gab))
           (resto (rest gab)))
-      (if (eq '* (first atual))
-          (append
+      (if (and (listp atual) (eq '* (first atual)))
+          (nconc
            (reduce #'append (repeat-list (second atual)
-                                         (expande-multiplicacoes (rest (rest atual)))))
+                                        (expande-multiplicacoes (rest (rest atual)))))
            (expande-multiplicacoes resto))
           (cons atual (expande-multiplicacoes resto))))))
 

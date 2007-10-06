@@ -11,6 +11,7 @@
 
 (use-package :rameau)
 
+
 (defparameter *print-only-wrong* nil)
 (defparameter *use-cifras* nil)
 
@@ -47,6 +48,7 @@
 -w        só mostra os testes que tem algum erro (implica em -v)
 -c        mostra cifra dos acordes no lugar de listas
 -v        verbose (mostra tudo)
+-m        profiler (mede a execução do código)
 -u        roda os testes de unidade
 -h        help
 
@@ -188,22 +190,23 @@ for uma lista assume que é para concetar com 'and'."
                               (t `((find ,opt ,opts) (,fn ,@args))))))
                    body)))
 
-(defmacro when-set-opt-true (opts &body body)
-  "Atribui o valor de verdadeiro para cada uma das variáveis em body
-se o caractere em body for encontrado em opts."
-  `(progn
-     ,@(mapcar (lambda (item) `(when (find ,(first item) opts) (setf ,@(rest item) t))) body)))
 
 (defun main ()
-  (destructuring-bind (raw-path file-list opts-value raw-opts) (handle-args)
+  (destructuring-bind (raw-path (&rest file-list) opts-value raw-opts) (handle-args)
     (let* ((type (get-opt-value "t" opts-value))
            (path (concat raw-path "/"))
            (opts (apply #'append (mapcar (lambda (c) (coerce c 'list)) raw-opts)))
-           (files (when type (make-list-of-files path type file-list))))
-     
-      (when-set-opt-true opts
-       (#\w           *print-only-wrong*)
-       (#\c           *use-cifras*))
+           (files (make-list-of-files path type file-list)))
+
+      (when (find #\w opts)
+        (setf *print-only-wrong* t)
+        (push #\v opts))
+      (when (find #\c opts)
+        (setf *use-cifras* t))
+
+      (when (find #\m opts)
+        (sb-profile:profile "RAMEAU"))
+
 
       (opt-cond opts print-help (type opts files)
         (#\h           print-help)
@@ -217,4 +220,6 @@ se o caractere em body for encontrado em opts."
         (#\g           print-ok-no-list (print-compara-gabarito files))
         (#\p           pop->cifra raw-path file-list)
         (t             print-ok-no-list (parse-summary files)))
-      0)))
+      (when (find #\m opts)
+        (sb-profile:report))
+  0)))

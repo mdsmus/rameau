@@ -39,7 +39,16 @@
 (defparameter triple-bonus 1.4)
 (defparameter note-bonus 0.2)
 
+;; Constantes do programa Meter
 
+(defparameter lowest-level 0)
+(defparameter tactus-level 2)
+(defparameter highest-level 4)
+(defparameter low-levels tactus-level)
+(defparameter high-levels (- high-level tactus-level))
+(defparameter n-levels (1+ highest-level))
+
+;; Informações adicionais de um evento em temperley
 
 (defstruct evento-temperley
   (evento)
@@ -124,15 +133,22 @@
 (defun rotula-voice-leading (musica)
   (mapl #'rotula-voice-leading-nota musica))
 
-(defun metrifica (segmentos)
-  
+
+
+(defun calcula-metrica (notas)
+  (let* ((pip (faz-pip-array segmentos))
+         (tact (compute-tactus-level pip segmentos)))
+    (adjust-notes pip tact)))
+
+(defun metrifica (segmento notas)
+  (calcula-metrica notas))
 
 (defun temperley (musica)
   (let* ((musica (mapcar #'cria-evento-temperley musica))
          (musica (rotula-dissonancia musica))
          (musica (rotula-voice-leading musica))
          (clist (segmentos-minimos musica))
-         (m-clist (metrifica clist))
+         (m-clist (metrifica clist musica))
          (m-clist (penaliza-as-dissonancias m-clist))
          (cm-clist (compacta m-clist)))
     (gera-gabarito-temperley
