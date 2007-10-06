@@ -193,7 +193,7 @@ for uma lista assume que é para concetar com 'and'."
     (let* ((type (get-opt-value "t" opts-value))
            (path (concat raw-path "/"))
            (opts (apply #'append (mapcar (lambda (c) (coerce c 'list)) raw-opts)))
-           (files (make-list-of-files path type file-list)))
+           (files (when type (make-list-of-files path type file-list))))
 
       (when (find #\w opts)
         (setf *print-only-wrong* t)
