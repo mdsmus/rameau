@@ -188,18 +188,22 @@ for uma lista assume que é para concetar com 'and'."
                               (t `((find ,opt ,opts) (,fn ,@args))))))
                    body)))
 
+(defmacro when-set-opt-true (opts &body body)
+  "Atribui o valor de verdadeiro para cada uma das variáveis em body
+se o caractere em body for encontrado em opts."
+  `(progn
+     ,@(mapcar (lambda (item) `(when (find ,(first item) opts) (setf ,@(rest item) t))) body)))
+
 (defun main ()
-  (destructuring-bind (raw-path (&rest file-list) opts-value raw-opts) (handle-args)
+  (destructuring-bind (raw-path file-list opts-value raw-opts) (handle-args)
     (let* ((type (get-opt-value "t" opts-value))
            (path (concat raw-path "/"))
            (opts (apply #'append (mapcar (lambda (c) (coerce c 'list)) raw-opts)))
            (files (when type (make-list-of-files path type file-list))))
-
-      (when (find #\w opts)
-        (setf *print-only-wrong* t)
-        (push #\v opts))
-      (when (find #\c opts)
-        (setf *use-cifras* t))
+     
+      (when-set-opt-true opts
+       (#\w           *print-only-wrong*)
+       (#\c           *use-cifras*))
 
       (opt-cond opts print-help (type opts files)
         (#\h           print-help)
@@ -213,4 +217,4 @@ for uma lista assume que é para concetar com 'and'."
         (#\g           print-ok-no-list (print-compara-gabarito files))
         (#\p           pop->cifra raw-path file-list)
         (t             print-ok-no-list (parse-summary files)))
-  0)))
+      0)))
