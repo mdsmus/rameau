@@ -1,25 +1,28 @@
 ; -*- org -*-
 
-* duvida c--7
-* duvida co co7 c~
-* duvida cruzamento de tenor e baixo
-* duvida coral 14 c.4, sm 3-4 (conta em?)
-  setima de passagem
-  setima tira tonica
-  setima real mas no 2o sm
-* coral 14 c7M/g no asterisco (passagem ou acorde?)
-* dica: rss tickets
-* query tickets
+* [ok] duvida c--7
+* [ok] duvida co co7 c~7
+* [ok] duvida cruzamento de tenor e baixo
+* [ok] duvida coral 14 c.4, sm 3-4 (conta em?)
+* [ok] coral 14 c7M/g no asterisco (passagem ou acorde?)
+* [ok] dica: rss tickets
+* [ok] erros em ./rameau -t e -g
+* [ok] wtf com unicode? (timeline)
+* [ok] revisar corais .ly
+* [ok] rameau binario
+* [ok] todo: rameau imprimir algo enquanto analiza corais
+* [ok] query tickets
+* [ok] templerley
 * fazer revisão geral: milestones, etc
-* calendario futuro:
+* [ok] calendario futuro:
 ** relatorio parcial
 ** reunioes nas ferias
 ** artigo(s)
-* exemplos: diversificar?
-* templerley
-* rameau binario
-* todo: rameau imprimir algo enquanto analiza corais
-e.g. rameau -t c 
-* erros em ./rameau -t e -g
-* wtf com unicode? (timeline)
-* revisar corais .ly
+
+* ticketsq
+** formato pop or
+** formato pop super-setima a==7
+** script para revisar/limpar corais
+** log para imprimir o que acontece em rameau (ver norvig)
+** fazer script kern->lily
+** mandar email proxima reuniã
