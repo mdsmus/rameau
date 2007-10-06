@@ -2,3 +2,4 @@ src/cpc
 *.pdf
 *.ps
 rameau
+*.fasl
