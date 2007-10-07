@@ -78,6 +78,12 @@ quantos acidentes ou oitavas uma nota tem."
           ((search flat string) (- (count-subseq flat string)))
           (t 0))))
 
+(defun smallest (lista &optional (teste #'identity) (menor sb-ext:long-float-positive-infinity))
+  (if lista
+      (let ((atual (funcall teste (car lista))))
+        (smallest (cdr lista) teste (if (< atual menor) atual menor)))
+      menor))
+
 (defun repeat-string (n string)
   "Repeat a string n times. EXAMPLE: (repeat-string 3 \"foo\") returns
   \"foofoofoo\"."

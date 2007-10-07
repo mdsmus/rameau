@@ -26,7 +26,7 @@
 
 (defun normaliza-notas (segmento)
   (let ((sobras nil)
-        (tamanho (evento-dur (first segmento))))
+        (tamanho (smallest segmento #'evento-dur)))
     (values (mapcar (lambda (nota)
                       (if (= (evento-dur nota) tamanho)
                           nota
@@ -51,21 +51,16 @@
    pedaços tem o mesmo início e o mesmo fim. Escolhe-se o menor
    fim de cada pedaço e, caso haja alguma nota com fim posterior,
    divide-se ela e coloca-se o resto no próximo pedaço."
-  (if (< 1 (length musica))
-     (let ((ordenados (mapcar
-                       (lambda (x) (sort x (lambda (x y)
-                                             (< (evento-dur x)
-                                                (evento-dur y)))))
-                       musica)))
-       (multiple-value-bind
-             (segmento sobras)
-           (normaliza-notas (first ordenados))
-         (cons segmento
-               (redivide-segmentos
-                (cons (append sobras
-                              (second ordenados))
-                      (cddr ordenados))))))
-     musica))
+  (if (cddr musica)
+      (multiple-value-bind
+            (segmento sobras)
+          (normaliza-notas (first musica))
+        (cons segmento
+              (redivide-segmentos
+               (cons (nconc sobras
+                            (second musica))
+                     (cddr musica)))))
+      musica))
 
 (defun segmentos-minimos (musica)
   (redivide-segmentos (agrupa-inicio musica)))
