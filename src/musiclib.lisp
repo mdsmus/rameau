@@ -203,19 +203,10 @@ accidental and a representation. EXAMPLE: (print-accidentals 3 'lily)
 returns isisis."
   (repeat-string acc (funcall (if (>= acc 0) #'get-sharp #'get-flat) repr)))
 
-(defun %print-note (note-code representation)
+(defcached print-note (note-code representation)
   "Retuns a string of a note according to a note-code and representation.
 Example: (print-note '(c 1) 'lily) return cis."
   (format nil "~(~a~)~a" (first note-code) (print-accidentals (second note-code) representation)))
-
-(defvar *printed-notes* (make-hash-table :test #'equal))
-
-(defun print-note (note-code representation)
-  "Caches the result of calling %print-note on a hash table"
-  (let ((hash (cons note-code representation)))
-    (aif (gethash hash *printed-notes*)
-         it
-         (setf (gethash hash *printed-notes*) (%print-note note-code representation)))))
 
 (defun latin->lily (nota)
   "Aceita uma string com o nome da nota em latin e retorna a

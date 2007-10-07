@@ -25,6 +25,19 @@ verdadeiro."
            ,(change-it-package then-form)
            ,(change-it-package else-form)))))
 
+(defmacro defcached (funcname args &body body)
+  (let ((cache (gensym))
+        (func (gensym))
+        (params (gensym)))
+    `(progn
+       (defvar ,cache (make-hash-table :test #'equal))
+       (defun ,funcname (&rest ,params)
+         (labels ((,func ,args ,@body))
+           (aif (gethash ,params ,cache)
+                it
+                (setf (gethash ,params ,cache) (apply #',func ,params))))))))
+           
+
 (defun concat (&rest strings)
   "Concatenate a bunch of strings."
   (apply #'concatenate 'string strings))
@@ -75,16 +88,8 @@ quantos acidentes ou oitavas uma nota tem."
   "Convert a string to a symbol."
   (intern (string-upcase string) :rameau))
 
-(defun %stringify (symb)
+(defcached stringify (symb)
   (format nil "~(~a~)" symb))
-
-(defvar *stringify-cache*
-  (make-hash-table :test #'equal))
-
-(defun stringify (symb)
-  (aif (gethash symb *stringify-cache*)
-       it
-       (setf (gethash symb *stringify-cache*) (%stringify symb))))
 
 (defun destringify (coisa)
   (cond ((numberp coisa) coisa)
