@@ -84,7 +84,7 @@ quantos acidentes ou oitavas uma nota tem."
   (with-output-to-string (s)
     (dotimes (i (abs n)) (format s string))))
 
-(defun string->symbol (string)
+(defcached string->symbol (string)
   "Convert a string to a symbol."
   (intern (string-upcase string) :rameau))
 
