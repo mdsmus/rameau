@@ -2,21 +2,6 @@
 
 (defparameter *filename* nil)
 
-(defun get-exp (exp)
-  (if (atom (car exp)) exp (car exp)))
-      
-;; (expmerge exp1 exp2) => expressãoanova
-;; Junta as duas expressões, executando simultaneamente
-(defun expmerge (exp1 exp2)
-  (merge 'list (get-exp exp1) (get-exp exp2)
-         (lambda (x y) (< (evento-inicio x) (evento-inicio y)))))
-
-(defun merge-exprs (exprs)
-  (if (second exprs)
-      (expmerge (first exprs) (merge-exprs (rest exprs)))
-      (car exprs)))
-
-
 (lexer:deflexer string-lexer
   ("('|,)+" (return (values 'OCTAVE lexer:%0)))
   ("(V|v)oice" (return (values 'VOICE lexer:%0)))
@@ -114,14 +99,13 @@
   (declare (ignore a b))
   (make-instance 'music-block :expr block))
 
-(defun do-the-parsing (tree)
-  (process-ast (ajusta-duracao tree)))
-
 (defun parse-chord-dur (a chord b dur)
   (declare (ignore a b))
   (when dur
       (dolist (i chord)
-        (setf (evento-dur i) dur)))
+        (setf (sequencia-de-notas-dur i) dur)
+        (dolist (j (sequencia-de-notas-notas i))
+          (setf (evento-dur j) dur))))
   (make-instance 'chord :expr chord))
 
 (defun parse-simultaneous (a simultaneous b)
@@ -192,10 +176,8 @@
   (declare (ignore a))
   (make-instance 'relative :expr block :start relative))
 
-(defun parse-lilypond (lilypond atom)
-  (coloca-expressoes-em-sequencia
-   (remove-if #'null (list lilypond
-                           (rameau:do-the-parsing atom)))))
+(defun parse-lilypond (expression)
+  (process-ast (ajusta-duracao (parse-music-block nil expression nil))))
 
 (defun empty-octave ()
   "")
@@ -221,6 +203,11 @@
       (setf (evento-dur tree) *dur*))
   tree)
 
+(defmethod ajusta-duracao ((tree sequencia-de-notas))
+  (mapcar #'ajusta-duracao (sequencia-de-notas-notas tree))
+  (setf (sequencia-de-notas-dur tree) (evento-dur (car (sequencia-de-notas-notas tree))))
+  tree)
+
 (defmethod ajusta-duracao ((tree list))
   (mapcar #'ajusta-duracao tree)
   tree)
@@ -240,6 +227,9 @@
 (defmethod acerta-times (times (e evento))
   (setf (evento-dur e) (* times (evento-dur e))))
 
+(defmethod acerta-times (times (e sequencia-de-notas))
+  (mapcar #'acerta-times (sequencia-de-notas-notas e)))
+
 (defmethod acerta-times (times (tree set-variable))
   (acerta-times times (node-value tree)))
 
@@ -254,13 +244,7 @@
 (defun process-trees (trees)
   (remove-if
    #'null
-   (mapcar
-    (lambda (x)
-      (let ((s (process-ast x)))
-        (if (listp s)
-             s
-            (list s))))
-    trees)))
+   (mapcar #'process-ast trees)))
 
 (defmethod process-ast ((node music-block))
   (let ((seq (process-trees (node-expr node))))
@@ -295,7 +279,8 @@
         (*dur* 1/4))
     (declare (special *environment* *dur*))
     (remove-if (lambda (x) (null (evento-pitch x)))
-               (parse-with-lexer (string-lexer str) *expression-parser*))))
+               (sequencia-de-notas-notas
+                (parse-with-lexer (string-lexer str) *expression-parser*)))))
 
 (defun file-string (path)
   "Sucks up an entire file from PATH into a freshly-allocated string,

@@ -1,16 +1,15 @@
 (declaim (sb-ext:muffle-conditions warning style-warning sb-ext:compiler-note))
 
 (declaim (optimize (compilation-speed 0)
-                   (debug 1)
-                   (safety 1)
-                   (space 3)
-                   (speed 3)))
+                   (debug 3)
+                   (safety 3)
+                   (space 1)
+                   (speed 1)))
 
 (asdf:oos 'asdf:load-op 'rameau :verbose nil)
 (asdf:oos 'asdf:load-op 'getopt :verbose nil)
 
 (use-package :rameau)
-
 
 (defparameter *print-only-wrong* nil)
 (defparameter *use-cifras* nil)

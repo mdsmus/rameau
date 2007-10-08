@@ -39,8 +39,7 @@
    (lilypond #'identity))
   
   (lilypond
-   (expression-atom #'rameau:do-the-parsing)
-   (lilypond expression-atom #'parse-lilypond))
+   (expression #'parse-lilypond))
 
   (lilypond-header
    (HEADER |{| expression |}|)

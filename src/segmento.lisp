@@ -22,7 +22,7 @@
       (multiple-value-bind (grupo restante) (agrupa-por inicio resto)
         
         (cons (cons primeiro grupo)
-              (segmentos-minimos restante))))))
+              (agrupa-inicio restante))))))
 
 (defun normaliza-notas (segmento)
   (let ((sobras nil)
