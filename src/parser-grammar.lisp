@@ -6,6 +6,7 @@
                NEW-STAFF
                NEW-SCORE
                NEW-VOICE
+               NEW
                DUR
                NOTE
                OCTAVE
@@ -93,7 +94,9 @@
   (staff-block
    (NEW-STAFF expression-atom #'parse-staff-block)
    (CONTEXT STAFF = VARNAME expression-atom #'parse-context-staff)
-   (CONTEXT STAFF = STRING expression-atom #'parse-context-staff))
+   (CONTEXT STAFF = STRING expression-atom #'parse-context-staff)
+   (NEW-STAFF = VARNAME expression-atom #'parse-new-staff)
+   (NEW-STAFF = STRING expression-atom #'parse-new-staff))
 
   (score-block
    (NEW-SCORE expression-atom #'parse-score-block)

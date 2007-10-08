@@ -5,11 +5,12 @@
 (lexer:deflexer string-lexer
   ("('|,)+" (return (values 'OCTAVE lexer:%0)))
   ("(V|v)oice" (return (values 'VOICE lexer:%0)))
-  ("(S|s)taff" (return (values 'STAFF lexer:%0)))
+  ("((P|p)iano)?(S|s)taff" (return (values 'STAFF lexer:%0)))
   ("(S|s)core" (return (values 'SCORE lexer:%0)))
   ("-\\\\tenuto")
   ("-\\\\staccato")
-  ("(-|_|\\^|~|\\?)(\\.|\\^|\\+|\\||>|_|-|\"[^\"]*\")?")
+  ("(\\\\|-|_|\\^|~|\\?|!)(\\.|\\^|\\+|\\||>|<|!|_|-|\"[^\"]*\")?")
+  ("(\\[|\\])")
   ("[:alpha:]+"
    (if (or (note? lexer:%0) (rest? lexer:%0))
        (return (values 'NOTE lexer:%0))
@@ -22,6 +23,7 @@
   ("\\*\\d+" (return (values 'MULTIPLICA lexer:%0)))
   ("([:space:]+)")
   ("\\\\\\\\") ; contar isso é uma maravilha. Devem ser oito
+  ("\\\\(set|override)[^=]*=[:space:]+\"[^\"]*\"") ; pra ignorar set e override
   ("\\\\(set|override)[^=]*=[:space:]+[^:space:]*") ; pra ignorar set e override
   ("\\\\(V|v)oice((O|o)ne|(T|t)wo|(T|t)hree|(F|f)our)")
   ("-+\n")
@@ -49,6 +51,7 @@
   ("\\\\include" (return (values 'INCLUDE lexer:%0)))
   ("\\\\new[:space:]+(Piano)?(s|S)taff" (return (values 'NEW-STAFF lexer:%0)))
   ("\\\\new[:space:]+(v|V)oice" (return (values 'NEW-VOICE lexer:%0)))
+  ("\\\\new" (return (values 'NEW (print "foobar"))))
   ("\\\\(R|r)elative" (return (values 'RELATIVE lexer:%0)))
   ("\\\\(S|s)core" (return (values 'NEW-SCORE lexer:%0)))
   ("\\\\(S|s)imultaneous" (return (values 'SIMULT lexer:%0)))
@@ -122,6 +125,10 @@
 
 (defun parse-context-staff (a b c d block)
   (declare (ignore a b c d))
+  (parse-staff-block nil block))
+
+(defun parse-new-staff (a b c block)
+  (declare (ignore a b c))
   (parse-staff-block nil block))
 
 (defun parse-score-block (a block)

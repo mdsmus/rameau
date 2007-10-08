@@ -12,6 +12,8 @@
 
 (use-package :rameau)
 
+(trace values)
+
 (defparameter *print-only-wrong* nil)
 (defparameter *use-cifras* nil)
 
