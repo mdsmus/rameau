@@ -1,5 +1,4 @@
-(declaim
- #+sbcl(sb-ext:muffle-conditions warning style-warning sb-ext:compiler-note))
+#+sbcl(declaim (sb-ext:muffle-conditions warning style-warning sb-ext:compiler-note))
 
 #+cmu(setf ext::*complain-about-illegal-switches* nil)
 
@@ -23,6 +22,38 @@
                          (exemplos "exemplos/")
                          (regressao "regressao/")
                          (lily "regressao-lily/")))
+
+;;; As funções dependentes de implementação devem ficar aqui
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun get-args ()
+  (let ((sbcl-args #+sbcl *posix-argv*)
+        (cmu-args #+cmu extensions:*command-line-strings*)
+        (clisp-args #+clisp *args*))
+    (cond (sbcl-args (rest sbcl-args))
+          (cmu-args (subseq cmu-args 3))
+          (clisp-args clisp-args)
+          )))
+
+(defun get-path ()
+  (format nil "~a" (or #+sbcl *default-pathname-defaults*
+                       #+cmu (first (ext:search-list "default:"))
+                       #+clisp (ext:default-directory))))
+
+(defun rameau-profile ()
+  #+sbcl(sb-profile:profile "RAMEAU")
+  #+cmu(profile:profile-all :package "RAMEAU")
+  )
+
+(defun rameau-report ()
+  #+sbcl(sb-profile:report)
+  #+cmu(profile:report-time)
+  )
+
+(defun rameau-quit ()
+  #+clisp(ext:exit)
+  )
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun print-gabarito (file gabarito algoritmo comparacao &optional notas)
   (progn
@@ -125,19 +156,13 @@ gabarito, e mostra resultado em cifras:
 
 (defun handle-args ()
   "O script passa os argumentos na ordem: sbcl path comandos"
-  (let* ((sbcl-args #+sbcl *posix-argv*)
-         (cmu-args #+cmu extensions:*command-line-strings*)
-         (command-args (cond (sbcl-args (rest sbcl-args))
-                             (cmu-args (subseq cmu-args 3))))
-         (path (format nil "~a" (or #+sbcl *default-pathname-defaults*
-                                    #+cmu (first (ext:search-list "default:"))))))
-    (append (list path)
-            (multiple-value-list
-             (getopt:getopt command-args
-                            '(("-h" :none) ("-g" :none) ("-w" :none)
-                              ("-v" :none) ("-h" :none) ("-l" :none)
-                              ("-p" :none) ("-u" :none)
-                              ("-c" :none) ("-s" :none) ("t" :required)))))))
+  (append (list (get-path))
+          (multiple-value-list
+           (getopt:getopt (get-args)
+                          '(("-h" :none) ("-g" :none) ("-w" :none)
+                            ("-v" :none) ("-h" :none) ("-l" :none)
+                            ("-p" :none) ("-u" :none)
+                            ("-c" :none) ("-s" :none) ("t" :required))))))
 
 (defun get-opt-value (key alist)
   (when alist (char (cdr (assoc key alist :test #'string=)) 0)))
@@ -206,14 +231,17 @@ for uma lista assume que é para concetar com 'and'."
            (path (concat raw-path "/"))
            (opts (apply #'append (mapcar (lambda (c) (coerce c 'list)) raw-opts)))
            (files (make-list-of-files path type file-list)))
+
+      ;;(print (list raw-path file-list opts-value raw-opts))
+      
       (when (find #\w opts)
         (setf *print-only-wrong* t)
         (push #\v opts))
       (when (find #\c opts)
         (setf *use-cifras* t))
       
-      #+sbcl(when (find #\m opts)
-              (sb-profile:profile "RAMEAU"))
+      (when (find #\m opts)
+        (rameau-profile))
       
       (opt-cond opts print-help (type opts files)
         (#\h           print-help)
@@ -228,6 +256,8 @@ for uma lista assume que é para concetar com 'and'."
         (#\p           pop->cifra raw-path file-list)
         (t             print-ok-no-list (parse-summary files)))
 
-      #+sbcl(when (find #\m opts)
-              (sb-profile:report))
+      (when (find #\m opts)
+        (rameau-report))
+
+      (rameau-quit)
       0)))

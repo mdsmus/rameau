@@ -37,7 +37,6 @@ verdadeiro."
                 it
                 (setf (gethash ,params ,cache) (apply #',func ,params))))))))
            
-
 (defun concat (&rest strings)
   "Concatenate a bunch of strings."
   (apply #'concatenate 'string strings))
