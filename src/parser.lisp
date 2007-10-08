@@ -159,13 +159,15 @@
 
 (defun parse-include (a file)
   (declare (ignore a))
-  (parse-file
-   (if *filename*
-       (concatenate 'string
-                    (subseq *filename* 0 (search "/" *filename* :from-end t))
-                    "/"
-                    (read-from-string file))
-       (read-from-string file))))
+  (let ((notas (parse-file
+                (if *filename*
+                    (concat (subseq *filename* 0 (search "/" *filename* :from-end t))
+                            "/"
+                            (read-from-string file))
+                    (read-from-string file)))))
+    (make-sequencia-de-notas :notas notas
+                             :inicio 0
+                             :dur (+ (evento-inicio (last1 notas)) (evento-dur (last1 notas))))))
 
 
 (defun parse-context-voice (a b c d block)
@@ -279,8 +281,9 @@
         (*dur* 1/4))
     (declare (special *environment* *dur*))
     (remove-if (lambda (x) (null (evento-pitch x)))
-               (sequencia-de-notas-notas
-                (parse-with-lexer (string-lexer str) *expression-parser*)))))
+               (aif (parse-with-lexer (string-lexer str) *expression-parser*)
+                    (sequencia-de-notas-notas it)
+                    it))))
 
 (defun file-string (path)
   "Sucks up an entire file from PATH into a freshly-allocated string,
