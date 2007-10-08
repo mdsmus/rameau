@@ -1,3 +1,3 @@
 #!/bin/sh
 
-cmucl -core cmurameau
+cmucl -core cmurameau $@

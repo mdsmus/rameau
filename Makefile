@@ -9,7 +9,10 @@ rameau: $(lisp-files)
 	${sbcl} "(progn (load \"tools/rameau.lisp\") (sb-ext:save-lisp-and-die \"rameau\" :executable t :toplevel #'main))"
 
 cmurameau: $(lisp-files)
-	${lisp} "(progn (load \"tools/rameau.lisp\") (extensions:save-lisp \"cmurameau\" :init-function #'main :batch-mode t))"
+	${lisp} "(progn (load \"tools/rameau.lisp\") (extensions:save-lisp \"cmurameau\" :init-function #'main))"
+
+eclrameau: $(lisp-files)
+	ecl -eval '(progn (compile-file "tools/rameau.lisp" :system-p t) (quit))'
 
 update:
 	git fetch && git rebase origin/master

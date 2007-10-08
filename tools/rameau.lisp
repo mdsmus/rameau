@@ -1,18 +1,18 @@
 (declaim
  #+sbcl(sb-ext:muffle-conditions warning style-warning sb-ext:compiler-note))
 
+#+cmu(setf ext::*complain-about-illegal-switches* nil)
+
 (declaim (optimize (compilation-speed 0)
                    (debug 3)
                    (safety 3)
                    (space 1)
                    (speed 1)))
 
-(asdf:oos 'asdf:load-op 'rameau :verbose nil)
-(asdf:oos 'asdf:load-op 'getopt :verbose nil)
+(asdf:oos 'asdf:load-op :rameau :verbose nil)
+(asdf:oos 'asdf:load-op :getopt :verbose nil)
 
 (use-package :rameau)
-
-(trace values)
 
 (defparameter *print-only-wrong* nil)
 (defparameter *use-cifras* nil)
@@ -105,8 +105,12 @@ gabarito, e mostra resultado em cifras:
   (let (ok no)
     (dolist (file files)
       (handler-case (parse-file file)
-        (serious-condition (expr) (push (pathname-name file) no))
-        (:no-error (&rest rest) (push (pathname-name file) ok))))
+        (serious-condition (expr)
+          (declare (ignore expr))
+          (push (pathname-name file) no))
+        (:no-error (&rest rest)
+          (declare (ignore rest))
+          (push (pathname-name file) ok))))
     (list (reverse ok) (reverse no))))
 
 (defun print-ok-no-list (list)
@@ -121,8 +125,12 @@ gabarito, e mostra resultado em cifras:
 
 (defun handle-args ()
   "O script passa os argumentos na ordem: sbcl path comandos"
-  (let ((command-args (rest #+sbcl *posix-argv*))
-        (path (format nil "~a" *default-pathname-defaults*)))
+  (let* ((sbcl-args #+sbcl *posix-argv*)
+         (cmu-args #+cmu extensions:*command-line-strings*)
+         (command-args (cond (sbcl-args (rest sbcl-args))
+                             (cmu-args (subseq cmu-args 3))))
+         (path (format nil "~a" (or #+sbcl *default-pathname-defaults*
+                                    #+cmu (first (ext:search-list "default:"))))))
     (append (list path)
             (multiple-value-list
              (getopt:getopt command-args
@@ -198,14 +206,14 @@ for uma lista assume que é para concetar com 'and'."
            (path (concat raw-path "/"))
            (opts (apply #'append (mapcar (lambda (c) (coerce c 'list)) raw-opts)))
            (files (make-list-of-files path type file-list)))
-
       (when (find #\w opts)
         (setf *print-only-wrong* t)
         (push #\v opts))
       (when (find #\c opts)
         (setf *use-cifras* t))
-      (when (find #\m opts)
-        #+sbcl(sb-profile:profile "RAMEAU"))
+      
+      #+sbcl(when (find #\m opts)
+              (sb-profile:profile "RAMEAU"))
       
       (opt-cond opts print-help (type opts files)
         (#\h           print-help)
@@ -220,6 +228,6 @@ for uma lista assume que é para concetar com 'and'."
         (#\p           pop->cifra raw-path file-list)
         (t             print-ok-no-list (parse-summary files)))
 
-      (when (find #\m opts)
-        #+sbcl(sb-profile:report))
+      #+sbcl(when (find #\m opts)
+              (sb-profile:report))
       0)))
