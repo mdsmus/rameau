@@ -1,4 +1,5 @@
-(declaim (sb-ext:muffle-conditions warning style-warning sb-ext:compiler-note))
+(declaim
+ #+sbcl(sb-ext:muffle-conditions warning style-warning sb-ext:compiler-note))
 
 (declaim (optimize (compilation-speed 0)
                    (debug 3)
@@ -115,10 +116,10 @@ gabarito, e mostra resultado em cifras:
     (handler-case (parse-file file)
     (serious-condition (expr) (format t "[NO] ~a: ~a~%" (pathname-name file) expr))
     (:no-error (&rest rest) (format t "[OK] ~a ~a~%" (pathname-name file) rest)))))
-  
+
 (defun handle-args ()
   "O script passa os argumentos na ordem: sbcl path comandos"
-  (let ((command-args (rest *posix-argv*))
+  (let ((command-args (rest #+sbcl *posix-argv*))
         (path (format nil "~a" *default-pathname-defaults*)))
     (append (list path)
             (multiple-value-list
@@ -189,7 +190,6 @@ for uma lista assume que é para concetar com 'and'."
                               (t `((find ,opt ,opts) (,fn ,@args))))))
                    body)))
 
-
 (defun main ()
   (destructuring-bind (raw-path (&rest file-list) opts-value raw-opts) (handle-args)
     (let* ((type (get-opt-value "t" opts-value))
@@ -202,11 +202,9 @@ for uma lista assume que é para concetar com 'and'."
         (push #\v opts))
       (when (find #\c opts)
         (setf *use-cifras* t))
-
       (when (find #\m opts)
-        (sb-profile:profile "RAMEAU"))
-
-
+        #+sbcl(sb-profile:profile "RAMEAU"))
+      
       (opt-cond opts print-help (type opts files)
         (#\h           print-help)
         (#\l           print-tests)
@@ -219,6 +217,7 @@ for uma lista assume que é para concetar com 'and'."
         (#\g           print-ok-no-list (print-compara-gabarito files))
         (#\p           pop->cifra raw-path file-list)
         (t             print-ok-no-list (parse-summary files)))
+
       (when (find #\m opts)
-        (sb-profile:report))
-  0)))
+        #+sbcl(sb-profile:report))
+      0)))
