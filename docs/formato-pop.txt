@@ -35,6 +35,17 @@ a sétima está no baixo. A expansão, contudo, é diferente:
 
 C__7 => (C MAJ 0) (C MAJ 3 7)
 
+A foma <acorde>==7 expande em dois acordes onde o segundo tem a
+sétima:
+
+c==7 => (c maj 0) (c maj 0 7)
+
+A forma <acorde>_--7 funciona como <acorde>--7, mas quando a sétima
+está no baixo:
+
+C_--7 => (* 2 ((C MAJ 0) (C MAJ 3 7)))
+
+
 Outras extensões podem ser entradas separadas por ponto. [esse recurso
 ainda não foi completamente implementado. outras extensões além da
 sétima serão silenciosamente ignoradas] Por exemplo:
