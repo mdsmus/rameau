@@ -1,28 +1,5 @@
 ; -*- org -*-
 
-* [ok] duvida c--7
-* [ok] duvida co co7 c~7
-* [ok] duvida cruzamento de tenor e baixo
-* [ok] duvida coral 14 c.4, sm 3-4 (conta em?)
-* [ok] coral 14 c7M/g no asterisco (passagem ou acorde?)
-* [ok] dica: rss tickets
-* [ok] erros em ./rameau -t e -g
-* [ok] wtf com unicode? (timeline)
-* [ok] revisar corais .ly
-* [ok] rameau binario
-* [ok] todo: rameau imprimir algo enquanto analiza corais
-* [ok] query tickets
-* [ok] templerley
-* fazer revisão geral: milestones, etc
-* [ok] calendario futuro:
-** relatorio parcial
-** reunioes nas ferias
-** artigo(s)
+* documentar coisas (e.g. soluções de algoritmos)
 
-* ticketsq
-** formato pop or
-** formato pop super-setima a==7
-** script para revisar/limpar corais
-** log para imprimir o que acontece em rameau (ver norvig)
-** fazer script kern->lily
-** mandar email proxima reuniã
+
