@@ -19,6 +19,7 @@
                VARIABLE
                SIMULT
                PONTO
+               MARKUP
                TIMES
                NUMBER
                VOICE
@@ -54,6 +55,7 @@
   
   (expression-atom
    (lilypond-header #'do-nothing)
+   (markup-expr #'do-nothing)
    (OPEN-PAREN #'do-nothing)
    (CLOSE-PAREN #'do-nothing)
    (layout-block #'do-nothing)
@@ -147,6 +149,9 @@
   (scheme-code
    (HASH scheme-sexp))
 
+  (markup-expr
+   (MARKUP |{| scheme-list |}|))
+
   (scheme-sexp
    (OPEN-PAREN scheme-list CLOSE-PAREN))
 
@@ -156,6 +161,7 @@
 
   (scheme-atom
    VARNAME
+   VARIABLE
    STRING
    BOOL
    COLON
@@ -163,6 +169,8 @@
    SCORE
    VOICE
    DUR
+   |{|
+   |}|
    OCTAVE
    NUMBER
    scheme-sexp)

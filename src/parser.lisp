@@ -28,6 +28,7 @@
   ("\\\\(V|v)oice((O|o)ne|(T|t)wo|(T|t)hree|(F|f)our)")
   ("\\\\partial" (return (values 'PARTIAL lexer:%0)))
   ("\\\\repeat" (return (values 'REPEAT lexer:%0)))
+  ("\\\\markup" (return (values 'MARKUP lexer:%0)))
   ("-+\n")
   ("\\|")
   ("#(t|f)" (return (values 'BOOL lexer:%0)))
