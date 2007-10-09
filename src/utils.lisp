@@ -25,7 +25,7 @@ verdadeiro."
            ,(change-it-package then-form)
            ,(change-it-package else-form)))))
 
-(defmacro defcached (funcname args &body body)
+#-clisp(defmacro defcached (funcname args &body body)
   (let ((cache (gensym))
         (func (gensym))
         (params (gensym)))
@@ -87,11 +87,18 @@ quantos acidentes ou oitavas uma nota tem."
   (with-output-to-string (s)
     (dotimes (i (abs n)) (format s string))))
 
-(defcached string->symbol (string)
+#-clisp(defcached string->symbol (string)
   "Convert a string to a symbol."
   (intern (string-upcase string) :rameau))
 
-(defcached stringify (symb)
+#-clisp(defcached stringify (symb)
+  (format nil "~(~a~)" symb))
+
+#+clisp(defun string->symbol (string)
+  "Convert a string to a symbol."
+  (intern (string-upcase string) :rameau))
+
+#+clisp(defun stringify (symb)
   (format nil "~(~a~)" symb))
 
 (defun destringify (coisa)

@@ -17,7 +17,7 @@ eclrameau: $(lisp-files)
 clisprameau: $(lisp-files)
 	clisp -ansi -K full -x "(progn (load \"tools/rameau.lisp\") (ext:saveinitmem \"clisprameau\" :script t :quiet t :executable t :init-function #'main) (quit))"
 
-all: rameau cmurameau
+all: rameau cmurameau clisprameau
 
 update:
 	git fetch && git rebase origin/master
