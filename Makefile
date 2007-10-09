@@ -19,6 +19,10 @@ clisprameau: $(lisp-files)
 
 all: rameau cmurameau clisprameau
 
+doc:
+	cd docs ;\
+	make pdf
+
 update:
 	git fetch && git rebase origin/master
 
