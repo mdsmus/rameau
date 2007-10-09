@@ -27,6 +27,7 @@
   ("\\\\(set|override)[^=]*=[:space:]+[^:space:]*") ; pra ignorar set e override
   ("\\\\(V|v)oice((O|o)ne|(T|t)wo|(T|t)hree|(F|f)our)")
   ("\\\\partial" (return (values 'PARTIAL lexer:%0)))
+  ("\\\\repeat" (return (values 'REPEAT lexer:%0)))
   ("-+\n")
   ("\\|")
   ("#(t|f)" (return (values 'BOOL lexer:%0)))
@@ -154,6 +155,10 @@
 (defun parse-voice-block-string (a b c block)
   (declare (ignore a b c))
   (make-instance 'voice :expr block))
+
+(defun parse-repeat-block (a b dur block)
+  (declare (ignore a))
+  (make-instance 'music-block :expr (repeat-list (/ 1 dur) block)))
 
 (defun parse-dur (dur)
   (/ 1 (parse-integer dur)))

@@ -13,6 +13,7 @@
                RELATIVE
                STRING
                PARTIAL
+               REPEAT
                HEADER
                VARNAME
                VARIABLE
@@ -63,6 +64,7 @@
    (voice-block #'identity)
    (times-block #'identity)
    (assignment #'identity)
+   (repeat-block #'identity)
    (variable-block #'identity)
    (relative-block #'identity)
    (chord-block #'identity)
@@ -78,6 +80,9 @@
   (value
    (STRING #'identity)
    (expression-atom #'identity))
+
+  (repeat-block
+   (REPEAT varname dur-expr expression-atom #'parse-repeat-block))
 
   (variable-block
    (VARIABLE #'parse-variable-block))
