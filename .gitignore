@@ -6,3 +6,7 @@ rameau
 *.fas
 cmurameau
 clisprameau
+*.aux
+*.log
+*.out
+auto
