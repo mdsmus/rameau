@@ -1,201 +1,102 @@
-% Lily was here -- automatically converted by /usr/local/lilypond/usr/bin/midi2ly from 172.mid
-\version "2.10.0"
 
+\version "2.10.33"
 
-trackAchannelA =  {
-  
+\header {
+  title = "172 - Sei gegrüßet, Jesu gütig"
+  composer = "J. S. Bach"
+}
+
+global =  {
   \time 4/4 
-  
-
   \key g \minor
-  
-  \tempo 4 = 96 
-  
 }
 
-trackA = <<
-  \context Voice = channelA \trackAchannelA
->>
-
-
-trackBchannelA = \relative c {
-  
-  % [SEQUENCE_TRACK_NAME] Instrument 1
-  g''4 a ais ais |
-  % 2
-  c ais a a |
-  % 3
-  ais c d d |
-  % 4
-  dis d8 c c2 |
-  % 5
-  ais d4 c |
-  % 6
-  d d c ais |
-  % 7
-  c c c d |
-  % 8
-  dis dis d c8 d |
-  % 9
-  d2 c |
-  % 10
-  g4 a ais ais |
-  % 11
-  c c d d |
-  % 12
-  d d dis d |
-  % 13
-  c ais8 a a2 |
-  % 14
-  g1 |
-  % 15
-  
+soprano = \relative c {
+  g''4 a bes bes 
+  c bes a a 
+  bes c d d 
+  ees d8 c c2 
+  bes d4 c 
+  d d c bes 
+  c c c d 
+  ees ees d c8 d 
+  d2 c 
+  g4 a bes bes 
+  c c d d 
+  d d ees d 
+  c bes8 a a2 
+  g1 
 }
 
-trackB = <<
-  \context Voice = channelA \trackBchannelA
->>
 
-
-trackCchannelA =  {
-  
-  % [SEQUENCE_TRACK_NAME] Instrument 2
-  
+alto = \relative c {
+  d'4 d d d 
+  g8 fis g4 g fis 
+  g f f f 
+  ees8 f g4 f2 
+  f f4 f 
+  f bes bes8 a bes4 
+  bes a a g 
+  g g g8 f ees4 
+  gis g8 f ees2 
+  ees4 d d8 ees f4 
+  g f f f 
+  d g g8 c4 b8 
+  c fis, g4 g fis 
+  d1 
 }
 
-trackCchannelB = \relative c {
-  d'4 d d d |
-  % 2
-  g8 fis g4 g fis |
-  % 3
-  g f f f |
-  % 4
-  dis8 f g4 f2 |
-  % 5
-  f f4 f |
-  % 6
-  f ais ais8 a ais4 |
-  % 7
-  ais a a g |
-  % 8
-  g g g8 f dis4 |
-  % 9
-  gis g8 f dis2 |
-  % 10
-  dis4 d d8 dis f4 |
-  % 11
-  g f f f |
-  % 12
-  d g g8 c4 b8 |
-  % 13
-  c fis, g4 g fis |
-  % 14
-  d1 |
-  % 15
-  
+
+tenor = \relative c {
+  bes'4 a4. g16 fis g4 
+  g8 a bes g d'4 d 
+  d c4. bes16 a bes4 
+  bes bes bes a 
+  d2 bes4 c2 bes4 g'8 ees f4 
+  f f f f 
+  ees8 d c4 b c 
+  c b g2 
+  c4 c bes bes2 a4 bes bes 
+  a8 c c bes4 gis16 g f4 
+  g8 a bes ees d4. c8 
+  b1 
 }
 
-trackC = <<
-  \context Voice = channelA \trackCchannelA
-  \context Voice = channelB \trackCchannelB
->>
 
-
-trackDchannelA =  {
-  
-  % [SEQUENCE_TRACK_NAME] Instrument 3
-  
+baixo = \relative c {
+  g'4 fis g4. f8 
+  ees4 d8 c d4 d 
+  g a bes4. a8 
+  g4 ees f f, 
+  bes2 bes'4 a 
+  bes8 a g f ees c d bes 
+  f'4 f, f' b, 
+  c8 d ees f g4 gis8 g 
+  f4 g c,2 
+  c'4 fis, g d 
+  ees f bes,2 
+  fis4 g c d 
+  ees d8 c d4 d, 
+  g1 
 }
-
-trackDchannelB = \relative c {
-  ais'4 a4. g16 fis g4 |
-  % 2
-  g8 a ais g d'4 d |
-  % 3
-  d c4. ais16 a ais4 |
-  % 4
-  ais ais ais a |
-  % 5
-  d2 ais4 c2 ais4 g'8 dis f4 |
-  % 7
-  f f f f |
-  % 8
-  dis8 d c4 b c |
-  % 9
-  c b g2 |
-  % 10
-  c4 c ais ais2 a4 ais ais |
-  % 12
-  a8 c c ais4 gis16 g f4 |
-  % 13
-  g8 a ais dis d4. c8 |
-  % 14
-  b1 |
-  % 15
-  
-}
-
-trackD = <<
-
-  \clef bass
-  
-  \context Voice = channelA \trackDchannelA
-  \context Voice = channelB \trackDchannelB
->>
-
-
-trackEchannelA =  {
-  
-  % [SEQUENCE_TRACK_NAME] Instrument 4
-  
-}
-
-trackEchannelB = \relative c {
-  g'4 fis g4. f8 |
-  % 2
-  dis4 d8 c d4 d |
-  % 3
-  g a ais4. a8 |
-  % 4
-  g4 dis f f, |
-  % 5
-  ais2 ais'4 a |
-  % 6
-  ais8 a g f dis c d ais |
-  % 7
-  f'4 f, f' b, |
-  % 8
-  c8 d dis f g4 gis8 g |
-  % 9
-  f4 g c,2 |
-  % 10
-  c'4 fis, g d |
-  % 11
-  dis f ais,2 |
-  % 12
-  fis4 g c d |
-  % 13
-  dis d8 c d4 d, |
-  % 14
-  g1 |
-  % 15
-  
-}
-
-trackE = <<
-
-  \clef bass
-  
-  \context Voice = channelA \trackEchannelA
-  \context Voice = channelB \trackEchannelB
->>
 
 
 \score {
   <<
-    \context Staff=trackB \trackB
-    \context Staff=trackC \trackC
-    \context Staff=trackD \trackD
-    \context Staff=trackE \trackE
+    \new Staff {
+      <<
+        \global
+        \new Voice = "1" { \voiceOne \soprano }
+        \new Voice = "2" { \voiceTwo \alto }
+      >>
+    }
+    \new Staff {
+      <<
+        \global
+        \clef "bass"
+        \new Voice = "1" {\voiceOne \tenor }
+        \new Voice = "2" { \voiceTwo \baixo \bar "|."}
+      >>
+    }
   >>
 }

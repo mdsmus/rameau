@@ -1,253 +1,132 @@
-% Lily was here -- automatically converted by /usr/local/lilypond/usr/bin/midi2ly from 195.mid
-\version "2.10.0"
 
+\version "2.10.33"
 
-trackAchannelA =  {
-  
-  \time 4/4 
-  
-
-  \key d \major
-  
-  \tempo 4 = 96 
-  
+\header {
+  title = "195 - Wie schön leuchtet der Morgenstern"
+  composer = "J. S. Bach"
 }
 
-trackA = <<
-  \context Voice = channelA \trackAchannelA
->>
+global =  {
+  \time 4/4 
+  \key d \major
+}
 
-
-trackBchannelA = \relative c {
-  
-  % [SEQUENCE_TRACK_NAME] Instrument 1
-  s2. d'4 |
-  % 2
-  a' fis8 e d4 a' |
-  % 3
-  b8. cis32 d b4 a a |
-  % 4
-  b cis d cis |
-  % 5
-  b8 d cis b a4 fis |
-  % 6
-  b a g fis |
-  % 7
-  e2 d4 d |
-  % 8
-  a' fis8 e d4 a' |
-  % 9
-  b8. cis32 d b4 a a |
-  % 10
-  b cis d cis |
-  % 11
-  b8 d cis b a4 fis |
-  % 12
-  b a g fis |
-  % 13
-  e2 d4 s4 |
-  % 14
-  a'2 fis |
-  % 15
-  a fis |
-  % 16
-  fis4 fis e e |
-  % 17
-  fis fis e fis |
-  % 18
-  g fis e2 |
-  % 19
-  d d'4 cis |
-  % 20
-  b a g fis |
-  % 21
+soprano = \relative c {
+  \partial 4 d'4 
+  a' fis8 e d4 a' 
+  b8. cis32 d b4 a a 
+  b cis d cis 
+  b8 d cis b a4 fis 
+  b a g fis 
+  e2 d4 d 
+  a' fis8 e d4 a' 
+  b8. cis32 d b4 a a 
+  b cis d cis 
+  b8 d cis b a4 fis 
+  b a g fis 
+  e2 d4 s4 
+  a'2 fis 
+  a fis 
+  fis4 fis e e 
+  fis fis e fis 
+  g fis e2 
+  d d'4 cis 
+  b a g fis 
   e2 d4 
 }
 
-trackB = <<
-  \context Voice = channelA \trackBchannelA
->>
 
-
-trackCchannelA =  {
-  
-  % [SEQUENCE_TRACK_NAME] Instrument 2
-  
-}
-
-trackCchannelB = \relative c {
-  s2. a'4 |
-  % 2
-  a a b cis |
-  % 3
-  fis e e fis |
-  % 4
-  g g fis e8 a |
-  % 5
-  a4 gis e d |
-  % 6
-  d d d8 cis d4 |
-  % 7
-  d cis a a |
-  % 8
-  a a b cis |
-  % 9
-  fis e e fis |
-  % 10
-  g g fis e8 a |
-  % 11
-  a4 gis e d |
-  % 12
-  d d d8 cis d4 |
-  % 13
-  d cis a s4 |
-  % 14
-  e'2 d |
-  % 15
-  e d |
-  % 16
-  d4 d cis cis |
-  % 17
-  d d cis dis |
-  % 18
-  e d8 cis b4 cis |
-  % 19
-  a2 fis'4 fis8 e |
-  % 20
-  d e fis4 fis8 e e d |
-  % 21
+alto = \relative c {
+  \partial 4 a'4 
+  a a b cis 
+  fis e e fis 
+  g g fis e8 a 
+  a4 gis e d 
+  d d d8 cis d4 
+  d cis a a 
+  a a b cis 
+  fis e e fis 
+  g g fis e8 a 
+  a4 gis e d 
+  d d d8 cis d4 
+  d cis a s4 
+  e'2 d 
+  e d 
+  d4 d cis cis 
+  d d cis dis 
+  e d8 cis b4 cis 
+  a2 fis'4 fis8 e 
+  d e fis4 fis8 e e d 
   d cis16 b cis4 a 
 }
 
-trackC = <<
-  \context Voice = channelA \trackCchannelA
-  \context Voice = channelB \trackCchannelB
->>
 
-
-trackDchannelA =  {
-  
-  % [SEQUENCE_TRACK_NAME] Instrument 3
-  
-}
-
-trackDchannelB = \relative c {
-  s2. fis4 |
-  % 2
-  e d8 e fis gis a4 |
-  % 3
-  a gis cis d |
-  % 4
-  d e a,8 b cis4 |
-  % 5
-  fis,8 fis' e d cis4 a |
-  % 6
-  g a b8 g a4 |
-  % 7
-  a4. g8 fis4 fis |
-  % 8
-  e d8 e fis gis a4 |
-  % 9
-  a gis cis d |
-  % 10
-  d e a,8 b cis4 |
-  % 11
-  fis,8 fis' e d cis4 a |
-  % 12
-  g a b8 g a4 |
-  % 13
-  a4. g8 fis4 s4 |
-  % 14
-  a2 a |
-  % 15
-  cis a |
-  % 16
-  a4 a a a |
-  % 17
-  a a a a |
-  % 18
-  b8 cis d4 d8 cis16 b a8 g |
-  % 19
-  fis2 fis8 gis ais4 |
-  % 20
-  b cis d8 e a,4 |
-  % 21
+tenor = \relative c {
+  \partial 4 fis4 
+  e d8 e fis gis a4 
+  a gis cis d 
+  d e a,8 b cis4 
+  fis,8 fis' e d cis4 a 
+  g a b8 g a4 
+  a4. g8 fis4 fis 
+  e d8 e fis gis a4 
+  a gis cis d 
+  d e a,8 b cis4 
+  fis,8 fis' e d cis4 a 
+  g a b8 g a4 
+  a4. g8 fis4 s4 
+  a2 a 
+  cis a 
+  a4 a a a 
+  a a a a 
+  b8 cis d4 d8 cis16 b a8 g 
+  fis2 fis8 gis ais4 
+  b cis d8 e a,4 
   b a8 g fis4 
 }
 
-trackD = <<
 
-  \clef bass
-  
-  \context Voice = channelA \trackDchannelA
-  \context Voice = channelB \trackDchannelB
->>
-
-
-trackEchannelA =  {
-  
-  % [SEQUENCE_TRACK_NAME] Instrument 4
-  
-}
-
-trackEchannelB = \relative c {
-  s2. d4 |
-  % 2
-  cis d8 cis b4 fis'8 e |
-  % 3
-  d b e4 a, d |
-  % 4
-  g fis8 e fis gis a4 |
-  % 5
-  d, e a, d |
-  % 6
-  g fis e d |
-  % 7
-  a2 d4 d |
-  % 8
-  cis d8 cis b4 fis'8 e |
-  % 9
-  d b e4 a, d |
-  % 10
-  g fis8 e fis gis a4 |
-  % 11
-  d, e a, d |
-  % 12
-  g fis e d |
-  % 13
-  a2 d4 s4 |
-  % 14
-  cis2 d |
-  % 15
-  a d |
-  % 16
-  d8 e fis g a b a g |
-  % 17
-  fis e fis d a a' g fis |
-  % 18
-  e4 b'8 a g4 a |
-  % 19
-  d,2 b4 fis |
-  % 20
-  g a b8 cis d4 |
-  % 21
+baixo = \relative c {
+  \partial 4 d4 
+  cis d8 cis b4 fis'8 e 
+  d b e4 a, d 
+  g fis8 e fis gis a4 
+  d, e a, d 
+  g fis e d 
+  a2 d4 d 
+  cis d8 cis b4 fis'8 e 
+  d b e4 a, d 
+  g fis8 e fis gis a4 
+  d, e a, d 
+  g fis e d 
+  a2 d4 s4 
+  cis2 d 
+  a d 
+  d8 e fis g a b a g 
+  fis e fis d a a' g fis 
+  e4 b'8 a g4 a 
+  d,2 b4 fis 
+  g a b8 cis d4 
   g, a d 
 }
-
-trackE = <<
-
-  \clef bass
-  
-  \context Voice = channelA \trackEchannelA
-  \context Voice = channelB \trackEchannelB
->>
 
 
 \score {
   <<
-    \context Staff=trackB \trackB
-    \context Staff=trackC \trackC
-    \context Staff=trackD \trackD
-    \context Staff=trackE \trackE
+    \new Staff {
+      <<
+        \global
+        \new Voice = "1" { \voiceOne \soprano }
+        \new Voice = "2" { \voiceTwo \alto }
+      >>
+    }
+    \new Staff {
+      <<
+        \global
+        \clef "bass"
+        \new Voice = "1" {\voiceOne \tenor }
+        \new Voice = "2" { \voiceTwo \baixo \bar "|."}
+      >>
+    }
   >>
 }
