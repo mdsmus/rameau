@@ -29,8 +29,7 @@ verdadeiro."
   (let ((cache (gensym))
         (func (gensym))
         (params (gensym)))
-    `(progn
-       (defvar ,cache (make-hash-table :test #'equal))
+    `(let ((,cache (make-hash-table :test #'equal)))
        (defun ,funcname (&rest ,params)
          (labels ((,func ,args ,@body))
            (aif (gethash ,params ,cache)
