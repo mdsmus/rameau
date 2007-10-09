@@ -12,6 +12,7 @@
                OCTAVE
                RELATIVE
                STRING
+               PARTIAL
                HEADER
                VARNAME
                VARIABLE
@@ -124,7 +125,8 @@
   
   (note-expr
    (NOTE octave-expr dur-expr  #'cria-nota)
-   (SKIP dur-expr #'cria-skip))
+   (SKIP dur-expr #'cria-skip)
+   (PARTIAL dur-expr #'cria-skip))
 
   (octave-expr
    (#'empty-octave)

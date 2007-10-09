@@ -26,6 +26,7 @@
   ("\\\\(set|override)[^=]*=[:space:]+\"[^\"]*\"") ; pra ignorar set e override
   ("\\\\(set|override)[^=]*=[:space:]+[^:space:]*") ; pra ignorar set e override
   ("\\\\(V|v)oice((O|o)ne|(T|t)wo|(T|t)hree|(F|f)our)")
+  ("\\\\partial" (return (values 'PARTIAL lexer:%0)))
   ("-+\n")
   ("\\|")
   ("#(t|f)" (return (values 'BOOL lexer:%0)))
