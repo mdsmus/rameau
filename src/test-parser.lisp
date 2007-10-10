@@ -18,12 +18,11 @@
   )
 
 (lisp-unit:define-test cria-nota
-  (lisp-unit:assert-equal 0 (evento-pitch (cria-nota "c")))
-  (lisp-unit:assert-equal nil (evento-dur (cria-nota "c")))
-  (lisp-unit:assert-equal 8 (evento-octave (cria-nota "c")))
-  (lisp-unit:assert-equal 0 (evento-inicio (cria-nota "c")))
+  (lisp-unit:assert-equal 0 (evento-pitch (car (sequencia-de-notas-notas (cria-nota "c")))))
+  (lisp-unit:assert-equal nil (evento-dur (car (sequencia-de-notas-notas (cria-nota "c")))))
+  (lisp-unit:assert-equal 8 (evento-octave (car (sequencia-de-notas-notas (cria-nota "c")))))
+  (lisp-unit:assert-equal 0 (evento-inicio (car (sequencia-de-notas-notas (cria-nota "c")))))
   )
-
 
 (lisp-unit:define-test parser
   (lisp-unit:assert-equalp
@@ -277,23 +276,36 @@
    '(0 0 0 0 1/4 1/4 1/4 1/4 1/2 1/2 1/2 1/2)
    (mapcar
     #'evento-inicio
-    (coloca-expressoes-em-sequencia
-     (list
+    (sequencia-de-notas-notas
+     (coloca-expressoes-em-sequencia
       (list
-       (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0)
-       (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-       (make-evento :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-       (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0))
-      (list
-       (make-evento :PITCH 83 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-       (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-       (make-evento :PITCH 14 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-       (make-evento :PITCH 55 :OCTAVE 8 :DUR 1/4 :INICIO 0))
-      (list
-       (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0)
-       (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-       (make-evento :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-       (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0)))))))
+       (make-sequencia-de-notas
+        :notas
+        (list
+         (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0)
+         (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+         (make-evento :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+         (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0))
+        :inicio 0
+        :dur 1/4)
+       (make-sequencia-de-notas
+        :notas
+        (list
+         (make-evento :PITCH 83 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+         (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+         (make-evento :PITCH 14 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+         (make-evento :PITCH 55 :OCTAVE 8 :DUR 1/4 :INICIO 0))
+        :inicio 0
+        :dur 1/4)
+       (make-sequencia-de-notas
+        :notas
+        (list
+         (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0)
+         (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+         (make-evento :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+         (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0))
+        :inicio 0
+        :dur 1/4)))))))
 
 (lisp-unit:define-test do-nothing
   (lisp-unit:assert-false (do-nothing "vlA")))

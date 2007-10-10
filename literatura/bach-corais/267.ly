@@ -1,197 +1,100 @@
-% Lily was here -- automatically converted by /usr/local/lilypond/usr/bin/midi2ly from 267.mid
-\version "2.10.0"
 
+\version "2.10.33"
 
-trackAchannelA =  {
-  
+\header {
+  title = "267 - Vater unser im Himmelreich"
+  composer = "J. S. Bach"
+}
+
+global =  {
   \time 4/4 
-  
-
   \key d \minor
-  
-  \tempo 4 = 96 
-  
 }
 
-trackA = <<
-  \context Voice = channelA \trackAchannelA
->>
-
-
-trackBchannelA = \relative c {
-  
-  % [SEQUENCE_TRACK_NAME] Instrument 1
-  s2. a''4 |
-  % 2
-  a f g a |
-  % 3
-  f e d a' |
-  % 4
-  a g c a |
-  % 5
-  f g a a |
-  % 6
-  c d f e |
-  % 7
-  d cis d d |
-  % 8
-  e d c b |
-  % 9
-  a b a d |
-  % 10
-  c b c8 ais a4 |
-  % 11
-  a g f a |
-  % 12
-  ais a a g |
-  % 13
-  f e d2 |
-  % 14
-  
+soprano = \relative c {
+  \partial 4 a''4 
+  a f g a 
+  f e d a' 
+  a g c a 
+  f g a a 
+  c d f e 
+  d cis d d 
+  e d c b 
+  a b a d 
+  c b c8 bes a4 
+  a g f a 
+  bes a a g 
+  f e d2 
 }
 
-trackB = <<
-  \context Voice = channelA \trackBchannelA
->>
 
-
-trackCchannelA =  {
-  
-  % [SEQUENCE_TRACK_NAME] Instrument 2
-  
+alto = \relative c {
+  \partial 4 f'4 
+  e d d8 cis d4 
+  d cis a e' 
+  d4. e8 f4 cis 
+  d d cis e 
+  f a g a8 g 
+  f4 e fis g 
+  g8 a b4 a gis 
+  a4. gis8 e4 e 
+  e8 f g4 g f 
+  f4. e8 f4 fis 
+  g8 f e4 d8 cis d e 
+  a, d d cis a2 
 }
 
-trackCchannelB = \relative c {
-  s2. f'4 |
-  % 2
-  e d d8 cis d4 |
-  % 3
-  d cis a e' |
-  % 4
-  d4. e8 f4 cis |
-  % 5
-  d d cis e |
-  % 6
-  f a g a8 g |
-  % 7
-  f4 e fis g |
-  % 8
-  g8 a b4 a gis |
-  % 9
-  a4. gis8 e4 e |
-  % 10
-  e8 f g4 g f |
-  % 11
-  f4. e8 f4 fis |
-  % 12
-  g8 f e4 d8 cis d e |
-  % 13
-  a, d d cis a2 |
-  % 14
-  
+
+tenor = \relative c {
+  \partial 4 d'4 
+  a a g f8 g 
+  a4 a8 g f4 a 
+  bes8 c d4 c8 d e4 
+  a, bes e c'8 bes 
+  a4 f'8 e d4 e 
+  a, a a b 
+  c f e d 
+  c f8 e cis4 b 
+  c d c c 
+  d4. c8 gis4 dis' 
+  d4. cis8 d2 
+  d8 a bes a fis2 
 }
 
-trackC = <<
-  \context Voice = channelA \trackCchannelA
-  \context Voice = channelB \trackCchannelB
->>
 
-
-trackDchannelA =  {
-  
-  % [SEQUENCE_TRACK_NAME] Instrument 3
-  
+baixo = \relative c {
+  \partial 4 d4 
+  cis d e d8 e 
+  f g a a, d4 c 
+  bes bes' a8 g f e 
+  d c bes4 a a'8 g 
+  f e d c b4 cis 
+  d a d g 
+  c8 b a gis a g f e 
+  f e d e a,4 gis 
+  a8 a' g f e4 f8 e 
+  d c bes c cis4 c 
+  g a bes8 a b cis 
+  d f g a d,2 
 }
-
-trackDchannelB = \relative c {
-  s2. d'4 |
-  % 2
-  a a g f8 g |
-  % 3
-  a4 a8 g f4 a |
-  % 4
-  ais8 c d4 c8 d e4 |
-  % 5
-  a, ais e c'8 ais |
-  % 6
-  a4 f'8 e d4 e |
-  % 7
-  a, a a b |
-  % 8
-  c f e d |
-  % 9
-  c f8 e cis4 b |
-  % 10
-  c d c c |
-  % 11
-  d4. c8 gis4 dis' |
-  % 12
-  d4. cis8 d2 |
-  % 13
-  d8 a ais a fis2 |
-  % 14
-  
-}
-
-trackD = <<
-
-  \clef bass
-  
-  \context Voice = channelA \trackDchannelA
-  \context Voice = channelB \trackDchannelB
->>
-
-
-trackEchannelA =  {
-  
-  % [SEQUENCE_TRACK_NAME] Instrument 4
-  
-}
-
-trackEchannelB = \relative c {
-  s2. d4 |
-  % 2
-  cis d e d8 e |
-  % 3
-  f g a a, d4 c |
-  % 4
-  ais ais' a8 g f e |
-  % 5
-  d c ais4 a a'8 g |
-  % 6
-  f e d c b4 cis |
-  % 7
-  d a d g |
-  % 8
-  c8 b a gis a g f e |
-  % 9
-  f e d e a,4 gis |
-  % 10
-  a8 a' g f e4 f8 e |
-  % 11
-  d c ais c cis4 c |
-  % 12
-  g a ais8 a b cis |
-  % 13
-  d f g a d,2 |
-  % 14
-  
-}
-
-trackE = <<
-
-  \clef bass
-  
-  \context Voice = channelA \trackEchannelA
-  \context Voice = channelB \trackEchannelB
->>
 
 
 \score {
   <<
-    \context Staff=trackB \trackB
-    \context Staff=trackC \trackC
-    \context Staff=trackD \trackD
-    \context Staff=trackE \trackE
+    \new Staff {
+      <<
+        \global
+        \new Voice = "1" { \voiceOne \soprano }
+        \new Voice = "2" { \voiceTwo \alto }
+      >>
+    }
+    \new Staff {
+      <<
+        \global
+        \clef "bass"
+        \new Voice = "1" {\voiceOne \tenor }
+        \new Voice = "2" { \voiceTwo \baixo \bar "|."}
+      >>
+    }
   >>
 }

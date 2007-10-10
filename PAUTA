@@ -1,14 +1,5 @@
 ; -*- org -*-
 
-OK * duvida :mel :sus gabarito
-http://lists.genos.mus.br/pipermail/genos-pesquisa/2007-September/000929.html
-OK * git
-** rebase
-** mensagens de commit
-** branches
-** repos separados?
-* codigo para testes
-OK * formato pop
-OK * anotações no gabarito
-OK * documentação e testes em tudo
-OK * erro doc. gabarito? setima depois da inversao?
+* documentar coisas (e.g. soluções de algoritmos)
+
+

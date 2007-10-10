@@ -23,45 +23,75 @@
   (dur)
   (inicio))
 
+(defstruct sequencia-de-notas
+  (notas)
+  (inicio)
+  (dur))
+
 (defun cria-nota (nota &optional (octave "") dur articulation dur2) 
   (declare (ignore articulation))
   (let ((dur (if dur2 dur2 dur)))
-    (make-evento :pitch (note->code nota)
-                 :octave (octave-from-string octave)
-                 :dur dur
-                 :inicio 0)))
+    (make-sequencia-de-notas
+     :notas (list
+             (make-evento :pitch (note->code nota)
+                          :octave (octave-from-string octave)
+                          :dur dur
+                          :inicio 0))
+     :inicio 0
+     :dur dur)))
 
 (defun cria-skip (skip dur)
   (declare (ignore skip))
   (cria-nota "s" "" dur))
 
 (defun move-evento-no-tempo (evento tempo)
-  (assert (not (listp evento)))
-  (make-evento :pitch (evento-pitch evento)
-               :dur (evento-dur evento)
-               :inicio (+ (evento-inicio evento) tempo)
-               :octave (evento-octave evento)))
+  (setf (evento-inicio evento) (+ (evento-inicio evento) tempo))
+  evento)
 
 (defun movimenta-sequencia (seq tempo)
-  (assert (listp seq))
-      (mapcar (lambda (x) (move-evento-no-tempo x tempo))
-              seq))
+  (mapcar (lambda (x) (move-evento-no-tempo x tempo))
+          seq))
   
 (defun fim-evento (evento)
   (+ (evento-inicio evento) (evento-dur evento)))
 
 (defun coloca-expressoes-em-sequencia (sequencias)
   "Leva uma lista de expressões musicais e as arruma em sequência"
-  (when sequencias
-      (let* ((primeiro (car sequencias))
-             (outros (cdr sequencias))
-             (fim-primeiro (reduce #'max (mapcar #'fim-evento primeiro)))
-             (inicio-primeiro (evento-inicio (car primeiro)))
-             (movimentador (- fim-primeiro inicio-primeiro)))
-        (append primeiro
-                (coloca-expressoes-em-sequencia
-                 (mapcar (lambda (x) (movimenta-sequencia x movimentador))
-                         outros))))))
+  (if (cdr sequencias)
+    (let* ((primeiro (car sequencias))
+           (segundo (second sequencias))
+           (resto (cddr sequencias))
+           (movimentador (sequencia-de-notas-dur primeiro)))
+      (setf (sequencia-de-notas-notas primeiro)
+            (nconc (sequencia-de-notas-notas primeiro)
+                   (movimenta-sequencia (sequencia-de-notas-notas segundo)
+                                        (sequencia-de-notas-dur primeiro))))
+      (incf (sequencia-de-notas-dur primeiro) (sequencia-de-notas-dur segundo))
+      (coloca-expressoes-em-sequencia (cons primeiro resto)))
+    (car sequencias)))
+
+(defun %expmerge (exp1 exp2)
+  (setf (sequencia-de-notas-dur exp1) (max (sequencia-de-notas-dur exp1)
+                                           (sequencia-de-notas-dur exp2)))
+  (setf (sequencia-de-notas-notas exp1)
+        (merge 'list
+               (sequencia-de-notas-notas exp1)
+               (sequencia-de-notas-notas exp2)
+               (lambda (x y)
+                 (< (evento-inicio x)
+                    (evento-inicio y)))))
+  exp1)
+
+(defun merge-exprs (exprs)
+  (if (cdr exprs)
+      (let* ((primeiro (car exprs))
+             (segundo (second exprs))
+             (resto (cddr exprs)))
+        (%expmerge primeiro segundo)
+        (merge-exprs (cons primeiro resto)))
+      (car exprs)))
+
+
 
 (defun menos-de-uma-quarta (a b)
   (let ((a (evento-pitch a))
@@ -87,20 +117,15 @@
                       oa
                       (+ oa 1))))))))
 
-(defun relativiza (nota expressao &optional seq oitava)
-  (if (not expressao)
-      (nreverse seq)
-      (let* ((prox-nota (first expressao))
-             (oitava (if oitava oitava
-                         (evento-octave nota)))
-             (expressao (rest expressao))
-             (evento-novo
-              (make-evento
-               :pitch (evento-pitch prox-nota)
-               :dur (evento-dur prox-nota)
-               :inicio (evento-inicio prox-nota)
-               :octave (modificador-oitava nota prox-nota)))
-             (seq 
-              (cons evento-novo seq)))
-        (relativiza evento-novo expressao seq oitava))))
+(defun %relativiza (nota expressao &optional oitava)
+  (when expressao
+    (let* ((prox-nota (first expressao))
+           (oitava (if oitava oitava
+                       (evento-octave nota)))
+           (expressao (rest expressao)))
+      (setf (evento-octave prox-nota) (modificador-oitava nota prox-nota))
+      (%relativiza prox-nota expressao oitava))))
 
+(defun relativiza (nota expressao)
+  (%relativiza (car (sequencia-de-notas-notas nota)) (sequencia-de-notas-notas expressao))
+  expressao)

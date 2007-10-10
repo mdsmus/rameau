@@ -22,6 +22,13 @@
     (princ string)
     (browse-url-mozilla-new-tab (concat "http://www.genos.mus.br/bugs/ticket/" string))))
 
+(defun rameau-find-coral ()
+  (interactive)
+  (let ((buffer (get-buffer (buffer-name)))
+        (coral (read-from-minibuffer "coral: ")))
+    (browse-url-mozilla-new-tab
+     (concat "http://www.genos.mus.br/bugs/search?q=choral+" coral "&&ticket=on"))))
+
 (defun rameau-email-open-link ()
   (interactive)
   (gnus-summary-select-article-buffer)

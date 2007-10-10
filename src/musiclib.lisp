@@ -5,11 +5,11 @@
 
 (in-package #:rameau)
 
-(defparameter *notes* '(#\c #\d #\e #\f #\g #\a #\b #\C #\D #\E #\F #\G #\A #\B))
+(defvar *notes* '(#\c #\d #\e #\f #\g #\a #\b #\C #\D #\E #\F #\G #\A #\B))
 
-(defparameter *rests* '(#\r #\s #\S #\R))
+(defvar *rests* '(#\r #\s #\S #\R))
 
-(defparameter *tonal-system*
+(defvar *tonal-system*
   '((c 0)  (c 1)  (c 2)  (c 3)  (c 4)  (c 5)  (c 6)
     (d -7) (d -6) (d -5) (d -4) (d -3) (d -2) (d -1)
     (d 0)  (d 1)  (d 2)  (d 3)  (d 4)  (d 5)  (d 6)
@@ -26,7 +26,7 @@
     (c -6) (c -5) (c -4) (c -3) (c -2) (c -1))
   "A table with note-codes for every note in Jamary's table (p. 18).")
 
-(defparameter *tonal-intervals*
+(defvar *tonal-intervals*
   '((1 just) (1 aug) (1 aug 2) (1 aug 3) (1 aug 4) (1 aug 5) (1 aug 6)
     (2 dim 6) (2 dim 5) (2 dim 4) (2 dim 3) (2 dim 2) (2 dim) (2 min) (2 maj) (2 aug)
     (2 aug 2) (2 aug 3) (2 aug 4) (2 aug 5) (2 aug 6) 
@@ -46,32 +46,32 @@
   represents a minor third; (3 dim 2) represents double-diminished
   third. Quantity is optional when equal to 1.")
 
-(defparameter *tempered-intervals*
+(defvar *tempered-intervals*
   '((1 just) (2 min) (2 maj) (3 min) (3 maj) (4 just)
     (5 dim) (5 just) (6 min) (6 maj) (7 min) (7 maj) (8 just)))
 
-(defparameter *tempered-system* '((c 0) (c 1) (d 0) (d 1) (e 0) (f 0)
+(defvar *tempered-system* '((c 0) (c 1) (d 0) (d 1) (e 0) (f 0)
                                   (f 1) (g 0) (g 1) (a 0) (a 1) (b 0)))
 
-(defparameter *systems* '((tonal (*tonal-system* 96 *tonal-intervals*))
+(defvar *systems* '((tonal (*tonal-system* 96 *tonal-intervals*))
                           (tempered (*tempered-system* 12 *tempered-intervals*))))
 
-(defparameter *system* 'tonal)
+(defvar *system* 'tonal)
 
-(defparameter *intervals-name* '((min minor)
+(defvar *intervals-name* '((min minor)
                                  (maj major)
                                  (just just)
                                  (aug augmented)
                                  (dim diminished)))
 
-(defparameter *intervals-quantity* '((2 double)
+(defvar *intervals-quantity* '((2 double)
                                      (3 triple)
                                      (4 quadruple)
                                      (5 pentuple)
                                      (6 hextuple)
                                      (7 heptuple)))
 
-(defparameter *accidentals* '((lily ("es" "is"))
+(defvar *accidentals* '((lily ("es" "is"))
                               (latin ("b" "#"))))
 
 (defmacro with-system (system &body body)
@@ -177,10 +177,10 @@ retorna 14."
     (tonal (position (list note 0) (get-system-notes *system*) :test #'equal))
     (tempered (position (list note 0) (get-system-notes *system*) :test #'equal))))
 
-
-(defun note? (string)
-  "Testa se uma dada string pode representar uma nota"
-  (cl-ppcre:scan "^[a-g]((es)*|(is)*|#*|b*)$" (string-downcase string)))
+(let ((testa-nota (cl-ppcre:create-scanner "^[a-g]((es)*|(is)*|#*|b*)$" :case-insensitive-mode t)))
+  (defun note? (string)
+    "Testa se uma dada string pode representar uma nota"
+    (cl-ppcre:scan testa-nota string)))
 
 (defun rest? (string)
   "Testa se uma string pode representar um silêncio"
@@ -202,8 +202,8 @@ usa a representação do lilypond e 'd#' usa a representação 'latin'."
 accidental and a representation. EXAMPLE: (print-accidentals 3 'lily)
 returns isisis."
   (repeat-string acc (funcall (if (>= acc 0) #'get-sharp #'get-flat) repr)))
-  
-(defun print-note (note-code representation)
+
+(defcached print-note (note-code representation)
   "Retuns a string of a note according to a note-code and representation.
 Example: (print-note '(c 1) 'lily) return cis."
   (format nil "~(~a~)~a" (first note-code) (print-accidentals (second note-code) representation)))
@@ -211,7 +211,7 @@ Example: (print-note '(c 1) 'lily) return cis."
 (defun latin->lily (nota)
   "Aceita uma string com o nome da nota em latin e retorna a
 representação do lilypond. Exemplo: (latin->lily \"Eb\") => \"ees\""
-  (print-note (code->note (note->code nota)) 'lily))
+  (print-note (code->note (note->code (stringify nota))) 'lily))
 
 (defun lily->latin (nota)
   "Aceita uma string com o nome da nota em lily e retorna a

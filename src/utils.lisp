@@ -15,17 +15,27 @@
 (defun troca-extensao (file ext)
   (if (tem-ext? file) (concat (tira-extensao file) ext) file))
   
-(defun change-it-package (form)
-  (subst 'it (find-symbol "IT" *package*) form))
-
 (defmacro aif (test-form then-form &optional else-form)
   "Macro anafófica que retorna o elemento no predicado ('it') se for
 verdadeiro."
-  `(let ((it ,test-form))
-     (if it 
-         ,(change-it-package then-form) 
-         ,(change-it-package else-form))))
+  (labels ((change-it-package (form)
+             (subst 'it (find-symbol "IT" *package*) form)))
+    `(let ((it ,test-form))
+       (if it
+           ,(change-it-package then-form)
+           ,(change-it-package else-form)))))
 
+(defmacro defcached (funcname args &body body)
+  (let ((cache (gensym))
+        (func (gensym))
+        (params (gensym)))
+    `(let ((,cache (make-hash-table :test #'equal)))
+       (defun ,funcname (&rest ,params)
+         (labels ((,func ,args ,@body))
+           (aif (gethash ,params ,cache)
+                it
+                (setf (gethash ,params ,cache) (apply #',func ,params))))))))
+           
 (defun concat (&rest strings)
   "Concatenate a bunch of strings."
   (apply #'concatenate 'string strings))
@@ -66,17 +76,21 @@ quantos acidentes ou oitavas uma nota tem."
           ((search flat string) (- (count-subseq flat string)))
           (t 0))))
 
+(defun smallest (lista &optional (teste #'identity))
+  (when lista
+    (reduce #'min lista :key teste)))
+
 (defun repeat-string (n string)
   "Repeat a string n times. EXAMPLE: (repeat-string 3 \"foo\") returns
   \"foofoofoo\"."
   (with-output-to-string (s)
-    (loop for x from 1 to (abs n) do (format s string))))
+    (dotimes (i (abs n)) (format s string))))
 
-(defun string->symbol (string)
+(defcached string->symbol (string)
   "Convert a string to a symbol."
   (intern (string-upcase string) :rameau))
 
-(defun stringify (symb)
+(defcached stringify (symb)
   (format nil "~(~a~)" symb))
 
 (defun destringify (coisa)
@@ -137,10 +151,10 @@ quantos acidentes ou oitavas uma nota tem."
   (when gab
     (let ((atual (first gab))
           (resto (rest gab)))
-      (if (eq '* (first atual))
-          (append
+      (if (and (listp atual) (eq '* (first atual)))
+          (nconc
            (reduce #'append (repeat-list (second atual)
-                                         (expande-multiplicacoes (rest (rest atual)))))
+                                        (expande-multiplicacoes (rest (rest atual)))))
            (expande-multiplicacoes resto))
           (cons atual (expande-multiplicacoes resto))))))
 

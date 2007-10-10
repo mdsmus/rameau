@@ -1,219 +1,111 @@
-% Lily was here -- automatically converted by /usr/local/lilypond/usr/bin/midi2ly from 225.mid
-\version "2.10.0"
 
+\version "2.10.33"
 
-trackAchannelA =  {
-  
+\header {
+  title = "225 - Gott, der du selber bist das Licht"
+  composer = "J. S. Bach"
+}
+
+global =  {
   \time 4/4 
-  
-
   \key g \minor
-  
-  \tempo 4 = 92 
-  
 }
 
-trackA = <<
-  \context Voice = channelA \trackAchannelA
->>
-
-
-trackBchannelA = \relative c {
-  
-  % [SEQUENCE_TRACK_NAME] Instrument 1
-  s2. d''4 |
-  % 2
-  g, a8 ais c4 ais |
-  % 3
-  a a g c |
-  % 4
-  c c d c |
-  % 5
-  d e f d |
-  % 6
-  c ais a g |
-  % 7
-  a2 g4 d' |
-  % 8
-  g, a8 ais c4 ais |
-  % 9
-  a a g c |
-  % 10
-  c c d c |
-  % 11
-  d e f d |
-  % 12
-  c ais a g |
-  % 13
-  a2 g4 a |
-  % 14
-  ais c d dis |
-  % 15
-  d c ais d |
-  % 16
-  f dis d g,8 a |
-  % 17
-  ais4 a g2 |
-  % 18
-  
+soprano = \relative c {
+  \partial 4 d''4 
+  g, a8 bes c4 bes 
+  a a g c 
+  c c d c 
+  d e f d 
+  c bes a g 
+  a2 g4 d' 
+  g, a8 bes c4 bes 
+  a a g c 
+  c c d c 
+  d e f d 
+  c bes a g 
+  a2 g4 a 
+  bes c d ees 
+  d c bes d 
+  f ees d g,8 a 
+  bes4 a g2 
 }
 
-trackB = <<
-  \context Voice = channelA \trackBchannelA
->>
 
-
-trackCchannelA =  {
-  
-  % [SEQUENCE_TRACK_NAME] Instrument 2
-  
+alto = \relative c {
+  \partial 4 g''4 
+  g fis8 g a4. g4 fis16 e fis4 d g 
+  f8 e f4 f f 
+  bes8 d4 cis8 d4 bes 
+  a d,8 e fis4 g 
+  g fis d g 
+  g fis8 g a4. g4 fis16 e fis4 d g 
+  f8 e f4 f f 
+  bes8 d4 cis8 d4 bes 
+  a d,8 e fis4 g 
+  g fis d f 
+  f8 bes4 a8 bes4 c4. bes4 a8 f4 f 
+  f8 a g f f4 ees 
+  d8 g4 fis8 d2 
 }
 
-trackCchannelB = \relative c {
-  s2. g''4 |
-  % 2
-  g fis8 g a4. g4 fis16 e fis4 d g |
-  % 4
-  f8 e f4 f f |
-  % 5
-  ais8 d4 cis8 d4 ais |
-  % 6
-  a d,8 e fis4 g |
-  % 7
-  g fis d g |
-  % 8
-  g fis8 g a4. g4 fis16 e fis4 d g |
-  % 10
-  f8 e f4 f f |
-  % 11
-  ais8 d4 cis8 d4 ais |
-  % 12
-  a d,8 e fis4 g |
-  % 13
-  g fis d f |
-  % 14
-  f8 ais4 a8 ais4 c4. ais4 a8 f4 f |
-  % 16
-  f8 a g f f4 dis |
-  % 17
-  d8 g4 fis8 d2 |
-  % 18
-  
+
+tenor = \relative c {
+  \partial 4 bes'8 c 
+  d4 c8 d ees d d4 
+  ees8 c a d16 c bes4 c8 bes 
+  a bes c a bes4 c 
+  bes8 a g4 a g'4. fis8 g4 d8 c bes4 
+  ees8 c a d16 c bes4 bes8 c 
+  d4 c8 d ees d d4 
+  ees8 c a d16 c bes4 c8 bes 
+  a bes c a bes4 c 
+  bes8 a g4 a g'4. fis8 g4 d8 c bes4 
+  ees8 c a d16 c bes4 c 
+  d ees f f 
+  f g8 f16 ees d4 d 
+  c8 d bes c d4 c8 fis, 
+  g d' d8. c16 b2 
 }
 
-trackC = <<
-  \context Voice = channelA \trackCchannelA
-  \context Voice = channelB \trackCchannelB
->>
 
-
-trackDchannelA =  {
-  
-  % [SEQUENCE_TRACK_NAME] Instrument 3
-  
+baixo = \relative c {
+  \partial 4 g8 a 
+  bes4 a8 g fis4 g 
+  c8 a d4 g, e 
+  f8 g a f bes bes'4 a8 
+  g f e4 d g, 
+  a bes8 c d4 ees8 d 
+  c4 d g, g8 a 
+  bes4 a8 g fis4 g 
+  c8 a d4 g, e 
+  f8 g a f bes bes'4 a8 
+  g f e4 d g, 
+  a bes8 c d4 ees8 d 
+  c4 d g, f'8 ees 
+  d4 c bes8 bes'4 a8 
+  bes d, ees f bes,4 bes 
+  a8 f g a bes4 c 
+  bes8 g d'4 g,2 
 }
-
-trackDchannelB = \relative c {
-  s2. ais'8 c |
-  % 2
-  d4 c8 d dis d d4 |
-  % 3
-  dis8 c a d16 c ais4 c8 ais |
-  % 4
-  a ais c a ais4 c |
-  % 5
-  ais8 a g4 a g'4. fis8 g4 d8 c ais4 |
-  % 7
-  dis8 c a d16 c ais4 ais8 c |
-  % 8
-  d4 c8 d dis d d4 |
-  % 9
-  dis8 c a d16 c ais4 c8 ais |
-  % 10
-  a ais c a ais4 c |
-  % 11
-  ais8 a g4 a g'4. fis8 g4 d8 c ais4 |
-  % 13
-  dis8 c a d16 c ais4 c |
-  % 14
-  d dis f f |
-  % 15
-  f g8 f16 dis d4 d |
-  % 16
-  c8 d ais c d4 c8 fis, |
-  % 17
-  g d' d8. c16 b2 |
-  % 18
-  
-}
-
-trackD = <<
-
-  \clef bass
-  
-  \context Voice = channelA \trackDchannelA
-  \context Voice = channelB \trackDchannelB
->>
-
-
-trackEchannelA =  {
-  
-  % [SEQUENCE_TRACK_NAME] Instrument 4
-  
-}
-
-trackEchannelB = \relative c {
-  s2. g8 a |
-  % 2
-  ais4 a8 g fis4 g |
-  % 3
-  c8 a d4 g, e |
-  % 4
-  f8 g a f ais ais'4 a8 |
-  % 5
-  g f e4 d g, |
-  % 6
-  a ais8 c d4 dis8 d |
-  % 7
-  c4 d g, g8 a |
-  % 8
-  ais4 a8 g fis4 g |
-  % 9
-  c8 a d4 g, e |
-  % 10
-  f8 g a f ais ais'4 a8 |
-  % 11
-  g f e4 d g, |
-  % 12
-  a ais8 c d4 dis8 d |
-  % 13
-  c4 d g, f'8 dis |
-  % 14
-  d4 c ais8 ais'4 a8 |
-  % 15
-  ais d, dis f ais,4 ais |
-  % 16
-  a8 f g a ais4 c |
-  % 17
-  ais8 g d'4 g,2 |
-  % 18
-  
-}
-
-trackE = <<
-
-  \clef bass
-  
-  \context Voice = channelA \trackEchannelA
-  \context Voice = channelB \trackEchannelB
->>
 
 
 \score {
   <<
-    \context Staff=trackB \trackB
-    \context Staff=trackC \trackC
-    \context Staff=trackD \trackD
-    \context Staff=trackE \trackE
+    \new Staff {
+      <<
+        \global
+        \new Voice = "1" { \voiceOne \soprano }
+        \new Voice = "2" { \voiceTwo \alto }
+      >>
+    }
+    \new Staff {
+      <<
+        \global
+        \clef "bass"
+        \new Voice = "1" {\voiceOne \tenor }
+        \new Voice = "2" { \voiceTwo \baixo \bar "|."}
+      >>
+    }
   >>
 }

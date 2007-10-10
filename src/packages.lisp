@@ -11,7 +11,7 @@
            #:expande-cifra-setima #:expand-mel #:gera-gabarito-file
            #:ajusta-duracao #:algoritmo-pardo #:assoc-item #:avalia-segmento
            #:avalia-segmento-notas #:avalia-template #:code->interval
-           #:code->note #:coloca-expressoes-em-sequencia
+           #:code->note #:coloca-expressoes-em-sequencia #:smallest
            #:compara-gabarito-pardo #:compara-gabarito-pardo-individual
            #:compara-notas #:concat #:corrige-exemplo #:count-subseq
            #:cria-nota #:cria-skip #:da-nota-modificada #:desempata-pardo
@@ -47,5 +47,6 @@
            #:evento-dur #:evento-octave #:evento-inicio #:pop2cifra
            #:*notes* #:*rests* #:*tonal-system* #:*tonal-intervals*
            #:*tempered-intervals* #:*tempered-system* #:*systems* #:*system*
+           #:make-sequencia-de-notas #:string-lexer
            #:*intervals-name* #:*intervals-quantity* #:*accidentals* #:tempered #:tonal)
   (:use #:cl #:yacc #:lisp-unit))

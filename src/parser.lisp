@@ -2,29 +2,15 @@
 
 (defparameter *filename* nil)
 
-(defun get-exp (exp)
-  (if (atom (car exp)) exp (car exp)))
-      
-;; (expmerge exp1 exp2) => expressãoanova
-;; Junta as duas expressões, executando simultaneamente
-(defun expmerge (exp1 exp2)
-  (merge 'list (get-exp exp1) (get-exp exp2)
-         (lambda (x y) (< (evento-inicio x) (evento-inicio y)))))
-
-(defun merge-exprs (exprs)
-  (if (second exprs)
-      (expmerge (first exprs) (merge-exprs (rest exprs)))
-      (car exprs)))
-
-
 (lexer:deflexer string-lexer
   ("('|,)+" (return (values 'OCTAVE lexer:%0)))
   ("(V|v)oice" (return (values 'VOICE lexer:%0)))
-  ("(S|s)taff" (return (values 'STAFF lexer:%0)))
+  ("((P|p)iano)?(S|s)taff" (return (values 'STAFF lexer:%0)))
   ("(S|s)core" (return (values 'SCORE lexer:%0)))
   ("-\\\\tenuto")
   ("-\\\\staccato")
-  ("(-|_|\\^|~|\\?)(\\.|\\^|\\+|\\||>|_|-|\"[^\"]*\")?")
+  ("(\\\\|-|_|\\^|~|\\?|!)(\\.|\\^|\\+|\\||>|<|!|_|-|\"[^\"]*\")?")
+  ("(\\[|\\])")
   ("[:alpha:]+"
    (if (or (note? lexer:%0) (rest? lexer:%0))
        (return (values 'NOTE lexer:%0))
@@ -37,8 +23,12 @@
   ("\\*\\d+" (return (values 'MULTIPLICA lexer:%0)))
   ("([:space:]+)")
   ("\\\\\\\\") ; contar isso é uma maravilha. Devem ser oito
+  ("\\\\(set|override)[^=]*=[:space:]+\"[^\"]*\"") ; pra ignorar set e override
   ("\\\\(set|override)[^=]*=[:space:]+[^:space:]*") ; pra ignorar set e override
   ("\\\\(V|v)oice((O|o)ne|(T|t)wo|(T|t)hree|(F|f)our)")
+  ("\\\\partial" (return (values 'PARTIAL lexer:%0)))
+  ("\\\\repeat" (return (values 'REPEAT lexer:%0)))
+  ("\\\\markup" (return (values 'MARKUP lexer:%0)))
   ("-+\n")
   ("\\|")
   ("#(t|f)" (return (values 'BOOL lexer:%0)))
@@ -64,6 +54,7 @@
   ("\\\\include" (return (values 'INCLUDE lexer:%0)))
   ("\\\\new[:space:]+(Piano)?(s|S)taff" (return (values 'NEW-STAFF lexer:%0)))
   ("\\\\new[:space:]+(v|V)oice" (return (values 'NEW-VOICE lexer:%0)))
+  ("\\\\new" (return (values 'NEW (print "foobar"))))
   ("\\\\(R|r)elative" (return (values 'RELATIVE lexer:%0)))
   ("\\\\(S|s)core" (return (values 'NEW-SCORE lexer:%0)))
   ("\\\\(S|s)imultaneous" (return (values 'SIMULT lexer:%0)))
@@ -114,14 +105,13 @@
   (declare (ignore a b))
   (make-instance 'music-block :expr block))
 
-(defun do-the-parsing (tree)
-  (process-ast (ajusta-duracao tree)))
-
 (defun parse-chord-dur (a chord b dur)
   (declare (ignore a b))
   (when dur
       (dolist (i chord)
-        (setf (evento-dur i) dur)))
+        (setf (sequencia-de-notas-dur i) dur)
+        (dolist (j (sequencia-de-notas-notas i))
+          (setf (evento-dur j) dur))))
   (make-instance 'chord :expr chord))
 
 (defun parse-simultaneous (a simultaneous b)
@@ -138,6 +128,10 @@
 
 (defun parse-context-staff (a b c d block)
   (declare (ignore a b c d))
+  (parse-staff-block nil block))
+
+(defun parse-new-staff (a b c block)
+  (declare (ignore a b c))
   (parse-staff-block nil block))
 
 (defun parse-score-block (a block)
@@ -163,6 +157,10 @@
   (declare (ignore a b c))
   (make-instance 'voice :expr block))
 
+(defun parse-repeat-block (a b dur block)
+  (declare (ignore a))
+  (make-instance 'music-block :expr (repeat-list (/ 1 dur) block)))
+
 (defun parse-dur (dur)
   (/ 1 (parse-integer dur)))
 
@@ -175,13 +173,15 @@
 
 (defun parse-include (a file)
   (declare (ignore a))
-  (parse-file
-   (if *filename*
-       (concatenate 'string
-                    (subseq *filename* 0 (search "/" *filename* :from-end t))
-                    "/"
-                    (read-from-string file))
-       (read-from-string file))))
+  (let ((notas (parse-file
+                (if *filename*
+                    (concat (subseq *filename* 0 (search "/" *filename* :from-end t))
+                            "/"
+                            (read-from-string file))
+                    (read-from-string file)))))
+    (make-sequencia-de-notas :notas notas
+                             :inicio 0
+                             :dur (+ (evento-inicio (last1 notas)) (evento-dur (last1 notas))))))
 
 
 (defun parse-context-voice (a b c d block)
@@ -192,10 +192,8 @@
   (declare (ignore a))
   (make-instance 'relative :expr block :start relative))
 
-(defun parse-lilypond (lilypond atom)
-  (coloca-expressoes-em-sequencia
-   (remove-if #'null (list lilypond
-                           (rameau:do-the-parsing atom)))))
+(defun parse-lilypond (expression)
+  (process-ast (ajusta-duracao (parse-music-block nil expression nil))))
 
 (defun empty-octave ()
   "")
@@ -221,6 +219,11 @@
       (setf (evento-dur tree) *dur*))
   tree)
 
+(defmethod ajusta-duracao ((tree sequencia-de-notas))
+  (mapcar #'ajusta-duracao (sequencia-de-notas-notas tree))
+  (setf (sequencia-de-notas-dur tree) (evento-dur (car (sequencia-de-notas-notas tree))))
+  tree)
+
 (defmethod ajusta-duracao ((tree list))
   (mapcar #'ajusta-duracao tree)
   tree)
@@ -240,6 +243,9 @@
 (defmethod acerta-times (times (e evento))
   (setf (evento-dur e) (* times (evento-dur e))))
 
+(defmethod acerta-times (times (e sequencia-de-notas))
+  (mapcar #'acerta-times (sequencia-de-notas-notas e)))
+
 (defmethod acerta-times (times (tree set-variable))
   (acerta-times times (node-value tree)))
 
@@ -254,13 +260,7 @@
 (defun process-trees (trees)
   (remove-if
    #'null
-   (mapcar
-    (lambda (x)
-      (let ((s (process-ast x)))
-        (if (listp s)
-             s
-            (list s))))
-    trees)))
+   (mapcar #'process-ast trees)))
 
 (defmethod process-ast ((node music-block))
   (let ((seq (process-trees (node-expr node))))
@@ -295,7 +295,9 @@
         (*dur* 1/4))
     (declare (special *environment* *dur*))
     (remove-if (lambda (x) (null (evento-pitch x)))
-               (parse-with-lexer (string-lexer str) *expression-parser*))))
+               (aif (parse-with-lexer (string-lexer str) *expression-parser*)
+                    (sequencia-de-notas-notas it)
+                    it))))
 
 (defun file-string (path)
   "Sucks up an entire file from PATH into a freshly-allocated string,

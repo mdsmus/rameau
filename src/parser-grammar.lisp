@@ -6,16 +6,20 @@
                NEW-STAFF
                NEW-SCORE
                NEW-VOICE
+               NEW
                DUR
                NOTE
                OCTAVE
                RELATIVE
                STRING
+               PARTIAL
+               REPEAT
                HEADER
                VARNAME
                VARIABLE
                SIMULT
                PONTO
+               MARKUP
                TIMES
                NUMBER
                VOICE
@@ -39,8 +43,7 @@
    (lilypond #'identity))
   
   (lilypond
-   (expression-atom #'rameau:do-the-parsing)
-   (lilypond expression-atom #'parse-lilypond))
+   (expression #'parse-lilypond))
 
   (lilypond-header
    (HEADER |{| expression |}|)
@@ -52,6 +55,7 @@
   
   (expression-atom
    (lilypond-header #'do-nothing)
+   (markup-expr #'do-nothing)
    (OPEN-PAREN #'do-nothing)
    (CLOSE-PAREN #'do-nothing)
    (layout-block #'do-nothing)
@@ -62,6 +66,7 @@
    (voice-block #'identity)
    (times-block #'identity)
    (assignment #'identity)
+   (repeat-block #'identity)
    (variable-block #'identity)
    (relative-block #'identity)
    (chord-block #'identity)
@@ -77,6 +82,9 @@
   (value
    (STRING #'identity)
    (expression-atom #'identity))
+
+  (repeat-block
+   (REPEAT varname dur-expr expression-atom #'parse-repeat-block))
 
   (variable-block
    (VARIABLE #'parse-variable-block))
@@ -94,7 +102,9 @@
   (staff-block
    (NEW-STAFF expression-atom #'parse-staff-block)
    (CONTEXT STAFF = VARNAME expression-atom #'parse-context-staff)
-   (CONTEXT STAFF = STRING expression-atom #'parse-context-staff))
+   (CONTEXT STAFF = STRING expression-atom #'parse-context-staff)
+   (NEW-STAFF = VARNAME expression-atom #'parse-new-staff)
+   (NEW-STAFF = STRING expression-atom #'parse-new-staff))
 
   (score-block
    (NEW-SCORE expression-atom #'parse-score-block)
@@ -122,7 +132,8 @@
   
   (note-expr
    (NOTE octave-expr dur-expr  #'cria-nota)
-   (SKIP dur-expr #'cria-skip))
+   (SKIP dur-expr #'cria-skip)
+   (PARTIAL dur-expr #'cria-skip))
 
   (octave-expr
    (#'empty-octave)
@@ -138,6 +149,9 @@
   (scheme-code
    (HASH scheme-sexp))
 
+  (markup-expr
+   (MARKUP |{| scheme-list |}|))
+
   (scheme-sexp
    (OPEN-PAREN scheme-list CLOSE-PAREN))
 
@@ -147,6 +161,7 @@
 
   (scheme-atom
    VARNAME
+   VARIABLE
    STRING
    BOOL
    COLON
@@ -154,6 +169,8 @@
    SCORE
    VOICE
    DUR
+   |{|
+   |}|
    OCTAVE
    NUMBER
    scheme-sexp)

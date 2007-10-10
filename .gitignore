@@ -1,4 +1,13 @@
 src/cpc
-pdf
-literatura/beethoven-sonatas
+*.pdf
+*.ps
 rameau
+*.fasl
+*.fas
+cmurameau
+clisprameau
+*.aux
+*.log
+*.out
+auto
+*.png
