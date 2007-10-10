@@ -15,6 +15,7 @@
 
 (defparameter *print-only-wrong* nil)
 (defparameter *use-cifras* nil)
+(defparameter *debug* nil)
 
 (defparameter *testes* '((corais "literatura/bach-corais/")
                          (kostka "literatura/kostka-payne/")
@@ -83,6 +84,7 @@
 -v        verbose (mostra tudo)
 -m        profiler (mede a execução do código)
 -u        roda os testes de unidade
+-d        debug (experimental)
 -h        help
 
 * EXEMPLOS
@@ -109,6 +111,9 @@ gabarito, e mostra resultado em cifras:
                            (compara-gabarito-pardo algoritmo gabarito)))
              (notas (no-op (parse-file file)))
              (file-name (pathname-name file)))
+
+        (when *debug* (format t "gabarito:~s~%pardo:~s~%" gabarito algoritmo))
+        
         (cond
           (*print-only-wrong*
            (unless comparacao
@@ -161,7 +166,7 @@ gabarito, e mostra resultado em cifras:
            (getopt:getopt (get-args)
                           '(("-h" :none) ("-g" :none) ("-w" :none)
                             ("-v" :none) ("-h" :none) ("-l" :none)
-                            ("-p" :none) ("-u" :none)
+                            ("-p" :none) ("-u" :none) ("-d" :none)
                             ("-c" :none) ("-s" :none) ("t" :required))))))
 
 (defun get-opt-value (key alist)
@@ -209,6 +214,9 @@ gabarito, e mostra resultado em cifras:
   (lisp-unit:run-all-tests :rameau)
   (format t "~%"))
 
+(defun symbol->char (symbol)
+  (char-downcase (coerce symbol 'character)))
+
 (defmacro opt-cond (opts help-fn null-vars &body body)
   "Gera um cond para lidar com opções do programa. opts indica a
 variável que guarda as opções, help-fn a função caso as variáveis em
@@ -219,12 +227,26 @@ for uma lista assume que é para concetar com 'and'."
          ,@(mapcar (lambda (item)
                      (destructuring-bind (opt fn &rest args) item
                        (cond ((listp opt)
-                              `((and ,@(mapcar (lambda (o) `(find ,o ,opts)) opt)) (,fn ,@args)))
+                              `((and ,@(mapcar (lambda (o) `(find ,(symbol->char o) ,opts)) opt)) (,fn ,@args)))
                              ((eql opt t)
                               `(,opt (,fn ,@args)))
-                              (t `((find ,opt ,opts) (,fn ,@args))))))
+                              (t `((find ,(symbol->char opt) ,opts) (,fn ,@args))))))
                    body)))
 
+(defmacro when-set-opt-true (opts &body body)
+  "Atribui o valor de verdadeiro para cada uma das variáveis em body
+se o caractere em body for encontrado em opts."
+  `(progn
+     ,@(mapcar (lambda (item) `(when (find ,(symbol->char (first item)) opts) (setf ,@(rest item) t))) body)))
+
+(defmacro with-profile (var &body body)
+  `(progn
+     (when (find #\m ,var)
+       (rameau-profile))
+     ,@body
+     (when (find #\m ,var)
+       (rameau-report))))
+  
 (defun main ()
   (destructuring-bind (raw-path (&rest file-list) opts-value raw-opts) (handle-args)
     (let* ((type (get-opt-value "t" opts-value))
@@ -234,30 +256,25 @@ for uma lista assume que é para concetar com 'and'."
 
       ;;(print (list raw-path file-list opts-value raw-opts))
       
-      (when (find #\w opts)
-        (setf *print-only-wrong* t)
-        (push #\v opts))
-      (when (find #\c opts)
-        (setf *use-cifras* t))
+      (when-set-opt-true opts
+        (w         *print-only-wrong*)
+        (c         *use-cifras*)
+        (d         *debug*))
       
-      (when (find #\m opts)
-        (rameau-profile))
-      
-      (opt-cond opts print-help (type opts files)
-        (#\h           print-help)
-        (#\l           print-tests)
-        (#\u           run-unit-tests)
-        (#\a           print-analise-harmonica files)
-        ((#\g #\v #\s) print-compara-gabarito files t t)
-        ((#\g #\v)     print-compara-gabarito files t)
-        ((#\v #\s)     print-compara-gabarito files nil t)
-        (#\v           parse-verbose files)
-        (#\g           print-ok-no-list (print-compara-gabarito files))
-        (#\p           pop->cifra raw-path file-list)
-        (t             print-ok-no-list (parse-summary files)))
-
-      (when (find #\m opts)
-        (rameau-report))
+      (with-profile opts
+        (opt-cond opts print-help (type opts files)
+          (h       print-help)
+          (l       print-tests)
+          (u       run-unit-tests)
+          (a       print-analise-harmonica files)
+          ((g v s) print-compara-gabarito files t t)
+          ((g v)   print-compara-gabarito files t)
+          ((v s)   print-compara-gabarito files nil t)
+          (v       parse-verbose files)
+          (g       print-ok-no-list (print-compara-gabarito files))
+          (p       pop->cifra raw-path file-list)
+          (t       print-ok-no-list (parse-summary files))))
 
       (rameau-quit)
       0)))
+
