@@ -42,10 +42,6 @@ fundamental do acorde."
 (defun qual-intervalo-no-baixo? (inversao)
   (first (find inversao *inversoes-pop* :key #'second)))
 
-;; (cifra->acorde "Cm7.9b.13/Eb")
-;; (cifra->acorde "C#M7/G#")
-;; (cifra->acorde "C7M")
-
 (defun cifra->acorde (cifra)
   (let ((cifra-list (cl-ppcre:split "/" cifra)))
     (cl-ppcre:register-groups-bind (fundamental modo acrescimos)
@@ -67,20 +63,33 @@ fundamental do acorde."
   (unless (= inversao 0)
     (print-note (code->note (+ (note->code tonica)
                                (get-intervalo-inversao-pop modo inversao)))
-                'lily)))
-  
+                'latin)))
+
+;; (get-intervalo-inversao-pop 'maj 7)
+;; (get-inversao-pop "ab" 'maj 1)
+;; (acorde->cifra '(Ab maj 3 7M))
+;; (acorde->cifra '(Ab maj 0))
+;; (acorde->cifra '((C MAJ 1) (c maj 1 7+)))
+
 (defun acorde->cifra (acorde)
-  (destructuring-bind (tonica modo inversao &optional acrescimos &rest resto) acorde
-    (declare (ignore resto))
-    (let ((fundamental (stringify tonica)))
-      (format nil "~a~@[~a~]~@[/~:(~a~)~]"
-              (case modo
-                (maj (format nil "~a" fundamental))
-                (min (format nil "~am" fundamental))
-                (dim (format nil "~ao" fundamental))
-                (aug (format nil "~a+" fundamental)))
-              acrescimos
-              (get-inversao-pop fundamental modo inversao)))))
+  (cond ((eql (first acorde) :mel) "m")
+        ((listp (first acorde)) (acorde->cifra (first acorde)))
+        (t (destructuring-bind (tonica &optional modo inv acresc &rest resto) acorde
+             (declare (ignore resto))
+             (let ((fundamental (stringify tonica))
+                   (acrescimos (cond ((and (null acresc) (eql inv 7)) 7)
+                                     (t acresc)))
+                   (inversao (cond ((and (null acresc) (eql inv 7)) 0)
+                                   ((null inv) 0)
+                                   (t inv))))
+               (format nil "~@(~a~)~@[~a~]~@[/~@(~a~)~]"
+                       (case modo
+                         (maj (format nil "~a" fundamental))
+                         (min (format nil "~am" fundamental))
+                         (dim (format nil "~ao" fundamental))
+                         (aug (format nil "~a+" fundamental)))
+                       acrescimos
+                       (get-inversao-pop fundamental modo inversao)))))))
 
 (defun expand-mel (stream char)
   (declare (ignore char))
