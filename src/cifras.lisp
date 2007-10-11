@@ -17,6 +17,7 @@
     (o "dim")
     (~ "dim")
     (+ "aug")
+    (! "inc")
     (t "maj")))
 
 (defun parse-fundamental (fundamental)
@@ -45,7 +46,7 @@ fundamental do acorde."
 (defun cifra->acorde (cifra)
   (let ((cifra-list (cl-ppcre:split "/" cifra)))
     (cl-ppcre:register-groups-bind (fundamental modo acrescimos)
-        ("([cdefgab]+[#b]?)(m|o|~|\\+)?([0-9\\.mb\\+]+)?" (first cifra-list) :sharedp t)
+        ("([cdefgab]+[#b]?)(m|o|~|!|\\+)?([0-9\\.mb\\+]+)?" (first cifra-list) :sharedp t)
       (remove-if #'null (list (parse-fundamental fundamental)
                               (get-modo modo)
                               (qual-inversao? fundamental (second cifra-list))
@@ -65,14 +66,8 @@ fundamental do acorde."
                                (get-intervalo-inversao-pop modo inversao)))
                 'latin)))
 
-;; (get-intervalo-inversao-pop 'maj 7)
-;; (get-inversao-pop "ab" 'maj 1)
-;; (acorde->cifra '(Ab maj 3 7M))
-;; (acorde->cifra '(Ab maj 0))
-;; (acorde->cifra '((C MAJ 1) (c maj 1 7+)))
-
 (defun acorde->cifra (acorde)
-  (cond ((equal (first acorde) :mel) "m")
+  (cond ((equal (first acorde) 'm!) "m")
         ((listp (first acorde)) (acorde->cifra (first acorde)))
         (t (destructuring-bind (tonica &optional modo inv acresc &rest resto) acorde
              (declare (ignore resto))
@@ -93,7 +88,7 @@ fundamental do acorde."
 
 (defun expand-mel (stream char)
   (declare (ignore char))
-  `(:mel ,@(read-delimited-list #\] stream t)))
+  `(m! ,@(read-delimited-list #\] stream t)))
 
 (defun expand-repeat (stream char)
   (declare (ignore char))
@@ -104,13 +99,6 @@ fundamental do acorde."
 
 (set-macro-character #\{ #'expand-repeat)
 (set-macro-character #\} (get-macro-character #\)))
-
-(defun nota-melodica? (lista)
-  (when (eql (first lista) :mel) t))
-
-(defun anotacao (lista)
-  (append (processa-cifra (first lista))
-          (list (second lista))))
 
 (defun expande-cifra-setima (cifra)
   (let* ((cifra1 (cifra->acorde (first cifra)))
@@ -128,33 +116,52 @@ fundamental do acorde."
         (setima (second cifra)))
     (format nil "~a~%~a" cifra1 (setima-no-baixo cifra1 setima))))
 
+(defun expande-cifra-super-setima-baixo (cifra)
+  (let ((cifra1 (cifra->acorde (first cifra)))
+        (setima (second cifra)))
+    (format nil "(~a~%~a)" cifra1 (setima-no-baixo cifra1 setima))))
+
+(defun expande-cifra-super-setima (cifra)
+  (list (cifra->acorde (first cifra)) (apply #'concat cifra)))
+
 (defun multiplica-cifra (cifra)
   (list '* (second cifra) (cifra->acorde (first cifra))))
 
 (defun processa-cifra (cifra)
   (let* ((cifra-string (stringify cifra))
          (cifra7 (cl-ppcre:split "--" cifra-string))
+         (cifra7s (cl-ppcre:split "==" cifra-string))
          (cifra7b (cl-ppcre:split "__" cifra-string))
+         (cifra7sb (cl-ppcre:split "_-" cifra-string))
          (cifra* (cl-ppcre:split "\\*" cifra-string)))
     (cond ((> (length cifra7) 1) (expande-cifra-setima cifra7))
+          ((> (length cifra7s) 1) (expande-cifra-super-setima cifra7s))
           ((> (length cifra7b) 1) (expande-cifra-setima-baixo cifra7b))
+          ((> (length cifra7sb) 1) (expande-cifra-super-setima-baixo cifra7sb))
           ((> (length cifra*) 1) (multiplica-cifra cifra*))
           (t (cifra->acorde cifra-string)))))
 
 (defun print-mel (pop)
   (destructuring-bind (s &rest notas) pop
     (declare (ignore s))
-    (format nil "(:mel ~{~(~a~)~^ ~})" (mapcar #'latin->lily notas))))
+    (format nil "(m! ~{~(~a~)~^ ~})" (mapcar #'latin->lily notas))))
 
 (defun print-repeat (pop)
   (destructuring-bind (s valor &rest cifras) pop
     (format nil "(~a ~a~%~{~( ~a~%~)~})" s valor (mapcar #'pop2cifra cifras))))
 
+(defun print-annotate (lista)
+  (destructuring-bind (s nota anotacao) lista
+    (declare (ignore s))
+    (format nil "(~{~a ~}~s)" (processa-cifra nota) anotacao)))
+
 (defun pop2cifra (pop)
   (if (listp pop)
-      (cond ((nota-melodica? pop) (print-mel pop))
-            ((eql '* (first pop)) (print-repeat pop))
-            (t (anotacao pop)))
+      (equal-case (first pop)
+        (an! (print-annotate pop))
+        (m! (print-mel pop))
+        (*  (print-repeat pop))
+        (t  (mapcar #'pop2cifra pop)))
       (processa-cifra pop)))
 
 (defun read-pop-file (file)
@@ -164,7 +171,3 @@ fundamental do acorde."
   (with-open-file (f (troca-extensao file ".gab") :direction :output :if-exists :supersede)
     (format f "~{~(~a~)~%~}" (mapcar #'pop2cifra (read-pop-file file)))))
 
-;;(gera-gabarito-file "/home/kroger/doc/pesquisa/analise-harmonica/literatura/bach-corais/001.pop")
-;;(gera-gabarito-file "/home/kroger/doc/pesquisa/analise-harmonica/literatura/bach-corais/002.pop")
-;;(gera-gabarito-file "/home/kroger/doc/pesquisa/analise-harmonica/literatura/bach-corais/003.pop")
-;;(gera-gabarito-file "/home/kroger/doc/pesquisa/analise-harmonica/literatura/bach-corais/004.pop")

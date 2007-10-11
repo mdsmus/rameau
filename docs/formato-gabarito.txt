@@ -34,7 +34,8 @@ A estrutura do formato de gabarito é simples:
 
    0.1: <tipo> representa o tipo da tríade: maj para maior, min para
    menor, dim para diminuto, ita para sexta italiana, ale para sexta
-   alemã, fra para sexta francesa e aug para aumentada.
+   alemã, fra para sexta francesa, aug para aumentada, e inc para
+   incompleto (i.e. sem a terça).
   
    0.2: <inversão> é um número inteiro representando a inversão do
    acorde. 0 é a forma natural, 1 a primeira inversão e assim
@@ -49,11 +50,11 @@ A estrutura do formato de gabarito é simples:
         (b dim 0 7)
 
 
- 1. Um segmento melódico é representado pela lista (:mel <notas>),
+ 1. Um segmento melódico é representado pela lista (m! <notas>),
  onde <notas> é uma sequência de notas com todas as notas do segmento
  melódico.
 
-  ex: (:mel dis g)
+  ex: (m! dis g)
 
  2. Um segmento com uma suspensão é representado por (:sus <info>),
  onde <info> é uma sequência com a informação necessária para se
@@ -75,7 +76,7 @@ A estrutura do formato de gabarito é simples:
 Ou seja, em EBNF:
 
   acorde := (<tonica> <tipo> <inversao> <adicoes>...)
-  melodico := (:mel <nota>...)
+  melodico := (m! <nota>...)
   suspenso := (:sus *)
   individual := acorde | melodico | suspenso
   ambiguo := (individual ... individual)

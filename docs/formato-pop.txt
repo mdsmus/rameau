@@ -9,15 +9,17 @@ G
 C/E
 C7/E
 Cm7/Eb
+C!7
 
 Os tipos de acordes são (nada) para maior, m para menor, o para
-diminuto, ~ para meio-diminuto.
+diminuto, ~ para meio-diminuto, e ! para incompleto (i.e. sem a
+terça).
 
 * notas melódicas
 
-A forma [<notas>] expande em (:mel <notas>), por exemplo:
+A forma [<notas>] expande em (m! <notas>), por exemplo:
 
-[f#] => (:mel fis)
+[f#] => (m! fis)
 
 * acorde de sétima e extensões
 
@@ -40,17 +42,23 @@ sétima:
 
 C==7 => (C MAJ 0) (C MAJ 0 7)
 
-A forma <acorde>_--7 funciona como <acorde>--7, mas quando a sétima
+A forma <acorde>_-7 funciona como <acorde>--7, mas quando a sétima
 está no baixo:
 
-C_--7 => (* 2 ((C MAJ 0) (C MAJ 3 7)))
-
+C_-7 => (* 2 ((C MAJ 0) (C MAJ 3 7)))
 
 Outras extensões podem ser entradas separadas por ponto. [esse recurso
 ainda não foi completamente implementado. outras extensões além da
 sétima serão silenciosamente ignoradas] Por exemplo:
 
 Cm7.9b.13/Eb
+
+* diferentes possibilidades
+
+Para entrar mais de uma possibilidade de análise para um segmento
+mínimo, é só colocar as possibilidades entre parênteses:
+
+([f#] Bm)
 
 * Sextas aumentadas
 
