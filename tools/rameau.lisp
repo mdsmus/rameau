@@ -59,14 +59,14 @@
 (defun print-gabarito (file gabarito algoritmo comparacao &optional notas)
   (progn
     (format t "~% * ~a~%" file)
-    (format t "gabarito (tamanho: ~a): ~(~s~) ~%" (length gabarito) gabarito)
-    (format t "   pardo (tamanho: ~a): ~(~a~) ~%" (length algoritmo) algoritmo)
+    (format t "gabarito (tamanho: ~a): ~(~a~) ~%" (length gabarito) (gera-gabarito gabarito))
+    (format t "   pardo (tamanho: ~a): ~(~a~) ~%" (length algoritmo) (gera-gabarito algoritmo))
     (when notas (format t "   notas: ~(~a~) ~%" notas))
     (format t "correto?: ~:[não~;sim~]~%" comparacao)))
 
 (defun gera-gabarito (gabarito)
   (if *use-cifras*
-      (mapcar #'acorde->cifra gabarito)
+      (mapcar (lambda (x) (string->symbol (acorde->cifra x))) gabarito)
       gabarito))
 
 (defun print-help ()
@@ -102,11 +102,10 @@ gabarito, e mostra resultado em cifras:
 (defun print-compara-gabarito (files &optional verbose? print-notas?)
   (let (ok no)
     (dolist (file files)
-      (let* ((algoritmo (gera-gabarito
-                         (with-system rameau:tempered
-                           (gera-gabarito-pardo (parse-file file)))))
-             (gabarito (gera-gabarito (processa-gabarito
-                                       (tira-extensao file))))
+      (let* ((algoritmo (with-system rameau:tempered
+                          (gera-gabarito-pardo (parse-file file))))
+             (gabarito (processa-gabarito
+                        (tira-extensao file)))
              (comparacao (with-system rameau:tempered
                            (compara-gabarito-pardo algoritmo gabarito)))
              (notas (no-op (parse-file file)))

@@ -158,11 +158,11 @@ level function, you should use note->code instead."
          (position (list (string->symbol (subseq note 0 1))
                          (number-of-accidentals (subseq note 1) representation))
                    (get-system-notes 'tonal)
-                   :test #'equal))
+                   :test #'rameau-equal))
         (note-code-tempered
          (+ (position (list (string->symbol (subseq note 0 1)) 0)
                    (get-system-notes 'tempered)
-                   :test #'equal)
+                   :test #'rameau-equal)
             (number-of-accidentals (subseq note 1) representation))))
     (case system
       (tonal note-code-tonal)
@@ -174,8 +174,8 @@ numérico. Essa é uma função auxiliar que funciona apenas para notas
 sem acidentes, como 'd', 'e', etc. EXEMPLO: (%note->code \"d\")
 retorna 14."
   (case *system*
-    (tonal (position (list note 0) (get-system-notes *system*) :test #'equal))
-    (tempered (position (list note 0) (get-system-notes *system*) :test #'equal))))
+    (tonal (position (list note 0) (get-system-notes *system*) :test #'rameau-equal))
+    (tempered (position (list note 0) (get-system-notes *system*) :test #'rameau-equal))))
 
 (let ((testa-nota (cl-ppcre:create-scanner "^[a-g]((es)*|(is)*|#*|b*)$" :case-insensitive-mode t)))
   (defun note? (string)
@@ -247,7 +247,7 @@ numeric value."
 (defun code->interval (code)
   "Retuns a interval of an interval-code.
 EXAMPLE: (code->interval '(3 aug)) returns 29."
-  (module (position code (get-system-intervals 'tonal) :test #'equal)))
+  (module (position code (get-system-intervals 'tonal) :test #'rameau-equal)))
 
 (defun print-interval (interval)
   "Returns the name of an interval. EXAMPLE: (print-interval 16)
@@ -351,10 +351,10 @@ sets are equal by transposition. The option 'prime tests if the sets
 are also equal by inversion.
 EXAMPLE: (equal-sets? '(0 3 7) '(8 1 4)) returns T."
   (case form
-    (normal (when (equal (set-transpose-to-0 (normal-form set1))
+    (normal (when (rameau-equal (set-transpose-to-0 (normal-form set1))
                          (set-transpose-to-0 (normal-form set2)))
               t))
-    (prime (when (equal (prime-form set1) (prime-form set2)) t))))
+    (prime (when (rameau-equal (prime-form set1) (prime-form set2)) t))))
 
 
 (defmacro deftemplates (name &body templates)

@@ -72,7 +72,7 @@ fundamental do acorde."
 ;; (acorde->cifra '((C MAJ 1) (c maj 1 7+)))
 
 (defun acorde->cifra (acorde)
-  (cond ((eql (first acorde) :mel) "m")
+  (cond ((equal (first acorde) :mel) "m")
         ((listp (first acorde)) (acorde->cifra (first acorde)))
         (t (destructuring-bind (tonica &optional modo inv acresc &rest resto) acorde
              (declare (ignore resto))
@@ -83,7 +83,7 @@ fundamental do acorde."
                                    ((null inv) 0)
                                    (t inv))))
                (format nil "~@(~a~)~@[~a~]~@[/~@(~a~)~]"
-                       (case modo
+                       (equal-case modo
                          (maj (format nil "~a" fundamental))
                          (min (format nil "~am" fundamental))
                          (dim (format nil "~ao" fundamental))
