@@ -1,18 +1,19 @@
 (in-package #:rameau)
 
-(defun rameau-equal (x y)
-  (labels ((equal-aux (x y)
-             (cond ((consp x)
-                    (and (consp y)
-                         (equal-aux (car x) (car y))
-                         (equal-aux (cdr x) (cdr y))))
-                   ((and (symbolp x) (symbolp y))
-                    (string= (symbol-name x) (symbol-name y)))
-                   (t (equal x y)))))
-    ;; Use MAYBE-INLINE to get the inline expansion only once (instead
-    ;; of 200 times with INLINE). -- JES, 2005-12-30
-    (declare (maybe-inline equal-aux))
-    (equal-aux x y)))
+(defgeneric equal1 (x y)
+  (:documentation "Compara dois símbolos."))
+
+(defmethod equal1 ((x symbol) (y symbol))
+  (if (eql x y)
+      t
+      (string= (symbol-name x) (symbol-name y))))
+
+(defmethod equal1 ((x cons) (y cons))
+  (and (equal1 (car x) (car y))
+       (equal1 (cdr x) (cdr y))))
+
+(defmethod equal1 (x y)
+  (equal x y))
 
 (defmacro equal-case (test-form &body cases)
   (let ((form (gensym)))
@@ -23,7 +24,7 @@
               (destructuring-bind (value action) x
                 (if (eq t value)
                     `(t ,action)
-                    `((rameau-equal ,form ',value) ,action))))
+                    `((equal1 ,form ',value) ,action))))
             cases)))))
 
 (defun add-lily-ext (file)
@@ -83,7 +84,7 @@ verdadeiro."
 
 (defun pula (elemento lista)
   "Pula as ocorrências iniciais de elemento na lista"
-  (if (rameau-equal elemento (first lista))
+  (if (equal1 elemento (first lista))
       (pula elemento (rest lista))
       lista))
 
