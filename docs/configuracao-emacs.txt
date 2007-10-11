@@ -1,0 +1,4 @@
+Para utilização do abbrev-mode o usuário deverá colocar em seu
+~/.emacs a linha abaixo:
+
+(add-hook 'pop-mode-hook (lambda () (abbrev-mode 1)))

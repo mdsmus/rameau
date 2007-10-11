@@ -1,5 +1,3 @@
-(require 'abbrev)
-
 (define-abbrev-table 'pop-mode-abbrev-table '(
     ("cis" "c#" nil 1)
     ("ces" "cb" nil 1)
