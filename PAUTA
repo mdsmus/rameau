@@ -3,5 +3,10 @@
 * documentar coisas (e.g. soluções de algoritmos)
 * brainstorm palestra computação musical
   (aha, viram as frescurinhas graficas? :-)
-
-
+* rameau-equal
+  nome mais generico (equal-xxxx)
+  acho que não precisa do eql
+  implementar em termos de equal
+  testar
+* função para gerar gabarito com duração do segmento minimo
+  (((g maj) 2) ((g maj) 4))
