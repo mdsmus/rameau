@@ -1,18 +1,18 @@
 (in-package #:rameau)
 
-(defgeneric equal1 (x y)
+(defgeneric symbol-equal (x y)
   (:documentation "Compara dois símbolos."))
 
-(defmethod equal1 ((x symbol) (y symbol))
+(defmethod symbol-equal ((x symbol) (y symbol))
   (if (eql x y)
       t
       (string= (symbol-name x) (symbol-name y))))
 
-(defmethod equal1 ((x cons) (y cons))
-  (and (equal1 (car x) (car y))
-       (equal1 (cdr x) (cdr y))))
+(defmethod symbol-equal ((x cons) (y cons))
+  (and (symbol-equal (car x) (car y))
+       (symbol-equal (cdr x) (cdr y))))
 
-(defmethod equal1 (x y)
+(defmethod symbol-equal (x y)
   (equal x y))
 
 (defmacro equal-case (test-form &body cases)
@@ -24,7 +24,7 @@
               (destructuring-bind (value action) x
                 (if (eq t value)
                     `(t ,action)
-                    `((equal1 ,form ',value) ,action))))
+                    `((symbol-equal ,form ',value) ,action))))
             cases)))))
 
 (defun add-lily-ext (file)
@@ -84,7 +84,7 @@ verdadeiro."
 
 (defun pula (elemento lista)
   "Pula as ocorrências iniciais de elemento na lista"
-  (if (equal1 elemento (first lista))
+  (if (symbol-equal elemento (first lista))
       (pula elemento (rest lista))
       lista))
 
