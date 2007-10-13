@@ -57,12 +57,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun print-gabarito (file gabarito algoritmo comparacao &optional notas)
-  (progn
-    (format t "~% * ~a~%" file)
-    (format t "gabarito (tamanho: ~a): ~(~a~) ~%" (length gabarito) (gera-gabarito gabarito))
-    (format t "   pardo (tamanho: ~a): ~(~a~) ~%" (length algoritmo) (gera-gabarito algoritmo))
-    (when notas (format t "   notas: ~(~a~) ~%" notas))
-    (format t "correto?: ~:[não~;sim~]~%" comparacao)))
+  (let ((*package* (find-package :rameau)))
+    (progn
+      (format t "~% * ~a~%" file)
+      (format t "gabarito (tamanho: ~a): ~(~s~) ~%" (length gabarito) (gera-gabarito gabarito))
+      (format t "   pardo (tamanho: ~a): ~(~s~) ~%" (length algoritmo) (gera-gabarito algoritmo))
+      (when notas (format t "   notas: ~(~s~) ~%" notas))
+      (format t "correto?: ~:[não~;sim~]~%" comparacao))))
 
 (defun gera-gabarito (gabarito)
   (if *use-cifras*
