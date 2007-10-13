@@ -102,32 +102,36 @@ gabarito, e mostra resultado em cifras:
 (defun print-compara-gabarito (files &optional verbose? print-notas?)
   (let (ok no)
     (dolist (file files)
-      (let* ((algoritmo (with-system rameau:tempered
-                          (gera-gabarito-pardo (parse-file file))))
-             (gabarito (processa-gabarito
-                        (tira-extensao file)))
-             (comparacao (with-system rameau:tempered
-                           (compara-gabarito-pardo algoritmo gabarito)))
-             (notas (no-op (parse-file file)))
-             (file-name (pathname-name file)))
+      (multiple-value-bind (algoritmo segmento)
+          (with-system rameau:tempered (gera-gabarito-pardo (parse-file file)))
+        (let* ((gabarito (processa-gabarito
+                          (tira-extensao file)))
+               (comparacao (with-system rameau:tempered
+                             (compara-gabarito-pardo algoritmo gabarito)))
+               (notas (mapcar #'lista-notas segmento))
+               (file-name (pathname-name file))
+               (duracoes (mapcar (lambda (x y)
+                                   (cons (evento-dur (first x))
+                                        y))
+                                 segmento algoritmo)))
 
-        (when *debug* (format t "gabarito:~s~%pardo:~s~%" gabarito algoritmo))
-        
-        (cond
-          (*print-only-wrong*
-           (unless comparacao
-             (print-gabarito file-name gabarito algoritmo comparacao)))
-          ;; se o arquivo .gab não existir
-          ((not gabarito)
-           (format t "~&[ERRO] o gabarito de ~a não existe~%" (pathname-name file)))
-          (print-notas?
-           (print-gabarito file-name gabarito algoritmo comparacao notas))
-          (verbose?
-           (print-gabarito file-name gabarito algoritmo comparacao))
-          (gabarito
-           (if comparacao (push file-name ok) (push file-name no)))
-          (t (error "não sei o que fazer!")))))
-    (list (reverse ok) (reverse no))))
+          (when *debug* (format t "gabarito:~s~%pardo:~s~%" gabarito algoritmo))
+
+          (cond
+            (*print-only-wrong*
+             (unless comparacao
+               (print-gabarito file-name gabarito algoritmo comparacao)))
+            ;; se o arquivo .gab não existir
+            ((not gabarito)
+             (format t "~&[ERRO] o gabarito de ~a não existe~%" (pathname-name file)))
+            (print-notas?
+             (print-gabarito file-name gabarito algoritmo comparacao notas))
+            (verbose?
+             (print-gabarito file-name gabarito algoritmo comparacao))
+            (gabarito
+             (if comparacao (push file-name ok) (push file-name no)))
+            (t (error "não sei o que fazer!")))))
+      (list (reverse ok) (reverse no)))))
 
 (defun print-analise-harmonica (files)
   (dolist (file files)

@@ -140,10 +140,12 @@
                           *pardo-templates*))))
 
 (defun gera-gabarito-pardo (musica)
-  (mapcar #'nota-pardo-gabarito
-          (reduce #'desempata-pardo
-                  (mapcar #'pardo (segmentos-minimos musica))
-           :from-end t :initial-value nil)))
+  (let ((segmentos (segmentos-minimos musica)))
+    (values
+     (mapcar #'nota-pardo-gabarito
+             (reduce #'desempata-pardo (mapcar #'pardo segmentos) :from-end t :initial-value nil))
+     segmentos)))
+     
 
 (defun compara-gabarito-pardo-individual (resultado gabarito)
   (let ((nota (note->code (stringify (first resultado))))
