@@ -78,7 +78,7 @@ fundamental do acorde."
                                    ((null inv) 0)
                                    (t inv))))
                (format nil "~@(~a~)~@[~a~]~@[/~@(~a~)~]"
-                       (equal-case modo
+                       (case modo
                          (maj (format nil "~a" fundamental))
                          (min (format nil "~am" fundamental))
                          (dim (format nil "~ao" fundamental))
@@ -88,11 +88,13 @@ fundamental do acorde."
 
 (defun expand-mel (stream char)
   (declare (ignore char))
-  `(m! ,@(read-delimited-list #\] stream t)))
+  (let ((*package* (find-package :rameau)))
+    `(m! ,@(read-delimited-list #\] stream t))))
 
 (defun expand-repeat (stream char)
   (declare (ignore char))
-  `(* 2 ,@(read-delimited-list #\} stream t)))
+  (let ((*package* (find-package :rameau)))
+    `(* 2 ,@(read-delimited-list #\} stream t))))
 
 (set-macro-character #\[ #'expand-mel)
 (set-macro-character #\] (get-macro-character #\)))
@@ -157,7 +159,7 @@ fundamental do acorde."
 
 (defun pop2cifra (pop)
   (if (listp pop)
-      (equal-case (first pop)
+      (case (first pop)
         (an! (print-annotate pop))
         (m! (print-mel pop))
         (*  (print-repeat pop))
@@ -165,7 +167,8 @@ fundamental do acorde."
       (processa-cifra pop)))
 
 (defun read-pop-file (file)
-  (read-from-string (format nil "(~a)" (file-string file))))
+  (let ((*package* (find-package :rameau)))
+    (read-from-string (format nil "(~a)" (file-string file)))))
 
 (defun gera-gabarito-file (file)
   (with-open-file (f (troca-extensao file ".gab") :direction :output :if-exists :supersede)

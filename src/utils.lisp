@@ -1,32 +1,5 @@
 (in-package #:rameau)
 
-(defgeneric symbol-equal (x y)
-  (:documentation "Compara dois símbolos."))
-
-(defmethod symbol-equal ((x symbol) (y symbol))
-  (if (eql x y)
-      t
-      (string= (symbol-name x) (symbol-name y))))
-
-(defmethod symbol-equal ((x cons) (y cons))
-  (and (symbol-equal (car x) (car y))
-       (symbol-equal (cdr x) (cdr y))))
-
-(defmethod symbol-equal (x y)
-  (equal x y))
-
-(defmacro equal-case (test-form &body cases)
-  (let ((form (gensym)))
-    `(let ((,form ,test-form))
-       (cond
-         ,@(mapcar
-            (lambda (x)
-              (destructuring-bind (value action) x
-                (if (eq t value)
-                    `(t ,action)
-                    `((symbol-equal ,form ',value) ,action))))
-            cases)))))
-
 (defun add-lily-ext (file)
   (if (tem-ext? file) file (concat file ".ly")))
 
@@ -84,7 +57,7 @@ verdadeiro."
 
 (defun pula (elemento lista)
   "Pula as ocorrências iniciais de elemento na lista"
-  (if (symbol-equal elemento (first lista))
+  (if (equal elemento (first lista))
       (pula elemento (rest lista))
       lista))
 
@@ -115,15 +88,18 @@ quantos acidentes ou oitavas uma nota tem."
 
 (defcached string->symbol (string)
   "Convert a string to a symbol."
-  (intern (string-upcase string) :rameau))
+  (let ((*package* (find-package :rameau)))
+    (intern (string-upcase string) :rameau)))
 
 (defcached stringify (symb)
-  (format nil "~(~a~)" symb))
+  (let ((*package* (find-package :rameau)))
+    (format nil "~(~a~)" symb)))
 
 (defun destringify (coisa)
-  (cond ((numberp coisa) coisa)
-        ((stringp coisa) (read-from-string (string-upcase coisa)))
-        (t coisa)))
+  (let ((*package* (find-package :rameau)))
+    (cond ((numberp coisa) coisa)
+          ((stringp coisa) (read-from-string (string-upcase coisa)))
+          (t coisa))))
 
 (defun converte-strings (coisas)
   (when coisas
@@ -151,6 +127,15 @@ quantos acidentes ou oitavas uma nota tem."
 
 (defun octave-from-string (string)
   (+ 8 (symbol->number string '("," "'"))))
+
+(defun file-string (path)
+  "Sucks up an entire file from PATH into a freshly-allocated string,
+      returning two values: the string and the number of bytes read."
+  (with-open-file (s path)
+    (let* ((len (file-length s))
+           (data (make-string len :initial-element #\Space))
+           (*package* (find-package :rameau)))
+      (values data (read-sequence data s)))))
 
 (defun compara-notas (x y)
   (let ((a (evento-octave x))
@@ -195,7 +180,8 @@ quantos acidentes ou oitavas uma nota tem."
 
 (defun processa-gabarito (file)
   "Transforma um gabarito de texto em sexp."
-  (let* ((nome-gab (concat file ".gab"))
+  (let* ((*package* (find-package :rameau))
+         (nome-gab (concat file ".gab"))
          (nome-pop (concat file ".pop"))
          (gabarito (cond ((cl-fad:file-exists-p nome-gab) 
                           (read-from-string (format nil "(~a)" (file-string nome-gab))))

@@ -130,8 +130,8 @@ gabarito, e mostra resultado em cifras:
              (print-gabarito file-name gabarito algoritmo comparacao))
             (gabarito
              (if comparacao (push file-name ok) (push file-name no)))
-            (t (error "não sei o que fazer!")))))
-      (list (reverse ok) (reverse no)))))
+            (t (error "não sei o que fazer!"))))))
+      (list (reverse ok) (reverse no))))
 
 (defun print-analise-harmonica (files)
   (dolist (file files)

@@ -82,12 +82,12 @@
   (let ((template (rest (nota-pardo-gabarito nota))))
     (length
      (member-if (lambda (x)
-                  (symbol-equal (car x) template))
+                  (equal (car x) template))
                 *pardo-templates*))))
 
 (defun dim7? (notas)
   (every (lambda (x)
-           (symbol-equal "dim" (stringify (second (nota-pardo-gabarito x)))))
+           (equal "dim" (stringify (second (nota-pardo-gabarito x)))))
          notas))
 
 (defun dim7-res (segmento proximo)
@@ -96,7 +96,7 @@
          (nota (print-note (code->note cod) 'lily)))
     (or (find-if
          (lambda (x)
-           (symbol-equal nota (stringify (nota-pardo-root x))))
+           (equal nota (stringify (nota-pardo-root x))))
               segmento)
         (first segmento))))
 
@@ -153,8 +153,8 @@
         (acorde (rest resultado))
         (acorde-certo (cons (second gabarito)
                             (rest (rest (rest gabarito))))))
-    (and (symbol-equal nota nota-certa)
-         (symbol-equal (mapcar #'stringify acorde) (mapcar #'stringify acorde-certo)))))
+    (and (equal nota nota-certa)
+         (equal (mapcar #'stringify acorde) (mapcar #'stringify acorde-certo)))))
 
 (defun compara-gabarito-pardo (resultado gabarito)
   (if (and (null resultado)
