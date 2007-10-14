@@ -1,18 +1,20 @@
-1. INTRODUÇÃO
+1. INSTALAÇÃO
 
-Você precisa dos seguintes programas para rodar os testes:
+Para instalar rameau voce precisa instalar os seguintes pacotes:
 
-  aptitude install sbcl cl-asdf cl-lexer cl-regex cl-yacc cl-getopt cl-fad cl-ppcre
+  sbcl cl-asdf cl-lexer cl-regex cl-yacc cl-getopt cl-fad cl-ppcre
 
-2. COMO RODAR OS TESTES
+Para compilar é só digitar 'make' no diretorio onde está o repositório
+da pequisa.
 
-o programa para rodar os testes é rameau. Para compilar o programa
-você deve digitar 'make' no terminal. Eu sugiro fazer um link
-simbolico dele para algum lugar no PATH, por exemplo:
+Eu sugiro fazer um link simbolico dele para algum lugar no PATH, por
+exemplo:
 
   ln -s $(pwd)/rameau ~/bin/
 
 desse modo voce não precisa digitar ./rameau e sim rameau.
+
+2. COMO RODAR OS TESTES
 
 se você rodar o script sem argumentos ele mostrará a lista de
 argumentos que aceita. para determinar o tipo de teste deve-se usar a
