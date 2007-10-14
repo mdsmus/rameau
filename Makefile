@@ -27,4 +27,7 @@ update:
 	git fetch && git rebase origin/master
 
 clean:
-	rm -f rameau cmurameau
+	rm -f rameau
+
+cleanall:
+	rm -rf rameau cmurameau eclrameau clisprameau

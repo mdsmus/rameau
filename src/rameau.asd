@@ -20,7 +20,7 @@
                (:file "test-musiclib")
                (:file "test-formato")
                (:file "test-parser")
-               ;;(:file "test-cifras")
+               (:file "test-cifras")
                ;;(:file "test-segmento")
                (:file "test-pardo")
                ))
