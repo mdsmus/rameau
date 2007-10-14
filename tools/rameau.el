@@ -11,35 +11,6 @@
     "Minor mode for editing and refactoring (Common) Lisp code."
   :lighter " Rameau")
 
-;;; find ticket
-(defun rameau-find-ticket ()
-  (interactive)
-  (beginning-of-buffer)
-  (re-search-forward "#[0-9]+")
-  (search-backward "#")
-  (forward-char)
-  (let ((string (thing-at-point 'symbol)))
-    (princ string)
-    (browse-url-mozilla-new-tab (concat "http://www.genos.mus.br/bugs/ticket/" string))))
-
-(defun rameau-find-coral ()
-  (interactive)
-  (let ((buffer (get-buffer (buffer-name)))
-        (coral (read-from-minibuffer "coral: ")))
-    (browse-url-mozilla-new-tab
-     (concat "http://www.genos.mus.br/bugs/search?q=choral+" coral "&&ticket=on"))))
-
-(defun rameau-email-open-link ()
-  (interactive)
-  (gnus-summary-select-article-buffer)
-  (beginning-of-buffer)
-  (re-search-forward "http://")
-  (let ((string (thing-at-point 'url)))
-    (princ string)
-    (browse-url-mozilla-new-tab string)))
-
-;;(define-key gnus-summary-mode-map [(alt o)] 'rameau-email-open-link)
-
 (defun rameau-new-test-snippet (function)
   (newline 2)
   (snippet-insert (concat "(define-test " function "\n"
