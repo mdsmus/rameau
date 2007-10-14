@@ -4,11 +4,6 @@ Você precisa dos seguintes programas para rodar os testes:
 
   aptitude install sbcl cl-asdf cl-lexer cl-regex cl-yacc cl-getopt cl-fad cl-ppcre
 
-Coloque no arquivo ~/.sbclrc as seguintes linhas:
-
-(push "/caminho/para/analise-harmonica/src/" asdf:*central-registry*)
-(push "/caminho/para/analise-harmonica/src/lib/" asdf:*central-registry*)
-
 2. COMO RODAR OS TESTES
 
 o programa para rodar os testes é rameau. Para compilar o programa

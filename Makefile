@@ -6,16 +6,16 @@ lisp-files = $(wildcard src/*.lisp src/lib/*.lisp tools/*.lisp)
 .PHONY: update clean
 
 rameau: $(lisp-files)
-	${sbcl} "(progn (load \"tools/rameau.lisp\") (sb-ext:save-lisp-and-die \"rameau\" :executable t :toplevel #'main))"
+	${sbcl} "(load \"tools/make-image.lisp\")"
 
 cmurameau: $(lisp-files)
-	${lisp} "(progn (load \"tools/rameau.lisp\") (extensions:save-lisp \"cmurameau\" :init-function #'main))"
+	${lisp} "(load \"tools/make-image.lisp\")" 
 
 eclrameau: $(lisp-files)
-	ecl -eval '(progn (compile-file "tools/rameau.lisp" :system-p t) (quit))'
+	ecl -eval  "(load \"tools/make-image.lisp\")"
 
 clisprameau: $(lisp-files)
-	clisp -ansi -K full -x "(progn (load \"tools/rameau.lisp\") (ext:saveinitmem \"clisprameau\" :script t :quiet t :executable t :init-function #'main) (quit))"
+	clisp -ansi -K full -x  "(load \"tools/make-image.lisp\")"
 
 all: rameau cmurameau clisprameau
 
