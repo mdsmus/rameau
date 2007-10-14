@@ -67,7 +67,7 @@ fundamental do acorde."
                 'latin)))
 
 (defun acorde->cifra (acorde)
-  (cond ((equal (first acorde) 'm!) "m")
+  (cond ((equal (first acorde) 'm!) "m!")
         ((listp (first acorde)) (acorde->cifra (first acorde)))
         (t (destructuring-bind (tonica &optional modo inv acresc &rest resto) acorde
              (declare (ignore resto))
@@ -121,13 +121,16 @@ fundamental do acorde."
 (defun expande-cifra-super-setima-baixo (cifra)
   (let ((cifra1 (cifra->acorde (first cifra)))
         (setima (second cifra)))
-    (format nil "(~a~%~a)" cifra1 (setima-no-baixo cifra1 setima))))
+    (list '* 2 (list cifra1 (setima-no-baixo cifra1 setima)))))
 
 (defun expande-cifra-super-setima (cifra)
-  (list (cifra->acorde (first cifra)) (apply #'concat cifra)))
+  (format nil "~a~%~a" (cifra->acorde (first cifra)) (cifra->acorde (apply #'concat cifra))))
 
 (defun multiplica-cifra (cifra)
   (list '* (second cifra) (cifra->acorde (first cifra))))
+
+(defun expande-cifra-sexta-aumentada (cifra)
+  (substitute (second cifra) "maj" (cifra->acorde (first cifra)) :test #'equal))
 
 (defun processa-cifra (cifra)
   (let* ((cifra-string (stringify cifra))
@@ -135,12 +138,15 @@ fundamental do acorde."
          (cifra7s (cl-ppcre:split "==" cifra-string))
          (cifra7b (cl-ppcre:split "__" cifra-string))
          (cifra7sb (cl-ppcre:split "_-" cifra-string))
-         (cifra* (cl-ppcre:split "\\*" cifra-string)))
-    (cond ((> (length cifra7) 1) (expande-cifra-setima cifra7))
-          ((> (length cifra7s) 1) (expande-cifra-super-setima cifra7s))
-          ((> (length cifra7b) 1) (expande-cifra-setima-baixo cifra7b))
-          ((> (length cifra7sb) 1) (expande-cifra-super-setima-baixo cifra7sb))
-          ((> (length cifra*) 1) (multiplica-cifra cifra*))
+         (cifra* (cl-ppcre:split "\\*" cifra-string))
+         (cifra6+ (when (cl-ppcre:scan "it|al|fr" cifra-string)
+                    (cl-ppcre:split "-" cifra-string))))
+    (cond ((rest cifra7)   (expande-cifra-setima cifra7))
+          ((rest cifra7s)  (expande-cifra-super-setima cifra7s))
+          ((rest cifra7b)  (expande-cifra-setima-baixo cifra7b))
+          ((rest cifra7sb) (expande-cifra-super-setima-baixo cifra7sb))
+          ((rest cifra*)   (multiplica-cifra cifra*))
+          ((rest cifra6+)  (expande-cifra-sexta-aumentada cifra6+))
           (t (cifra->acorde cifra-string)))))
 
 (defun print-mel (pop)
@@ -173,4 +179,3 @@ fundamental do acorde."
 (defun gera-gabarito-file (file)
   (with-open-file (f (troca-extensao file ".gab") :direction :output :if-exists :supersede)
     (format f "~{~(~a~)~%~}" (mapcar #'pop2cifra (read-pop-file file)))))
-
