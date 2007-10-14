@@ -136,7 +136,7 @@
     (let ((function (rameau-get-defun-name))
           (file (rameau-test-filename))
           (buffer (file-name-nondirectory (rameau-test-filename))))
-      (if (search "test" file)
+      (if (search "test-" (buffer-file-name))
           (princ "você já está no arquivo de teste!")
           (let ((package (rameau-get-package)))
             (if (file-exists-p file)
