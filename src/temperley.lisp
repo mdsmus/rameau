@@ -80,6 +80,63 @@
                         :dur (converte-milisegundos (evento-dur evento))
                         :inicio (converte-milisegundos (evento-inicio evento)))))
 
+;; variáveis globais
+
+(defvar first-beat)
+
+;; estruturas de Meter
+
+(defstruct pip
+  (pip-note-list nil)
+  (score nil)
+  (base 0.0)
+  (higher-base 0.0)
+  (best-j 0)
+  (is-beat (make-array `(n-levels)))
+  (is-first-beat (make-array `(n-levels))))
+
+(defstruct pip-note-list
+  (notas nil)
+  (marca 0)
+  (weight 0.0)
+  (prox nil))
+
+;; Funções de Meter
+
+(defun quantiza (t)
+    (/ (+ t (/ pip-time 2)) pip-time))
+
+(defun limpa-first-beat ()
+  (setf first-beat (make-array `(,n-levels))))
+
+(defun inicializa-pip-array (array n)
+  (dotimes (i n)
+    (setf (aref array i) (make-pip)))
+  array)
+
+(defun quantiza-notas (pip-array segmentos)
+  
+
+(defun faz-pip-array (segmentos)
+  (limpa-first-beat)
+  (let* ((last-time (fim-evento (first (last1 (segmentos)))))
+         (n-pips (1+ (quantiza last-time)))
+         (pip-array (make-array `(,n-pips)))
+         (pip-array (inicializa-pip-array pip-array n-pips))
+         (pip-array (quantiza-notas pip-array segmentos))
+    
+
+(defun calcula-metrica (notas)
+  (let* ((pip (faz-pip-array segmentos))
+         (tact (compute-tactus-level pip segmentos)))
+    (adjust-notes pip tact)))
+
+(defun metrifica (segmento notas)
+  (calcula-metrica notas))
+
+
+;; Funções de Harmony
+
 (defun penalidade-de-dissonancia (delta)
   (+ odp-constant
      (* odp-linear_factor delta)
@@ -133,15 +190,6 @@
 (defun rotula-voice-leading (musica)
   (mapl #'rotula-voice-leading-nota musica))
 
-
-
-(defun calcula-metrica (notas)
-  (let* ((pip (faz-pip-array segmentos))
-         (tact (compute-tactus-level pip segmentos)))
-    (adjust-notes pip tact)))
-
-(defun metrifica (segmento notas)
-  (calcula-metrica notas))
 
 (defun temperley (musica)
   (let* ((musica (mapcar #'cria-evento-temperley musica))
