@@ -51,28 +51,28 @@
     (5 dim) (5 just) (6 min) (6 maj) (7 min) (7 maj) (8 just)))
 
 (defvar *tempered-system* '((c 0) (c 1) (d 0) (d 1) (e 0) (f 0)
-                                  (f 1) (g 0) (g 1) (a 0) (a 1) (b 0)))
+                            (f 1) (g 0) (g 1) (a 0) (a 1) (b 0)))
 
 (defvar *systems* '((tonal (*tonal-system* 96 *tonal-intervals*))
-                          (tempered (*tempered-system* 12 *tempered-intervals*))))
+                    (tempered (*tempered-system* 12 *tempered-intervals*))))
 
 (defvar *system* 'tonal)
 
 (defvar *intervals-name* '((min minor)
-                                 (maj major)
-                                 (just just)
-                                 (aug augmented)
-                                 (dim diminished)))
+                           (maj major)
+                           (just just)
+                           (aug augmented)
+                           (dim diminished)))
 
 (defvar *intervals-quantity* '((2 double)
-                                     (3 triple)
-                                     (4 quadruple)
-                                     (5 pentuple)
-                                     (6 hextuple)
-                                     (7 heptuple)))
+                               (3 triple)
+                               (4 quadruple)
+                               (5 pentuple)
+                               (6 hextuple)
+                               (7 heptuple)))
 
 (defvar *accidentals* '((lily ("es" "is"))
-                              (latin ("b" "#"))))
+                        (latin ("b" "#"))))
 
 (defmacro with-system (system &body body)
   `(let ((*system* ',system))
@@ -147,8 +147,8 @@ first argument to this function, otherwise it could mistakenly return
 (defun match-note-representation (note representation)
   "Returns non-nil if a note matches the representation.
 EXAMPLE: (match-note-representation \"cis\" 'latin) returns nil."
-    (or (search (get-flat representation) note)
-        (search (get-sharp representation) note)))
+  (or (search (get-flat representation) note)
+      (search (get-sharp representation) note)))
 
 (defun %parse-note (note representation system)
   "Returns the numeric code for a note according with the representation and system.
@@ -161,8 +161,8 @@ level function, you should use note->code instead."
                    :test #'equal))
         (note-code-tempered
          (+ (position (list (string->symbol (subseq note 0 1)) 0)
-                   (get-system-notes 'tempered)
-                   :test #'equal)
+                      (get-system-notes 'tempered)
+                      :test #'equal)
             (number-of-accidentals (subseq note 1) representation))))
     (case system
       (tonal note-code-tonal)
