@@ -113,7 +113,7 @@
        (parse-verbose files)
        (print-ok/no-list (parse-summary files))))
 
-(defun run-unit (flags files)
+(defun run-unidade (flags files)
   (let ((string-result
          (with-output-to-string (string)
            (let ((*standard-output* string))
@@ -130,15 +130,17 @@
         (directory (concat path "*" ext)))))
 
 (defun teste (dados flags files)
-  (let* ((dados-list '("unit" "regressao" "lily" "exemplos"))
+  (let* ((dados-list '("unidade" "regressao" "lily" "exemplos"))
          (comandos-lista (if (string= dados "all") dados-list (split-dados dados))))
     (with-profile flags
-        (loop for item in comandos-lista do
+        (loop
+           for i in comandos-lista
+           for item = (first-string i dados-list) do
              (if (member item dados-list :test #'string=)
                  (progn
                    (format t "~%* teste: ~(~a~)~%" item)
-                   (if (string= item "unit")
-                       (run-unit flags (processa-files item files))
+                   (if (string= item "unidade")
+                       (run-unidade flags (processa-files item files))
                        (run-regressao flags (processa-files item files))))
                  (format t "[AVISO!] ~a não é um comando de 'teste'.~%" item))))))
 
@@ -148,22 +150,23 @@
 (defun cifra (dados flags files)
   (print 3))
 
-(defun first-string (string)
-  (loop for s in *comandos* do
-       (if (string= (subseq s 0 1) string)
-           (return s))))
+(defun first-string (string list)
+  (let ((tmp (loop for s in list do
+                  (if (string= (subseq s 0 1) string)
+                      (return s)))))
+       (if tmp tmp string)))
 
 (defun main ()
   (destructuring-bind (comando dados &optional flags &rest files) (rameau-args)
-    (let ((string (first-string comando)))
-      (cond (string (funcall (read-from-string string) dados (parse-opts flags) files))
-            ((member comando *comandos* :test #'string=)
-             (funcall (read-from-string comando) dados (parse-opts flags) files))
-            (t (format t "comando não conhecido: ~(~a~)~%" comando)
-               (format t "você deve entrar um dos comandos: ~{~(~a~)~^ ~}~%" *comandos*)))))
+    (let ((string (first-string comando *comandos*)))
+      (if (member string *comandos* :test #'string=)
+          (funcall (read-from-string string) dados (parse-opts flags) files)
+          (progn
+            (format t "comando não conhecido: ~(~a~)~%" comando)
+            (format t "você deve entrar um dos comandos: ~{~(~a~)~^ ~}~%" *comandos*)))))
   0)
 
-;; ("testes" "unit,regressao" "-p" ("001")) 
+;; ("testes" "unidade,regressao" "-p" ("001")) 
 
 (main)
 (quit)
