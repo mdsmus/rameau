@@ -1,0 +1,36 @@
+Rameau é o programa que 
+
+O formato de execução é
+
+  rameau <o que fazer> <onde> <opções> <arquivos>
+
+<o que fazer> pode ser testes, analise, cifras
+
+
+rameau testes unit,regressao [opts] 001
+rameau analisa corais [opts] 001..
+rameau cifras ...
+
+aceita ranges:
+
+rameau.lisp a c -a 001..002
+
+rameau testes unit|regressao [opts] 001
+rameau analisa corais [opts] 001..
+rameau cifras ...
+
+versão resumida
+
+rameau t u|r [opts] 001 002
+
+-p profile funciona para tudo
+-d debug funciona para tudo
+-v verbose funciona para tudo (cada coisa define a semantica)
+
+rameau analisa tem as opções
+-a        gera analise harmonica (sem comparar com gabarito)
+-g        compara com gabarito
+-s        mostra as notas de cada segmento [implica em -v]
+-w        só mostra os testes que tem algum erro (implica em -v)
+-c        mostra cifra dos acordes no lugar de listas
+
