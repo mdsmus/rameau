@@ -73,6 +73,19 @@ A forma <acorde>*2 expande para (* 2 <acorde>), exemplo:
 
 C7*2 => (* 2 (C MAJ 0 7))
 
+* Comentários
+
+Um texto em strings como "esse é um comentário" será expandido para um
+comentário, como:
+
+c "foo" d 
+
+será expandido em:
+
+(c maj 0)
+; foo
+(d maj 0)
+
 * Exemplo
 
 Segue abaixo o coral 001 de Bach como exemplo. Cada frase está em uma
