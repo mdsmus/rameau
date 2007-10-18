@@ -4,7 +4,7 @@
 (m! d)
 (m! c)
 (g maj 1 7)
-(m! d)
+(* 2(m! d))
 (c maj 1)
 (m! f)
 (g maj 0)
