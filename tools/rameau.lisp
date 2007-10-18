@@ -42,6 +42,10 @@
   #+clisp(ext:exit))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defconstant max-print-error 10
+  "Quando o numero de arquivos que não são parseados é maior que essa
+  constante, rameau mostra apenas o inicio da lista.")
+
 (defparameter *comandos* '("teste" "analise" "cifra"))
 
 (defparameter *lily-dir-list* '(("corais" "literatura/bach-corais/")
@@ -65,10 +69,31 @@
 (defun split-dados (dados)
   (cl-ppcre:split "," dados))
 
-(defun run-unit (flags files)
-  (declare (ignore flags files))
-  (lisp-unit:run-all-tests :rameau)
-  (format t "~%"))
+(defmacro with-profile (var &body body)
+  `(progn
+     (when (member 'p ,var)
+       (rameau-profile))
+     ,@body
+     (when (member 'p ,var)
+       (rameau-report))))
+
+(defun print-condition (status file expr)
+  (format t "[~a] ~a: ~a~%" status (pathname-name file) expr))
+
+(defun print-ok/no-list (list)
+  (destructuring-bind (ok no) list
+    (let* ((s2 (length no))
+           (no-string
+            (if (> s2 max-print-error)
+                (format nil "~a ..." (subseq no 0 max-print-error))
+                no)))
+      (format t "  [OK]: ~a [NO]: ~a ~@[~a ~]~%" (length ok) s2 no-string))))
+
+(defun parse-verbose (files)
+  (dolist (file files)
+    (handler-case (parse-file file)
+    (serious-condition (expr) (print-condition 'no file expr))
+    (:no-error (&rest rest) (print-condition 'ok file rest)))))
 
 (defun parse-summary (files)
   (let (ok no)
@@ -82,52 +107,40 @@
           (push (pathname-name file) ok))))
     (list (reverse ok) (reverse no))))
 
-(defun print-condition (status file expr)
-  (format t "[~a] ~a: ~a~%" status (pathname-name file) expr))
+ (defun run-regressao (flags files)
+   ;;;; TODO checa flags
+   (if (member 'v flags)
+       (parse-verbose files)
+       (print-ok/no-list (parse-summary files))))
 
-(defun parse-verbose (files)
-  (dolist (file files)
-    (handler-case (parse-file file)
-    (serious-condition (expr) (print-condition 'no file expr))
-    (:no-error (&rest rest) (print-condition 'ok file rest)))))
-
-(defun print-ok/no-list (list)
-  (destructuring-bind (ok no) list
-    (format t "[OK]: ~a [NO]: ~a ~@[~a ~]~%" (length ok) (length no) no)))
-
-(defmacro with-profile (var &body body)
-  `(progn
-     (when (member 'p ,var)
-       (rameau-profile))
-     ,@body
-     (when (member 'p ,var)
-       (rameau-report))))
-
-(defun run-regressao (flags files)
-  ;;;; TODO checa flags
-  (with-profile flags
-      (if (member 'v flags)
-          (parse-verbose files)
-          (print-ok/no-list (parse-summary files)))))
-
-(defun run-lily (flags files)
-  )
-
-(defun run-exemplos (flags files)
-  )
+(defun run-unit (flags files)
+  (let ((string-result
+         (with-output-to-string (string)
+           (let ((*standard-output* string))
+             (lisp-unit:run-all-tests :rameau)
+             (format t "~%")))))
+    (if (member 'v flags)
+        (write-line string-result)
+        (write-line (subseq (last1 (cl-ppcre:split "\\n" string-result)) 34)))))
 
 (defun processa-files (item files &optional (ext ".ly"))
   (let ((path (concat (rameau-path) (second (assoc item *lily-dir-list* :test #'equal)))))
     (if files
-        (mapcar (lambda (file) (concat path file ext)) files))))
+        (mapcar (lambda (file) (concat path file ext)) files)
+        (directory (concat path "*" ext)))))
 
 (defun teste (dados flags files)
   (let* ((dados-list '("unit" "regressao" "lily" "exemplos"))
-         (comandos-lista (if (string= dados "all") dados-list (split-dados dados))))                           
-    (loop for item in comandos-lista do
-         (if (member item dados-list :test #'string=)
-             (funcall-string (concat "run-" item) flags (processa-files item files))
-             (format t "[AVISO!] ~a não é um comando de 'teste'.~%" item)))))
+         (comandos-lista (if (string= dados "all") dados-list (split-dados dados))))
+    (with-profile flags
+        (loop for item in comandos-lista do
+             (if (member item dados-list :test #'string=)
+                 (progn
+                   (format t "~%* teste: ~(~a~)~%" item)
+                   (if (string= item "unit")
+                       (run-unit flags (processa-files item files))
+                       (run-regressao flags (processa-files item files))))
+                 (format t "[AVISO!] ~a não é um comando de 'teste'.~%" item))))))
 
 (defun analise (dados flags files)
   (print 2))
@@ -140,15 +153,12 @@
        (if (string= (subseq s 0 1) string)
            (return s))))
 
-(defun funcall-string (string &rest args)
-  (apply (intern (string-upcase string)) args))
-
 (defun main ()
   (destructuring-bind (comando dados &optional flags &rest files) (rameau-args)
     (let ((string (first-string comando)))
-      (cond (string (funcall-string string dados (parse-opts flags) files))
+      (cond (string (funcall (read-from-string string) dados (parse-opts flags) files))
             ((member comando *comandos* :test #'string=)
-             (funcall-string comando dados (parse-opts flags) files))
+             (funcall (read-from-string comando) dados (parse-opts flags) files))
             (t (format t "comando não conhecido: ~(~a~)~%" comando)
                (format t "você deve entrar um dos comandos: ~{~(~a~)~^ ~}~%" *comandos*)))))
   0)
