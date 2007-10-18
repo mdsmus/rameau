@@ -70,6 +70,8 @@
       (mapcar (lambda (x) (string->symbol (acorde->cifra x))) gabarito)
       gabarito))
 
+(trace cria-nota lista-notas)
+
 (defun print-help ()
   (format t "uso: rameau [opções] [arquivos]
 
@@ -109,7 +111,7 @@ gabarito, e mostra resultado em cifras:
                           (tira-extensao file)))
                (comparacao (with-system rameau:tempered
                              (compara-gabarito-pardo algoritmo gabarito)))
-               (notas (mapcar #'lista-notas segmento))
+               (notas (with-system rameau:tempered (mapcar #'lista-notas segmento)))
                (file-name (pathname-name file))
                (duracoes (mapcar (lambda (x y)
                                    (cons (evento-dur (first x))
