@@ -70,8 +70,6 @@
       (mapcar (lambda (x) (string->symbol (acorde->cifra x))) gabarito)
       gabarito))
 
-(trace cria-nota lista-notas)
-
 (defun print-help ()
   (format t "uso: rameau [opções] [arquivos]
 
