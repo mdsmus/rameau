@@ -44,12 +44,13 @@ fundamental do acorde."
   (first (find inversao *inversoes-pop* :key #'second)))
 
 (defun cifra->acorde (cifra)
-  (cl-ppcre:register-groups-bind (fundamental modo acrescimos baixo setima)
-      ("([cdefgab]+[#b]?)(m|o|~|!|\\+)?([0-9\\.mb\\+]+)?/?([abcdefg][b#]?)?(7+?-?)?" cifra)
-    (remove-if #'null (list (parse-fundamental fundamental)
-                            (get-modo modo)
-                            (qual-inversao? fundamental baixo)
-                            (parse-acrescimos modo (concat setima acrescimos))))))
+  (let ((cifra-list (cl-ppcre:split "/" cifra)))
+    (cl-ppcre:register-groups-bind (fundamental modo acrescimos)
+        ("([cdefgab]+[#b]?)(m|o|~|!|\\+)?([0-9\\.mb\\+]+)?" (first cifra-list) :sharedp t)
+      (remove-if #'null (list (parse-fundamental fundamental)
+                              (get-modo modo)
+                              (qual-inversao? fundamental (second cifra-list))
+                              (parse-acrescimos modo acrescimos))))))
 
 ;; TODO: lidar com 7m 7M, 5+, etc
 (defun get-intervalo-inversao-pop (modo inversao)
@@ -123,7 +124,8 @@ fundamental do acorde."
     (list '* 2 (list cifra1 (setima-no-baixo cifra1 setima)))))
 
 (defun expande-cifra-super-setima (cifra)
-  (format nil "~a~%~a" (cifra->acorde (first cifra)) (cifra->acorde (apply #'concat cifra))))
+  (let ((acorde (cifra->acorde (first cifra))))
+    (format nil "~a~%~a" acorde (append acorde (list (second cifra))))))
 
 (defun multiplica-cifra (cifra)
   (list '* (second cifra) (cifra->acorde (first cifra))))
