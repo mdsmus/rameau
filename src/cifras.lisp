@@ -124,7 +124,8 @@ fundamental do acorde."
     (list '* 2 (list cifra1 (setima-no-baixo cifra1 setima)))))
 
 (defun expande-cifra-super-setima (cifra)
-  (format nil "~a~%~a" (cifra->acorde (first cifra)) (cifra->acorde (apply #'concat cifra))))
+  (let ((acorde (cifra->acorde (first cifra))))
+    (format nil "~a~%~a" acorde (append acorde (list (second cifra))))))
 
 (defun multiplica-cifra (cifra)
   (list '* (second cifra) (cifra->acorde (first cifra))))
