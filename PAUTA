@@ -1,13 +1,15 @@
 ; -*- org -*-
 
-* marcar reunião para o dia 31 ou 1 (dia 26 não tem reunião)
 * versões de release
-  1.0
   1.1 versões intermediarias (e.g. rameau com nova interface)
-  2.0 quando será? o que terá?
-* nome das coisas
-  rameau era o codigo em src, agora é a ferramenta, sugestoes?
-* simbolos
-  exporta tudo (argh!)
-  divide utils, rameau, testes
-* rameau 1.1
+  2.0 quando será? o que terá? [9 novembro]
+- interface nova do rameau
+  ferramenta para gerar pop->gab (file independente)
+  alinhar comparação de gabaritos
+  mostar % de completude
+- algoritmo de temperley
+- gera lilypond com analise harmonica em baixo (grafico)- 
+- limpar packages.lisp
+- limpar utils
+- fazer genos-lib: separar utils e musiclib
+
