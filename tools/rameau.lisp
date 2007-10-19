@@ -155,10 +155,10 @@
   (let ((*package* (find-package :rameau)))
     (progn
       (format t "~% * ~a~%" file)
-      (format t "gabarito (tamanho: ~a): ~(~s~) ~%" (length gabarito) gabarito)
-      (format t "   pardo (tamanho: ~a): ~(~s~) ~%" (length algoritmo) algoritmo)
-      (when (member 'n flags) (format t "   notas: ~(~s~) ~%" notas))
-      (when (member 'd flags) (format t "   dur: ~(~s~) ~%" dur))
+      (format t "gabarito (~a): ~(~s~) ~%" (length gabarito) gabarito)
+      (format t "   pardo (~a): ~(~s~) ~%" (length algoritmo) algoritmo)
+      (when (member 'n flags) (format t "   notas: ~(~a~) ~%" notas))
+      (when (member 'd flags) (format t "   dur: ~(~a~) ~%" dur))
       (format t "correto?: ~:[não~;sim~]~%" comparacao))))
 
 (defun run-compara-gabarito (flags files)
@@ -174,8 +174,9 @@
                (duracoes (mapcar (lambda (x y) (list y (evento-dur (first x))))
                                  segmento algoritmo)))
           (cond
-            ((member 'w flags)
+            ((member 'e flags)
              (unless comparacao
+               (push 'v flags)
                (print-gabarito file-name gabarito algoritmo comparacao
                                flags :dur duracoes :notas notas)))
             ((member 'c flags)

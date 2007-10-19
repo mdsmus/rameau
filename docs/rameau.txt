@@ -31,6 +31,9 @@ rameau analisa tem as opções
 -a        gera analise harmonica (sem comparar com gabarito)
 -g        compara com gabarito
 -s        mostra as notas de cada segmento [implica em -v]
--w        só mostra os testes que tem algum erro (implica em -v)
--c        mostra cifra dos acordes no lugar de listas
+-e        só mostra os testes que tem algum erro (implica em -v)
 
+.............
+
+-p mostra cifra
+-c mostra certo
