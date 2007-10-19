@@ -9,7 +9,6 @@
                    (speed 1)))
 
 (asdf:oos 'asdf:load-op :rameau :verbose nil)
-(asdf:oos 'asdf:load-op :getopt :verbose nil)
 
 (use-package :rameau)
 
@@ -69,9 +68,9 @@
 (defun char->symbol (char)
   (intern (string-upcase (string char))))
 
-(defun parse-opts (string)
-  (exclude-repetition (mapcan (lambda (s) (split-word (delete #\- s)))
-                              (cl-ppcre:split #\Space string))))
+(defun split-opts (string)
+  (mapcan (lambda (s) (split-word (delete #\- s)))
+          (cl-ppcre:split #\Space string)))
 
 (defun split-dados (dados)
   (cl-ppcre:split "," dados))
@@ -168,10 +167,7 @@
       (multiple-value-bind (algoritmo segmento)
           (with-system rameau:tempered (gera-gabarito-pardo (parse-file file)))
         (let* ((file-name (pathname-name file))
-               (gabarito
-                (handler-case (processa-gabarito (tira-extensao file))
-                  (serious-condition (expr)
-                    (format t "[ERRO] erro no gabarito ~a" file-name) nil)))
+               (gabarito (processa-gabarito (tira-extensao file)))
                (notas (with-system rameau:tempered (mapcar #'lista-notas segmento)))
                (comparacao (with-system rameau:tempered
                              (compara-gabarito-pardo algoritmo gabarito)))
@@ -220,7 +216,9 @@
                   (progn
                     (format t "~%* ~(~a~): ~(~a~)~%" ',nome item)
                     ,@body)
-                  (format t "[AVISO!] ~a não é um comando de '~(~a~)'.~%" item ',nome)))))))
+                  (progn
+                    (format t "[AVISO!] ~a não é um comando de '~(~a~)'.~%" item ',nome)
+                    (format t "comandos possíveis são: all ~{~a ~}~%" dados-list))))))))
 
 (defcomando teste dados flags files
     (if (string= item "unidade")
@@ -240,21 +238,52 @@
     (if tmp tmp string)))
 
 (defun print-help ()
+  (write-line "Help")
   (rameau-quit))
 
+(defun next-flag (list)
+  (loop for x in (rest list) do
+       (if (search "-" x)
+           (return x))))
+
+(defun pos (list)
+  (let ((p (position (next-flag list) list :test #'string=)))
+    (if p p 0)))
+
+(defun arg->list (list)
+  (when list
+    (if (next-flag list)
+        (let ((p (pos list)))
+          (cons (subseq list 0 p)
+                (arg->list (subseq (subseq list p) 0))))
+        (list list))))
+
+(defun get-lone-flags (list)
+  (exclude-repetition
+   (mapcan (lambda (item) (split-opts (first item)))
+           (remove-if-not (lambda (item) (= (length item) 1)) list))))
+
+(defun get-flag-list (flag list)
+  (rest (assoc flag list :test #'string=)))
+
 (defun main ()
-  (destructuring-bind (&optional comando dados flags &rest files) (rameau-args)
-    (let ((string (first-string comando *comandos*))
-          (pflags (parse-opts flags)))
-      (cond ((null comando) (print-help))
-            ((equal comando "help") (print-help))
-            ((equal comando "-h") (print-help))
-            ((and comando (null dados))
-             (format t "você deve entrar dados para o comando ~a~%" comando)
-             (format t "comandos possíveis são: all ~{~a~^ ~}~%"
-                     (get-item (read-from-string comando) *dados* #'string=)))
-            ((member string *comandos* :test #'string=)
-             (funcall (read-from-string string) dados pflags files))
-            (t (format t "comando não conhecido: ~(~a~)~%" comando)
-               (format t "você deve entrar um dos comandos: ~{~(~a~)~^ ~}~%" *comandos*)))))
+  (let* ((args (rameau-args))
+         (comando (first args))
+         (dados (second args))
+         (string (if comando (first-string comando *comandos*)))
+         (flags-list (if (> (length args) 2) (arg->list (subseq args 2))))
+         (files (get-flag-list "-f" flags-list))
+         (trace (get-flag-list "-t" flags-list))
+         (flags (if flags-list (get-lone-flags flags-list))))
+    (cond ((null comando) (print-help))
+          ((equal comando "help") (print-help))
+          ((equal comando "-h") (print-help))
+          ((and comando (null dados))
+           (format t "você deve entrar dados para o comando ~a~%" comando)
+           (format t "comandos possíveis são: all ~{~a~^ ~}~%"
+                   (get-item (read-from-string comando) *dados* #'string=)))
+          ((member string *comandos* :test #'string=)
+          (funcall (read-from-string string) dados flags files))
+          (t (format t "comando não conhecido: ~(~a~)~%" comando)
+             (format t "você deve entrar um dos comandos: ~{~(~a~)~^ ~}~%" *comandos*))))
   0)
