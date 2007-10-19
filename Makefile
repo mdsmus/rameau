@@ -23,8 +23,9 @@ doc:
 	cd docs ;\
 	make pdf
 
-update:
+update: 
 	git fetch && git rebase origin/master
+	make rameau
 
 clean:
 	rm -f rameau
