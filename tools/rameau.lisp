@@ -267,6 +267,10 @@
 (defun get-flag-list (flag list)
   (rest (assoc flag list :test #'string=)))
 
+
+(defun maptrace (lista-string)
+  )
+
 (defun main ()
   (let* ((args (rameau-args))
          (comando (first args))
@@ -276,6 +280,9 @@
          (files (get-flag-list "-f" flags-list))
          (trace (get-flag-list "-t" flags-list))
          (flags (if flags-list (get-lone-flags flags-list))))
+
+    (maptrace trace)
+    
     (cond ((null comando) (print-help))
           ((equal comando "help") (print-help))
           ((equal comando "-h") (print-help))
