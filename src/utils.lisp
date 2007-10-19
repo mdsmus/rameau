@@ -18,12 +18,11 @@
 (defmacro aif (test-form then-form &optional else-form)
   "Macro anafófica que retorna o elemento no predicado ('it') se for
 verdadeiro."
-  (labels ((change-it-package (form)
-             (subst 'it (find-symbol "IT" *package*) form)))
-    `(let ((it ,test-form))
-       (if it
-           ,(change-it-package then-form)
-           ,(change-it-package else-form)))))
+  (let ((it (intern (symbol-name 'it))))
+    `(let ((,it ,test-form))
+       (if ,it
+           ,then-form
+           ,else-form))))
 
 (defmacro defcached (funcname args &body body)
   (let ((cache (gensym))
