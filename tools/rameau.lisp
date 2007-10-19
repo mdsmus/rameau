@@ -238,7 +238,7 @@
     (if tmp tmp string)))
 
 (defun print-help ()
-  (write-line "Help")
+  (format t "comandos possíveis são: ~{~a ~}~%" *comandos*)
   (rameau-quit))
 
 (defun next-flag (list)
@@ -280,7 +280,7 @@
           ((equal comando "-h") (print-help))
           ((and comando (null dados))
            (format t "você deve entrar dados para o comando ~a~%" comando)
-           (format t "comandos possíveis são: all ~{~a~^ ~}~%"
+           (format t "dados possíveis são: all ~{~a~^ ~}~%"
                    (get-item (read-from-string comando) *dados* #'string=)))
           ((member string *comandos* :test #'string=)
           (funcall (read-from-string string) dados flags files))
