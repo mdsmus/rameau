@@ -244,19 +244,18 @@
 
 (defun next-flag (list)
   (loop for x in (rest list) do
-       (if (search "-" x)
+       (if (equal #\- (aref x 0))
            (return x))))
 
 (defun pos (list)
-  (let ((p (position (next-flag list) list :test #'string=)))
-    (if p p 0)))
+  (aif (position (next-flag list) list :test #'string=) it 0))
 
 (defun arg->list (list)
   (when list
     (if (next-flag list)
         (let ((p (pos list)))
           (cons (subseq list 0 p)
-                (arg->list (subseq (subseq list p) 0))))
+                (arg->list (nthcdr p list))))
         (list list))))
 
 (defun get-lone-flags (list)
@@ -267,9 +266,8 @@
 (defun get-flag-list (flag list)
   (rest (assoc flag list :test #'string=)))
 
-
 (defun maptrace (lista-string)
-  )
+  (eval (append '(trace) (mapcar #'string->symbol lista-string))))
 
 (defun main ()
   (let* ((args (rameau-args))
