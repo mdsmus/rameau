@@ -19,6 +19,14 @@ clisprameau: $(lisp-files)
 
 all: rameau cmurameau clisprameau
 
+corais:
+	if [ ! -d partituras ]; then mkdir partituras; fi; \
+	cd partituras; \
+	if [ ! -d bach-corais ]; then mkdir bach-corais; fi; \
+	cd bach-corais; \
+	lilypond  `ls ../../literatura/bach-corais/*.ly`
+
+
 doc:
 	cd docs ;\
 	make pdf
