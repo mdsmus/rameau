@@ -45,7 +45,7 @@ C==7 => (C MAJ 0) (C MAJ 0 7)
 A forma <acorde>_-7 funciona como <acorde>--7, mas quando a sétima
 está no baixo:
 
-C_-7 => (* 2 ((C MAJ 0) (C MAJ 3 7)))
+C_-7 => (C MAJ 0) ((C MAJ 3 7) (m! bes))
 
 Outras extensões podem ser entradas separadas por ponto. [esse recurso
 ainda não foi completamente implementado. outras extensões além da
