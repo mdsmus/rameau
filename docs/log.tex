@@ -1,4 +1,4 @@
-\documentclass[12pt,brazil]{article}
+\documentclass[12pt,brazil]{book}
 \usepackage[utf8x]{inputenc}
 \usepackage{babel}
 \usepackage[top=2.5cm,left=2.5cm,bottom=2.5cm,right=2.5cm]{geometry}
@@ -14,21 +14,285 @@
 
 \maketitle
 
-\section{Corais}
-\label{sec:corais}
+\chapter{Corais}
+\label{chap:corais}
 
-corais com mudanças de tempo implícita (359), colocamos a mudança
-explicita
+\section{Objetivo}
+\label{sec:objetivo}
 
-notas extas (ossias)
+O objetivo principal é ter os 371 corais harmonizados de Bach no
+formato do lilypond de modo que possa servir para diversas pesquisas.
+Esses arquivos devem ser revisados e corrigidos.
 
-pausas, anacruses
+\section{Introdução}
+\label{sec:introducao}
 
-coral 248 não corresponde ao riamanscheiner
+%% falar mais da importancia dos corais, citar McHose
+Os corais harmonizados de J. S. Bach são utilizados frequentemente
+para o estudo da harmonia ocidental tradicional. Os corais são
+excelentes para o estudo da harmonia já que apresentam um número
+grande de mudanças harmônicas em pouco tempo, enquanto uma sinfonia
+pode demorar vários compassos em apenas 2 ou 3 acordes.
 
-falta 048, conversão de midi não ok
+Não existe um repositório púpblico dos 371 corais harmonizados em
+formato simbólico. Donald Byrd cita os corais de Bach na sua lista de
+coleções úteis para \textit{Music Information Retrievel}
+(\url{www.informatics.indiana.edu/donbyrd/MusicTestCollections.HTML}).
+A coleção em
+\url{kern.humdrum.org/cgi-bin/kern/kssearch?s=t&keyword=Bach+Johann}
+possui alguns corais no formato Kern usado pelo Humdrum. A coleção em
+\url{www.musedata.org/encodings/bach/bg/chorals/} tem 185 corais no
+formato musedata. Finalmente, \url{www.jsbchorales.net} contém todos
+os 371 corais no formato MIDI. Esse site também contém várias
+meta-informações úteis como os títulos dos corais, número de BWM,
+número em difentes edições, etc.
 
-coral 218 está sem repetição
+Nós decidimos seguir a ordem dos corais usada na edição de Albert
+Riemenschneider. Os corais em formato MIDI foram baixados de
+\url{www.jsbchorales.net} e convertidos para o formato do lilypond com
+o script midi2ly, distribuído com o lilypond. Um script foi criado
+para usar a informação em \url{www.jsbchorales.net/riemen.shtml} e
+re-nomear os arquivos para o seu numero correspondente na edição de
+Riemenschneider. Por exemplo, o arquivo \texttt{026900b\_.mid} foi
+renomeado para 001.mid.
+
+A conversão de midi para lilypond funcionou perfeitamente, contudo
+midi2ly gera um arquivo seguindo a estrutura do arquivo midi. Nesse
+caso os arquivos gerados foram consideravelmente prolixos e difíceis
+de ler, ainda que nosso parser conseguisse ler e analisa-los
+corretamente. Um trecho do coral 002 pode ser visto abaixo. Ele foi
+editado para economizar espaço, e apenas a primeira linha das notas
+foi mostrada.
+
+\begin{verbatim}
+trackAchannelA =  {
+  \time 4/4 
+  \key a \major
+  \tempo 4 = 76 
+}
+
+trackA = <<
+  \context Voice = channelA \trackAchannelA
+>>
+
+trackBchannelA = \relative c {
+  % [SEQUENCE_TRACK_NAME] Instrument 1
+  s2. a''4 |
+  .... (notas)
+}
+
+trackB = <<
+  \context Voice = channelA \trackBchannelA
+>>
+
+trackCchannelA =  {
+  % [SEQUENCE_TRACK_NAME] Instrument 2
+}
+
+trackCchannelB = \relative c {
+  s2. e'4 |
+  .... (notas)
+}
+
+trackC = <<
+  \context Voice = channelA \trackCchannelA
+  \context Voice = channelB \trackCchannelB
+>>
+
+trackDchannelA =  {
+  % [SEQUENCE_TRACK_NAME] Instrument 3
+}
+
+trackDchannelB = \relative c {
+  s2. cis'4 |
+  .... (notas)
+}
+
+trackD = <<
+  \clef bass
+  \context Voice = channelA \trackDchannelA
+  \context Voice = channelB \trackDchannelB
+>>
+
+
+trackEchannelA =  {
+  % [SEQUENCE_TRACK_NAME] Instrument 4
+}
+
+trackEchannelB = \relative c {
+  s2. a'8 gis |
+  .... (notas)
+}
+
+trackE = <<
+  \clef bass
+  \context Voice = channelA \trackEchannelA
+  \context Voice = channelB \trackEchannelB
+>>
+
+\score {
+  <<
+    \context Staff=trackB \trackB
+    \context Staff=trackC \trackC
+    \context Staff=trackD \trackD
+    \context Staff=trackE \trackE
+  >>
+}
+\end{verbatim}
+
+Para facilitar a leitura, edições, e correções posteriores por
+humanos, desenvolvemos um script em lisp para converter os arquivos no
+formato acima para algo mais legível. O resultado pode ser visto
+abaixo:
+
+\begin{verbatim}
+\header {
+  title = "2 - Ich dank dir, lieber Herre"
+  composer = "J. S. Bach"
+}
+
+global =  {
+  \time 4/4 
+  \key a \major
+}
+
+soprano = \relative c {
+  \partial 4 a''4 
+  a a a b 
+ ... notas ...
+}
+
+alto = \relative c {
+  \partial 4 e'4 
+  fis e fis fis 
+ ... notas ...
+}
+
+tenor = \relative c {
+  \partial 4 cis'4 
+  cis cis8 b a gis fis4 
+ ... notas ...
+}
+
+baixo = \relative c {
+  \partial 4 a'8 gis 
+  fis4 cis d dis 
+ ... notas ...
+}
+
+\score {
+  <<
+    \new Staff {
+      <<
+        \global
+        \new Voice = "1" { \voiceOne \soprano }
+        \new Voice = "2" { \voiceTwo \alto }
+      >>
+    }
+    \new Staff {
+      <<
+        \global
+        \clef "bass"
+        \new Voice = "1" {\voiceOne \tenor }
+        \new Voice = "2" { \voiceTwo \baixo \bar "|."}
+      >>
+    }
+  >>
+}
+\end{verbatim}
+
+Observe que cada voz é claramente marcada com nomes legíveis como
+``soprano'' ou ``alto''. O script usa informação da lista on-line para
+inserir o título do coral. Finalmente, os corais são montados em dois
+pentagramas, como na edição do Riemenschneider.
+
+O script também lidou com anacruses. O arquivo original tinha uma
+pausa escondida (um \textit{skip}) para a anacruse. O script
+interpretou essa informação e colocou o comando \texttt{partial} para
+fazer anacruzes da maneira correta.
+
+Um dos maiores problemas com o MIDI é que informações enarmônicas são
+perdidas. O script procurou fazer as enarmonizações mais obvias,
+baseando-se na indicação de armadura. Por exemplo, uma nota que foi
+escrita como Sol$\sharp$ na tonalidade de Mi$\flat$ maior foi
+corretamente enarmonizada para Lá$\flat$. Contudo notas fora da
+armadura não foram enarmonizadas automaticamente e deverão ser feitas
+manualmente.
+
+Surpreendentente alguns corais tem mudança de compasso implícita, i.e.
+sem indicação de nova fórmula de compasso (e.g. coral 359). Decidimos
+indicar todas as mudanças de tempo explicitamente.
+
+A edição de Riemenschneider tem notas extras em alguns corais,
+indicando outras possibilidades de execução (especialmente na voz do
+baixo) ou para indicar um instrumento. Nos escolhemos retirar essas
+vozes para concentrar apenas na textura a 4 vozes.
+
+Após essa etapa os corais ainda tem problemas. 
+
+Na edição impressa alguns corais tem indicação de repetição. Nos
+arquivos MIDI as repetições são feitas por extenso. Isso faz com que
+os arquivos lilypond fiquem maiores do que necessário e a análise
+harmônica tenha que ser feita duas vezes para um mesmo trecho. Além
+disso, a impressão do coral em pdf fica desnecessariamente grande.
+
+O programa midi2ly converteu algumas notas longas na sintaxe
+\texttt{c8*4} que indica que uma nota dura 4 vezes o valor marcado
+(nesse caso 4 colcheias, ou 1 mínima). Na partitura ela aparece como
+uma colcheia mas ocupa o lugar de uma mínima. É necessário converter
+essa notação para algo simplificado como c2 o c4~c4 se a nota não
+couber no compasso.
+
+Para resolver esses problemas fizemos outro script em lisp. Ele lê os
+arquivos já convertidos pelo primeiro script e guarda informações em
+uma estrutura. Nesse script foram criadas funções para procurar e
+eliminar as repetições nos corais. O script procura simultaneamente
+nas 4 vozes, para garantir que a repetição será a mesma nas 4 vozes.
+Para garantir acuracidade, uma lista de todos os corais que não tem
+repetição foi feita manualmente (uma tarefa entediante mas mais rápida
+que parece; levou 20 minutos). Uma função retornava uma lista com os
+corais com repetição e outra sem. Desse modo foi possível comparar com
+a lista feita manualmente e encontrar problemas no programa ou nos
+arquivos com os corais. Durante esse processo foram encontradas notas
+erradas em alguns corais. O código para buscar repetições é bastante
+simples e pode ser visto abaixo. A função \texttt{voz-pos} retorna a
+posição onde as 4 vozes repetem. Essa possição é usada por
+\texttt{voz-subseq} para retorna uma lista sem a repetição de cada
+voz.
+
+\begin{verbatim}
+(defun voz-subseq (voz pos)
+  (subseq voz (if pos pos 0)))
+  
+(defun search-pos (list x)
+  (let ((list (mapcar #'parse-nota list)))
+    (search (subseq list 0 x) list :key #'first :test #'equal :from-end t)))
+
+(defun voz-pos (l1 l2 l3 l4)
+  (loop
+     for x from 19 downto 10
+     for a1 = (search-pos l1 x)
+     for a2 = (search-pos l2 x)
+     for a3 = (search-pos l3 x)
+     for a4 = (search-pos l4 x) do
+       ;;(print (list x a1 a2 a3 a4))
+       (when (and (plusp a1) (plusp a2) (plusp a3) (plusp a4))
+         (return a1))))
+\end{verbatim}
+
+Os corais 043, 055, 087, 121, 205, 253, 327, 333, 272, 218, 222, e 323
+tem repetições mais complexas como casa 1 e 2, mais de uma repetição,
+etc. Eles deverão ser editados manualmente.
+
+\section{Problemas}
+\label{sec:problemas}
+
+O coral 248 não corresponde ao coral no riamanscheiner. 5 dos 371
+corais não puderam ser corrigidos automaticamente; os corais 308, 236,
+e 215 estão fora do formato acima e não puderam ser convertidos. O
+coral 48 estava tão mal-codificado que terá que ser feito manualmente.
+O coral 150 tem 1 voz faltando (ele é a 5 vozes).
+
 
 \end{document}
 
