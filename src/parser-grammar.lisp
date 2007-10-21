@@ -73,7 +73,7 @@
    (scheme-code #'do-nothing)
    (include STRING #'parse-include)
    (|<<| expression |>>| #'parse-simultaneous)
-   (SIMULT { expression } #'parse-simult)
+   (SIMULT |{| expression |}| #'parse-simult)
    (note-expr #'identity))
 
   (assignment
@@ -169,8 +169,6 @@
    SCORE
    VOICE
    DUR
-   |{|
-   |}|
    OCTAVE
    NUMBER
    scheme-sexp)
