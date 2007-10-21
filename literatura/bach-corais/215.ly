@@ -34,7 +34,7 @@
           f4 g8 a bes4 g
           g2.\fermata f4
           g a bes a
-          g2~ g4 fis
+          g2~g4 fis
           g2.\fermata
           
         }
@@ -101,8 +101,7 @@
           a d g, c
           b2 c4 bes8 aes
           g4 f bes8 aes4 g8
-          g a? bes4 bes2~
-          bes8 g a4 f2
+          g a? bes4 bes2~bes8 g a4 f2
           bes4 a bes8 a g4
           ees'4. d16 c bes2
           bes8 a g4 f8 ees f4
@@ -139,9 +138,7 @@
           bes'8 a g fis g f ees d
           ees d c d ees2\fermata
           bes4 ees d c8 b
-          c2.\fermata d4~
-          d c d8 ees f4~
-          f8 ees16 d ees8 c d2
+          c2.\fermata d4~d c d8 ees f4~f8 ees16 d ees8 c d2
           g,2.\fermata
         }    
         
