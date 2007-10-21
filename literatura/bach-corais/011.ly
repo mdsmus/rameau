@@ -37,7 +37,7 @@ soprano = \relative c {
   e d c d2 e4 f2. e2 e4 
   d2 d4 cis2 cis4 d4*5 e4 
   e d c d2 e4 f2. e2 e4 
-  d2 d4 cis2 cis4 d2.~ d2 e4 
+  d2 d4 cis2 cis4 d2.~d2 e4 
   \time 4/4
   e c d e 
   f2 d4 d 
@@ -133,7 +133,7 @@ baixo = \relative c {
   g'8 fis g a b g c4 
   f,2 f4 e8 f 
   g4 a8 g f4 g8 g, 
-  c2. g4 
+  c2. c4 
   c c' b ais 
   a g8 f ais4 fis 
   g8 f e4 f g 
