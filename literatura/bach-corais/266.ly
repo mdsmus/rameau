@@ -76,8 +76,8 @@ baixo = \relative c {
   c, d e fis 
   g d g, g' 
   f8 ees d c bes d e fis 
-  g a bes c d4 ees, 
-  c d e fis 
+  g a bes c d4 g, 
+  c, d e fis 
   g d g, g' 
   f8 ees d c bes d e fis 
   g a bes c d4 f,8 g 
