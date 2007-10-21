@@ -52,7 +52,7 @@ alto = \relative c {
   ees f f4 g g 
   aes8 c bes aes g f ees4 
   f2 g4 aes 
-  g2. g4 
+  g2. bes4 
   bes g g f8 ees 
   ees4 aes g g 
   g8 f ees f g f ees d 
