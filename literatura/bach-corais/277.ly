@@ -78,7 +78,7 @@ tenor = \relative c {
   e d c4 d g, 
   c8 b a c b4 c8 b 
   a4 d c8 b c4 
-  c b g d' 
+  c b g e' 
   d d8 c b4 c8 b 
   a b c4 c c8 d 
   e d c4 d g, 
