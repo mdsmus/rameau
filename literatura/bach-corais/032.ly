@@ -17,7 +17,7 @@ soprano = \relative c {
   e2 s4 cis 
   d cis b cis8. d16 
   b2 a4 e' 
-  e2 fis4 fis 
+  e4 e4 fis4 fis 
   e2 s4 cis 
   d cis b cis8. d16 
   b2 a4 b 
