@@ -73,7 +73,7 @@ baixo = \relative c {
   fis d g, a8 b 
   c4 g c fis 
   g4. fis8 e fis g a 
-  fis d a'4 d, b' 
+  fis d a'4 d, g 
   fis d g, a8 b 
   c4 g c fis 
   g4. fis8 e fis g a 
