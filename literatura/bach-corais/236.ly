@@ -29,7 +29,7 @@
           fis4 fis8. e16 dis4 e
           e d e eis
           fis4. eis8 fis4 fis8 gis
-          a4 a b8 cis~ cis b
+          a4 a b8 cis~cis b
           b ais16 gis ais4 fis
         }    
         
@@ -46,7 +46,7 @@
           g a8 g fis4 b
           c b8 a g4 g8 a
           b4 a g fis
-          b~ b8 ais fis4 g
+          b~b8 ais fis4 g
           a a8 b cis4 d
           cis gis8 cis cis4 d
           e fis e8 cis d fis
