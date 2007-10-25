@@ -86,7 +86,9 @@
 (defstruct pip
   (notas)
   (beats)
-  (score))
+  (score)
+  (is-beat)
+  (best-j))
 
 ;; variáveis globais
 
@@ -115,7 +117,8 @@
   (let* ((tamanho (quantiza (fim-evento (last1 notas))))
          (pip-array (make-array (list tamanho))))
     (dotimes (i tamanho)
-      (setf (aref pip-array i) (make-pip)))
+      (setf (aref pip-array i) (make-pip))
+      (setf (pip-is-beat (aref pip-array i)) (make-array (list n-levels))))
     (pip-insere-notas pip-array notas)
     (dotimes (i (- tamanho 1))
       (let ((atual (pip-notas (aref pip-array i)))
@@ -134,6 +137,9 @@
     (* note-factor (+ note-bonus
                       (* (sqrt dur)
                          (if higher-base 0.5 average-length))))))
+
+(defun penalidade-desvio (x y)
+  (* beat-interval-factor (- (abs (x - y)) beat-slop)))
 
 (defun best-score (pip-array pip j min-pip max-pip use-higher-base)
   (let ((base (base-score (pip-notas (aref pip-array pip)) use-higher-base)))
@@ -158,13 +164,42 @@
                           (* base
                              (sqrt (ms-to-sec
                                     (/ (* pip-time (* 2 j)) 2))0))))))))
-              (values (first melhor) (second melhor)))))))
+              (values (second melhor) (first melhor)))))))
 
-(defun penalidade-desvio (x y)
-  (* beat-interval-factor (- (abs (x - y)) beat-slop)))
+(defun label-beats (j pip level min max pip-array)
+  (let* ((k 0))
+    (loop
+       (setf (aref (pip-is-beat (aref pip-array pip))
+                   level)
+             t)
+       (setf (pip-best-j (aref pip-array pip)) j)
+       (when (< (- pip j) 0)
+         (return-from label-beats))
+       (multiple-value-bind (novo-res novo-k)
+           (best-score pip-array pip j min max (= level highest-level))
+         (setf k novo-k)
+         (decf pip j)
+         (setf j k)))))
 
-(defun evaluate-solution (x)
-  )
+(defun evaluate-solution (pip-array min-pip max-pip level compute-beats)
+  (let* ((tam (length pip-array))
+         (valores (loop
+                     for pip from (- tam 1) downto (- tam max-pip) do
+                     with best = 0.0 and best-j = min-pip and best-pip = pip do
+                       (loop for j from min-pip to max-pip do
+                            (let ((score (aref (pip-score (aref (pip-array pip)))
+                                               (nscore j min-pip max-pip))))
+                              (when (< best score)
+                                (setf best score)
+                                (setf best-j j)
+                                (setf best-pip pip))))
+                     finally (return (list best best-j best-pip))))
+         (best (first valores))
+         (best-j (second valores))
+         (best-pip (third valores)))
+    (when compute-beats (label-beats best-j best-pip level min-pip max-pip pip-array))
+    best))
+
 
 (defun compute-tactus-scores (min-pip max-pip pip-array)
   (loop
@@ -189,7 +224,8 @@
      for max = (dquantize tmax 0) then (dquantize tmax 0)
      for score = (clear-score pip min max) then (clears-core pip min max)
      until (>= tmax tactus-max)
-     collect (evaluate-solution (compute-tactus-scores min max pip))))
+     collect (evaluate-solution (compute-tactus-scores min max pip)
+                                min max tactus-level nil)))
 
 (defun calcula-metrica (notas)
   (let* ((pip-array (cria-pip-array notas))
