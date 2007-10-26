@@ -60,74 +60,85 @@ void warn(void) {
 }
 
 Event * build_event_list_and_beat_list_from_input(void) {
-    char first_part[100];
-    int second_part;
-    int third_part;
-    int fourth_part;
-    int event_time;
-    int N_parts;
-    int on_event, both_event, off_event;
-    int on_time, off_time;
-    int i;
-    Pitch pitch;
-    Event * event_list, * new_event;
-    Beat * new_beat;
+  char first_part[100];
+  int second_part;
+  int third_part;
+  int fourth_part;
+  int event_time;
+  int N_parts;
+  int on_event, both_event, off_event;
+  int on_time, off_time;
+  int i;
+  Pitch pitch;
+  Event * event_list, * new_event;
+  Beat * new_beat;
     
-    beatlevel[0].count = 1;
-    beatlevel[0].start = 0;
-    beatlevel[0].units = 1;
-    N_beatlevel = 1;
+  beatlevel[0].count = 1;
+  beatlevel[0].start = 0;
+  beatlevel[0].units = 1;
+  N_beatlevel = 1;
     
-    event_time = 0;
-    event_list = NULL;
-    global_beat_list = NULL;
+  event_time = 0;
+  event_list = NULL;
+  global_beat_list = NULL;
     
-    for (line_no = 1; fgets(line, sizeof(line), instream) != NULL; line_no++) {
-	for (i=0; isspace(line[i]); i++);
-	if (line[i] == '%' || line[i] == '\0') continue;  /* ignore comment lines */
-	N_parts = sscanf(line, "%99s %d %d %d", first_part, &second_part, &third_part, &fourth_part);
-	if (N_parts < 2) {
+  for (line_no = 1; fgets(line, sizeof(line), instream) != NULL; line_no++) {
+    for (i=0; isspace(line[i]); i++);
+    if (line[i] == '%' || line[i] == '\0') continue;  /* ignore comment lines */
+    N_parts = sscanf(line, 
+                     "%99s %d %d %d", 
+                     first_part, &second_part, &third_part, &fourth_part);
+    if (N_parts < 2) {
 	    warn();
 	    continue;
-	}
+    }
 	
-	if (strcasecmp(first_part, "BaseUnit") == 0) {
+    if (strcasecmp(first_part, "BaseUnit") == 0) {
 	    if (N_parts != 2) {
-		fprintf(stderr, "%s: Error (line %d) BaseUnit expects one integer parameter.\n", this_program, line_no);
-		my_exit(1);
+        fprintf(stderr, 
+                "%s: Error (line %d) BaseUnit expects one integer parameter.\n", 
+                this_program, line_no);
+        my_exit(1);
 	    }
 	    baseunit = second_part;
 	    continue;
-	}
+    }
 	
-	if (strcasecmp(first_part, "BeatLevel") == 0) {
+    if (strcasecmp(first_part, "BeatLevel") == 0) {
 	    if (N_parts != 4) {
-		fprintf(stderr, "%s: Error (line %d) BeatLevel expects three integer parameters.\n", this_program, line_no);
-		my_exit(1);
+        fprintf(stderr, 
+                "%s: Error (line %d) BeatLevel expects three integer parameters.\n", 
+                this_program, line_no);
+        my_exit(1);
 	    }
 	    
 	    if (N_beatlevel != second_part) {
-		fprintf(stderr,"%s: Error (line %d) A BeatLevel numbers must be in increasing order starting from 1.\n", this_program, line_no);
-		my_exit(1);	
+        fprintf(stderr,
+                "%s: Error (line %d) A BeatLevel numbers must be in increasing order"\
+                " starting from 1.\n", this_program, line_no);
+        my_exit(1);	
 	    }
 	    
 	    if (N_beatlevel+1 > MAX_BEAT_LEVEL) {
-		fprintf(stderr,"%s: Error (line %d) A BeatLevel cannot be greater than %d\n", this_program, line_no, MAX_BEAT_LEVEL);
-		my_exit(1);	
+        fprintf(stderr,
+                "%s: Error (line %d) A BeatLevel cannot be greater than %d\n", 
+                this_program, line_no, MAX_BEAT_LEVEL);
+        my_exit(1);	
 	    }
 	    beatlevel[N_beatlevel].count = third_part;
 	    beatlevel[N_beatlevel].start = fourth_part;
 	    beatlevel[N_beatlevel].units = beatlevel[N_beatlevel].count * beatlevel[N_beatlevel-1].units;
 	    
 	    if (verbosity >= 3) {
-		printf(" beatlevel[%d].count(start)(units) =%d (%d)(%d)\n", N_beatlevel, third_part, fourth_part, beatlevel[N_beatlevel].units);
+        printf(" beatlevel[%d].count(start)(units) =%d (%d)(%d)\n", 
+               N_beatlevel, third_part, fourth_part, beatlevel[N_beatlevel].units);
 	    }
 	    
 	    N_beatlevel++;
 	    continue;
-	}
+    }
 	
-	if (strcasecmp(first_part, "Beat") == 0) {
+    if (strcasecmp(first_part, "Beat") == 0) {
 	    new_beat = (Beat *) xalloc(sizeof(Beat));
 	    new_beat->start = second_part;
 	    new_beat->level = third_part;
@@ -138,25 +149,27 @@ Event * build_event_list_and_beat_list_from_input(void) {
 	    if (new_beat->level+1 > N_beatlevel) N_beatlevel = new_beat->level+1;
 	    
 	    continue;
-	}
+    }
 	
-	on_event = (strcasecmp(first_part, "Note-on") == 0);
-	both_event = (strcasecmp(first_part, "Note") == 0);
-	off_event = (strcasecmp(first_part, "Note-off") == 0);
+    on_event = (strcasecmp(first_part, "Note-on") == 0);
+    both_event = (strcasecmp(first_part, "Note") == 0);
+    off_event = (strcasecmp(first_part, "Note-off") == 0);
 	
-	if (!(on_event || off_event || both_event)) {
+    if (!(on_event || off_event || both_event)) {
 	    warn();
 	    continue;
-	}
+    }
 	
-	if ((on_event || off_event || both_event) && (verbosity>2 || prechord_mode==1)) {   
-	                                                                     /* This prints out the inputted Note statements */
+    if ((on_event || off_event || both_event) && (verbosity>2 || prechord_mode==1)) {   
+      /* This prints out the inputted Note statements */
 	    printf("%s", line);
-	}
-	if (on_event || off_event) {
+    }
+    if (on_event || off_event) {
 	    if (N_parts != 3) {
-		fprintf(stderr, "%s: Error (line %d) a note needs a time and a pitch\n", this_program, line_no);
-		my_exit(1);		
+        fprintf(stderr, 
+                "%s: Error (line %d) a note needs a time and a pitch\n", 
+                this_program, line_no);
+        my_exit(1);		
 	    }
 	    
 	    event_time = second_part;
@@ -170,11 +183,13 @@ Event * build_event_list_and_beat_list_from_input(void) {
 	    new_event->next = event_list;
 	    new_event->directnote = NULL;
 	    event_list = new_event;
-	} else {
+    } else {
 	    /* it's a both event */
 	    if (N_parts != 4) {
-		fprintf(stderr, "%s: Error (line %d) a note needs an on-time an off-time and a pitch\n", this_program, line_no);
-		my_exit(1);		
+        fprintf(stderr, 
+                "%s: Error (line %d) a note needs an on-time an off-time and a pitch\n", 
+                this_program, line_no);
+        my_exit(1);		
 	    }
 	    on_time = second_part;
 	    off_time = third_part;
@@ -196,10 +211,10 @@ Event * build_event_list_and_beat_list_from_input(void) {
 	    new_event->next = event_list;
 	    new_event->directnote = NULL;
 	    event_list = new_event;
-	}
     }
+  }
     
-    return event_list;
+  return event_list;
 }
 
 
@@ -310,119 +325,108 @@ DirectNote * build_direct_note_list_from_event_list(Event * e) {
    start, duration, pitch, npc, base_tpc, next
    */
 Note * build_note_list_from_event_list(Event * e) {
-    int event_time, previous_event_time;
-    int on_event, i, xet, event_n;
-    Pitch pitch;
-    Note * note_list, * new_note;
-    char pitch_in_use[MAX_PITCH];
-    DirectNote * directnote[MAX_PITCH];  /* for each pitch in use we need the
-					    direct note that created it */
-    char already_emitted[MAX_PITCH];  /* to compute the is_first_note fields */
-    int pitch_count[MAX_PITCH];  /* the number of times the pitch is turned on */
-    Event *el;
-    Event ** etable;
-    int N_events;
+  int event_time, previous_event_time;
+  int on_event, i, xet, event_n;
+  Pitch pitch;
+  Note * note_list, * new_note;
+  char pitch_in_use[MAX_PITCH];
+  DirectNote * directnote[MAX_PITCH];  /* for each pitch in use we need the
+                                          direct note that created it */
+  char already_emitted[MAX_PITCH];  /* to compute the is_first_note fields */
+  int pitch_count[MAX_PITCH];  /* the number of times the pitch is turned on */
+  Event *el;
+  Event ** etable;
+  int N_events;
     
-    for (N_events=0, el = e; el != NULL; el = el->next) N_events++;
-    etable = (Event **) xalloc (N_events * sizeof (Event *));
-    for (i=0, el = e; el != NULL; el = el->next, i++) etable[i] = el;
+  for (N_events=0, el = e; el != NULL; el = el->next) N_events++;
+  etable = (Event **) xalloc (N_events * sizeof (Event *));
+  for (i=0, el = e; el != NULL; el = el->next, i++) etable[i] = el;
     
-    qsort(etable, N_events, sizeof (Event *), (int (*)(const void *, const void *))comp_event2);
+  qsort(etable, N_events, sizeof (Event *), (int (*)(const void *, const void *))comp_event2);
     
-    for(i=0; i<MAX_PITCH; i++) {
-	pitch_in_use[i] = 0;
-	already_emitted[i] = 0;
-	directnote[i] = NULL;
-	pitch_count[i] = 0;
+  for(i=0; i<MAX_PITCH; i++) {
+    pitch_in_use[i] = 0;
+    already_emitted[i] = 0;
+    directnote[i] = NULL;
+    pitch_count[i] = 0;
+  }
+    
+  event_time = 0;
+  note_list = NULL;
+    
+  /*
+    for (i=0; i<N_events; i++) {
+    el = etable[i];
+    printf("event: pitch = %d  note_on = %d  time = %d \n", el->pitch, el->note_on, el->time);
     }
+  */
     
-    event_time = 0;
-    note_list = NULL;
-    
-    /*
-      for (i=0; i<N_events; i++) {
-      el = etable[i];
-      printf("event: pitch = %d  note_on = %d  time = %d \n", el->pitch, el->note_on, el->time);
+  for (event_n=0; event_n<N_events; event_n++) {
+    el = etable[event_n];
+    xet = el->time;
+    pitch = el->pitch;
+    on_event = el->note_on;
+
+    /* we ignore an event that doesn't change which pitches are currently on,
+       that is, a situation where two notes are overlapping */
+    if (on_event) {
+      pitch_count[pitch]++;
+      if (pitch_count[pitch] > 1) continue;
+    } else {
+      pitch_count[pitch]--;
+      if (pitch_count[pitch] > 0) continue;
+    }
+
+    previous_event_time = event_time;
+    event_time = xet;
+  
+    /* now, for each pitch that's turned on, we generate a note */
+    /* the onset time is previous_event_time, the duration is */
+    /* the diff between that and event_time */
+      
+    if (previous_event_time > event_time) {
+      fprintf(stderr, "%s: Events are not sorted by time.\n", this_program);
+      my_exit(1);
+    }
+      
+    if (previous_event_time != event_time) {
+      /* Don't create any notes unless some time has elapsed */
+      for(i=0; i<MAX_PITCH; i++) {
+        if (pitch_in_use[i]) {
+          new_note = (Note*) xalloc(sizeof(Note));
+          new_note->pitch = i;
+          new_note->start = previous_event_time;
+          new_note->duration = event_time - previous_event_time;
+          new_note->npc = new_note->base_tpc = new_note->tpc = 0;
+          new_note->orn_dis_penalty = 0.0;
+          new_note->next = note_list;
+          new_note->is_first_note = (!already_emitted[i]);
+          new_note->directnote = directnote[i];
+          already_emitted[i] = 1;
+          note_list = new_note;
+        }
       }
-      */
-    
-    for (event_n=0; event_n<N_events; event_n++) {
-	el = etable[event_n];
-	xet = el->time;
-	pitch = el->pitch;
-	on_event = el->note_on;
-
-	/* we ignore an event that doesn't change which pitches are currently on,
-	   that is, a situation where two notes are overlapping */
-	if (on_event) {
-	    pitch_count[pitch]++;
-	    if (pitch_count[pitch] > 1) continue;
-	} else {
-	    pitch_count[pitch]--;
-	    if (pitch_count[pitch] > 0) continue;
-	}
-
-	previous_event_time = event_time;
-	event_time = xet;
-
-	/* these two tests are now irrelevant -- cannot happen */
-	if (on_event && pitch_in_use[pitch]) {
-	    fprintf (stderr, "%s: Pitch %d is already on, but it just got turned on at time %d.\n", this_program, pitch, event_time);
-	    my_exit(1);
-	}
-	
-	if (!on_event && !pitch_in_use[pitch]) {
-	    fprintf (stderr, "%s: Pitch %d is not on, but it just got turned off.\n", this_program, pitch);
-	    my_exit(1);
-	}
-	
-	/* now, for each pitch that's turned on, we generate a note */
-	/* the onset time is previous_event_time, the duration is */
-	/* the diff between that and event_time */
-	
-	if (previous_event_time > event_time) {
-	    fprintf(stderr, "%s: Events are not sorted by time.\n", this_program);
-	    my_exit(1);
-	}
-	
-	if (previous_event_time != event_time) {
-	    /* Don't create any notes unless some time has elapsed */
-	    for(i=0; i<MAX_PITCH; i++) {
-		if (pitch_in_use[i]) {
-		    new_note = (Note*) xalloc(sizeof(Note));
-		    new_note->pitch = i;
-		    new_note->start = previous_event_time;
-		    new_note->duration = event_time - previous_event_time;
-		    new_note->npc = new_note->base_tpc = new_note->tpc = 0;
-		    new_note->orn_dis_penalty = 0.0;
-		    new_note->next = note_list;
-		    new_note->is_first_note = (!already_emitted[i]);
-		    new_note->directnote = directnote[i];
-		    already_emitted[i] = 1;
-		    note_list = new_note;
-		}
-	    }
-	}
-	pitch_in_use[pitch] = on_event;
-	directnote[pitch] = el->directnote;  /* NULL if not an on_event */
-	already_emitted[pitch] = 0;
     }
+    pitch_in_use[pitch] = on_event;
+    directnote[pitch] = el->directnote;  /* NULL if not an on_event */
+    already_emitted[pitch] = 0;
+  }
     
-    for(i=0; i<MAX_PITCH; i++) {
-	if (pitch_in_use[i]) {
-	    fprintf(stderr, "%s: Pitch %d was still in use at the end.\n", this_program, i);
-	    my_exit(1);
-	}
+  for(i=0; i<MAX_PITCH; i++) {
+    if (pitch_in_use[i]) {
+      fprintf(stderr, "%s: Pitch %d was still in use at the end.\n", this_program, i);
+      my_exit(1);
     }
+  }
     
-    for (new_note =  note_list; new_note != NULL; new_note = new_note->next) {
-	new_note->npc = Pitch_to_NPC(new_note->pitch);
-	new_note->base_tpc = base_TPC(new_note->npc);
-    }
+  for (new_note =  note_list; new_note != NULL; new_note = new_note->next) {
+    new_note->npc = Pitch_to_NPC(new_note->pitch);
+    new_note->base_tpc = base_TPC(new_note->npc);
+  }
     
-    xfree(etable);
+  xfree(etable);
     
-    return reverse(note_list);
+  return reverse(note_list);
 }
 
 #if 0

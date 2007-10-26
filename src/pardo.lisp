@@ -57,8 +57,9 @@
     (make-nota-pardo :root note-symb
                      :template template
                      :resultado (avalia-template
-                                 (set-transpose template
-                                            (position nota *tempered-system*))
+                                 (set-transpose
+                                  template
+                                  (position nota (get-system-notes 'tempered)))
                                  segmento)
                      :segmento segmento)))
 

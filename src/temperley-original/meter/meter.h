@@ -66,8 +66,8 @@ typedef struct pip_struct {
     Pip_note_list * pnl;
     double * score; /* must allocate these arrays when you allocate this element */
     double base;    /* the base score of this pip due to the notes at this time
-		       this is not really needed...could use base_score()
-		       to compute it as needed */
+                       this is not really needed...could use base_score()
+                       to compute it as needed */
     double higher_base;
     int best_j;     /* which choice in the score array is the one used here */
     char is_beat[N_LEVELS];  /* Is this pip a beat at this level? */

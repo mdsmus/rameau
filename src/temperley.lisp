@@ -48,6 +48,7 @@
 (defparameter high-levels (- high-level tactus-level))
 (defparameter n-levels (1+ highest-level))
 
+
 ;; Informações adicionais de um evento em temperley
 
 (defstruct evento-temperley
@@ -80,60 +81,160 @@
                         :dur (converte-milisegundos (evento-dur evento))
                         :inicio (converte-milisegundos (evento-inicio evento)))))
 
-;; variáveis globais
-
-(defvar first-beat)
-
-;; estruturas de Meter
+;; Estruturas de meter
 
 (defstruct pip
-  (pip-note-list nil)
-  (score nil)
-  (base 0.0)
-  (higher-base 0.0)
-  (best-j 0)
-  (is-beat (make-array `(n-levels)))
-  (is-first-beat (make-array `(n-levels))))
+  (notas)
+  (beats)
+  (score)
+  (is-beat)
+  (best-j))
 
-(defstruct pip-note-list
-  (notas nil)
-  (marca 0)
-  (weight 0.0)
-  (prox nil))
+;; variáveis globais
 
 ;; Funções de Meter
 
 (defun quantiza (t)
-    (/ (+ t (/ pip-time 2)) pip-time))
+  "Determina em que 'pip' fica um evento no tempo"
+  (/ (+ t (/ pip-time 2)) pip-time))
 
-(defun limpa-first-beat ()
-  (setf first-beat (make-array `(,n-levels))))
+(defun dquantize (val round)
+  (let ((valor (/ val pip-time)))
+    (cond ((= round -1) (round valor))
+          ((= round 1) (round (+ .999999 valor)))
+          (t (round (+ .5 valor))))))
 
-(defun inicializa-pip-array (array n)
-  (dotimes (i n)
-    (setf (aref array i) (make-pip)))
+(defun ms-to-sec (ms)
+  (/ ms 1000.0))
+
+(defun pip-insere-notas (pip notas)
+  (when notas
+    (pushf (pip-notas (aref pip (quantiza (evento-inicio (first notas)))))
+           (first notas))
+    (pip-insere-notas pip (rest notas))))
+
+(defun cria-pip-array (notas)
+  (let* ((tamanho (quantiza (fim-evento (last1 notas))))
+         (pip-array (make-array (list tamanho))))
+    (dotimes (i tamanho)
+      (setf (aref pip-array i) (make-pip))
+      (setf (pip-is-beat (aref pip-array i)) (make-array (list n-levels))))
+    (pip-insere-notas pip-array notas)
+    (dotimes (i (- tamanho 1))
+      (let ((atual (pip-notas (aref pip-array i)))
+            (prox (pip-notas (aref pip-array (1+ i)))))
+        (when (and atual prox)
+          (setf (pip-notas (aref pip-array i)) (nconc atual prox))
+          (setf (pip-notas (aref pip-array (1+ i))) nil))))
+    pip-array))
+
+(defun base-score (notas higher-base)
+  "A pontuação de uma beat colocada exatamente sobre essas notas"
+  (let ((dur (length notas))
+        (average-length (ms-to-sec
+                         (/ (reduce #'+ notas :key #'evento-dur :initial-value 0)
+                            dur))))
+    (* note-factor (+ note-bonus
+                      (* (sqrt dur)
+                         (if higher-base 0.5 average-length))))))
+
+(defun penalidade-desvio (x y)
+  (* beat-interval-factor (- (abs (x - y)) beat-slop)))
+
+(defun best-score (pip-array pip j min-pip max-pip use-higher-base)
+  (let ((base (base-score (pip-notas (aref pip-array pip)) use-higher-base)))
+    (if (< 0 (- pip j))
+        (values (* base (sqrt (ms-to-sec (/ (+ tactus-min tactus-max) 2))))
+                -1)
+        (let ((melhor
+               (car
+                (max-predicado
+                 #'second
+                 (loop
+                    for k from min-pip to max-pip
+                    collect
+                      (list
+                       k
+                       (+ (aref (pip-score (aref pip-array (- pip j)))
+                                (nscore k min-pip max-pip))
+                          (if (< (- pip j k) 0)
+                              0
+                              (- (penalidade-desvio (* k pip-time)
+                                                    (* j pip-time))))
+                          (* base
+                             (sqrt (ms-to-sec
+                                    (/ (* pip-time (* 2 j)) 2))0))))))))
+              (values (second melhor) (first melhor)))))))
+
+(defun label-beats (j pip level min max pip-array)
+  (let* ((k 0))
+    (loop
+       (setf (aref (pip-is-beat (aref pip-array pip))
+                   level)
+             t)
+       (setf (pip-best-j (aref pip-array pip)) j)
+       (when (< (- pip j) 0)
+         (return-from label-beats))
+       (multiple-value-bind (novo-res novo-k)
+           (best-score pip-array pip j min max (= level highest-level))
+         (setf k novo-k)
+         (decf pip j)
+         (setf j k)))))
+
+(defun evaluate-solution (pip-array min-pip max-pip level compute-beats)
+  (let* ((tam (length pip-array))
+         (valores (loop
+                     for pip from (- tam 1) downto (- tam max-pip) do
+                     with best = 0.0 and best-j = min-pip and best-pip = pip do
+                       (loop for j from min-pip to max-pip do
+                            (let ((score (aref (pip-score (aref (pip-array pip)))
+                                               (nscore j min-pip max-pip))))
+                              (when (< best score)
+                                (setf best score)
+                                (setf best-j j)
+                                (setf best-pip pip))))
+                     finally (return (list best best-j best-pip))))
+         (best (first valores))
+         (best-j (second valores))
+         (best-pip (third valores)))
+    (when compute-beats (label-beats best-j best-pip level min-pip max-pip pip-array))
+    best))
+
+
+(defun compute-tactus-scores (min-pip max-pip pip-array)
+  (loop
+     for pip from 0 to (- (length pip-array) 1) do
+       (loop for j from min-pip to max-pip do
+            (setf (aref (pip-score (aref (pip-array pip)))
+                        (nscore j min-pip max-pip))
+                  (best-score pip-array pip j min-pip max-pip nil))))
+  pip-array)
+
+(defun clear-score (array min max)
+  (dotimes (i (length array))
+    (setf (pip-score (aref array i))
+          (make-array (list (1+ (- max min))) :initial-element 0.0)))
   array)
 
-(defun quantiza-notas (pip-array segmentos)
-  
-
-(defun faz-pip-array (segmentos)
-  (limpa-first-beat)
-  (let* ((last-time (fim-evento (first (last1 (segmentos)))))
-         (n-pips (1+ (quantiza last-time)))
-         (pip-array (make-array `(,n-pips)))
-         (pip-array (inicializa-pip-array pip-array n-pips))
-         (pip-array (quantiza-notas pip-array segmentos))
-    
+(defun compute-tactus-level (pip)
+  (loop 
+     for tmin = tactus-min then (* tmin tactus-step)
+     for tmax = (* tactus-min tactus-width) then (* tmax tactus-step)
+     for min = (dquantize tmin 0) then (dquantize tmin 0)
+     for max = (dquantize tmax 0) then (dquantize tmax 0)
+     for score = (clear-score pip min max) then (clears-core pip min max)
+     until (>= tmax tactus-max)
+     collect (evaluate-solution (compute-tactus-scores min max pip)
+                                min max tactus-level nil)))
 
 (defun calcula-metrica (notas)
-  (let* ((pip (faz-pip-array segmentos))
-         (tact (compute-tactus-level pip segmentos)))
+  (let* ((pip-array (cria-pip-array notas))
+         (tact (compute-tactus-level pip))
+         (tact+1 (raise-beat-level pip tact))
+         (tact+2 (raise-beat-level pip tact+1))
+         (tact-1 (lower-beat-level pip tact))
+         (tact-2 (lower-beat-level pip tact-1)))
     (adjust-notes pip tact)))
-
-(defun metrifica (segmento notas)
-  (calcula-metrica notas))
-
 
 ;; Funções de Harmony
 
@@ -192,7 +293,9 @@
 
 
 (defun temperley (musica)
-  (let* ((musica (mapcar #'cria-evento-temperley musica))
+  (let* ((musica (reduce #'nconc (segmentos-minimos musica) :from-end t))
+         (musica (mapcar #'cria-evento-temperley musica))
+         (musica (calcula-metrica musica))
          (musica (rotula-dissonancia musica))
          (musica (rotula-voice-leading musica))
          (clist (segmentos-minimos musica))

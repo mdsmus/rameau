@@ -51,44 +51,44 @@ Chord * reverse_ch(Chord * a) {
    function.  */
 
 Chord * build_chord_representation (Note * nl) {
-    Note * xnl, *n_copy;
-    Chord * c_chord, * head_chord;
-    int end_time;
-    head_chord = c_chord = NULL;
+  Note * xnl, *n_copy;
+  Chord * c_chord, * head_chord;
+  int end_time;
+  head_chord = c_chord = NULL;
     
-    for (xnl = nl; xnl != NULL; xnl = xnl->next) {
-	if (c_chord == NULL) head_chord = c_chord = new_chord(xnl);
-	n_copy = (Note *) xalloc(sizeof(Note));
-	*n_copy = *xnl;
-	if (c_chord->start == xnl->start && c_chord->duration == xnl->duration) {
+  for (xnl = nl; xnl != NULL; xnl = xnl->next) {
+    if (c_chord == NULL) head_chord = c_chord = new_chord(xnl);
+    n_copy = (Note *) xalloc(sizeof(Note));
+    *n_copy = *xnl;
+    if (c_chord->start == xnl->start && c_chord->duration == xnl->duration) {
 	    /* add to current chord */
 	    n_copy->next = c_chord->note;
 	    c_chord->note = n_copy;
 	    continue;
-	}
+    }
 	
-	end_time = c_chord->start + c_chord->duration;
+    end_time = c_chord->start + c_chord->duration;
 	
-	if (end_time > xnl->start) {
+    if (end_time > xnl->start) {
 	    fprintf(stderr, "%s: A note begins during another note.\n", this_program);
 	    my_exit(1);
-	}
+    }
 	
-	if (end_time < xnl->start) {
+    if (end_time < xnl->start) {
 	    /* add a blank chord */
 	    c_chord->next = new_chord(xnl);  /* will throw out these parameters */
 	    c_chord = c_chord->next;
 	    c_chord->start = end_time;  /* this starts when the previous ends */
 	    c_chord->duration = xnl->start - end_time;
-	}
-	
-	/* start a new chord right after the current one */
-	c_chord->next = new_chord(xnl);
-	c_chord = c_chord->next;
-	n_copy->next = NULL;
-	c_chord->note = n_copy;
     }
-    return head_chord;
+	
+    /* start a new chord right after the current one */
+    c_chord->next = new_chord(xnl);
+    c_chord = c_chord->next;
+    n_copy->next = NULL;
+    c_chord->note = n_copy;
+  }
+  return head_chord;
 }
 
 void print_chord_list(Chord *clist) {
