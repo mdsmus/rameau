@@ -321,12 +321,17 @@
 
 (defun compute-higher-level (pip-array level)
   (let* ((new-level (1+ level))
-         (bl-array (build-bl-array level pip-array))
-         (scores (compute-higher-level-scores bl-array new-level pip-array))
-         (solution (evaluate-raised-solution new-level true bl-array)))
+         (bl-array (build-bl-array level pip-array)))
+    (compute-higher-level-scores bl-array new-level pip-array)
+    (evaluate-raised-solution new-level true bl-array)
     new-level))
 
-
+(defun compute-lower-level (pip-array level)
+  (let* ((new-level (1- level))
+         (measure-array (build-measure-array pip-array level)))
+    (compute-measure-scores measure-array pip-array)
+    (insert-beats new-level pip-array measure-array)
+    new-level))
 
 (defun calcula-metrica (notas)
   (let* ((pip-array (cria-pip-array notas))
