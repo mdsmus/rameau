@@ -27,15 +27,14 @@ verdadeiro."
 
 (defmacro defcached (funcname args &body body)
   (let ((cache (gensym))
-        (func (gensym))
-        (params (gensym)))
+        (func (gensym)))
     `(let ((,cache (make-hash-table :test #'equal)))
-       (defun ,funcname (&rest ,params)
-         (labels ((,func ,args ,@body))
-           (aif (gethash ,params ,cache)
+       (labels ((,func ,args ,@body))
+         (defun ,funcname ,args
+           (aif (gethash ,(cons 'list args) ,cache)
                 it
-                (setf (gethash ,params ,cache) (apply #',func ,params))))))))
-           
+                (setf (gethash ,(cons 'list args) ,cache) (,func ,@args))))))))
+
 (defun concat (&rest strings)
   "Concatenate a bunch of strings."
   (apply #'concatenate 'string strings))
