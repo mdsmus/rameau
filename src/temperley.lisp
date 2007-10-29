@@ -2,6 +2,8 @@
 ;; Copyright (C) 2000 Daniel Sleator and David Temperley 
 ;; See http://www.link.cs.cmu.edu/music-analysis
 ;; for information about commercial use of this system
+;;
+;; Here be dragons
 
 (in-package :rameau)
 
@@ -90,6 +92,11 @@
   (is-beat)
   (best-j))
 
+(defstruct bl
+  (pip)
+  (best-back)
+  (score))
+
 ;; variáveis globais
 
 ;; Funções de Meter
@@ -156,7 +163,7 @@
                       (list
                        k
                        (+ (aref (pip-score (aref pip-array (- pip j)))
-                                (nscore k min-pip max-pip))
+                                k)
                           (if (< (- pip j k) 0)
                               0
                               (- (penalidade-desvio (* k pip-time)
@@ -188,7 +195,7 @@
                      with best = 0.0 and best-j = min-pip and best-pip = pip do
                        (loop for j from min-pip to max-pip do
                             (let ((score (aref (pip-score (aref (pip-array pip)))
-                                               (nscore j min-pip max-pip))))
+                                               j)))
                               (when (< best score)
                                 (setf best score)
                                 (setf best-j j)
@@ -206,7 +213,7 @@
      for pip from 0 to (- (length pip-array) 1) do
        (loop for j from min-pip to max-pip do
             (setf (aref (pip-score (aref (pip-array pip)))
-                        (nscore j min-pip max-pip))
+                        j)
                   (best-score pip-array pip j min-pip max-pip nil))))
   pip-array)
 
@@ -216,7 +223,7 @@
           (make-array (list (1+ (- max min))) :initial-element 0.0)))
   array)
 
-(defun compute-tactus-level (pip)
+(defun resultados-tactus (pip)
   (loop 
      for tmin = tactus-min then (* tmin tactus-step)
      for tmax = (* tactus-min tactus-width) then (* tmax tactus-step)
@@ -224,17 +231,116 @@
      for max = (dquantize tmax 0) then (dquantize tmax 0)
      for score = (clear-score pip min max) then (clears-core pip min max)
      until (>= tmax tactus-max)
-     collect (evaluate-solution (compute-tactus-scores min max pip)
-                                min max tactus-level nil)))
+     collect (list (evaluate-solution (compute-tactus-scores min max pip)
+                                      min max tactus-level nil)
+                   min max)))
+
+(defun compute-tactus-level (pip)
+  (let* ((resultados (resultados-tactus pip))
+         (resultado (first (max-predicado #'caar resultados)))
+         (score (first resultado))
+         (min-pip (second resultado))
+         (max-pip (third resultado)))
+    (clear-score pip min max)
+    (compute-tactus-scores min max pip)
+    (evaluate-solution pip min max tactus-level t))
+  tactus-level)
+
+(defun build-bl-array (level pip-array)
+  (let* ((n-bl (loop for i from 0 to (- (length pip-array) 1)
+                  counting (aref (pip-is-beat (aref pip-array i)) level)
+                  into n-bl finally (return n-bl)))
+         (bl-array (make-array (list n-bl)))
+         (i 0))
+    (loop for bl from 0 to (- n-bl 1) do
+         (setf (aref bl-array bl) (make-bl))
+         (setf (bl-score (aref bl-array bl)) (make-array '(2))))
+    (loop for pip from 0 to (- (length pip-array 1)) do
+         (when (aref (pip-is-beat (aref pip-array pip)) level)
+           (let ((atual (aref bl-array i)))
+             (setf (aref (bl-score atual) 0) 0.0)
+             (setf (aref (bl-score atual) 1) 0.0)
+             (setf (bl-pip atual) pip)
+             (incf i))))
+    bl-array))
+
+(defun best-raising-choice (base-beat back use-higher-base pip-array bl-array)
+  (let ((base (base-score (pip-notes (aref pip-array (bl-pip (aref bl-array base-beat))))
+                          use-higher-base)))
+    (if (< (- base-beat back) 0)
+        (values base -1) ;; retirada dependência em is-first-beat
+        (let ((choice)
+              (best-score 0.0))
+          (loop for try from 2 to 3 do
+               (let ((score (+ (* (+ 1.0
+                                     (* (- try 2)
+                                        (- triple-bonus 1.0)))
+                                  base)
+                               (aref (bl-score (aref bl-array (- base-beat back)))
+                                     (- try 2)))))
+                 (unless (= try back) (decf score raising-change-penalty))
+                 (when (or (= try 2) (< best-score score))
+                   (setf best-score score)
+                   (setf choice try))))
+          (values best-score choice)))))
+
+(defun label-raised-beats (beat back level bl-array pip-array)
+  (loop
+     (setf (aref (pip-is-beat (aref pip-array (bl-pip (aref bl-array beat))))
+                 level)
+           t)
+     (setf (bl-best-back (aref bl-array beat)) back)
+     (multiple-value-bind (value k)
+         (best-raising-choice beat back (= level highest-level) pip-array bl-array)
+       (declare (ignore value))
+       (decf beat back)
+       (setf back k))))
+
+(defun evaluate-raised-solution (new-level compute-beats bl-array)
+  (let ((best 0.0)
+        (best-back -1)
+        (best-beat -1))
+    (loop for beat from (- (length bl-array) 1) downto (- (length bl-array 3)) do
+         (loop for back from 2 to 3 do
+              (let ((score (aref (bl-score (aref bl-array beat)) (- back 2))))
+                (if (or (= best-back -1)
+                        (< best score))
+                    (setf best score)
+                    (setf best-back back)
+                    (setf best-beat beat)))))
+    (when compute-beats (label-raise-beats best-beat best-back level bl-array pip-array))
+    best))
+
+(defun compute-higher-level-scores (bl-array new-level pip-array)
+  (loop for beat from 0 to (- (length bl-array) 1) do
+       (loop for back from 2 to 3 do
+            (setf (aref (bl-score (aref bl-array beat)) (- back 2))
+                  (best-raising-choice beat back
+                                       (= new-level highest-level)
+                                       pip-array bl-array)))))
+
+(defun compute-higher-level (pip-array level)
+  (let* ((new-level (1+ level))
+         (bl-array (build-bl-array level pip-array)))
+    (compute-higher-level-scores bl-array new-level pip-array)
+    (evaluate-raised-solution new-level true bl-array)
+    new-level))
+
+(defun compute-lower-level (pip-array level)
+  (let* ((new-level (1- level))
+         (measure-array (build-measure-array pip-array level)))
+    (compute-measure-scores measure-array pip-array)
+    (insert-beats new-level pip-array measure-array)
+    new-level))
 
 (defun calcula-metrica (notas)
   (let* ((pip-array (cria-pip-array notas))
          (tact (compute-tactus-level pip))
-         (tact+1 (raise-beat-level pip tact))
-         (tact+2 (raise-beat-level pip tact+1))
-         (tact-1 (lower-beat-level pip tact))
-         (tact-2 (lower-beat-level pip tact-1)))
-    (adjust-notes pip tact)))
+         (tact+1 (compute-higher-level pip tact))
+         (tact+2 (compute-higher-level pip tact+1))
+         (tact-1 (compute-lower-level pip tact))
+         (tact-2 (compute-lower-level pip tact-1)))
+    (adjust-notes pip notas)))
 
 ;; Funções de Harmony
 
