@@ -1,0 +1,178 @@
+
+O algoritmo de Temperley é cheio de parâmetros arbitrários.
+
+Existe um bug no tratamento de entrada do algoritmo de Temperley, no
+programa de harmonia. Ao processar um comando Note on-time off-time pith, o
+código faz (read-input.c:194)
+
+	    on_time = second_part;
+	    off_time = third_part;
+	    pitch = fourth_part;
+	    
+	    test_pitch(pitch);      
+	    new_event = (Event *) xalloc(sizeof(Event));
+	    new_event->pitch = pitch;
+	    new_event->note_on = 1;
+	    new_event->time = on_time;
+	    new_event->next = event_list;
+	    new_event->directnote = NULL;
+	    event_list = new_event;
+	    
+	    new_event = (Event *) xalloc(sizeof(Event));
+	    new_event->pitch = pitch;
+	    new_event->note_on = 0;
+	    new_event->time = off_time;
+	    new_event->next = event_list;
+	    new_event->directnote = NULL;
+	    event_list = new_event;
+
+onde event_list é uma lista de "eventos". Depois, na hora de convertes esses
+"eventos" em notas (read-input.c:276)
+
+    for (N_events=0, el = e; el != NULL; el = el->next) N_events++;
+    etable = (Event **) xalloc (N_events * sizeof (Event *));
+    for (i=0, el = e; el != NULL; el = el->next, i++) etable[i] = el;
+    
+    qsort(etable, N_events, sizeof (Event *), (int (*)(const void *, const void *))comp_event1);
+
+onde comp_event1 é (read-input.c:246)
+
+  int comp_event1(Event ** a, Event ** b) {
+    if ((*a)->time != (*b)->time) return  ((*a)->time - (*b)->time);
+    return ((*a)->note_on - (*b)->note_on);
+  }
+
+Como pode-se notar, os eventos são ordenados por tempo independentemente da origem.
+Não existem marcas que associam um on-event ao seu específico off-event. Então, caso
+existam os seguintes eventos
+
+  Note 0 4 1
+  Note 1 2 1
+
+na lista de entrada, eles virarão
+
+  note-on  time: 0 pitch: 1
+  note-off time: 4 pitch: 1
+  note-on  time: 1 pitch: 1
+  note-off time: 2 pitch: 1
+
+e, após a ordenação, teremos
+
+  note-on  time: 0 pitch: 1
+  note-on  time: 1 pitch: 1
+  note-off time: 2 pitch: 1
+  note-off time: 4 pitch: 1
+
+Até aí tudo bem. Agora, se a entrada tivesse sido
+
+  Note 0 2 1
+  Note 1 4 1
+
+Teríamos, após a ordenação,
+
+  note-on  time: 0 pitch: 1
+  note-on  time: 1 pitch: 1
+  note-off time: 2 pitch: 1
+  note-off time: 4 pitch: 1
+
+o que é a mesma coisa que o anterior. Isso significa que informação é perdida.
+Nesse caso não parece tão assustador, mas isso pode gerar corrupção.
+
+
+No algoritmo de meter ele, ao contrário do que afirma no artigo, faz a
+transformação para segmentos mínimos _antes_ de calcular a métrica, o que
+diminui artificialmente o peso de "uma nota longa começa nessa batida" de
+uma das regras de preferências.
+
+
+
+
+
+
+
+
+
+
+
+
+Nota: segmentos mínimos. Para gerar os segmentos mínimos uma lógica muito
+      estranha em build_note_list_from_event_list é usada.
+
+Percorrendo a lista de eventos em ordem, um vetor é mantido que guarda, para
+cada pitch midi, o número de vezes que ele já foi "ligado". "Note->directnote" é usado
+para representar a nota real, que é usada por vários "Note"s. O código que lida com
+isso é uma monstruosidade, mas dá pra entender.
+
+Por exemplo, ao processar
+
+Ao processar o arquivo midi do oitavo coral de Bach, as seguintes notas são geradas
+
+  Note      0    490  72
+  Note     70    630  57
+  Note     70    560  65
+  Note    175    665  51
+
+mas, dentro do programa, elas são processadas como
+
+  (gdb) p *note_list
+  $4 = {start = 0, duration = 70, pitch = 72, npc = 0, 
+     base_tpc = 2, tpc = 0, is_first_note = 1 '\001', 
+     voice_leading_neighbor = 15 '\017', orn_dis_penalty = 0, 
+     next = 0x8059c08, directnote = 0x8056480}
+  (gdb) p *note_list->next
+  $5 = {start = 70, duration = 105, pitch = 57, npc = 9, 
+     base_tpc = 5, tpc = 0, is_first_note = 1 '\001', 
+     voice_leading_neighbor = 16 '\020', orn_dis_penalty = 0, 
+     next = 0x8059c38, directnote = 0x80564c0}
+  (gdb) p *note_list->next->next
+  $6 = {start = 70, duration = 105, pitch = 65, npc = 5, 
+     base_tpc = 1, tpc = 0, is_first_note = 1 '\001', 
+     voice_leading_neighbor = 18 '\022', orn_dis_penalty = 0, 
+     next = 0x8059c68, directnote = 0x80564a0}
+  (gdb) p *note_list->next->next->next
+  $7 = {start = 70, duration = 105, pitch = 72, npc = 0, 
+     base_tpc = 2, tpc = 0, is_first_note = 0 '\0', 
+     voice_leading_neighbor = 19 '\023', 
+     orn_dis_penalty = 0, next = 0x8059c98, directnote = 0x8056480}
+  (gdb) p *note_list->next->next->next->next
+  $8 = {start = 175, duration = 315, pitch = 51, npc = 3, 
+     base_tpc = 11, tpc = 0, is_first_note = 1 '\001', 
+     voice_leading_neighbor = 20 '\024', 
+     orn_dis_penalty = 0, next = 0x8059cc8, directnote = 0x80564e0}
+  (gdb) p *note_list->next->next->next->next->next
+  $9 = {start = 175, duration = 315, pitch = 57, npc = 9, 
+      base_tpc = 5, tpc = 0, is_first_note = 0 '\0', 
+      voice_leading_neighbor = 21 '\025', orn_dis_penalty = 0, 
+      next = 0x8059cf8, directnote = 0x80564c0}
+  (gdb) p *note_list->next->next->next->next->next->next
+   $10 = {start = 175, duration = 315, pitch = 65, npc = 5, 
+      base_tpc = 1, tpc = 0, is_first_note = 0 '\0', 
+      voice_leading_neighbor = 23 '\027', orn_dis_penalty = 0, 
+      next = 0x8059d28, directnote = 0x80564a0}
+  (gdb) p *note_list->next->next->next->next->next->next->next
+  $11 = {start = 175, duration = 315, pitch = 72, npc = 0, 
+      base_tpc = 2, tpc = 0, is_first_note = 0 '\0', 
+      voice_leading_neighbor = 24 '\030', orn_dis_penalty = 0, 
+      next = 0x8059d58, directnote = 0x8056480}
+  (gdb) p *note_list->next->next->next->next->next->next->next->next
+  $12 = {start = 490, duration = 70, pitch = 51, npc = 3, 
+      base_tpc = 11, tpc = 0, is_first_note = 0 '\0', 
+      voice_leading_neighbor = 25 '\031', orn_dis_penalty = 0, 
+      next = 0x8059d88, directnote = 0x80564e0}
+  (gdb) p *note_list->next->next->next->next->next->next->next->next->directnote
+  $13 = {start = 175, duration = 490, adjusted_start_time = 175, 
+       adjusted_end_time = 630, pitch = 51,  tpc = -10000, next = 0x8056500}
+
+o que, traduzindo pro formato original, ficaria
+
+  Note   0   70   72
+  Note   70  175  57
+  Note   70  175  65
+  Note   70  175  72
+  Note   175 490  51  
+  Note   175 490  57
+  Note   175 490  65
+  Note   175 490  72
+...
+
+

@@ -194,10 +194,10 @@ void main (int argc, char * argv[]) {
     compute_tactus_level();
 
     for (level = TACTUS_LEVEL; level > lowest_level_to_compute; level--) {
-	compute_lower_level(level);
+      compute_lower_level(level);
     }
     for (level = TACTUS_LEVEL; level < highest_level_to_compute; level++) {
-	compute_higher_level(level);
+      compute_higher_level(level);
     }
 
     if (graphic || verbosity > 0) print_levels();

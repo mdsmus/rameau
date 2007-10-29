@@ -26,8 +26,7 @@
           cis,8 d 
           e4 a, d cis
           b e dis dis
-          e fis fis8 dis e4~e8
-          fis dis4 b gis'
+          e fis fis8 dis e4~e8 fis dis4 b gis'
           a cis, fis8 gis a4
           b a gis fis
           e8 d cis dis e d cis4
