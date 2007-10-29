@@ -97,6 +97,16 @@
   (best-back)
   (score))
 
+(defstruct measuce
+  (score)
+  (local-score)
+  (one-pip)
+  (two-pips1)
+  (two-pips2)
+  (best-beat-count)
+  (left-pip)
+  (right-pip))
+
 ;; variáveis globais
 
 ;; Funções de Meter
@@ -325,6 +335,51 @@
     (compute-higher-level-scores bl-array new-level pip-array)
     (evaluate-raised-solution new-level true bl-array)
     new-level))
+
+(let ((dummy (make-pip)))
+  (defun xpip (p pip-array)
+    (if (or (< p 0)
+            (> p (length pip-array)))
+        dummy
+        (aref pip-array p))))
+
+(defun build-measure-array (pip-array base-level)
+  (let* ((pip 0)
+         (m 0)
+         (first-beat-pip 0)
+         (last-beat-pip 0)
+         (n-beats 0)
+         (d-average-pips-per-beat 0.0)
+         (average-pips-per-beat 0)
+         (first-pseudo-pip 0)
+         (last-pseudo-pip 0))
+    (loop
+       for pip from 0 to (1- length (pip-array))
+       when (aref (pip-is-beat (aref pip-array pip)) base-level) do
+         (when (= first-beat-pip 0) (setf first-beat-pip pip))
+         (setf last-beat-pip pip)
+         (incf n-beats))
+    (setf d-average-pips-per-beat (coerce
+                                   (/ (- last-beat-pip first-beat-pip)
+                                      (- n-beats 1))
+                                   'float))
+    (setf average-pips-per-beat (round (+ 0.5 d-average-pips-per-beat)))
+
+    (setf first-pseudo-pip first-beat-pip)
+    (when (> first-beat-pip 0)
+      (decf first-pseudo-pip average-pips-per-beat)
+      (when (<= first-pseudo-pip 0) (setf first-pseudo-pip -1)))
+
+    (setf last-pseudo-pip last-beat-pip)
+    (when (< last-beat-pip (1- (length pip-array)))
+      (incf last-pseudo-pip average-pips-per-beat)
+      (when (<= last-pseudo-pip (1- (length pip-array))
+                (setf last-pseudo-pip (1- (length pip-array))))))
+
+    
+    
+          
+         
 
 (defun compute-lower-level (pip-array level)
   (let* ((new-level (1- level))
