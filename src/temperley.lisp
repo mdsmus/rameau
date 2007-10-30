@@ -126,8 +126,8 @@
 
 (defun pip-insere-notas (pip notas)
   (when notas
-    (push (pip-notas (aref pip (quantiza (evento-temperley-inicio (first notas)))))
-           (first notas))
+    (push (first notas)
+          (pip-notas (aref pip (quantiza (evento-temperley-inicio (first notas))))))
     (pip-insere-notas pip (rest notas))))
 
 (defun cria-pip-array (notas)
@@ -162,7 +162,7 @@
 
 (defun best-score (pip-array pip j min-pip max-pip use-higher-base)
   (let ((base (base-score (pip-notas (aref pip-array pip)) use-higher-base)))
-    (if (< 0 (- pip j))
+    (if (> 0 (- pip j))
         (values (* base (sqrt (ms-to-sec (/ (+ tactus-min tactus-max) 2))))
                 -1)
         (let ((melhor
@@ -175,7 +175,7 @@
                       (list
                        k
                        (+ (aref (pip-score (aref pip-array (- pip j)))
-                                k)
+                                (- k min-pip))
                           (if (< (- pip j k) 0)
                               0
                               (- (penalidade-desvio (* k pip-time)
@@ -210,7 +210,7 @@
                      with best-pip = pip do
                        (loop for j from min-pip to max-pip do
                             (let ((score (aref (pip-score (aref pip-array pip))
-                                               j)))
+                                               (- j min-pip))))
                               (when (< best score)
                                 (setf best score)
                                 (setf best-j j)
@@ -228,7 +228,7 @@
      for pip from 0 to (- (length pip-array) 1) do
        (loop for j from min-pip to max-pip do
             (setf (aref (pip-score (aref pip-array pip))
-                        j)
+                        (- j min-pip))
                   (best-score pip-array pip j min-pip max-pip nil))))
   pip-array)
 
@@ -252,7 +252,7 @@
 
 (defun compute-tactus-level (pip)
   (let* ((resultados (resultados-tactus pip))
-         (resultado (first (max-predicado #'caar resultados)))
+         (resultado (first (max-predicado #'car resultados)))
          (min-pip (second resultado))
          (max-pip (third resultado)))
     (clear-score pip min-pip max-pip)
@@ -299,22 +299,24 @@
           (values best-score choice)))))
 
 (defun label-raised-beats (beat back level bl-array pip-array)
-  (loop
-     (setf (aref (pip-is-beat (aref pip-array (bl-pip (aref bl-array beat))))
-                 level)
-           t)
-     (setf (bl-best-back (aref bl-array beat)) back)
-     (multiple-value-bind (value k)
-         (best-raising-choice beat back (= level highest-level) pip-array bl-array)
-       (declare (ignore value))
-       (decf beat back)
-       (setf back k))))
+  (unless (= beat -1)
+    (loop
+       (format t "back: ~a" back)
+       (setf (aref (pip-is-beat (aref pip-array (bl-pip (aref bl-array beat))))
+                   level)
+             t)
+       (setf (bl-best-back (aref bl-array beat)) back)
+       (multiple-value-bind (value k)
+           (best-raising-choice beat back (= level highest-level) pip-array bl-array)
+         (declare (ignore value))
+         (decf beat back)
+         (setf back k)))))
 
 (defun evaluate-raised-solution (new-level compute-beats bl-array pip-array)
   (let ((best 0.0)
         (best-back -1)
         (best-beat -1))
-    (loop for beat from (- (length bl-array) 1) downto (- 3 (length bl-array)) do
+    (loop for beat from (1- (length bl-array)) downto (- (length bl-array) 3) do
          (loop for back from 2 to 3 do
               (let ((score (aref (bl-score (aref bl-array beat)) (- back 2))))
                 (if (or (= best-back -1)
@@ -345,7 +347,10 @@
   (defun xpip (p pip-array)
     (if (or (< p 0)
             (> p (length pip-array)))
-        dummy
+        (progn
+          (setf (pip-is-beat dummy) (pip-is-beat (aref pip-array 0)))
+          (setf (pip-score dummy) (pip-score (aref pip-array 0)))
+          dummy)
         (aref pip-array p))))
 
 (defun build-measure-array (pip-array base-level)
@@ -353,7 +358,7 @@
          (first-beat-pip 0)
          (last-beat-pip 0)
          (n-beats 0)
-         (n-measures)
+         (n-measures 0)
          (measure-array)
          (d-average-pips-per-beat 0.0)
          (average-pips-per-beat 0)
@@ -476,7 +481,7 @@
             (setf (aref (measure-score (aref measure-array m)) xb)
                   (best-beat-score m xb measure-array)))))
 
-(defun insert-beats (new-level measure-array pip-array)
+(defun insert-beats (new-level pip-array measure-array)
   (let ((base-level (1+ new-level)))
     (loop
        for pip from 0 to (1- (length pip-array)) do
@@ -504,7 +509,6 @@
                            new-level)
                      t)
                (progn
-                 
                  (setf (aref (pip-is-beat (xpip (measure-two-pips1 (aref measure-array m))
                                                 pip-array))
                              new-level)
@@ -530,7 +534,7 @@
 
 (defun conta-beats (is-beat)
   (loop for i from 0 to (1- (length is-beat))
-     counting (aref is-beat i) into beats
+     counting (not (eq 0 (aref is-beat i))) into beats
      finally (return beats)))
 
 (defun adjust-notes (pip-array)
