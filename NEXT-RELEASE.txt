@@ -1,12 +1,14 @@
   2.0  [9 novembro]
+- gera lilypond com analise harmonica em baixo (grafico)
+- codigo gerar midi
+- inserir numeros de seg. minimos na representação grafica do coral [kroger]
 - interface nova do rameau
-  ferramenta para gerar pop->gab (file independente)
+  mostrar resultado em formato pop [kroger]
   alinhar comparação de gabaritos
   mostar % de completude
   retornar valores de erro em teste
   target no make para dar push se funcionar
 - algoritmo de temperley
-- gera lilypond com analise harmonica em baixo (grafico)- 
 - limpar packages.lisp
 - limpar utils
 - fazer genos-lib: separar utils e musiclib
