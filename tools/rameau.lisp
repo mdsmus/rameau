@@ -87,6 +87,7 @@
 -u        roda os testes de unidade
 -d        debug (experimental)
 -h        help
+-y        roda metrica de temperley na musica (debug)
 
 * EXEMPLOS
 roda todas as regressões:
@@ -140,6 +141,13 @@ gabarito, e mostra resultado em cifras:
     (format t "   pardo: ~(~a~) ~%" (gera-gabarito
                                      (with-system rameau:tempered
                                        (gera-gabarito-pardo (parse-file file)))))))
+
+
+(defun print-analise-temperley (files)
+  (dolist (file files)
+    (format t "~% * ~a~%" (pathname-name file))
+    (format t "   temperley: ~(~a~) ~%" 
+            (temperley-metrifica (parse-file file)))))
 
 (defun parse-summary (files)
   (let (ok no)
@@ -271,6 +279,7 @@ se o caractere em body for encontrado em opts."
           (l       print-tests)
           (u       run-unit-tests)
           (a       print-analise-harmonica files)
+          (y       print-analise-temperley files)
           ((g v s) print-compara-gabarito files t t)
           ((g v)   print-compara-gabarito files t)
           ((v s)   print-compara-gabarito files nil t)
