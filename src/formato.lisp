@@ -93,11 +93,11 @@
 
 
 
-(defun menos-de-uma-quarta (a b)
+(defun menos-de-uma-quinta (a b)
   (let ((a (evento-pitch a))
         (b (evento-pitch b)))
-    (<= (module (- b a))
-       (code->interval '(4 just)))))
+    (< (module (- b a))
+       (code->interval '(5 just)))))
 
 
 (defun modificador-oitava (a b)
@@ -105,15 +105,15 @@
         (pb (evento-pitch b))
         (oa (evento-octave a))
         (ob (evento-octave b)))
-    (cond ((null pa) 0)
-          ((null pb) 0)
+    (cond ((null pa) ob)
+          ((null pb) ob)
           (t
            (+ (- ob 8)
               (if (< pa pb)
-                  (if (menos-de-uma-quarta a b)
+                  (if (menos-de-uma-quinta a b)
                       oa
                       (- oa 1))
-                  (if (menos-de-uma-quarta b a)
+                  (if (menos-de-uma-quinta b a)
                       oa
                       (+ oa 1))))))))
 
@@ -124,7 +124,9 @@
                        (evento-octave nota)))
            (expressao (rest expressao)))
       (setf (evento-octave prox-nota) (modificador-oitava nota prox-nota))
-      (%relativiza prox-nota expressao oitava))))
+      (%relativiza (if (null (evento-pitch prox-nota)) nota prox-nota)
+       ;prox-nota
+       expressao oitava))))
 
 (defun relativiza (nota expressao)
   (%relativiza (car (sequencia-de-notas-notas nota)) (sequencia-de-notas-notas expressao))

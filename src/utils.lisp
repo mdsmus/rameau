@@ -142,7 +142,7 @@ quantos acidentes ou oitavas uma nota tem."
         (b (evento-octave y)))
     (if (= a b)
         (< (evento-pitch x) (evento-pitch y))
-        (< (evento-octave x) (evento-octave y)))))
+        (< a b))))
 
 (defun lista-notas (segmento)
   (mapcar (lambda (x)

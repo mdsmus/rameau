@@ -258,7 +258,8 @@ se o caractere em body for encontrado em opts."
      ,@body
      (when (find #\m ,var)
        (rameau-report))))
-  
+
+
 (defun main ()
   (destructuring-bind (raw-path (&rest file-list) opts-value raw-opts) (handle-args)
     (let* ((type (get-opt-value "t" opts-value))
