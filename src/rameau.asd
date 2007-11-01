@@ -15,6 +15,7 @@
                (:file "parser")
                (:file "parser-grammar")
                (:file "pardo")
+               (:file "temperley")
                (:file "cifras")
                (:file "kern2lily")
                (:file "test-utils")
