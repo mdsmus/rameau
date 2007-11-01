@@ -545,8 +545,7 @@
            (loop for i in (pip-notas atual) do
                 (setf (evento-temperley-forca-metrica i) beat-level)))))
   (loop for pip from 0 to (1- (length pip-array))
-     nconc (pip-notas (aref pip-array pip)) into notas
-     finally (return notas)))
+     when (pip-notas (aref pip-array pip)) collect (pip-notas (aref pip-array pip))))
                   
 
 (defun calcula-metrica (notas)
