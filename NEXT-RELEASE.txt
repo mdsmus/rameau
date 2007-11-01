@@ -1,0 +1,13 @@
+  2.0  [9 novembro]
+- interface nova do rameau
+  ferramenta para gerar pop->gab (file independente)
+  alinhar comparação de gabaritos
+  mostar % de completude
+  retornar valores de erro em teste
+  target no make para dar push se funcionar
+- algoritmo de temperley
+- gera lilypond com analise harmonica em baixo (grafico)- 
+- limpar packages.lisp
+- limpar utils
+- fazer genos-lib: separar utils e musiclib
+
