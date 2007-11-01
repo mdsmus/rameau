@@ -96,7 +96,7 @@
 (defun menos-de-uma-quarta (a b)
   (let ((a (evento-pitch a))
         (b (evento-pitch b)))
-    (< (module (- b a))
+    (<= (module (- b a))
        (code->interval '(4 just)))))
 
 

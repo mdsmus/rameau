@@ -25,3 +25,18 @@
      (menos-de-uma-quarta (make-evento :pitch 0)
                           (make-evento :pitch 5)))))
 
+(define-test relativiza
+  (assert-equal (with-system tempered (parse-string "
+\\score {
+  \\new Staff \\relative c''{
+    c g c f c g c
+  }
+}"))
+                
+                (list (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0)
+                      (make-evento :PITCH 7 :OCTAVE 9 :DUR 1/4 :INICIO 1/4)
+                      (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 1/2)
+                      (make-evento :PITCH 5 :OCTAVE 10 :DUR 1/4 :INICIO 3/4)
+                      (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 1)
+                      (make-evento :PITCH 7 :OCTAVE 9 :DUR 1/4 :INICIO 5/4)
+                      (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 3/2))))
