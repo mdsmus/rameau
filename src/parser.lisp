@@ -58,7 +58,7 @@
   ("\\\\include" (return (values 'INCLUDE lexer:%0)))
   ("\\\\new[:space:]+(Piano)?(s|S)taff" (return (values 'NEW-STAFF lexer:%0)))
   ("\\\\new[:space:]+(v|V)oice" (return (values 'NEW-VOICE lexer:%0)))
-  ("\\\\new" (return (values 'NEW (print "foobar"))))
+  ("\\\\new" (return (values 'NEW "foobar")))
   ("\\\\(R|r)elative" (return (values 'RELATIVE lexer:%0)))
   ("\\\\(S|s)core" (return (values 'NEW-SCORE lexer:%0)))
   ("\\\\(S|s)imultaneous" (return (values 'SIMULT lexer:%0)))

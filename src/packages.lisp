@@ -47,8 +47,7 @@
            #:evento-dur #:evento-octave #:evento-inicio #:pop2cifra
            #:*notes* #:*rests* #:*tonal-system* #:*tonal-intervals*
            #:*tempered-intervals* #:*tempered-system* #:*systems* #:*system*
-           #:make-sequencia-de-notas #:string-lexer #:stringify
-           #:temperley-metrifica
+           #:make-sequencia-de-notas #:string-lexer #:stringify #:aif
            #:*intervals-name* #:*intervals-quantity* #:*accidentals* #:tempered #:tonal)
   (:use #:cl #:yacc #:lisp-unit))
 
