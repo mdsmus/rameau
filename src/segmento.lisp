@@ -51,15 +51,17 @@
    pedaços tem o mesmo início e o mesmo fim. Escolhe-se o menor
    fim de cada pedaço e, caso haja alguma nota com fim posterior,
    divide-se ela e coloca-se o resto no próximo pedaço."
-  (if (cddr musica)
+  (if (cdr musica)
       (multiple-value-bind
             (segmento sobras)
           (normaliza-notas (first musica))
-        (cons segmento
-              (redivide-segmentos
-               (cons (nconc sobras
-                            (second musica))
-                     (cddr musica)))))
+        (let* ((sobras-acumuladas (nconc sobras (second musica)))
+               (segmentos (nconc (agrupa-inicio (sort sobras-acumuladas
+                                                      (lambda (x y)
+                                                        (< (evento-inicio x)
+                                                           (evento-inicio y)))))
+                                 (cddr musica))))
+          (cons segmento (redivide-segmentos segmentos))))
       musica))
 
 (defun segmentos-minimos (musica)

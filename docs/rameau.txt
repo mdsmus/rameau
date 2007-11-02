@@ -1,0 +1,58 @@
+Rameau é um front-end para o código de análise de harmonia automática.
+O formato de execução é:
+
+  rameau <ação> [dados] [opções]
+
+<ação> pode ser testes ou analise. Os dados que teste a análise
+aceitam são:
+
+  TESTE     unidade,regressao,lily
+  ANALISE   corais,kostka,sonatas,exemplos
+
+As flags de opções estão listadas abaixo. Algumas opções funcionam
+para todas as ações, enquanto outras só para análise:
+
+* [todos]
+  -h    ajuda 
+  -f    arquivos 
+  -p    profile 
+  -d    debug 
+  -v    verbose 
+  -m n  o número de testes errados para imprimir 
+
+* [análise]
+  -a    gera análise harmônica (padrão) 
+  -g    compara com gabarito 
+  -n    mostra as notas de cada segmento (implica em -v)
+  -d    mostra as durações de cada segmento (implica em -v)
+  -l    mostra formato de gabarito como listas (implica em -v)
+  -e    só mostra os testes que tem erro (implica em -v)
+  -c    só mostra os testes corretos (implica em -v)
+  -i    ignora (não imprime) corais sem gabaritos 
+
+
+A opção -f aceita âmbito de arquivos, e.g. -f 1..14 vai escolher os
+arquivos de 001 a 014.
+
+Tanto as ações quanto os dados podem ser entrados apenas com a
+primeira letra.
+
+  rameau t u
+
+é igual a:
+
+  rameau teste unidade
+
+Mais de um dado pode ser entrado por ação, separados por vírgulas:
+
+  rameau teste unidade,regressao
+
+ou
+
+  rameau t u,r
+
+A opção n controla quantos arquivos serão listados na lista de
+arquivos cuja comparação com o gabarito deu errado. O valor padrão é
+10. n = 0 imprime todos.
+
+Se [dados] for vazio para teste, executa todos os testes.

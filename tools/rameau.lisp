@@ -9,25 +9,13 @@
                    (speed 1)))
 
 (asdf:oos 'asdf:load-op :rameau :verbose nil)
-(asdf:oos 'asdf:load-op :getopt :verbose nil)
 
 (use-package :rameau)
-
-(defparameter *print-only-wrong* nil)
-(defparameter *use-cifras* nil)
-(defparameter *debug* nil)
-
-(defparameter *testes* '((corais "literatura/bach-corais/")
-                         (kostka "literatura/kostka-payne/")
-                         (sonatas "literatura/beethoven-sonatas/")
-                         (exemplos "exemplos/")
-                         (regressao "regressao/")
-                         (lily "regressao-lily/")))
 
 ;;; As funções dependentes de implementação devem ficar aqui
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun get-args ()
+(defun rameau-args ()
   (let ((sbcl-args #+sbcl *posix-argv*)
         (cmu-args #+cmu extensions:*command-line-strings*)
         (clisp-args #+clisp *args*))
@@ -36,110 +24,123 @@
           (clisp-args clisp-args)
           )))
 
-(defun get-path ()
+(defun rameau-path ()
   (format nil "~a" (or #+sbcl *default-pathname-defaults*
                        #+cmu (first (ext:search-list "default:"))
                        #+clisp (ext:default-directory))))
 
 (defun rameau-profile ()
   #+sbcl(sb-profile:profile "RAMEAU")
-  #+cmu(profile:profile-all :package "RAMEAU")
-  )
+  #+cmu(profile:profile-all :package "RAMEAU"))
 
 (defun rameau-report ()
   #+sbcl(sb-profile:report)
-  #+cmu(profile:report-time)
-  )
+  #+cmu(profile:report-time))
 
 (defun rameau-quit ()
   #+clisp(ext:exit)
-  )
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  #+sbcl(quit))
 
-(defun print-gabarito (file gabarito algoritmo comparacao &optional notas)
-  (let ((*package* (find-package :rameau)))
-    (progn
-      (format t "~% * ~a~%" file)
-      (format t "gabarito (tamanho: ~a): ~(~s~) ~%" (length gabarito) (gera-gabarito gabarito))
-      (format t "   pardo (tamanho: ~a): ~(~s~) ~%" (length algoritmo) (gera-gabarito algoritmo))
-      (when notas (format t "   notas: ~(~s~) ~%" notas))
-      (format t "correto?: ~:[não~;sim~]~%" comparacao))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun gera-gabarito (gabarito)
-  (if *use-cifras*
-      (mapcar (lambda (x) (string->symbol (acorde->cifra x))) gabarito)
-      gabarito))
+(defparameter max-print-error 10
+  "Quando o numero de arquivos que não são parseados é maior que essa
+  constante, rameau mostra apenas o inicio da lista.")
 
-(defun print-help ()
-  (format t "uso: rameau [opções] [arquivos]
+(defparameter *help* '((todos
+                        (("-h" "ajuda")
+                         ("-f" "arquivos")
+                         ("-p" "profile")
+                         ("-d" "debug")
+                         ("-v" "verbose")
+                         ("-m n" "o número de testes errados para imprimir")))
+                       (análise
+                        (("-a" "gera análise harmônica (padrão)")
+                         ("-g" "compara com gabarito")
+                         ("-n" "mostra as notas de cada segmento" "-v")
+                         ("-d" "mostra as durações de cada segmento" "-v")
+                         ("-l" "mostra formato de gabarito como listas" "-v")
+                         ("-e" "só mostra os testes que tem erro" "-v")
+                         ("-c" "só mostra os testes corretos" "-v")
+                         ("-i" "ignora (não imprime) corais sem gabaritos")))))
 
-* OPÇÕES
--p        gera gabaritos a partir de arquivos .pop
--t <nome> indica o nome do teste
--l        lista os testes disponíveis
--a        gera analise harmonica (sem comparar com gabarito)
--g        compara com gabarito (implica em -h)
--s        mostra as notas de cada segmento
--w        só mostra os testes que tem algum erro (implica em -v)
--c        mostra cifra dos acordes no lugar de listas
--v        verbose (mostra tudo)
--m        profiler (mede a execução do código)
--u        roda os testes de unidade
--d        debug (experimental)
--h        help
+(defparameter *lily-dir-list* '(("corais" "literatura/bach-corais/")
+                                ("kostka" "literatura/kostka-payne/")
+                                ("sonatas" "literatura/beethoven-sonatas/")
+                                ("exemplos" "exemplos/")
+                                ("regressao" "regressao/")
+                                ("lily" "regressao-lily/")))
 
-* EXEMPLOS
-roda todas as regressões:
-  rameau -t r
+(defparameter *dados* '((teste ("unidade" "regressao" "lily"))
+                        (analise ("corais" "kostka" "sonatas" "exemplos"))))
 
-roda os corais 031 e 371:
-  rameau -t c 031 371
+(defun percent (x total)
+  (/ (* x 100.0) total))
 
-roda todos os exemplos, faz comparação das analises harmonicas com
-gabarito, e mostra resultado em cifras:
-  rameau -t e -vcg
-"))
+(defun get-item (item lista &optional (test #'eql))
+  "Pega um item em uma lista de associação."
+  (second (assoc item lista :test test)))
 
-(defun print-compara-gabarito (files &optional verbose? print-notas?)
-  (let (ok no)
-    (dolist (file files)
-      (multiple-value-bind (algoritmo segmento)
-          (with-system rameau:tempered (gera-gabarito-pardo (parse-file file)))
-        (let* ((gabarito (processa-gabarito
-                          (tira-extensao file)))
-               (comparacao (with-system rameau:tempered
-                             (compara-gabarito-pardo algoritmo gabarito)))
-               (notas (with-system rameau:tempered (mapcar #'lista-notas segmento)))
-               (file-name (pathname-name file))
-               (duracoes (mapcar (lambda (x y)
-                                   (cons (evento-dur (first x))
-                                        y))
-                                 segmento algoritmo)))
+(defun char->symbol (char)
+  "Retorna o símbolo representado pelo caractere char.
+Exemplo: (char->symbol #\a) => A"
+  (intern (string-upcase (string char))))
 
-          (when *debug* (format t "gabarito:~s~%pardo:~s~%" gabarito algoritmo))
+(defun split-word (word)
+  "Retorna uma lista de símbolos para cada letra da palavra 'word'.
+Exemplo: (split-word \"foo\") => (F O O)"
+  (loop for char across word collect (char->symbol char)))
 
-          (cond
-            (*print-only-wrong*
-             (unless comparacao
-               (print-gabarito file-name gabarito algoritmo comparacao)))
-            ;; se o arquivo .gab não existir
-            ((not gabarito)
-             (format t "~&[ERRO] o gabarito de ~a não existe~%" (pathname-name file)))
-            (print-notas?
-             (print-gabarito file-name gabarito algoritmo comparacao notas))
-            (verbose?
-             (print-gabarito file-name gabarito algoritmo comparacao))
-            (gabarito
-             (if comparacao (push file-name ok) (push file-name no)))
-            (t (error "não sei o que fazer!"))))))
-      (list (reverse ok) (reverse no))))
+(defun split-opts (string)
+  (mapcan (lambda (s) (split-word (delete #\- s)))
+          (cl-ppcre:split #\Space string)))
 
-(defun print-analise-harmonica (files)
+(defun split-dados (dados)
+  (cl-ppcre:split "," dados))
+
+(defmacro with-profile (var &body body)
+  `(progn
+     (when (member 'p ,var)
+       (rameau-profile))
+     ,@body
+     (when (member 'p ,var)
+       (rameau-report))))
+
+(defun next-flag (list)
+  (loop for x in (rest list) do
+       (if (equal #\- (aref x 0))
+           (return x))))
+
+(defun pos (list)
+  (aif (position (next-flag list) list :test #'string=) it 0))
+
+(defun arg->list (list)
+  (when list
+    (if (next-flag list)
+        (let ((p (pos list)))
+          (cons (subseq list 0 p)
+                (arg->list (nthcdr p list))))
+        (list list))))
+
+(defun get-lone-flags (list)
+  (exclude-repetition
+   (mapcan (lambda (item) (split-opts (first item)))
+           (remove-if-not (lambda (item) (= (length item) 1)) list))))
+
+(defun get-flag-list (flag list)
+  (rest (assoc flag list :test #'string=)))
+
+(defun maptrace (lista-string)
+  (eval (append '(trace) (mapcar #'string->symbol lista-string))))
+
+(defun get-comandos ()
+  (mapcar #'(lambda (item) (format nil "~(~a~)" (first item))) *dados*))
+
+(defun parse-verbose (files)
   (dolist (file files)
-    (format t "~% * ~a~%" (pathname-name file))
-    (format t "   pardo: ~(~a~) ~%" (gera-gabarito
-                                     (with-system rameau:tempered
-                                       (gera-gabarito-pardo (parse-file file)))))))
+    (handler-case (parse-file file)
+      (serious-condition (expr) (print-condition 'no file expr))
+      (:no-error (&rest rest) (print-condition 'ok file rest)))))
 
 (defun parse-summary (files)
   (let (ok no)
@@ -153,132 +154,213 @@ gabarito, e mostra resultado em cifras:
           (push (pathname-name file) ok))))
     (list (reverse ok) (reverse no))))
 
-(defun print-ok-no-list (list)
+(defun files-range (list)
+  (loop for x from (parse-integer (first list)) to (parse-integer (second list))
+     collect (cond ((< x 10)  (format nil "00~a" x))
+                   ((< x 100) (format nil "0~a" x))
+                   (t (format nil "~a" x)))))
+
+(defun first-string (string list)
+  (let ((tmp (loop for s in list do
+                  (if (string= (subseq s 0 1) string)
+                      (return s)))))
+    (if tmp tmp string)))
+
+(defun print-condition (status file expr)
+  (format t "[~a] ~a: ~a~%" status (pathname-name file) expr))
+
+(defun print-ok/no-list (list)
   (destructuring-bind (ok no) list
-    (format t "[OK]: ~a [NO]: ~a ~@[~a ~]~%" (length ok) (length no) no)))
+    (let* ((s2 (length no))
+           (no-string
+            (cond ((= max-print-error 0) no)
+                  ((> s2 max-print-error)
+                   (format nil "~a ..." (subseq no 0 max-print-error)))
+                  (t no))))
+      (format t "  [OK]: ~a [NO]: ~a ~@[~a ~]~%" (length ok) s2 no-string))))
 
-(defun parse-verbose (files)
-  (dolist (file files)
-    (handler-case (parse-file file)
-    (serious-condition (expr) (format t "[NO] ~a: ~a~%" (pathname-name file) expr))
-    (:no-error (&rest rest) (format t "[OK] ~a ~a~%" (pathname-name file) rest)))))
+(defun print-chord (list flags)
+  (if (member 'l flags)
+      list
+      (acorde->cifra list)))
 
-(defun handle-args ()
-  "O script passa os argumentos na ordem: sbcl path comandos"
-  (append (list (get-path))
-          (multiple-value-list
-           (getopt:getopt (get-args)
-                          '(("-h" :none) ("-g" :none) ("-w" :none)
-                            ("-v" :none) ("-h" :none) ("-l" :none)
-                            ("-p" :none) ("-u" :none) ("-d" :none)
-                            ("-c" :none) ("-s" :none) ("t" :required))))))
+;; BUG: ok? não imprime por cause do (not f)
+(defun print-gab-columns (a b c d e f flags)
+  (let ((string (if (member 'l flags)
+                    "~4a~@[~15a~]~(~30a~)~(~15a~)~@[~10a~]~@[*~]~%"
+                    "~4a~@[~15a~]~10a~10a~@[~10a~]~@[*~]~%")))
+    (format t string
+            a
+            (when (member 'n flags) b)
+            c
+            d
+            (when (member 'd flags) (if (listp e) (second e) e))
+            (not f))))
 
-(defun get-opt-value (key alist)
-  (when alist (char (cdr (assoc key alist :test #'string=)) 0)))
+(defun print-gabarito (file gabarito algoritmo comparacao flags &key notas dur)
+  (let ((*package* (find-package :rameau)))
+    (print-gab-columns "#" "notas" "gab" "pardo" "dur" "ok?" flags)
+    (write-line (repeat-string 80 "-"))
+    (let ((count-ok 0)
+          (size-gab (length gabarito))
+          (size-algo (length algoritmo))
+          (wrong-list))
+      (loop
+         for gab in gabarito
+         for pardo in algoritmo
+         for n in notas
+         for d in dur
+         for numero-seg from 1
+         for result = (compara-gabarito-pardo-individual pardo gab)
+         do
+           (if result
+               (incf count-ok)
+               (push numero-seg wrong-list))
+           (print-gab-columns numero-seg n (print-chord gab flags) (print-chord pardo flags) d result flags))
+      (format t "~%~$ % correto, gab: ~a, pardo: ~a~%" (percent count-ok size-gab) size-gab size-algo)
+      (format t "segmentos errados: ~a~%" (nreverse wrong-list)))))
 
-(defun get-test (key)
-  (second (assoc key *testes*)))
-
-(defun print-tests ()
-  (format t "~%os testes disponíveis são:~%  (t)odos ~{~(~a ~)~}"
-          (mapcar #'parenteses-na-primeira-letra (mapcar #'first *testes*))))
-
-(defun parenteses-na-primeira-letra (letra)
-  (let ((palavra (format nil "~(~a~)" letra)))
-    (format nil "(~a)~a" (subseq palavra 0 1) (subseq palavra 1))))
-
-(defun return-path (code)
-  (case code
-    (#\c (get-test 'corais))
-    (#\e (get-test 'exemplos))
-    (#\s (get-test 'sonatas))
-    (#\k (get-test 'kostka))
-    (#\l (get-test 'lily))
-    (#\r (get-test 'regressao))))
-
-(defun make-list-of-files (path type flist)
-  (if flist
-      (loop for f in flist collect (concat path (return-path type) (add-lily-ext f)))
-      (loop for f in (directory (concat path (return-path type) "*.ly")) collect (format nil "~a" f))))
-
-(defun pop->cifra (path f)
-  (let* ((full-path (concat path "literatura/bach-corais/"))
-         (files (if f
-                    (loop for file in f collect (concat full-path (add-pop-ext file)))
-                    (loop for file in (directory (concat full-path "*.pop"))
-                       collect (format nil "~a" file)))))
-    (loop for file in files do
-         (if (cl-fad:file-exists-p file)
-             (progn
-               (format t "... gerando gabarito ~a~%" (pathname-name file))
-               (gera-gabarito-file file))
-             (format t "arquivo ~a não existe~%" file)))))
-
-(defun run-unit-tests ()
-  (lisp-unit:run-all-tests :rameau)
-  (format t "~%"))
-
-(defun symbol->char (symbol)
-  (char-downcase (coerce symbol 'character)))
-
-(defmacro opt-cond (opts help-fn null-vars &body body)
-  "Gera um cond para lidar com opções do programa. opts indica a
-variável que guarda as opções, help-fn a função caso as variáveis em
-null-vars sejam nulas (ou seja, o usuário não as especificou. body
-deve obedecer ao formato (<opção> <função> <argumentos>). Se <opção>
-for uma lista assume que é para concetar com 'and'."
-  `(cond ((and ,@(mapcar (lambda (item) `(null ,item)) null-vars)) (,help-fn))
-         ,@(mapcar (lambda (item)
-                     (destructuring-bind (opt fn &rest args) item
-                       (cond ((listp opt)
-                              `((and ,@(mapcar (lambda (o) `(find ,(symbol->char o) ,opts)) opt)) (,fn ,@args)))
-                             ((eql opt t)
-                              `(,opt (,fn ,@args)))
-                              (t `((find ,(symbol->char opt) ,opts) (,fn ,@args))))))
-                   body)))
-
-(defmacro when-set-opt-true (opts &body body)
-  "Atribui o valor de verdadeiro para cada uma das variáveis em body
-se o caractere em body for encontrado em opts."
-  `(progn
-     ,@(mapcar (lambda (item) `(when (find ,(symbol->char (first item)) opts) (setf ,@(rest item) t))) body)))
-
-(defmacro with-profile (var &body body)
-  `(progn
-     (when (find #\m ,var)
-       (rameau-profile))
-     ,@body
-     (when (find #\m ,var)
-       (rameau-report))))
+(defun print-help-item (item)
+  (format t "~%~(* [~a]~)~%" item)
+  (dolist (line (get-item item *help*))
+    (destructuring-bind (flag string &optional v) line
+      (format t "  ~6a~a ~@[(implica em ~a)~]~%" flag string v))))
   
+(defun print-help ()
+  (format t "USO: rameau <ação> [dados] [opções]~%~%")
+  (dolist (item *dados*)
+    (format t "     ~10a~{~a~^,~}~%" (first item) (second item)))
+  (print-help-item 'todos)
+  (print-help-item 'análise)
+  (rameau-quit))
+
+(defun run-regressao (flags files)
+  (if (member 'v flags)
+      (parse-verbose files)
+      (print-ok/no-list (parse-summary files))))
+
+(defun run-unidade (flags files)
+  (let ((string-result
+         (with-output-to-string (string)
+           (let ((*standard-output* string))
+             (lisp-unit:run-all-tests :rameau)
+             (format t "~%")))))    
+    (if (member 'v flags)
+        (write-line string-result)
+        (write-line (subseq (last1 (cl-ppcre:split "\\n" string-result)) 34)))))
+
+(defun run-analise-harmonica (files)
+  (dolist (file files)
+    (let ((resultado (with-system rameau:tempered
+                       (gera-gabarito-pardo (parse-file file)))))
+      (format t "~%  * ~a: [pardo] ~(~a~) ~%" (pathname-name file) resultado))))
+
+(defun run-compara-gabarito (flags files)
+  (let (ok no)
+    (dolist (file files)
+      (multiple-value-bind (algoritmo segmento)
+          (with-system rameau:tempered (gera-gabarito-pardo (parse-file file)))
+        (let* ((file-name (pathname-name file))
+               (gabarito (processa-gabarito (tira-extensao file)))
+               (notas (with-system rameau:tempered (mapcar #'lista-notas segmento)))
+               (comparacao (with-system rameau:tempered
+                             (compara-gabarito-pardo algoritmo gabarito)))
+               (duracoes (mapcar (lambda (x y) (list y (evento-dur (first x))))
+                                 segmento algoritmo)))
+          (cond
+            ((member 'e flags)
+             (unless comparacao
+               (push 'v flags)
+               (print-gabarito file-name gabarito algoritmo comparacao
+                               flags :dur duracoes :notas notas)))
+            ((member 'c flags)
+             (push 'v flags)
+             (when comparacao
+               (print-gabarito file-name gabarito algoritmo comparacao
+                               flags :dur duracoes :notas notas)))
+            ((and (not gabarito) (not (member 'i flags)))
+             (format t "~&[ERRO] o gabarito de ~a não existe~%" file-name))
+            ((or (member 'v flags) (member 'n flags) (member 'd flags))
+             (push 'v flags)
+             (print-gabarito file-name gabarito algoritmo comparacao
+                             flags :dur duracoes :notas notas))
+            (gabarito
+             (if comparacao (push file-name ok) (push file-name no)))))))
+    (unless (member 'v flags)
+      (print-ok/no-list (list (reverse ok) (reverse no))))))
+
+(defun run-analise (flags files)
+  (when (and (member 'a flags) (member 'g flags))
+    (write-line "As opções -a e -g não podem ser dadas ao mesmo tempo")
+    (rameau-quit))
+  (if (member 'g flags)
+      (run-compara-gabarito flags files)
+      (run-analise-harmonica files)))
+
+(defun processa-files (item f &optional (ext ".ly"))
+  (let* ((path (concat (rameau-path) (get-item item *lily-dir-list*  #'equal)))
+         (file-name (format nil "~a" (first f)))
+         (files (if (search ".." file-name)
+                    (files-range (cl-ppcre:split "\\.\\." file-name))
+                    f)))
+    (if files
+        (mapcar (lambda (file) (concat path file ext)) files)
+        (mapcar (lambda (file) (format nil "~a" file)) (directory (concat path "*" ext))))))
+
+(defmacro defcomando (nome dados flags files &body body)
+  `(defun ,nome (,dados ,flags ,files)
+     (let* ((dados-list (get-item ',nome *dados*))
+            (comandos-lista (if (string= ,dados "all") dados-list (split-dados ,dados))))
+       (with-profile ,flags
+         (loop
+            for i in comandos-lista
+            for item = (first-string i dados-list) do
+              (if (member item dados-list :test #'string=)
+                  (progn
+                    (format t "~%* ~(~a~): ~(~a~)~%" ',nome item)
+                    ,@body)
+                  (progn
+                    (format t "~a não é um comando de ~(~a~).~%" item ',nome)
+                    (format t "comandos possíveis são: all ~{~a ~}~%" dados-list))))))))
+
+(defcomando teste dados flags files
+    (if (string= item "unidade")
+        (run-unidade flags (processa-files item files))
+        (run-regressao flags (processa-files item files))))
+
+(defcomando analise dados flags files
+  (run-analise flags (processa-files item files)))
+
 (defun main ()
-  (destructuring-bind (raw-path (&rest file-list) opts-value raw-opts) (handle-args)
-    (let* ((type (get-opt-value "t" opts-value))
-           (path (concat raw-path "/"))
-           (opts (apply #'append (mapcar (lambda (c) (coerce c 'list)) raw-opts)))
-           (files (make-list-of-files path type file-list)))
+  (let* ((args (rameau-args))
+         (string (first args))
+         (dados (second args))
+         (comando (if string (first-string string (get-comandos))))
+         (flags-list (if (> (length args) 2) (arg->list (subseq args 2))))
+         (files (get-flag-list "-f" flags-list))
+         (trace (get-flag-list "-t" flags-list))
+         (max-error (first (get-flag-list "-m" flags-list)))
+         (flags (if flags-list (get-lone-flags flags-list))))
 
-      ;;(print (list raw-path file-list opts-value raw-opts))
-      
-      (when-set-opt-true opts
-        (w         *print-only-wrong*)
-        (c         *use-cifras*)
-        (d         *debug*))
-      
-      (with-profile opts
-        (opt-cond opts print-help (type opts files)
-          (h       print-help)
-          (l       print-tests)
-          (u       run-unit-tests)
-          (a       print-analise-harmonica files)
-          ((g v s) print-compara-gabarito files t t)
-          ((g v)   print-compara-gabarito files t)
-          ((v s)   print-compara-gabarito files nil t)
-          (v       parse-verbose files)
-          (g       print-ok-no-list (print-compara-gabarito files))
-          (p       pop->cifra raw-path file-list)
-          (t       print-ok-no-list (parse-summary files))))
-
-      (rameau-quit)
-      0)))
-
+    (when trace (maptrace trace))
+    (when max-error (setf max-print-error (read-from-string max-error)))
+    (when (member 'h flags) (print-help))
+    
+    (cond ((null comando) (print-help))
+          ((equal comando "help") (print-help))
+          ((equal comando "-h") (print-help))
+          ((and (null dados) (string= comando "teste"))
+           (funcall (read-from-string comando) "all" flags files))
+          ((and comando (null dados))
+           (if (member comando (get-comandos) :test #'string=)
+               (format t "as opções de ~a são: ~{~a ~}~%"
+                       comando
+                       (get-item (intern (string-upcase comando)) *dados*))
+               (progn
+                 (format t "comando ~a não reconhecido~%" comando)
+                 (format t "você deve entrar um dos comandos: ~{~(~a~)~^ ~}~%" (get-comandos)))))
+          ((member comando (get-comandos) :test #'string=)
+           (funcall (read-from-string comando) dados flags files))
+          (t (format t "comando ~a não reconhecido~%" comando)
+             (format t "você deve entrar um dos comandos: ~{~(~a~)~^ ~}~%" (get-comandos)))))
+  0)

@@ -2,7 +2,7 @@
 
 Para instalar rameau voce precisa instalar os seguintes pacotes:
 
-  sbcl cl-asdf cl-lexer cl-regex cl-yacc cl-getopt cl-fad cl-ppcre
+  sbcl cl-asdf cl-lexer cl-regex cl-yacc cl-fad cl-ppcre
 
 Para compilar é só digitar 'make' no diretorio onde está o repositório
 da pequisa.
@@ -13,57 +13,3 @@ exemplo:
   ln -s $(pwd)/rameau ~/bin/
 
 desse modo voce não precisa digitar ./rameau e sim rameau.
-
-2. COMO RODAR OS TESTES
-
-se você rodar o script sem argumentos ele mostrará a lista de
-argumentos que aceita. para determinar o tipo de teste deve-se usar a
-opção -t. o exemplo abaixo roda todos os corais de bach:
-
-  rameau -t c
-
-sem outras opções ele parseia os arquivos e mostra um sumário dos
-testes. caso algum teste falhe nesse modo ele lista quais arquivos
-falharam.
-
-  [OK]: 371 [NO]: 0 
-
-voce pode rodar apenas um teste identificando o numero no final. o
-exemplo abaixo rodará apenas o coral 003.ly. observe que o script faz
-a busca automatica no diretório.
-
-  rameau -t c 003
-
-para fazer a analise harmonica sem usar um gabarito usa-se a opção -a:
-
-  rameau -t e -a 003
-
-esse comando irá fazer a análise harmonica do exemplo 003.ly e mostrar
-a seguinte saída:
-
- * 003
-   pardo: ((c maj 0) (g maj 0) (c maj 0)) 
-
-para ver o resultado em cifas use a opção -c
-
-  rameau -t e -a 003 -c
-
-onde o resultado será:
-
- * 003
-   pardo: (c g c) 
-
-observe que a ordem dos argumentos não importa, os argumentos sem
-valor (como -c, -a, etc) podem ser condensados em um único comando.
-
-  rameau -t e 003 -ac
-
-a opção -t NÂO pode ser condensada com os outros comandos.
-
-3. COMO GERAR GABARITOS USANDO O FORMATO 'POP'
-
-A opção -p gera um arquivo .gab a partir do arquivo .pop. Por enquanto
-rameau considera que os arquivos .gab e .pop devem estar em
-literatura/bach-corais/
-
-  rameau -p 001

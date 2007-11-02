@@ -1,18 +1,14 @@
-; -*- org -*-
-
-* versões de release
-  1.0
-  1.1 versões intermediarias (e.g. rameau com nova interface)
-  2.0 quando será? o que terá? [9 novembro]
-- interface nova do rameau
-  ferramenta para gerar pop->gab (file independente)
-  alinhar comparação de gabaritos
-  mostar % de completude
-  retornar valores de erro em teste
-  target no make para dar push se funcionar
-- algoritmo de temperley
-- gera lilypond com analise harmonica em baixo (grafico)- 
-- limpar packages.lisp
-- limpar utils
-- fazer genos-lib: separar utils e musiclib
+* melhoramento nos corais
+** nova bilioteca: chorallib
+** corais sem serem 'tocados'
+** lista de corais repetidos
+** testes para garantir que está correto
+** falta split notas
+** corais 'bagunçados' (ver lista)
+** prioridade: corrigir corais nessa semana
+** mostrar corais com gthumb
+** mostrar codigo-fonte dos corais procesados
+* interface rameau
+** ainda em andamento (espero terminar amanha)
+* ver next-release.txt
 

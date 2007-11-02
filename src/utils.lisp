@@ -18,24 +18,22 @@
 (defmacro aif (test-form then-form &optional else-form)
   "Macro anafófica que retorna o elemento no predicado ('it') se for
 verdadeiro."
-  (labels ((change-it-package (form)
-             (subst 'it (find-symbol "IT" *package*) form)))
-    `(let ((it ,test-form))
-       (if it
-           ,(change-it-package then-form)
-           ,(change-it-package else-form)))))
+  (let ((it (intern (symbol-name 'it))))
+    `(let ((,it ,test-form))
+       (if ,it
+           ,then-form
+           ,else-form))))
 
 (defmacro defcached (funcname args &body body)
   (let ((cache (gensym))
-        (func (gensym))
-        (params (gensym)))
+        (func (gensym)))
     `(let ((,cache (make-hash-table :test #'equal)))
-       (defun ,funcname (&rest ,params)
-         (labels ((,func ,args ,@body))
-           (aif (gethash ,params ,cache)
+       (labels ((,func ,args ,@body))
+         (defun ,funcname ,args
+           (aif (gethash ,(cons 'list args) ,cache)
                 it
-                (setf (gethash ,params ,cache) (apply #',func ,params))))))))
-           
+                (setf (gethash ,(cons 'list args) ,cache) (,func ,@args))))))))
+
 (defun concat (&rest strings)
   "Concatenate a bunch of strings."
   (apply #'concatenate 'string strings))
@@ -115,15 +113,16 @@ quantos acidentes ou oitavas uma nota tem."
   (second (assoc item alist)))
 
 (defun max-predicado (predicado lista)
-  (let ((maior-valor (funcall predicado (first lista)))
-        (lista-max nil))
-    (dolist (par lista)
-      (cond ((> (funcall predicado par) maior-valor)
-             (setf maior-valor (funcall predicado par))
-             (setf lista-max (list par)))
-            ((= (funcall predicado par) maior-valor)
-             (push par lista-max))))
-    lista-max))
+  (when lista
+    (let ((maior-valor (funcall predicado (first lista)))
+          (lista-max nil))
+      (dolist (par lista)
+        (cond ((> (funcall predicado par) maior-valor)
+               (setf maior-valor (funcall predicado par))
+               (setf lista-max (list par)))
+              ((= (funcall predicado par) maior-valor)
+               (push par lista-max))))
+      lista-max)))
 
 (defun octave-from-string (string)
   (+ 8 (symbol->number string '("," "'"))))
@@ -142,7 +141,7 @@ quantos acidentes ou oitavas uma nota tem."
         (b (evento-octave y)))
     (if (= a b)
         (< (evento-pitch x) (evento-pitch y))
-        (< (evento-octave x) (evento-octave y)))))
+        (< a b))))
 
 (defun lista-notas (segmento)
   (mapcar (lambda (x)

@@ -14,8 +14,8 @@
 (defun get-modo (abrev)
   (case (string->symbol abrev)
     (m "min")
-    (o "dim")
-    (~ "dim")
+    (° "dim")
+    (ø "half-dim")
     (+ "aug")
     (! "inc")
     (t "maj")))
@@ -46,7 +46,7 @@ fundamental do acorde."
 (defun cifra->acorde (cifra)
   (let ((cifra-list (cl-ppcre:split "/" cifra)))
     (cl-ppcre:register-groups-bind (fundamental modo acrescimos)
-        ("([cdefgab]+[#b]?)(m|o|~|!|\\+)?([0-9\\.mb\\+]+)?" (first cifra-list) :sharedp t)
+        ("([cdefgab]+[#b]?)(m|°|ø|!|\\+)?([0-9\\.mb\\+]+)?" (first cifra-list) :sharedp t)
       (remove-if #'null (list (parse-fundamental fundamental)
                               (get-modo modo)
                               (qual-inversao? fundamental (second cifra-list))
@@ -71,7 +71,7 @@ fundamental do acorde."
         ((listp (first acorde)) (acorde->cifra (first acorde)))
         (t (destructuring-bind (tonica &optional modo inv acresc &rest resto) acorde
              (declare (ignore resto))
-             (let ((fundamental (stringify tonica))
+             (let ((fundamental (lily->latin (stringify tonica)))
                    (acrescimos (cond ((and (null acresc) (eql inv 7)) 7)
                                      (t acresc)))
                    (inversao (cond ((and (null acresc) (eql inv 7)) 0)
@@ -81,7 +81,8 @@ fundamental do acorde."
                        (case modo
                          (maj (format nil "~a" fundamental))
                          (min (format nil "~am" fundamental))
-                         (dim (format nil "~ao" fundamental))
+                         (dim (format nil "~a°" fundamental))
+                         (half-dim (format nil "~aø" fundamental))
                          (aug (format nil "~a+" fundamental)))
                        acrescimos
                        (get-inversao-pop fundamental modo inversao)))))))
