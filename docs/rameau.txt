@@ -29,6 +29,7 @@ para todas as ações, enquanto outras só para análise:
   -e    só mostra os testes que tem erro (implica em -v)
   -c    só mostra os testes corretos (implica em -v)
   -i    ignora (não imprime) corais sem gabaritos 
+  -t    roda metrica de temperley na musica (debug) 
 
 
 A opção -f aceita âmbito de arquivos, e.g. -f 1..14 vai escolher os

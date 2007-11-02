@@ -48,6 +48,7 @@
            #:*notes* #:*rests* #:*tonal-system* #:*tonal-intervals*
            #:*tempered-intervals* #:*tempered-system* #:*systems* #:*system*
            #:make-sequencia-de-notas #:string-lexer #:stringify #:aif
-           #:*intervals-name* #:*intervals-quantity* #:*accidentals* #:tempered #:tonal)
+           #:*intervals-name* #:*intervals-quantity* #:*accidentals* #:tempered #:tonal
+           #:temperley-metrifica)
   (:use #:cl #:yacc #:lisp-unit))
 
