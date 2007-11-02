@@ -11,8 +11,8 @@ C7/E
 Cm7/Eb
 C!7
 
-Os tipos de acordes são (nada) para maior, m para menor, o para
-diminuto, ~ para meio-diminuto, e ! para incompleto (i.e. sem a
+Os tipos de acordes são (nada) para maior, m para menor, ° para
+diminuto, ø para meio-diminuto, e ! para incompleto (i.e. sem a
 terça).
 
 * notas melódicas
