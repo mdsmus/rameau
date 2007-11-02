@@ -43,11 +43,9 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defconstant max-print-error 10
+(defparameter max-print-error 10
   "Quando o numero de arquivos que não são parseados é maior que essa
   constante, rameau mostra apenas o inicio da lista.")
-
-(defparameter *comandos* '("teste" "analise" "cifra"))
 
 (defparameter *lily-dir-list* '(("corais" "literatura/bach-corais/")
                                 ("kostka" "literatura/kostka-payne/")
@@ -90,9 +88,10 @@
   (destructuring-bind (ok no) list
     (let* ((s2 (length no))
            (no-string
-            (if (> s2 max-print-error)
-                (format nil "~a ..." (subseq no 0 max-print-error))
-                no)))
+            (cond ((= max-print-error 0) no)
+                  ((> s2 max-print-error)
+                   (format nil "~a ..." (subseq no 0 max-print-error)))
+                  (t no))))
       (format t "  [OK]: ~a [NO]: ~a ~@[~a ~]~%" (length ok) s2 no-string))))
 
 (defun parse-verbose (files)
@@ -123,7 +122,7 @@
          (with-output-to-string (string)
            (let ((*standard-output* string))
              (lisp-unit:run-all-tests :rameau)
-             (format t "~%")))))
+             (format t "~%")))))    
     (if (member 'v flags)
         (write-line string-result)
         (write-line (subseq (last1 (cl-ppcre:split "\\n" string-result)) 34)))))
@@ -181,18 +180,17 @@
                                flags :dur duracoes :notas notas)))
             ((member 'c flags)
              (push 'v flags)
-             (when gabarito
+             (when comparacao
                (print-gabarito file-name gabarito algoritmo comparacao
                                flags :dur duracoes :notas notas)))
-            ((not gabarito)
+            ((and (not gabarito) (not (member 'i flags)))
              (format t "~&[ERRO] o gabarito de ~a não existe~%" file-name))
             ((or (member 'v flags) (member 'n flags) (member 'd flags))
              (push 'v flags)
              (print-gabarito file-name gabarito algoritmo comparacao
                              flags :dur duracoes :notas notas))
             (gabarito
-             (if comparacao (push file-name ok) (push file-name no)))
-            (t (error "não sei o que fazer!"))))))
+             (if comparacao (push file-name ok) (push file-name no)))))))
     (unless (member 'v flags)
       (print-ok/no-list (list (reverse ok) (reverse no))))))
 
@@ -200,7 +198,6 @@
   (when (and (member 'a flags) (member 'g flags))
     (write-line "As opções -a e -g não podem ser dadas ao mesmo tempo")
     (rameau-quit))
-
   (if (member 'g flags)
       (run-compara-gabarito flags files)
       (run-analise-harmonica files)))
@@ -218,7 +215,7 @@
                     (format t "~%* ~(~a~): ~(~a~)~%" ',nome item)
                     ,@body)
                   (progn
-                    (format t "[AVISO!] ~a não é um comando de '~(~a~)'.~%" item ',nome)
+                    (format t "~a não é um comando de ~(~a~).~%" item ',nome)
                     (format t "comandos possíveis são: all ~{~a ~}~%" dados-list))))))))
 
 (defcomando teste dados flags files
@@ -229,9 +226,6 @@
 (defcomando analise dados flags files
   (run-analise flags (processa-files item files)))
 
-(defun cifra (dados flags files)
-  (print 3))
-
 (defun first-string (string list)
   (let ((tmp (loop for s in list do
                   (if (string= (subseq s 0 1) string)
@@ -239,7 +233,25 @@
     (if tmp tmp string)))
 
 (defun print-help ()
-  (format t "comandos possíveis são: ~{~a ~}~%" *comandos*)
+  (format t "USO: rameau <ação> [dados] [opções]~%~%")
+  (dolist (item *dados*)
+    (format t "     [~a]  ~{~a~^,~}~%" (first item) (second item)))
+  (format t "~%* [todos]~%")
+  (format t "  -h    ajuda~%")
+  (format t "  -f    arquivos~%")
+  (format t "  -p    profile~%")
+  (format t "  -d    debug~%")
+  (format t "  -v    verbose~%")
+  (format t "  -m n  o número de testes errados para imprimir~%")
+  (format t "~%* [analise]~%")
+  (format t "  -a    gera análise harmônica (padrão)~%")
+  (format t "  -g    compara com gabarito~%")
+  (format t "  -n    mostra as notas de cada segmento (implica em -v)~%")
+  (format t "  -d    mostra as durações de cada segmento (implica em -v)~%")
+  (format t "  -l    mostra formato de gabarito como listas (implica em -v)~%")
+  (format t "  -e    só mostra os testes que tem erro (implica em -v)~%")
+  (format t "  -c    só mostra os testes corretos (implica em -v)~%")
+  (format t "  -i    ignora (não imprime) corais sem gabaritos~%")
   (rameau-quit))
 
 (defun next-flag (list)
@@ -269,27 +281,37 @@
 (defun maptrace (lista-string)
   (eval (append '(trace) (mapcar #'string->symbol lista-string))))
 
+(defun get-comandos ()
+  (mapcar #'(lambda (item) (format nil "~(~a~)" (first item))) *dados*))
+
 (defun main ()
   (let* ((args (rameau-args))
          (comando (first args))
          (dados (second args))
-         (string (if comando (first-string comando *comandos*)))
+         (string (if comando (first-string comando (get-comandos))))
          (flags-list (if (> (length args) 2) (arg->list (subseq args 2))))
          (files (get-flag-list "-f" flags-list))
          (trace (get-flag-list "-t" flags-list))
+         (max-error (first (get-flag-list "-m" flags-list)))
          (flags (if flags-list (get-lone-flags flags-list))))
 
     (maptrace trace)
     
-    (cond ((null comando) (print-help))
-          ((equal comando "help") (print-help))
-          ((equal comando "-h") (print-help))
-          ((and comando (null dados))
-           (format t "você deve entrar dados para o comando ~a~%" comando)
-           (format t "dados possíveis são: all ~{~a~^ ~}~%"
-                   (get-item (read-from-string comando) *dados* #'string=)))
-          ((member string *comandos* :test #'string=)
-          (funcall (read-from-string string) dados flags files))
-          (t (format t "comando não conhecido: ~(~a~)~%" comando)
-             (format t "você deve entrar um dos comandos: ~{~(~a~)~^ ~}~%" *comandos*))))
+    (when max-error (setf max-print-error (read-from-string max-error)))
+
+    (when (member 'h flags) (print-help))
+    
+    (cond ((null string) (print-help))
+          ((equal string "help") (print-help))
+          ((equal string "-h") (print-help))
+          ((and string (null dados))
+           (if (member string (get-comandos) :test #'string=)
+               (funcall (read-from-string string) "all" flags files)
+               (progn
+                 (format t "comando ~a não reconhecido~%" string)
+                 (format t "você deve entrar um dos comandos: ~{~(~a~)~^ ~}~%" (get-comandos)))))
+          ((member string (get-comandos) :test #'string=)
+           (funcall (read-from-string string) dados flags files))
+          (t (format t "comando ~a não reconhecido~%" string)
+             (format t "você deve entrar um dos comandos: ~{~(~a~)~^ ~}~%" (get-comandos)))))
   0)
