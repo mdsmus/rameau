@@ -41,43 +41,6 @@
   #+clisp(ext:exit)
   #+sbcl(quit))
 
-(shadow 'report)
-
-(defun report ()
-  "Report results from profiling. The results are approximately adjusted
-for profiling overhead. The compensation may be rather inaccurate when
-bignums are involved in runtime calculation, as in a very-long-running
-Lisp process."
-  (unless (boundp '*overhead*)
-    (setf *overhead*
-          (compute-overhead)))
-  (let ((time-info-list ())
-        (no-call-name-list ()))
-    (dohash (name pinfo *profiled-fun-name->info*)
-      (unless (eq (fdefinition name)
-                  (profile-info-encapsulation-fun pinfo))
-        (warn "Function ~S has been redefined, so times may be inaccurate.~@
-               PROFILE it again to record calls to the new definition."
-              name))
-      (multiple-value-bind (calls ticks consing profile)
-          (funcall (profile-info-read-stats-fun pinfo))
-        (if (zerop calls)
-            (push name no-call-name-list)
-            (push (make-time-info :name name
-                                  :calls calls
-                                  :seconds (compensate-time calls
-                                                            ticks
-                                                            profile)
-                                  :consing consing)
-                  time-info-list))))
-
-    (setf time-info-list
-          (sort time-info-list
-                #'>=
-                :key #'time-info-seconds))
-    (print-profile-table time-info-list)
-
-    (values)))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defparameter max-print-error 10
@@ -110,6 +73,9 @@ Lisp process."
 
 (defparameter *dados* '((teste ("unidade" "regressao" "lily"))
                         (analise ("corais" "kostka" "sonatas" "exemplos"))))
+
+(defun percent (x total)
+  (/ (* x 100.0) total))
 
 (defun get-item (item lista &optional (test #'eql))
   "Pega um item em uma lista de associação."
@@ -213,15 +179,46 @@ Exemplo: (split-word \"foo\") => (F O O)"
                   (t no))))
       (format t "  [OK]: ~a [NO]: ~a ~@[~a ~]~%" (length ok) s2 no-string))))
 
+(defun print-chord (list flags)
+  (if (member 'l flags)
+      list
+      (acorde->cifra list)))
+
+;; BUG: ok? não imprime por cause do (not f)
+(defun print-gab-columns (a b c d e f flags)
+  (let ((string (if (member 'l flags)
+                    "~4a~@[~15a~]~(~30a~)~(~15a~)~@[~10a~]~@[*~]~%"
+                    "~4a~@[~15a~]~10a~10a~@[~10a~]~@[*~]~%")))
+    (format t string
+            a
+            (when (member 'n flags) b)
+            c
+            d
+            (when (member 'd flags) (if (listp e) (second e) e))
+            (not f))))
+
 (defun print-gabarito (file gabarito algoritmo comparacao flags &key notas dur)
   (let ((*package* (find-package :rameau)))
-    (progn
-      (format t "~% * ~a~%" file)
-      (format t "gabarito (~a): ~(~s~) ~%" (length gabarito) gabarito)
-      (format t "   pardo (~a): ~(~s~) ~%" (length algoritmo) algoritmo)
-      (when (member 'n flags) (format t "   notas: ~(~a~) ~%" notas))
-      (when (member 'd flags) (format t "   dur: ~(~a~) ~%" dur))
-      (format t "correto?: ~:[não~;sim~]~%" comparacao))))
+    (print-gab-columns "#" "notas" "gab" "pardo" "dur" "ok?" flags)
+    (write-line (repeat-string 80 "-"))
+    (let ((count-ok 0)
+          (size-gab (length gabarito))
+          (size-algo (length algoritmo))
+          (wrong-list))
+      (loop
+         for gab in gabarito
+         for pardo in algoritmo
+         for n in notas
+         for d in dur
+         for numero-seg from 1
+         for result = (compara-gabarito-pardo-individual pardo gab)
+         do
+           (if result
+               (incf count-ok)
+               (push numero-seg wrong-list))
+           (print-gab-columns numero-seg n (print-chord gab flags) (print-chord pardo flags) d result flags))
+      (format t "~%~$ % correto, gab: ~a, pardo: ~a~%" (percent count-ok size-gab) size-gab size-algo)
+      (format t "segmentos errados: ~a~%" (nreverse wrong-list)))))
 
 (defun print-help-item (item)
   (format t "~%~(* [~a]~)~%" item)
@@ -352,9 +349,13 @@ Exemplo: (split-word \"foo\") => (F O O)"
     (cond ((null comando) (print-help))
           ((equal comando "help") (print-help))
           ((equal comando "-h") (print-help))
+          ((and (null dados) (string= comando "teste"))
+           (funcall (read-from-string comando) "all" flags files))
           ((and comando (null dados))
-           (if (string= comando "teste")
-               (funcall (read-from-string comando) "all" flags files)
+           (if (member comando (get-comandos) :test #'string=)
+               (format t "as opções de ~a são: ~{~a ~}~%"
+                       comando
+                       (get-item (intern (string-upcase comando)) *dados*))
                (progn
                  (format t "comando ~a não reconhecido~%" comando)
                  (format t "você deve entrar um dos comandos: ~{~(~a~)~^ ~}~%" (get-comandos)))))
