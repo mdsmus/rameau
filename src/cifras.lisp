@@ -71,7 +71,7 @@ fundamental do acorde."
         ((listp (first acorde)) (acorde->cifra (first acorde)))
         (t (destructuring-bind (tonica &optional modo inv acresc &rest resto) acorde
              (declare (ignore resto))
-             (let ((fundamental (stringify tonica))
+             (let ((fundamental (lily->latin (stringify tonica)))
                    (acrescimos (cond ((and (null acresc) (eql inv 7)) 7)
                                      (t acresc)))
                    (inversao (cond ((and (null acresc) (eql inv 7)) 0)
