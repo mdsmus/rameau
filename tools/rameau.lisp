@@ -112,13 +112,18 @@ Lisp process."
                         (analise ("corais" "kostka" "sonatas" "exemplos"))))
 
 (defun get-item (item lista &optional (test #'eql))
+  "Pega um item em uma lista de associação."
   (second (assoc item lista :test test)))
 
-(defun split-word (word)
-  (loop for char across word collect (char->symbol char)))
-
 (defun char->symbol (char)
+  "Retorna o símbolo representado pelo caractere char.
+Exemplo: (char->symbol #\a) => A"
   (intern (string-upcase (string char))))
+
+(defun split-word (word)
+  "Retorna uma lista de símbolos para cada letra da palavra 'word'.
+Exemplo: (split-word \"foo\") => (F O O)"
+  (loop for char across word collect (char->symbol char)))
 
 (defun split-opts (string)
   (mapcan (lambda (s) (split-word (delete #\- s)))
@@ -165,6 +170,36 @@ Lisp process."
 (defun get-comandos ()
   (mapcar #'(lambda (item) (format nil "~(~a~)" (first item))) *dados*))
 
+(defun parse-verbose (files)
+  (dolist (file files)
+    (handler-case (parse-file file)
+      (serious-condition (expr) (print-condition 'no file expr))
+      (:no-error (&rest rest) (print-condition 'ok file rest)))))
+
+(defun parse-summary (files)
+  (let (ok no)
+    (dolist (file files)
+      (handler-case (parse-file file)
+        (serious-condition (expr)
+          (declare (ignore expr))
+          (push (pathname-name file) no))
+        (:no-error (&rest rest)
+          (declare (ignore rest))
+          (push (pathname-name file) ok))))
+    (list (reverse ok) (reverse no))))
+
+(defun files-range (list)
+  (loop for x from (parse-integer (first list)) to (parse-integer (second list))
+     collect (cond ((< x 10)  (format nil "00~a" x))
+                   ((< x 100) (format nil "0~a" x))
+                   (t (format nil "~a" x)))))
+
+(defun first-string (string list)
+  (let ((tmp (loop for s in list do
+                  (if (string= (subseq s 0 1) string)
+                      (return s)))))
+    (if tmp tmp string)))
+
 (defun print-condition (status file expr)
   (format t "[~a] ~a: ~a~%" status (pathname-name file) expr))
 
@@ -201,36 +236,6 @@ Lisp process."
   (print-help-item 'todos)
   (print-help-item 'análise)
   (rameau-quit))
-
-(defun parse-verbose (files)
-  (dolist (file files)
-    (handler-case (parse-file file)
-      (serious-condition (expr) (print-condition 'no file expr))
-      (:no-error (&rest rest) (print-condition 'ok file rest)))))
-
-(defun parse-summary (files)
-  (let (ok no)
-    (dolist (file files)
-      (handler-case (parse-file file)
-        (serious-condition (expr)
-          (declare (ignore expr))
-          (push (pathname-name file) no))
-        (:no-error (&rest rest)
-          (declare (ignore rest))
-          (push (pathname-name file) ok))))
-    (list (reverse ok) (reverse no))))
-
-(defun files-range (list)
-  (loop for x from (parse-integer (first list)) to (parse-integer (second list))
-     collect (cond ((< x 10)  (format nil "00~a" x))
-                   ((< x 100) (format nil "0~a" x))
-                   (t (format nil "~a" x)))))
-
-(defun first-string (string list)
-  (let ((tmp (loop for s in list do
-                  (if (string= (subseq s 0 1) string)
-                      (return s)))))
-    (if tmp tmp string)))
 
 (defun run-regressao (flags files)
   (if (member 'v flags)
@@ -340,10 +345,8 @@ Lisp process."
          (max-error (first (get-flag-list "-m" flags-list)))
          (flags (if flags-list (get-lone-flags flags-list))))
 
-    (maptrace trace)
-    
+    (when trace (maptrace trace))
     (when max-error (setf max-print-error (read-from-string max-error)))
-
     (when (member 'h flags) (print-help))
     
     (cond ((null comando) (print-help))
