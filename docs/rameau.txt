@@ -1,39 +1,58 @@
-Rameau é o programa que 
+Rameau é um front-end para o código de análise de harmonia automática.
+O formato de execução é:
 
-O formato de execução é
+  rameau <ação> [dados] [opções]
 
-  rameau <o que fazer> <onde> <opções> <arquivos>
+<ação> pode ser testes ou analise. Os dados que teste a análise
+aceitam são:
 
-<o que fazer> pode ser testes, analise, cifras
+  TESTE     unidade,regressao,lily
+  ANALISE   corais,kostka,sonatas,exemplos
+
+As flags de opções estão listadas abaixo. Algumas opções funcionam
+para todas as ações, enquanto outras só para análise:
+
+* [todos]
+  -h    ajuda 
+  -f    arquivos 
+  -p    profile 
+  -d    debug 
+  -v    verbose 
+  -m n  o número de testes errados para imprimir 
+
+* [análise]
+  -a    gera análise harmônica (padrão) 
+  -g    compara com gabarito 
+  -n    mostra as notas de cada segmento (implica em -v)
+  -d    mostra as durações de cada segmento (implica em -v)
+  -l    mostra formato de gabarito como listas (implica em -v)
+  -e    só mostra os testes que tem erro (implica em -v)
+  -c    só mostra os testes corretos (implica em -v)
+  -i    ignora (não imprime) corais sem gabaritos 
 
 
-rameau testes unit,regressao [opts] 001
-rameau analisa corais [opts] 001..
-rameau cifras ...
+A opção -f aceita âmbito de arquivos, e.g. -f 1..14 vai escolher os
+arquivos de 001 a 014.
 
-aceita ranges:
+Tanto as ações quanto os dados podem ser entrados apenas com a
+primeira letra.
 
-rameau.lisp a c -a 001..002
+  rameau t u
 
-rameau testes unit|regressao [opts] 001
-rameau analisa corais [opts] 001..
-rameau cifras ...
+é igual a:
 
-versão resumida
+  rameau teste unidade
 
-rameau t u|r [opts] 001 002
+Mais de um dado pode ser entrado por ação, separados por vírgulas:
 
--p profile funciona para tudo
--d debug funciona para tudo
--v verbose funciona para tudo (cada coisa define a semantica)
+  rameau teste unidade,regressao
 
-rameau analisa tem as opções
--a        gera analise harmonica (sem comparar com gabarito)
--g        compara com gabarito
--s        mostra as notas de cada segmento [implica em -v]
--e        só mostra os testes que tem algum erro (implica em -v)
+ou
 
-.............
+  rameau t u,r
 
--p mostra cifra
--c mostra certo
+A opção n controla quantos arquivos serão listados na lista de
+arquivos cuja comparação com o gabarito deu errado. O valor padrão é
+10. n = 0 imprime todos.
+
+Se [dados] for vazio para teste, executa todos os testes.
