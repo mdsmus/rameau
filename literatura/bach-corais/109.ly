@@ -111,7 +111,7 @@ tenor = \relative c' {
 baixo = \relative c' {
   g8 a8 bes8 a8 g4 
   c,4 d4 ees4 
-  a4 bes4 g4 
+  a,4 bes4 g4 
   d'2. 
   d4 g4 f4   %5
   e4 fis4 d4 

@@ -74,7 +74,7 @@ tenor = \relative c' {
   d4 g,4 a4 g4 
   g2 r4 g4 
   g4 d'4 c8 a8 bes8 g8 
-  ees'4 a4 bes2   %15
+  ees'4 a,4 bes2   %15
   r4 b4 c4 f4 
   ees4 d4 cis8 d4 cis8 
   d1 

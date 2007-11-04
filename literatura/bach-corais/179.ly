@@ -165,7 +165,7 @@ baixo = \relative c {
   g2 f2 
   ees1 
   r2 ees'2 
-  a2 b2 
+  a,2 b2 
   c2 c2   %30
   g4 aes4 bes2 
   c,2 ees4 f4 
