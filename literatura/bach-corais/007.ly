@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -6,130 +5,180 @@
   composer = "J. S. Bach"
 }
 
-global =  {
-  \time 3/4 
+
+global = {
+  \time 3/4
   \key a \major
 }
 
-soprano = \relative c {
-  \partial 4 a''4 a2 gis4 fis2 
-  e4 a b2 
-  cis cis4 cis 
-  b cis cis2 
-  b4 a b2 
-  a a4 a2 gis4 fis2 
-  e4 a b2 
-  cis cis4 cis 
-  b cis cis2 
-  b4 a b2 
-  a a4 a 
-  b cis b2 
-  cis4 a gis2 
-  fis b4 b 
-  a gis a fis2 e e4 
-  a2 a4 b2 b4 cis4. b8 
-  cis4 a2 a4 
-  d2 d4 cis 
-  b cis b2 
-  b4 cis2 cis4 
-  d2 d4 e2. a,2 
-  cis4 b a gis 
-  a fis2 e e4 a2 
-  gis4 fis2 e4 
-  b' cis2 b cis4 d2 
-  cis4 b a8 gis a b 
-  cis4 b2 a 
+
+soprano = \relative c'' {
+  \repeat volta 2 {
+    \partial 4 a4 
+    a2 gis4 
+    fis2 e4 
+    a4 b2 
+    cis2 cis4 
+    cis4 b4 cis4     %5
+    cis2 b4 
+    a4 b2 
+    a2 } a4 
+  a4 b4 cis4 
+  b2 cis4   %10
+  a4 gis2 
+  fis2 b4 
+  b4 a4 gis4 
+  a4 fis2 
+  e2 e4   %15
+  a2 a4 
+  b2 b4 
+  cis4. b8 cis4 
+  a2 a4 
+  d2 d4   %20
+  cis4 b4 cis4 
+  b2 b4 
+  cis2 cis4 
+  d2 d4 
+  e2.   %25
+  a,2 cis4 
+  b4 a4 gis4 
+  a4 fis2 
+  e2 e4 
+  a2 gis4   %30
+  fis2 e4 
+  b'4 cis2 
+  b2 cis4 
+  d2 cis4 
+  b4 a8 gis8 a8 b8   %35
+  cis4 b2 
+  a2 
 }
 
-
-alto = \relative c {
-  \partial 4 e'4 fis2 e4 d cis 
-  b e fis e 
-  e2 e8 fis gis2 f4 fis2 
-  gis4 a2 gis4 
-  e2 e4 fis2 e4 d cis 
-  b e fis e 
-  e2 e8 fis gis2 f4 fis2 
-  gis4 a2 gis4 
-  e2 e4 fis 
-  gis a b a 
-  gis fis2 f4 
-  cis2 fis4 e2 e4 e2 
-  dis4 b2 cis4 
-  cis2 fis4 e 
-  fis gis a2 
-  g4 fis2 a4 
-  b2 b8 a g ais 
-  b4 e, dis2 
-  e4 e2 fis4 
-  fis2 g4 g 
-  fis e d2 
-  e4 fis2 e4 
-  e2 dis4 b2 cis4 cis dis 
-  e dis2 e4 
-  fis4. gis8 a4 e2 gis4 a b 
-  a gis a2 
-  a4 gis2 e 
+alto = \relative c' {
+  \repeat volta 2 {
+    \partial 4 e4 
+    fis2 e4 
+    d4 cis4 b4 
+    e4 fis4 e4 
+    e2 e8 fis8 
+    gis2 f4     %5
+    fis2 gis4 
+    a2 gis4 
+    e2 } e4 
+  fis4 gis4 a4 
+  b4 a4 gis4   %10
+  fis2 f4 
+  cis2 fis4 
+  e2 e4 
+  e2 dis4 
+  b2 cis4   %15
+  cis2 fis4 
+  e4 fis4 gis4 
+  a2 g4 
+  fis2 a4 
+  b2 b8 a8   %20
+  g8 ais8 b4 e,4 
+  dis2 e4 
+  e2 fis4 
+  fis2 g4 
+  g4 fis4 e4   %25
+  d2 e4 
+  fis2 e4 
+  e2 dis4 
+  b2 cis4 
+  cis4 dis4 e4   %30
+  dis2 e4 
+  fis4. gis8 a4 
+  e2 gis4 
+  a4 b4 a4 
+  gis4 a2   %35
+  a4 gis2 
+  e2 
 }
 
-
-tenor = \relative c {
-  \partial 4 cis'4 cis2 cis4 a2 
-  gis4 a2 gis4 
-  a2 cis4 cis2 b4 a2 
-  e'4 e fis e 
-  cis2 cis4 cis2 cis4 a2 
-  gis4 a2 gis4 
-  a2 cis4 cis2 b4 a2 
-  e'4 e fis e 
-  cis2 cis4 d2 e4 f fis 
-  gis cis, d cis 
-  a2 a4 gis 
-  a b cis2 
-  b8 a gis2 gis4 
-  a2 d4 b2 e4 e2. d2 e4 
-  fis2 b,4 e 
-  d8 cis b ais b2 
-  gis4 a2 a4 
-  b2 b4 b 
-  a g fis2 
-  a4 fis2 b4 
-  cis b a gis2 gis4 a2 
-  b4 b a gis 
-  d' a2 gis cis4 fis e 
-  e e8 d cis4 fis 
-  e2 d4 cis2 
+tenor = \relative c' {
+  \repeat volta 2 {
+    \partial 4 cis4 
+    cis2 cis4 
+    a2 gis4 
+    a2 gis4 
+    a2 cis4 
+    cis2 b4     %5
+    a2 e'4 
+    e4 fis4 e4 
+    cis2 } cis4 
+  d2 e4 
+  f4 fis4 gis4   %10
+  cis,4 d4 cis4 
+  a2 a4 
+  gis4 a4 b4 
+  cis2 b8 a8 
+  gis2 gis4   %15
+  a2 d4 
+  b2 e4 
+  e2. 
+  d2 e4 
+  fis2 b,4   %20
+  e4 d8 cis8 b8 ais8 
+  b2 gis4 
+  a2 a4 
+  b2 b4 
+  b4 a4 g4   %25
+  fis2 a4 
+  fis2 b4 
+  cis4 b4 a4 
+  gis2 gis4 
+  a2 b4   %30
+  b4 a4 gis4 
+  d'4 a2 
+  gis2 cis4 
+  fis4 e4 e4 
+  e8 d8 cis4 fis4   %35
+  e2 d4 
+  cis2 
 }
 
-
-baixo = \relative c {
-  \partial 4 a'4 fis2 cis4 d2 
-  d4 cis d e 
-  a,2 a'4 f2 cis4 fis e 
-  d cis d e 
-  a,2 a'4 fis2 cis4 d2 
-  d4 cis d e 
-  a,2 a'4 f2 cis4 fis e 
-  d cis d e 
-  a,2 a4 d2 a'4 gis fis 
-  f fis b, cis 
-  fis,2 dis'4 e2 d4 cis a 
-  b e2 cis4 
-  fis e fis gis 
-  fis e a2 
-  a,4 d2 cis4 
-  b b'8 a g fis e fis 
-  g4 fis b,2 
-  e4 a gis fis 
-  b a g cis,2. d2 
-  a'4 dis,2 e4 
-  a, b2 e cis4 fis2 
-  e4 b2 cis4 
-  d2 dis4 e2 f4 fis gis 
-  a e fis d 
-  e2. a,2 
+baixo = \relative c' {
+  \repeat volta 2 {
+    \partial 4 a4 
+    fis2 cis4 
+    d2 d4 
+    cis4 d4 e4 
+    a,2 a'4 
+    f2 cis4     %5
+    fis4 e4 d4 
+    cis4 d4 e4 
+    a,2 } a4 
+  d2 a'4 
+  gis4 fis4 f4   %10
+  fis4 b,4 cis4 
+  fis,2 dis'4 
+  e2 d4 
+  cis4 a4 b4 
+  e2 cis4   %15
+  fis4 e4 fis4 
+  gis4 fis4 e4 
+  a2 a,4 
+  d2 cis4 
+  b4 b'8 a8 g8 fis8   %20
+  e8 fis8 g4 fis4 
+  b,2 e4 
+  a4 gis4 fis4 
+  b4 a4 g4 
+  cis,2.   %25
+  d2 a'4 
+  dis,2 e4 
+  a,4 b2 
+  e2 cis4 
+  fis2 e4   %30
+  b2 cis4 
+  d2 dis4 
+  e2 f4 
+  fis4 gis4 a4 
+  e4 fis4 d4   %35
+  e2. 
+  a,2 
 }
-
 
 \score {
   <<

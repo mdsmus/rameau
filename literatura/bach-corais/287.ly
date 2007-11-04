@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -6,86 +5,72 @@
   composer = "J. S. Bach"
 }
 
-global =  {
-  \time 4/4 
+
+global = {
+  \time 4/4
   \key a \minor
 }
 
-soprano = \relative c {
-  a''4 e a b 
-  c d b2 
-  a c4 b 
-  a b c d 
-  e1 
-  a,4 e a b 
-  c d b2 
-  a c4 b 
-  a b c d 
-  e1 
-  e4 f g c, 
-  f e d2 
-  c d4 d 
-  e a, d c 
-  b2 a 
+
+soprano = \relative c'' {
+  \repeat volta 2 {
+    a4 e4 a4 b4 
+    c4 d4 b2 
+    a2 c4 b4 
+    a4 b4 c4 d4 
+    e1 }  %5
+  e4 f4 g4 c,4 
+  f4 e4 d2 
+  c2 d4 d4 
+  e4 a,4 d4 c4 
+  b2 a2   %10
+  
 }
 
-
-alto = \relative c {
-  e'4 e e d 
-  e a a gis 
-  e2 a4 gis 
-  a e e a 
-  gis1 
-  e4 e e d 
-  e a a gis 
-  e2 a4 gis 
-  a e e a 
-  gis1 
-  a4 a g a 
-  a8 gis g4 g4. f8 
-  e2 g4 g 
-  g fis8 e fis gis a4 
-  a gis e2 
+alto = \relative c' {
+  \repeat volta 2 {
+    e4 e4 e4 d4 
+    e4 a4 a4 gis4 
+    e2 a4 gis4 
+    a4 e4 e4 a4 
+    gis1 }  %5
+  a4 a4 g4 a4 
+  a8 gis8 g4 g4. f8 
+  e2 g4 g4 
+  g4 fis8 e8 fis8 gis8 a4 
+  a4 gis4 e2   %10
+  
 }
 
-
-tenor = \relative c {
-  c'4 c c8 a4 b16 a 
-  gis4 a e'4. d8 
-  c2 e4 d 
-  e e8 d c b a4 
-  b1 
-  c4 c c8 a4 b16 a 
-  gis4 a e'4. d8 
-  c2 e4 d 
-  e e8 d c b a4 
-  b1 
-  c4 d d8 c c4 
-  c8 b c4 c b 
-  g2 b4 b 
-  c8 g d'4 d e 
-  e4. d8 cis2 
+tenor = \relative c' {
+  \repeat volta 2 {
+    c4 c4 c8 a4 b16 a16 
+    gis4 a4 e'4. d8 
+    c2 e4 d4 
+    e4 e8 d8 c8 b8 a4 
+    b1 }  %5
+  c4 d4 d8 c8 c4 
+  c8 b8 c4 c4 b4 
+  g2 b4 b4 
+  c8 g8 d'4 d4 e4 
+  e4. d8 cis2   %10
+  
 }
-
 
 baixo = \relative c {
-  a4 a'8 g fis4 f 
-  e f8 d e2 
-  a, a'4 b 
-  c gis a8 g f4 
-  e1 
-  a,4 a'8 g fis4 f 
-  e f8 d e2 
-  a, a'4 b 
-  c gis a8 g f4 
-  e1 
-  a4 g8 f e4 f8 e 
-  d4 e8 f g2 
-  c, g'8 f e d 
-  c e d c b4 a 
-  e'2 a, 
+  \repeat volta 2 {
+    a4 a'8 g8 fis4 f4 
+    e4 f8 d8 e2 
+    a,2 a'4 b4 
+    c4 gis4 a8 g8 f4 
+    e1 }  %5
+  a4 g8 f8 e4 f8 e8 
+  d4 e8 f8 g2 
+  c,2 g'8 f8 e8 d8 
+  c8 e8 d8 c8 b4 a4 
+  e'2 a,2   %10
+  
 }
-
 
 \score {
   <<

@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -6,106 +5,108 @@
   composer = "J. S. Bach"
 }
 
-global =  {
-  \time 4/4 
+
+global = {
+  \time 4/4
   \key c \minor
 }
 
-soprano = \relative c {
-  c''4 c bes aes 
-  g4. f8 f4 f 
-  aes4. bes8 c4 c 
+
+soprano = \relative c'' {
+  c4 c4 bes4 aes4 
+  g4. f8 f4 f4 
+  aes4. bes8 c4 c4 
   bes4. aes8 aes2 
-  aes4 bes bes aes 
+  aes4 bes4 bes4 aes4   %5
   g4. f8 f2 
-  c'4 c des des 
-  bes bes c c 
-  aes aes des des 
-  c c bes2 
-  g4 aes bes aes 
-  g g f2 
-  f'4 f ees ees 
-  d d c c 
-  c c des c 
-  bes4. aes8 aes4 aes 
-  aes aes des des 
-  bes bes ees ees 
-  c c f f 
-  e e f f
+  c'4 c4 des4 des4 
+  bes4 bes4 c4 c4 
+  aes4 aes4 des4 des4 
+  c4 c4 bes2   %10
+  g4 aes4 bes4 aes4 
+  g4 g4 f2 
+  f'4 f4 ees4 ees4 
+  d4 d4 c4 c4 
+  c4 c4 des4 c4   %15
+  bes4. aes8 aes4 aes4 
+  aes4 aes4 des4 des4 
+  bes4 bes4 ees4 ees4 
+  c4 c4 f4 f4 
+  e4 e4 f4 f4   %20
+  
 }
 
-
-alto = \relative c {
-  f'4 f f8 e f4 
-  f8 g e4 f c 
-  f4. g8 aes4 aes 
-  aes8 f g4 ees2 
-  f4 g e f 
-  f e c2 
-  f4 f f f 
-  g8 aes bes g aes4 aes 
-  f f bes bes 
-  bes a f2 
-  e4 f f8 e f4 
-  f e c2 
-  aes'4 aes g g 
-  g8 aes g f e4 e 
-  f f f8 g aes4 
-  aes8 f g4 ees ees 
-  f f bes bes 
-  g g c c 
-  aes8 g aes bes c4 bes8 aes 
-  g4 g a a 
+alto = \relative c' {
+  f4 f4 f8 e8 f4 
+  f8 g8 e4 f4 c4 
+  f4. g8 aes4 aes4 
+  aes8 f8 g4 ees2 
+  f4 g4 e4 f4   %5
+  f4 e4 c2 
+  f4 f4 f4 f4 
+  g8 aes8 bes8 g8 aes4 aes4 
+  f4 f4 bes4 bes4 
+  bes4 a4 f2   %10
+  e4 f4 f8 e8 f4 
+  f4 e4 c2 
+  aes'4 aes4 g4 g4 
+  g8 aes8 g8 f8 e4 e4 
+  f4 f4 f8 g8 aes4   %15
+  aes8 f8 g4 ees4 ees4 
+  f4 f4 bes4 bes4 
+  g4 g4 c4 c4 
+  aes8 g8 aes8 bes8 c4 bes8 aes8 
+  g4 g4 a4 a4   %20
+  
 }
 
-
-tenor = \relative c {
-  aes'4 a bes c 
-  des c8 bes aes4 aes 
-  c4. bes8 ees4 ees 
-  f ees8 des c2 
-  des4 des g f8 aes 
-  des4 c8 bes aes2 
-  a8 bes c a bes4 bes 
-  bes ees ees ees 
-  des des f f 
-  fis f8 ees des2 
-  c4 c bes c 
-  des c8 bes aes2 
-  c4 c c c 
-  c b c g 
-  a a bes ees, 
-  ees'4. des8 c4 c 
-  des des f f 
-  ees ees g g 
-  f f c f, 
-  c' c c c
+tenor = \relative c' {
+  aes4 a4 bes4 c4 
+  des4 c8 bes8 aes4 aes4 
+  c4. bes8 ees4 ees4 
+  f4 ees8 des8 c2 
+  des4 des4 g,4 f8 aes8   %5
+  des4 c8 bes8 aes2 
+  a8 bes8 c8 a8 bes4 bes4 
+  bes4 ees4 ees4 ees4 
+  des4 des4 f4 f4 
+  fis4 f8 ees8 des2   %10
+  c4 c4 bes4 c4 
+  des4 c8 bes8 aes2 
+  c4 c4 c4 c4 
+  c4 b4 c4 g4 
+  a4 a4 bes4 ees,4   %15
+  ees'4. des8 c4 c4 
+  des4 des4 f4 f4 
+  ees4 ees4 g4 g4 
+  f4 f4 c4 f,4 
+  c'4 c4 c4 c4   %20
+  
 }
-
 
 baixo = \relative c {
-  f4 ees des c 
-  bes c f, f 
-  f' ees8 des c bes aes4 
-  des ees aes,2 
-  des4 c8 bes c4 des 
-  bes c f,2 
-  f'8 g a f bes, c des bes 
-  ees f g ees aes4 aes 
-  des,8 ees f des bes c des bes 
-  ees c f4 bes,2 
-  bes'4 aes g f 
-  bes, c f,2 
-  f8 g aes bes c d ees f 
-  g4 g, c c 
-  f8 ees des c bes4 c8 des 
-  ees4 ees aes, aes 
-  des8 ees des c bes c des bes 
-  ees f ees des c des ees c 
-  f e f g aes g aes bes 
-  c4 c, f f
+  f4 ees4 des4 c4 
+  bes4 c4 f,4 f4 
+  f'4 ees8 des8 c8 bes8 aes4 
+  des4 ees4 aes,2 
+  des4 c8 bes8 c4 des4   %5
+  bes4 c4 f,2 
+  f'8 g8 a8 f8 bes,8 c8 des8 bes8 
+  ees8 f8 g8 ees8 aes4 aes4 
+  des,8 ees8 f8 des8 bes8 c8 des8 bes8 
+  ees8 c8 f4 bes,2   %10
+  bes'4 aes4 g4 f4 
+  bes,4 c4 f,2 
+  f8 g8 aes8 bes8 c8 d8 ees8 f8 
+  g4 g,4 c4 c4 
+  f8 ees8 des8 c8 bes4 c8 des8   %15
+  ees4 ees4 aes,4 aes4 
+  des8 ees8 des8 c8 bes8 c8 des8 bes8 
+  ees8 f8 ees8 des8 c8 des8 ees8 c8 
+  f8 e8 f8 g8 aes8 g8 aes8 bes8 
+  c4 c,4 f4 f4   %20
+  
 }
-
 
 \score {
   <<

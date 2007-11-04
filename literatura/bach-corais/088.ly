@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -6,94 +5,80 @@
   composer = "J. S. Bach"
 }
 
-global =  {
-  \time 4/4 
+
+global = {
+  \time 4/4
   \key a \minor
 }
 
-soprano = \relative c {
-  \partial 4 a''4 
-  a b c d 
-  b4. c8 d4 e 
-  c a b b 
-  a2. a4 
-  a b c d 
-  b4. c8 d4 e 
-  c a b b 
-  a2. e'4 
-  d c b a 
+
+soprano = \relative c'' {
+  \repeat volta 2 {
+    \partial 4 a4 
+    a4 b4 c4 d4 
+    b4. c8 d4 e4 
+    c4 a4 b4 b4 
+    a2. } e'4 
+  d4 c4 b4 a4   %5
   b2. b4 
-  c d e c 
-  d4. c8 b4 b 
-  c d e c 
-  d4. c8 b4 e 
-  c8 b a4 b b 
+  c4 d4 e4 c4 
+  d4. c8 b4 b4 
+  c4 d4 e4 c4 
+  d4. c8 b4 e4   %10
+  c8 b8 a4 b4 b4 
   a2. 
 }
 
-
-alto = \relative c {
-  \partial 4 e'4 
-  e e e d 
-  d g8 fis g4 e 
-  e a a gis 
-  e2. e4 
-  e e e d 
-  d g8 fis g4 e 
-  e a2 gis4 
-  e2. a4 
-  a8 gis a4 a8 gis a a, 
-  e'2. gis4 
-  a g g a 
-  a g8 fis g4 g 
-  g f e a 
-  a8 g fis e d4 e 
-  e a a gis 
-  e2. 
+alto = \relative c' {
+  \repeat volta 2 {
+    \partial 4 e4 
+    e4 e4 e4 d4 
+    d4 g8 fis8 g4 e4 
+    e4 a4 a4 gis4 
+    e2. } a8 gis8 
+  a4 a8 gis8 a8 a,8 e'4~   %5
+  e2 gis4 a4 
+  g4 g4 a4 a4 
+  g8 fis8 g4 g4 g4 
+  f4 e4 a4 a8 g8 
+  fis8 e8 d4 e4 e4   %10
+  a4 a4 gis4 e4~ 
+  e2 
 }
 
-
-tenor = \relative c {
-  \partial 4 c'4 
-  c b a a 
-  g8 fis g a b4 b 
-  a8 b c4 f e8 d 
-  c2. c4 
-  c b a a 
-  g8 fis g a b4 b 
-  a8 b c4 f e8 d 
-  c2. c4 
-  d e f8 e e d 
+tenor = \relative c' {
+  \repeat volta 2 {
+    \partial 4 c4 
+    c4 b4 a4 a4 
+    g8 fis8 g8 a8 b4 b4 
+    a8 b8 c4 f4 e8 d8 
+    c2. } c4 
+  d4 e4 f8 e8 e8 d8   %5
   gis,2. e'4 
-  e d c8 d e4 
-  a, d d d 
-  g, a8 b c d e4 
-  d a b b 
-  a8 b c4 f e8 d 
+  e4 d4 c8 d8 e4 
+  a,4 d4 d4 d4 
+  g,4 a8 b8 c8 d8 e4 
+  d4 a4 b4 b4   %10
+  a8 b8 c4 f4 e8 d8 
   cis2. 
 }
 
-
 baixo = \relative c {
-  \partial 4 a4 
-  a' gis a fis 
-  g2 g,4 gis' 
-  a8 g f e d4 e 
-  a2. a,4 
-  a' gis a fis 
-  g2 g,4 gis' 
-  a8 g f e d4 e 
-  a2. a,4 
-  b c d8 e f4 
+  \repeat volta 2 {
+    \partial 4 a4 
+    a'4 gis4 a4 fis4 
+    g2 g,4 gis'4 
+    a8 g8 f8 e8 d4 e4 
+    a2. } a,4 
+  b4 c4 d8 e8 f4   %5
   e2. e4 
-  a b c8 b a g 
-  fis e d4 g f 
-  e d c b8 a 
-  b c d4 g, gis' 
-  a8 g f e d4 e 
+  a4 b4 c8 b8 a8 g8 
+  fis8 e8 d4 g4 f4 
+  e4 d4 c4 b8 a8 
+  b8 c8 d4 g,4 gis'4   %10
+  a8 g8 f8 e8 d4 e4 
   a,2. 
 }
-
 
 \score {
   <<

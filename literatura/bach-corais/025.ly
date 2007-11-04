@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -6,75 +5,80 @@
   composer = "J. S. Bach"
 }
 
-global =  {
-  \time 4/4 
+
+global = {
+  \time 4/4
   \key c \minor
 }
 
-soprano = \relative c {
-  \partial 4 f'4 
-  f g aes bes 
-  c2 s4 c 
-  c4. bes8 aes4 bes 
-  g2 s4 g 
-  aes bes c c 
-  bes2 c4 c 
-  aes bes c des8 ees 
-  c4 bes8 aes aes4 c 
-  ees c c c 
-  bes2 bes4 bes 
-  c4. bes8 aes4 bes8 aes 
-  g2 f 
+
+soprano = \relative c' {
+  \partial 4 f4 
+    f4 g4 aes4 bes4 
+  c2 r4 c4 
+  c4. bes8 aes4 bes4 
+  g2 r4 g4 
+  aes4 bes4 c4 c4   %5
+  bes2 c4 c4 
+  aes4 bes4 c4 des8 ees8 
+  c4 bes8 aes8 aes4 c4 
+  ees4 c4 c4 c4 
+  bes2 bes4 bes4   %10
+  c4. bes8 aes4 bes8 aes8 
+  g2 f2 
+  
 }
 
-
-alto = \relative c {
-  \partial 4 c'4 
-  c d8 e f e f g 
-  e2 s4 ees4. f8 g4 g8 f e f 
-  e2 s4 e 
-  f ees ees f 
-  f ees ees ees 
-  f f8 g aes4 aes 
-  aes g ees aes 
-  bes aes aes aes 
-  aes g8 f g4 g 
-  g8 f e4 f f2 e4 c2 
+alto = \relative c' {
+  \partial 4 c4 
+    c4 d8 e8 f8 e8 f8 g8 
+  e2 r4 ees4~ 
+  ees8 f8 g4 g8 f8 e8 f8 
+  e2 r4 e4 
+  f4 ees4 ees4 f4   %5
+  f4 ees4 ees4 ees4 
+  f4 f8 g8 aes4 aes4 
+  aes4 g4 ees4 aes4 
+  bes4 aes4 aes4 aes4 
+  aes4 g8 f8 g4 g4   %10
+  g8 f8 e4 f4 f4~ 
+  f4 e4 c2 
+  
 }
 
-
-tenor = \relative c {
-  \partial 4 aes'8 bes 
-  c4 bes c des 
-  g2 s4 aes 
-  aes g c des 
-  c2 s4 c 
-  c8 des c bes aes4 aes2 g4 aes aes 
-  aes des c f 
-  ees des8 c c4 ees 
-  ees ees f ees 
-  f8 ees d4 ees ees8 des 
-  c4 c c bes8 c 
-  des4 c8 bes a2 
+tenor = \relative c' {
+  \partial 4 aes8  bes8 
+    c4 bes4 c4 des4 
+  g2 r4 aes4 
+  aes4 g4 c4 des4 
+  c2 r4 c4 
+  c8 des8 c8 bes8 aes4 aes4~   %5
+  aes4 g4 aes4 aes4 
+  aes4 des4 c4 f4 
+  ees4 des8 c8 c4 ees4 
+  ees4 ees4 f4 ees4 
+  f8 ees8 d4 ees4 ees8 des8   %10
+  c4 c4 c4 bes8 c8 
+  des4 c8 bes8 a2 
+  
 }
-
 
 baixo = \relative c {
-  \partial 4 f8 g 
-  aes4 g f des 
-  c2 s4 aes8 bes 
-  c des ees e f4 bes, 
-  c2 s4 c 
-  f g aes8 g f ees 
-  des4 ees aes, aes 
-  des8 c bes4 f'8 ees des4 
-  ees2 aes,4 aes' 
-  g aes8 g f ees d c 
-  ees4 bes ees g8 f 
-  e d c4 f8 ees des c 
-  bes4 c f,2 
+  \partial 4 f8  g8 
+    aes4 g4 f4 des4 
+  c2 r4 aes8 bes8 
+  c8 des8 ees8 e8 f4 bes,4 
+  c2 r4 c4 
+  f4 g4 aes8 g8 f8 ees8   %5
+  des4 ees4 aes,4 aes4 
+  des8 c8 bes4 f'8 ees8 des4 
+  ees2 aes,4 aes'4 
+  g4 aes8 g8 f8 ees8 d8 c8 
+  ees4 bes4 ees4 g8 f8   %10
+  e8 d8 c4 f8 ees8 des8 c8 
+  bes4 c4 f,2 
+  
 }
-
 
 \score {
   <<

@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -6,111 +5,101 @@
   composer = "J. S. Bach"
 }
 
-global =  {
-  \time 4/4 
+
+global = {
+  \time 4/4
   \key aes \major
 }
 
-soprano = \relative c {
-  \partial 4 ees''4 
-  f ees8 des c des ees4 
-  des8 c des4 c bes 
-  c des ees des8 c 
-  bes aes bes4 aes ees' 
-  f ees8 des c des ees4 
-  des8 c des4 c bes 
-  c des ees des8 c 
-  bes aes bes4 aes aes 
-  bes c des8 c bes4 
-  c bes aes aes8 bes 
-  c4 des ees f 
-  c d ees c8 des 
-  ees4 f ees8 des c4 
-  des2 c4 f 
-  f f bes, ees 
-  des c bes des 
-  c bes aes bes8 aes 
-  fis4 f ees ees 
-  aes bes c4. des8 
-  ees4 des8 c bes4 c8 des 
+
+soprano = \relative c'' {
+  \repeat volta 2 {
+    \partial 4 ees4 
+    f4 ees8 des8 c8 des8 ees4 
+    des8 c8 des4 c4 bes4 
+    c4 des4 ees4 des8 c8 
+    bes8 aes8 bes4 aes4 } aes4 
+  bes4 c4 des8 c8 bes4   %5
+  c4 bes4 aes4 aes8 bes8 
+  c4 des4 ees4 f4 
+  c4 d4 ees4 c8 des8 
+  ees4 f4 ees8 des8 c4 
+  des2 c4 f4   %10
+  f4 f4 bes,4 ees4 
+  des4 c4 bes4 des4 
+  c4 bes4 aes4 bes8 aes8 
+  fis4 f4 ees4 ees4 
+  aes4 bes4 c4. des8   %15
+  ees4 des8 c8 bes4 c8 des8 
   bes2 aes4 
 }
 
-
-alto = \relative c {
-  \partial 4 aes''4 
-  aes g aes g 
-  f8 aes4 g8 aes4 bes 
-  aes aes aes aes 
-  aes g ees aes 
-  aes g aes g 
-  f8 aes4 g8 aes4 bes 
-  aes aes aes aes 
-  aes g ees ees 
-  ees8 f g4 f f8 ees 
-  ees4 des c f 
-  ees f fis f8 g 
-  aes g aes bes g4 ees 
-  aes aes bes c 
-  c8 a bes4 a c 
-  bes f8 des ees f fis4 
-  f ees des bes' 
-  ees,8 f fis4 f8 ees f4. ees4 d8 ees4 ees8 des 
-  c bes aes fis aes4 aes' 
-  g aes aes aes2 g4 ees 
+alto = \relative c'' {
+  \repeat volta 2 {
+    \partial 4 aes4 
+    aes4 g4 aes4 g4 
+    f8 aes4 g8 aes4 bes4 
+    aes4 aes4 aes4 aes4 
+    aes4 g4 ees4 } ees4 
+  ees8 f8 g4 f4 f8 ees8   %5
+  ees4 des4 c4 f4 
+  ees4 f4 fis4 f8 g8 
+  aes8 g8 aes8 bes8 g4 ees4 
+  aes4 aes4 bes4 c4 
+  c8 a8 bes4 a4 c4   %10
+  bes4 f8 des8 ees8 f8 fis4 
+  f4 ees4 des4 bes'4 
+  ees,8 f8 fis4 f8 ees8 f4~ 
+  f8 ees4 d8 ees4 ees8 des8 
+  c8 bes8 aes8 fis8 aes4 aes'4   %15
+  g4 aes4 aes4 aes4~ 
+  aes4 g4 ees4 
 }
 
-
-tenor = \relative c {
-  \partial 4 c'4 
-  des8 c bes4 f' bes,8 c 
-  des f ees4 ees ees 
-  ees aes,8 bes c aes f'4 
-  bes,8 c des4 c c 
-  des8 c bes4 f' bes,8 c 
-  des f ees4 ees ees 
-  ees aes,8 bes c aes f'4 
-  bes,8 c des4 c c 
-  bes ees aes, bes4. aes4 g8 aes4 aes 
-  aes aes aes aes 
-  aes8 bes16 bes bes4 bes aes 
-  aes8 ees' des c bes4 f' 
-  f2 f4 f8 ees 
-  des c bes4. a8 bes c 
-  a bes4 a8 bes4 f8 g 
-  aes4 ees'8 des b4 bes 
-  bes aes g g 
-  aes ees' ees f 
-  ees2 f8 ees des4 
-  ees8 f ees des c4 
+tenor = \relative c' {
+  \repeat volta 2 {
+    \partial 4 c4 
+    des8 c8 bes4 f'4 bes,8 c8 
+    des8 f8 ees4 ees4 ees4 
+    ees4 aes,8 bes8 c8 aes8 f'4 
+    bes,8 c8 des4 c4 } c4 
+  bes4 ees4 aes,4 bes4~   %5
+  bes8 aes4 g8 aes4 aes4 
+  aes4 aes4 aes4 aes4 
+  aes8 bes16 bes16 bes4 bes4 aes4 
+  aes8 ees'8 des8 c8 bes4 f'4 
+  f2 f4 f8 ees8   %10
+  des8 c8 bes4. a8 bes8 c8 
+  a8 bes4 a8 bes4 f8 g8 
+  aes4 ees'8 des8 b4 bes4 
+  bes4 aes4 g4 g4 
+  aes4 ees'4 ees4 f4   %15
+  ees2 f8 ees8 des4 
+  ees8 f8 ees8 des8 c4 
 }
 
-
-baixo = \relative c {
-  \partial 4 aes'4 
-  des, ees f g8 aes 
-  bes4 ees, aes g 
-  aes8 g f4 c des 
-  ees2 aes,4 aes' 
-  des, ees f g8 aes 
-  bes4 ees, aes g8 s8 
-  aes g f4 c des 
-  ees2 aes,4 aes' 
-  g f8 ees f4 g 
-  aes ees aes, des 
-  aes'8 fis f ees des c des ees 
-  f4 bes, ees aes8 bes 
-  c4 des g a 
-  bes bes, f' a, 
-  bes8 c des bes fis'4 f8 ees 
-  f4 f, bes bes 
-  c8 d ees2 d4 
-  ees bes ees c 
-  f ees aes8 g f4 
-  c8 bes aes4 des8 c bes4 
-  ees8 des ees4 aes, 
+baixo = \relative c' {
+  \repeat volta 2 {
+    \partial 4 aes4 
+    des,4 ees4 f4 g8 aes8 
+    bes4 ees,4 aes4 g4 
+    aes8 g8 f4 c4 des4 
+    ees2 aes,4 } aes,4 
+  aes'4 g4 f8 ees8 f4   %5
+  g4 aes4 ees4 aes,4 
+  des4 aes'8 fis8 f8 ees8 des8 c8 
+  des8 ees8 f4 bes,4 ees4 
+  aes8 bes8 c4 des4 g4 
+  a4 bes4 bes,4 f'4   %10
+  a,4 bes8 c8 des8 bes8 fis'4 
+  f8 ees8 f4 f,4 bes4 
+  bes4 c8 d8 ees2 
+  d4 ees4 bes4 ees4 
+  c4 f4 ees4 aes8 g8   %15
+  f4 c8 bes8 aes4 des8 c8 
+  bes4 ees8 des8 ees4 aes,4 
+  
 }
-
 
 \score {
   <<

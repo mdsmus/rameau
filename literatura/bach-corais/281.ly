@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -6,78 +5,80 @@
   composer = "J. S. Bach"
 }
 
-global =  {
-  \time 4/4 
+
+global = {
+  \time 4/4
   \key g \minor
 }
 
-soprano = \relative c {
-  \partial 4 g''4 
-  g a bes c 
+
+soprano = \relative c'' {
+  \partial 4 g4 
+    g4 a4 bes4 c4 
   d2. d4 
-  d c bes c 
+  d4 c4 bes4 c4 
   bes2. bes4 
-  bes c d d 
-  c2 d4 d 
-  bes c d d 
-  c2 bes4 d 
-  f d d d 
-  c2 c4 c 
-  d c bes c8 bes 
-  a2 g1 
+  bes4 c4 d4 d4   %5
+  c2 d4 d4 
+  bes4 c4 d4 d4 
+  c2 bes4 d4 
+  f4 d4 d4 d4 
+  c2 c4 c4   %10
+  d4 c4 bes4 c8 bes8 
+  a2 g2~ 
+  g2 
 }
 
-
-alto = \relative c {
-  \partial 4 d'4 
-  d d d g 
+alto = \relative c' {
+  \partial 4 d4 
+    d4 d4 d4 g4 
   fis2. fis4 
-  g g8 fis g4 a 
+  g4 g8 fis8 g4 a4 
   f2. f4 
-  g a bes bes 
-  bes a bes a 
-  g a8 g f4 f 
-  g f f bes 
-  c bes a g 
-  g f8 e f4 g 
-  fis fis g g 
-  g fis d1 
+  g4 a4 bes4 bes4   %5
+  bes4 a4 bes4 a4 
+  g4 a8 g8 f4 f4 
+  g4 f4 f4 bes4 
+  c4 bes4 a4 g4 
+  g4 f8 e8 f4 g4   %10
+  fis4 fis4 g4 g4 
+  g4 fis4 d2~ 
+  d2 
 }
 
-
-tenor = \relative c {
-  \partial 4 bes'4 
-  bes a g8 bes ees4 
+tenor = \relative c' {
+  \partial 4 bes4 
+    bes4 a4 g8 bes8 ees4 
   a2. a4 
-  bes c d ees 
+  bes4 c4 d4 ees4 
   d2. d4 
-  d f f g 
-  g f f d 
-  d f bes, bes 
-  bes a d f 
-  f f8 g a a, bes4 
-  bes a8 g a4 g 
-  a d d c8 d 
-  ees4 d8 c b1 
+  d4 f4 f4 g4   %5
+  g4 f4 f4 d4 
+  d4 f4 bes,4 bes4 
+  bes4 a4 d4 f4 
+  f4 f8 g8 a8 a,8 bes4 
+  bes4 a8 g8 a4 g4   %10
+  a4 d4 d4 c8 d8 
+  ees4 d8 c8 b2~ 
+  b2 
 }
-
 
 baixo = \relative c {
   \partial 4 g4 
-  g' fis g ees 
+    g'4 fis4 g4 ees4 
   d2. c4 
-  bes a g c 
+  bes4 a4 g4 c4 
   d2. d4 
-  g f bes8 a g f 
-  ees4 f bes, fis 
-  g8 g' f ees d c bes d 
-  ees c f4 bes, bes' 
-  a bes fis g 
-  e c f ees 
-  d8 c bes a g f' ees d 
-  c4 d g,1 
+  g4 f4 bes8 a8 g8 f8   %5
+  ees4 f4 bes,4 fis4 
+  g8 g'8 f8 ees8 d8 c8 bes8 d8 
+  ees8 c8 f4 bes,4 bes'4 
+  a4 bes4 fis4 g4 
+  e4 c4 f4 ees4   %10
+  d8 c8 bes8 a8 g8 f'8 ees8 d8 
+  c4 d4 g,2~ 
+  g2 
 }
-
 
 \score {
   <<

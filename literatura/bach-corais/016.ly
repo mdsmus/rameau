@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -6,118 +5,104 @@
   composer = "J. S. Bach"
 }
 
-global =  {
-  \time 4/4 
+
+global = {
+  \time 4/4
   \key b \minor
 }
 
-soprano = \relative c {
-  \partial 4 cis''4 
-  d cis b cis8 d 
-  e4 fis e d 
-  cis2 s4 e 
-  d cis d b 
-  a fis8 g a4 g 
-  fis2. cis'4 
-  d cis b cis8 d 
-  e4 fis e d 
-  cis2 s4 e 
-  d cis d b 
-  a fis8 g a4 g 
-  fis2. a4 
-  g fis e fis 
-  d e fis cis' 
-  d cis b cis8 d 
-  e4 d cis fis 
-  e8 d cis d e4 b 
-  a g fis e 
-  a b cis8 d e4 
-  d cis b d 
-  cis b a8 g fis g 
-  a4 g fis1. 
+
+soprano = \relative c'' {
+  \repeat volta 2 {
+    \partial 4 cis4 
+    d4 cis4 b4 cis8 d8 
+    e4 fis4 e4 d4 
+    cis2 r4 e4 
+    d4 cis4 d4 b4 
+    a4 fis8 g8 a4 g4     %5
+    fis2. } a4 
+  g4 fis4 e4 fis4 
+  d4 e4 fis4 cis'4 
+  d4 cis4 b4 cis8 d8 
+  e4 d4 cis4 fis4   %10
+  e8 d8 cis8 d8 e4 b4 
+  a4 g4 fis4 e4 
+  a4 b4 cis8 d8 e4 
+  d4 cis4 b4 d4 
+  cis4 b4 a8 g8 fis8 g8   %15
+  a4 g4 fis2~ 
+  fis1 
+  
 }
 
-
-alto = \relative c {
-  \partial 4 fis'4 
-  fis fis g a 
-  g fis8 gis ais4 b 
-  ais2 s4 cis 
-  b8 a g4 a g8 fis 
-  e4 d8 e fis4 e8 d 
-  cis2. fis4 
-  fis fis g a 
-  g fis8 gis ais4 b 
-  ais2 s4 cis 
-  b8 a g4 a g8 fis 
-  e4 d8 e fis4 e8 d 
-  cis2. cis4 
-  d d cis cis 
-  d8 cis b4 cis fis 
-  fis8 gis ais4 b ais8 b 
-  cis fis, fis4 fis a 
-  gis a e e 
-  e8 d e cis d4 cis 
-  cis8 dis e4 e8 fis g fis 
-  fis gis a4 gis fis 
-  e8 fis g4 fis8 e d4 
-  e2. d2 cis8 b cis2 
+alto = \relative c' {
+  \repeat volta 2 {
+    \partial 4 fis4 
+    fis4 fis4 g4 a4 
+    g4 fis8 gis8 ais4 b4 
+    ais2 r4 cis4 
+    b8 a8 g4 a4 g8 fis8 
+    e4 d8 e8 fis4 e8 d8     %5
+    cis2. } cis4 
+  d4 d4 cis4 cis4 
+  d8 cis8 b4 cis4 fis4 
+  fis8 gis8 ais4 b4 ais8 b8 
+  cis8 fis,8 fis4 fis4 a4   %10
+  gis4 a4 e4 e4 
+  e8 d8 e8 cis8 d4 cis4 
+  cis8 dis8 e4 e8 fis8 g8 fis8 
+  fis8 gis8 a4 gis4 fis4 
+  e8 fis8 g4 fis8 e8 d4   %15
+  e2. d4~ 
+  d4 cis8 b8 cis2 
+  
 }
 
-
-tenor = \relative c {
-  \partial 4 ais'4 
-  b cis8 d e4 a, 
-  b8 cis d4 e fis 
-  fis2 s4 fis 
-  fis e d d 
-  e a,8 b c4 b 
-  ais2. ais4 
-  b cis8 d e4 a, 
-  b8 cis d4 e fis 
-  fis2 s4 fis 
-  fis e d d 
-  e a,8 b c4 b 
-  ais2. a4 
-  b a a8 g fis4 
-  fis b ais ais 
-  b e fis e8 d 
-  cis4 b ais b 
-  b a b8 a gis4 
-  a a a a 
-  a gis ais8 b cis4. b8 e4 e a,8 b 
-  cis4 d d a 
-  a b cis b2 ais8 gis ais2 
+tenor = \relative c' {
+  \repeat volta 2 {
+    \partial 4 ais4 
+    b4 cis8 d8 e4 a,4 
+    b8 cis8 d4 e4 fis4 
+    fis2 r4 fis4 
+    fis4 e4 d4 d4 
+    e4 a,8 b8 c4 b4     %5
+    ais2. } a4 
+  b4 a4 a8 g8 fis4 
+  fis4 b4 ais4 ais4 
+  b4 e4 fis4 e8 d8 
+  cis4 b4 ais4 b4   %10
+  b4 a4 b8 a8 gis4 
+  a4 a4 a4 a4 
+  a4 gis4 ais8 b8 cis4~ 
+  cis8 b8 e4 e4 a,8 b8 
+  cis4 d4 d4 a4   %15
+  a4 b4 cis4 b4~ 
+  b4 ais8 gis8 ais2 
+  
 }
-
 
 baixo = \relative c {
-  \partial 4 fis4 
-  b a g fis 
-  e d cis b 
-  fis'2 s4 ais 
-  b e, fis g 
-  cis, d dis e 
-  fis2. fis4 
-  b a g fis 
-  e d cis b 
-  fis'2 s4 ais 
-  b e, fis g 
-  cis, d dis e 
-  fis2. fis4 
-  b,8 cis d4 a ais 
-  b g fis fis' 
-  b cis d cis8 b 
-  ais4 b fis dis 
-  e fis gis8 fis e d 
-  cis b cis a d4 a'8 gis 
-  fis4 e8 d cis b ais4 
-  b cis8 dis e4 fis8 gis 
-  a4 b8 cis d4 d, 
-  c b ais b 
+  \repeat volta 2 {
+    \partial 4 fis4 
+    b4 a4 g4 fis4 
+    e4 d4 cis4 b4 
+    fis'2 r4 ais4 
+    b4 e,4 fis4 g4 
+    cis,4 d4 dis4 e4     %5
+    fis2. } fis4 
+  b,8 cis8 d4 a4 ais4 
+  b4 g4 fis4 fis'4 
+  b4 cis4 d4 cis8 b8 
+  ais4 b4 fis4 dis4   %10
+  e4 fis4 gis8 fis8 e8 d8 
+  cis8 b8 cis8 a8 d4 a'8 gis8 
+  fis4 e8 d8 cis8 b8 ais4 
+  b4 cis8 dis8 e4 fis8 gis8 
+  a4 b8 cis8 d4 d,4   %15
+  c4 b4 ais4 b4 
   fis1 
+  
 }
-
 
 \score {
   <<

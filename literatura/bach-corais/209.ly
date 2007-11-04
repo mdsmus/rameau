@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -6,95 +5,100 @@
   composer = "J. S. Bach"
 }
 
-global =  {
-  \time 3/4 
+
+global = {
+  \time 3/4
   \key bes \major
 }
 
-soprano = \relative c {
-  \partial 4 f'4 bes 
-  d8 c d bes g'4 ees2 f4 bes, ees 
-  c2 bes4 c 
-  ees d c d8 c 
-  d bes a bes bes4. c8 
-  c2 f,4 bes 
-  d8 c d bes g'4 ees2 f4 bes, ees 
-  c2 bes4 c 
-  ees d c d8 c 
-  d bes a bes bes4. c8 
-  c2 a4 bes 
-  c d g, g'8 ees 
-  c b c d d4. ees8 
-  ees2 c4 a 
-  bes8 a g f f'4. bes,8 
-  g'4. f8 ees d c bes 
+
+soprano = \relative c' {
+  \repeat volta 2 {
+    \partial 4 f4 
+    bes4 d8 c8 d8 bes8 
+    g'4 ees2 
+    f4 bes,4 ees4 
+    c2 bes4 
+    c4 ees4 d4     %5
+    c4 d8 c8 d8 bes8 
+    a8 bes8 bes4. c8 
+    c2 } a4 
+  bes4 c4 d4 
+  g,4 g'8 ees8 c8 b8   %10
+  c8 d8 d4. ees8 
+  ees2 c4 
+  a4 bes8 a8 g8 f8 
+  f'4. bes,8 g'4~ 
+  g8 f8 ees8 d8 c8 bes8   %15
   bes2. 
+  
 }
 
-
-alto = \relative c {
-  \partial 4 d'4 f 
-  bes8 a bes4 bes g2 f4 g8 a bes4 
-  bes a f f 
-  f4. g8 a4 bes8 a 
-  bes4 ees, f8 ees f e 
-  f2 d4 f 
-  bes8 a bes4 bes g2 f4 g8 a bes4 
-  bes a f f 
-  f4. g8 a4 bes8 a 
-  bes4 ees, f8 ees f e 
-  f2 f4 f2 f4 ees4. g8 
-  ees d ees4 gis g 
-  g2 g4 f 
-  g a bes4. bes8 
-  bes4 bes bes a 
+alto = \relative c' {
+  \repeat volta 2 {
+    \partial 4 d4 
+    f4 bes8 a8 bes4 
+    bes4 g2 
+    f4 g8 a8 bes4 
+    bes4 a4 f4 
+    f4 f4. g8     %5
+    a4 bes8 a8 bes4 
+    ees,4 f8 ees8 f8 e8 
+    f2 } f4 
+  f2 f4 
+  ees4. g8 ees8 d8   %10
+  ees4 gis4 g4 
+  g2 g4 
+  f4 g4 a4 
+  bes4. bes8 bes4 
+  bes4 bes4 a4   %15
   f2. 
+  
 }
 
-
-tenor = \relative c {
-  \partial 4 bes'4 bes 
-  f'8 ees f4 ees bes8 a 
-  bes c d2 g4 
-  f4. ees8 d4 c8 bes 
-  c a bes4 c f, 
-  f c' bes f8 g 
-  a2 bes4 bes 
-  f'8 ees f4 ees bes8 a 
-  bes c d2 g4 
-  f4. ees8 d4 c8 bes 
-  c a bes4 c f, 
-  f c' bes f8 g 
-  a2 c4 f, 
-  a bes bes4. bes8 
-  c4. c8 c4 b 
-  c2 c4 c2 c4 d4. d8 
-  ees4 bes f' ees8 d 
+tenor = \relative c' {
+  \repeat volta 2 {
+    \partial 4 bes4 
+    bes4 f'8 ees8 f4 
+    ees4 bes8 a8 bes8 c8 
+    d2 g4 
+    f4. ees8 d4 
+    c8 bes8 c8 a8 bes4     %5
+    c4 f,4 f4 
+    c'4 bes4 f8 g8 
+    a2 } c4 
+  f,4 a4 bes4 
+  bes4. bes8 c4~   %10
+  c8 c8 c4 b4 
+  c2 c4 
+  c2 c4 
+  d4. d8 ees4 
+  bes4 f'4 ees8 d8   %15
   d2. 
+  
 }
 
-
-baixo = \relative c {
-  \partial 4 bes'4 d, 
-  c bes ees g8 f 
-  g ees bes' a g4 ees 
-  f2 bes,4 a'8 g 
-  a f bes4 f ees 
-  d c d8 c d bes 
-  f2 bes'4 d, 
-  c bes ees g8 f 
-  g ees bes' a g4 ees 
-  f2 bes,4 a'8 g 
-  a f bes4 f ees 
-  d c d8 c d bes 
-  f2 f'8 ees d4 
-  ees8 d c bes ees4. ees8 
-  gis4. g8 f4 g 
-  c,2 ees4 f2 ees4 d g8 f 
-  ees d ees4 f f, 
+baixo = \relative c' {
+  \repeat volta 2 {
+    \partial 4 bes4 
+    d,4 c4 bes4 
+    ees4 g8 f8 g8 ees8 
+    bes'8 a8 g4 ees4 
+    f2 bes,4 
+    a'8 g8 a8 f8 bes4     %5
+    f4 ees4 d4 
+    c4 d8 c8 d8 bes8 
+    f2 } f'8 ees8 
+  d4 ees8 d8 c8 bes8 
+  ees4. ees8 gis4~   %10
+  gis8 g8 f4 g4 
+  c,2 ees4 
+  f2 ees4 
+  d4 g8 f8 ees8 d8 
+  ees4 f4 f,4   %15
   bes2. 
+  
 }
-
 
 \score {
   <<

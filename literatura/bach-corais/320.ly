@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -6,67 +5,72 @@
   composer = "J. S. Bach"
 }
 
-global =  {
-  \time 4/4 
+
+global = {
+  \time 4/4
   \key fis \minor
 }
 
-soprano = \relative c {
-  cis''2 e 
-  cis4 cis cis cis 
-  d2 cis 
+
+soprano = \relative c'' {
+  cis2 e2 
+  cis4 cis4 cis4 cis4 
+  d2 cis2 
   b1 
-  a 
-  cis2 e 
-  b4 b b b 
-  b2 fis4 gis 
-  a2 gis 
-  fis1*2 
+  a1   %5
+  cis2 e2 
+  b4 b4 b4 b4 
+  b2 fis4 gis4 
+  a2 gis2 
+  fis1~   %10
+  fis1 
+  
 }
 
-
-alto = \relative c {
-  fis'2 e 
-  e4 f fis gis 
-  fis e2 fis4 
-  fis2 e 
+alto = \relative c' {
+  fis2 e2 
+  e4 f4 fis4 gis4 
+  fis4 e2 fis4 
+  fis2 e2 
+  e1   %5
   e1 
-  e 
-  e4 gis fis a 
-  gis2 fis 
+  e4 gis4 fis4 a4 
+  gis2 fis2 
   fis2. f4 
-  cis2 d1 cis2 
+  cis2 d2~   %10
+  d2 cis2 
+  
 }
 
-
-tenor = \relative c {
-  a'2 b 
-  cis4 b a gis 
-  a b2 a4 
-  a2 gis 
-  a1 
-  a2 a 
-  gis4 b a fis' 
-  e2 b 
-  cis b 
-  ais b1 ais2 
+tenor = \relative c' {
+  a2 b2 
+  cis4 b4 a4 gis4 
+  a4 b2 a4 
+  a2 gis2 
+  a1   %5
+  a2 a2 
+  gis4 b4 a4 fis'4 
+  e2 b2 
+  cis2 b2 
+  ais2 b2~   %10
+  b2 ais2 
+  
 }
-
 
 baixo = \relative c {
-  fis2 gis 
-  a4 gis fis f 
-  fis gis a fis 
-  d b e2 
-  a,1 
-  a4 b cis d 
-  e2 dis 
-  e d 
+  fis2 gis2 
+  a4 gis4 fis4 f4 
+  fis4 gis4 a4 fis4 
+  d4 b4 e2 
+  a,1   %5
+  a4 b4 cis4 d4 
+  e2 dis2 
+  e2 d2 
   cis1 
-  fis,4 e' d b 
+  fis,4 e'4 d4 b4   %10
   fis1 
+  
 }
-
 
 \score {
   <<

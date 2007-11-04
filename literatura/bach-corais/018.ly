@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -6,77 +5,80 @@
   composer = "J. S. Bach"
 }
 
-global =  {
-  \time 4/4 
+
+global = {
+  \time 4/4
   \key g \major
 }
 
-soprano = \relative c {
-  g''4 g8 a b4 c 
-  d e d2 
-  e4 fis g d 
-  b cis d2 
-  c4 a b c 
-  b a g2 
-  fis4 g a b 
-  a4. g8 fis4 e 
+
+soprano = \relative c'' {
+  g4 g8 a8 b4 c4 
+  d4 e4 d2 
+  e4 fis4 g4 d4 
+  b4 cis4 d2 
+  c4 a4 b4 c4   %5
+  b4 a4 g2 
+  fis4 g4 a4 b4 
+  a4. g8 fis4 e4 
   d1 
-  g4 g8 a b4 c 
-  d e d2 
-  g,4 a b c 
-  b a g2 
+  g4 g8 a8 b4 c4   %10
+  d4 e4 d2 
+  g,4 a4 b4 c4 
+  b4 a4 g2 
+  
 }
 
-
-alto = \relative c {
-  d'4 e8 fis g4 fis8 e 
-  d fis b a fis2 
-  a4 a g a 
-  g8 fis e4 fis2 
-  e4 d d c 
+alto = \relative c' {
+  d4 e8 fis8 g4 fis8 e8 
+  d8 fis8 b8 a8 fis2 
+  a4 a4 g4 a4 
+  g8 fis8 e4 fis2 
+  e4 d4 d4 c4   %5
   d4. c8 b2 
-  d4 cis8 b a4 d 
-  e8*5 d4 cis8 
+  d4 cis8 b8 a4 d4 
+  e2~ e8 d4 cis8 
   a1 
-  d4 e8 fis g4 g 
-  f e8 fis g2 
-  g8 e d c b a g fis' 
+  d4 e8 fis8 g4 g4   %10
+  f4 e8 fis8 g2 
+  g8 e8 d8 c8 b8 a8 g8 fis'8 
   g4. fis8 d2 
+  
 }
 
-
-tenor = \relative c {
-  b'4 c d c 
-  b16 c d4 cis8 d2 
-  c8 b c d b4 a 
-  d a a2 
-  g4 a g8 fis g4 
-  g fis g2 
-  a4 g d'8 cis b4 
-  e, a2 g4 
+tenor = \relative c' {
+  b4 c4 d4 c4 
+  b16 c16 d4 cis8 d2 
+  c8 b8 c8 d8 b4 a4 
+  d4 a4 a2 
+  g4 a4 g8 fis8 g4   %5
+  g4 fis4 g2 
+  a4 g4 d'8 cis8 b4 
+  e,4 a2 g4 
   fis1 
-  g4 c d c4. b8 c4 b2 
-  b4 a d e8 a, 
-  b c d4 b2 
+  g4 c4 d4 c4~   %10
+  c8 b8 c4 b2 
+  b4 a4 d4 e8 a,8 
+  b8 c8 d4 b2 
+  
 }
 
-
-baixo = \relative c {
-  g'4 c, g8 g' a4 
-  b8 a g a d,2 
-  a'4 d, e fis 
-  g a d,2 
-  e4 fis g e 
-  d8 c d4 g,2 
-  d'4 e fis g 
-  cis, a d a 
+baixo = \relative c' {
+  g4 c,4 g8 g'8 a4 
+  b8 a8 g8 a8 d,2 
+  a'4 d,4 e4 fis4 
+  g4 a4 d,2 
+  e4 fis4 g4 e4   %5
+  d8 c8 d4 g,2 
+  d'4 e4 fis4 g4 
+  cis,4 a4 d4 a4 
   d1 
-  b4 c g' e 
-  d c g'2 
-  e4 fis g e 
-  d2 g 
+  b4 c4 g'4 e4   %10
+  d4 c4 g'2 
+  e4 fis4 g4 e4 
+  d2 g2 
+  
 }
-
 
 \score {
   <<

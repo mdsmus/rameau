@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -6,71 +5,76 @@
   composer = "J. S. Bach"
 }
 
-global =  {
-  \time 4/4 
+
+global = {
+  \time 4/4
   \key e \minor
 }
 
-soprano = \relative c {
-  e'4 b' b a 
-  b e,8 fis g4 g 
-  g fis e2 
-  g4 g g e 
-  g a b a 
-  g fis e2 
-  g4 g g e 
-  g a b a 
-  g2 s4 d' 
-  e d8 c b a g a 
-  b4 a g fis 
+
+soprano = \relative c' {
+  e4 b'4 b4 a4 
+  b4 e,8 fis8 g4 g4 
+  g4 fis4 e2 
+  g4 g4 g4 e4 
+  g4 a4 b4 a4   %5
+  g4 fis4 e2 
+  g4 g4 g4 e4 
+  g4 a4 b4 a4 
+  g2 r4 d'4 
+  e4 d8 c8 b8 a8 g8 a8   %10
+  b4 a4 g4 fis4 
   e1 
+  
 }
 
-
-alto = \relative c {
-  b'4 b e8 dis e4 
-  dis e8 dis e4 e 
+alto = \relative c' {
+  b4 b4 e8 dis8 e4 
+  dis4 e8 dis8 e4 e4 
   e4. dis8 b2 
-  e4 e d c 
-  d e8 fis g4. fis4 e dis8 b2 
-  e4 g8 fis e4 c 
-  e8 d e fis g4. fis8 
-  d2 s4 g8 f 
-  e4 fis g8 dis e d4 g fis e dis8 
+  e4 e4 d4 c4 
+  d4 e8 fis8 g4. fis8~   %5
+  fis8 e4 dis8 b2 
+  e4 g8 fis8 e4 c4 
+  e8 d8 e8 fis8 g4. fis8 
+  d2 r4 g8 f8 
+  e4 fis4 g8 dis8 e8 d8~   %10
+  d8 g4 fis4 e4 dis8 
   b1 
+  
 }
 
-
-tenor = \relative c {
-  g'4 fis g fis8 e 
-  fis4 b8 a b4 e8 dis 
-  cis4 fis,8 b16 a g2 
-  b4 c g g 
-  g8 a16 b c4 d8 e16 d c b c8 
+tenor = \relative c' {
+  g4 fis4 g4 fis8 e8 
+  fis4 b8 a8 b4 e8 dis8 
+  cis4 fis,8 b16 a16 g2 
+  b4 c4 g4 g4 
+  g8 a16 b16 c4 d8 e16 d16 c16 b16 c8   %5
   b4 b8. a16 g2 
-  b8 c d4 c g 
-  g c d d8. c16 
-  b2 s4 d 
-  c8 b a4 g8 c b a 
-  g d' e b b4 c8 b16 a 
+  b8 c8 d4 c4 g4 
+  g4 c4 d4 d8. c16 
+  b2 r4 d4 
+  c8 b8 a4 g8 c8 b8 a8   %10
+  g8 d'8 e8 b8 b4 c8 b16 a16 
   gis1 
+  
 }
-
 
 baixo = \relative c {
   e4. d8 c2 
-  b8 a' g fis e d c b 
-  ais4 b e,2 
-  e'8 d c4 b c4. b8 a4 g a 
-  b2 e 
-  e4 b c8 d e d 
-  c b a4 g d' 
-  g,2 s4 b 
-  c d e4. fis8 
-  g b, cis dis e g, a b 
+  b8 a'8 g8 fis8 e8 d8 c8 b8 
+  ais4 b4 e,2 
+  e'8 d8 c4 b4 c4~ 
+  c8 b8 a4 g4 a4   %5
+  b2 e2 
+  e4 b4 c8 d8 e8 d8 
+  c8 b8 a4 g4 d'4 
+  g,2 r4 b4 
+  c4 d4 e4. fis8   %10
+  g8 b,8 cis8 dis8 e8 g,8 a8 b8 
   e,1 
+  
 }
-
 
 \score {
   <<

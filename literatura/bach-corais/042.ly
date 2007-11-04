@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -6,82 +5,72 @@
   composer = "J. S. Bach"
 }
 
-global =  {
-  \time 4/4 
+
+global = {
+  \time 4/4
   \key a \major
 }
 
-soprano = \relative c {
-  \partial 4 cis''4 
-  a b cis e 
-  d d cis e 
-  d cis b b 
-  cis2. cis4 
-  a b cis e 
-  d d cis e 
-  d cis b b 
-  cis2. b4 
-  b b cis b 
-  a b gis gis 
-  a b cis b8 cis 
-  d4 cis b2 
+
+soprano = \relative c'' {
+  \repeat volta 2 {
+    \partial 4 cis4 
+    a4 b4 cis4 e4 
+    d4 d4 cis4 e4 
+    d4 cis4 b4 b4 
+    cis2. } b4 
+  b4 b4 cis4 b4   %5
+  a4 b4 gis4 gis4 
+  a4 b4 cis4 b8 cis8 
+  d4 cis4 b2 
   a1 
+  
 }
 
-
-alto = \relative c {
-  \partial 4 a''4 
-  fis gis a b 
-  a b a a 
-  a a a gis 
-  a2. a4 
-  fis gis a b 
-  a b a a 
-  a a a gis 
-  a2. gis4 
-  e gis a gis 
-  fis gis f f 
-  fis gis a e 
-  a a a gis 
+alto = \relative c'' {
+  \repeat volta 2 {
+    \partial 4 a4 
+    fis4 gis4 a4 b4 
+    a4 b4 a4 a4 
+    a4 a4 a4 gis4 
+    a2. } gis4 
+  e4 gis4 a4 gis4   %5
+  fis4 gis4 f4 f4 
+  fis4 gis4 a4 e4 
+  a4 a4 a4 gis4 
   a1 
+  
 }
 
-
-tenor = \relative c {
-  \partial 4 e'4 
-  d d e e 
-  fis e e e 
-  fis e fis e 
-  e2. e4 
-  d d e e 
-  fis e e e 
-  fis e fis e 
-  e2. e4 
-  b e e e8 d 
-  cis4 d cis cis 
-  cis e e2 
-  d4 e fis e8 d 
+tenor = \relative c' {
+  \repeat volta 2 {
+    \partial 4 e4 
+    d4 d4 e4 e4 
+    fis4 e4 e4 e4 
+    fis4 e4 fis4 e4 
+    e2. } e4 
+  b4 e4 e4 e8 d8   %5
+  cis4 d4 cis4 cis4 
+  cis4 e4 e2 
+  d4 e4 fis4 e8 d8 
   cis1 
+  
 }
-
 
 baixo = \relative c {
-  \partial 4 a4 
-  d8 cis b4 a gis 
-  fis gis a cis 
-  fis8 gis a4 d, e 
-  a,2. a4 
-  d8 cis b4 a gis 
-  fis gis a cis 
-  fis8 gis a4 d, e 
-  a,2. e'8 fis 
-  gis4 e a e 
-  fis b, cis cis 
-  fis e a gis 
-  fis e d e 
+  \repeat volta 2 {
+    \partial 4 a4 
+    d8 cis8 b4 a4 gis4 
+    fis4 gis4 a4 cis4 
+    fis8 gis8 a4 d,4 e4 
+    a,2. } e'8 fis8 
+  gis4 e4 a4 e4   %5
+  fis4 b,4 cis4 cis4 
+  fis4 e4 a4 gis4 
+  fis4 e4 d4 e4 
   a,1 
+  
 }
-
 
 \score {
   <<

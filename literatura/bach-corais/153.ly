@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -6,87 +5,80 @@
   composer = "J. S. Bach"
 }
 
-global =  {
-  \time 4/4 
+
+global = {
+  \time 4/4
   \key d \major
 }
 
-soprano = \relative c {
-  a''4 d a b 
-  a4. g8 fis4 fis 
-  a a g fis 
+
+soprano = \relative c'' {
+  \repeat volta 2 {
+    a4 d4 a4 b4 
+    a4. g8 fis4 fis4 
+    a4 a4 g4 fis4 
+    e4. d8 d2 }
+  e4 e4 fis8 gis8 a4   %5
+  a4. gis8 a4 a4 
+  b4. cis8 d4 d4 
+  cis4. cis8 b4 b4 
+  fis4 fis4 b4 a4 
+  a4 gis4 a2   %10
+  b4 a4 g4 fis4 
   e4. d8 d2 
-  a'4 d a b 
-  a4. g8 fis4 fis 
-  a a g fis 
-  e4. d8 d2 
-  e4 e fis8 gis a4 
-  a4. gis8 a4 a 
-  b4. cis8 d4 d 
-  cis4. cis8 b4 b 
-  fis fis b a 
-  a gis a2 
-  b4 a g fis 
-  e4. d8 d2 
+  
 }
 
-
-alto = \relative c {
-  d'4 d d d 
-  d cis d d 
-  d d8 cis b cis d2 cis4 d2 
-  d4 d d d 
-  d cis d d 
-  d d8 cis b cis d2 cis4 d2 
-  cis4 cis d cis 
-  fis e8 d cis4 cis 
-  e8 fis g4 fis fis 
-  fis4. e8 d4 d 
-  d d d cis 
-  d d cis2 
-  d4 d8 cis b cis d4 
-  d cis d2 
+alto = \relative c' {
+  \repeat volta 2 {
+    d4 d4 d4 d4 
+    d4 cis4 d4 d4 
+    d4 d8 cis8 b8 cis8 d4~ 
+    d4 cis4 d2 }
+  cis4 cis4 d4 cis4   %5
+  fis4 e8 d8 cis4 cis4 
+  e8 fis8 g4 fis4 fis4 
+  fis4. e8 d4 d4 
+  d4 d4 d4 cis4 
+  d4 d4 cis2   %10
+  d4 d8 cis8 b8 cis8 d4 
+  d4 cis4 d2 
+  
 }
-
 
 tenor = \relative c {
-  fis4 fis8 g a4 g8 fis 
-  e d e4 d d 
-  fis fis g a 
-  b a8. g16 fis2 
-  fis4 fis8 g a4 g8 fis 
-  e d e4 d d 
-  fis fis g a 
-  b a8. g16 fis2 
-  a4 a a a 
-  b b a a 
-  g4. a8 b2. ais4 b2 
-  a4 a g8 fis e4 
-  d8 fis e d e2 
-  g4 fis g a 
-  b a8. g16 fis2 
+  \repeat volta 2 {
+    fis4 fis8 g8 a4 g8 fis8 
+    e8 d8 e4 d4 d4 
+    fis4 fis4 g4 a4 
+    b4 a8. g16 fis2 }
+  a4 a4 a4 a4   %5
+  b4 b4 a4 a4 
+  g4. a8 b2~ 
+  b4 ais4 b2 
+  a4 a4 g8 fis8 e4 
+  d8 fis8 e8 d8 e2   %10
+  g4 fis4 g4 a4 
+  b4 a8. g16 fis2 
+  
 }
-
 
 baixo = \relative c {
-  d4 b fis g 
-  a a d, d 
-  d' d e fis 
-  g8 fis a a, d2 
-  d4 b fis g 
-  a a d, d 
-  d' d e fis 
-  g8 fis a a, d2 
-  a4 a d fis8 e 
-  d4 e a,2 
-  e' b8 cis d e 
-  fis2 b, 
-  d4 d g, a 
-  b2 a 
-  g4 d' e fis 
-  g8 e a a, d2 
+  \repeat volta 2 {
+    d4 b4 fis4 g4 
+    a4 a4 d,4 d4 
+    d'4 d4 e4 fis4 
+    g8 fis8 a8 a,8 d2 }
+  a4 a4 d4 fis8 e8   %5
+  d4 e4 a,2 
+  e'2 b8 cis8 d8 e8 
+  fis2 b,2 
+  d4 d4 g,4 a4 
+  b2 a2   %10
+  g4 d'4 e4 fis4 
+  g8 e8 a8 a,8 d2 
+  
 }
-
 
 \score {
   <<

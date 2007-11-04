@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -6,91 +5,96 @@
   composer = "J. S. Bach"
 }
 
-global =  {
-  \time 4/4 
+
+global = {
+  \time 4/4
   \key e \minor
 }
 
-soprano = \relative c {
-  \partial 4 g''4 
-  g g g a 
-  b2 s4 b 
-  b d g,8 a b4 
-  a2 g4 b 
-  a b g a 
-  fis2 s4 g 
-  g g a g 
-  fis2 e4 fis 
-  fis fis fis g 
-  a2 s4 a 
-  a b c c 
-  b2 s4 b 
-  b d c b 
-  a2 s4 a 
-  b a g fis 
+
+soprano = \relative c'' {
+  \partial 4 g4 
+    g4 g4 g4 a4 
+  b2 r4 b4 
+  b4 d4 g,8 a8 b4 
+  a2 g4 b4 
+  a4 b4 g4 a4   %5
+  fis2 r4 g4 
+  g4 g4 a4 g4 
+  fis2 e4 fis4 
+  fis4 fis4 fis4 g4 
+  a2 r4 a4   %10
+  a4 b4 c4 c4 
+  b2 r4 b4 
+  b4 d4 c4 b4 
+  a2 r4 a4 
+  b4 a4 g4 fis4   %15
   e1 
+  
 }
 
-
-alto = \relative c {
-  \partial 4 e'4 
-  d e d e8 fis 
-  g2 s4 g 
-  g g8 fis e fis g4 
-  g fis d g 
-  fis fis4. e4 fis8 
-  dis2 s4 e 
-  e d e8 dis e2 dis4 b d 
-  d e d cis 
-  d2 s4 fis 
-  fis g g fis 
-  g2 s4 g 
-  g g4. fis8 g4 
-  fis2 s4 fis4. e8 fis4. e4 dis8 
+alto = \relative c' {
+  \partial 4 e4 
+    d4 e4 d4 e8 fis8 
+  g2 r4 g4 
+  g4 g8 fis8 e8 fis8 g4 
+  g4 fis4 d4 g4 
+  fis4 fis4. e4 fis8   %5
+  dis2 r4 e4 
+  e4 d4 e8 dis8 e4~ 
+  e4 dis4 b4 d4 
+  d4 e4 d4 cis4 
+  d2 r4 fis4   %10
+  fis4 g4 g4 fis4 
+  g2 r4 g4 
+  g4 g4. fis8 g4 
+  fis2 r4 fis4~ 
+  fis8 e8 fis4. e4 dis8   %15
   b1 
+  
 }
 
-
-tenor = \relative c {
-  \partial 4 b'4 
-  b8 a g a b4 c 
-  d2 s4 d 
-  e d c d4. a8 d c b4 d 
-  d dis b c 
-  b2 s4 b 
-  c g c cis 
-  fis,8 b4 a8 g4 b 
-  b cis4. b8 a g 
-  fis2 s4 d' 
-  d d e d 
-  d2 s4 d 
-  e d e8 d d4 
-  d2 s4 d8 c 
-  b2. b8. a16 
+tenor = \relative c' {
+  \partial 4 b4 
+    b8 a8 g8 a8 b4 c4 
+  d2 r4 d4 
+  e4 d4 c4 d4~ 
+  d8 a8 d8 c8 b4 d4 
+  d4 dis4 b4 c4   %5
+  b2 r4 b4 
+  c4 g4 c4 cis4 
+  fis,8 b4 a8 g4 b4 
+  b4 cis4. b8 a8 g8 
+  fis2 r4 d'4   %10
+  d4 d4 e4 d4 
+  d2 r4 d4 
+  e4 d4 e8 d8 d4 
+  d2 r4 d8 c8 
+  b2. b8. a16   %15
   g1 
+  
 }
-
 
 baixo = \relative c {
   \partial 4 e4 
-  b c b a 
-  g2 s4 g'8 fis 
-  e4 b c b8 c 
-  d2 g,4 g' 
-  d8 c b4 e a, 
-  b2 s4 e8 d 
-  c d c b a4 ais 
-  b2 e4 b8 cis 
-  d4 ais b e 
-  d2 s4 d 
-  d'8 c b4 a d, 
-  g2 s4 g8 fis 
-  e d c b a4 g 
-  d'2 s4 d 
-  dis8 cis dis b e4 b 
+    b4 c4 b4 a4 
+  g2 r4 g'8 fis8 
+  e4 b4 c4 b8 c8 
+  d2 g,4 g'4 
+  d8 c8 b4 e4 a,4   %5
+  b2 r4 e8 d8 
+  c8 d8 c8 b8 a4 ais4 
+  b2 e4 b8 cis8 
+  d4 ais4 b4 e4 
+  d2 r4 d4   %10
+  d'8 c8 b4 a4 d,4 
+  g2 r4 g8 fis8 
+  e8 d8 c8 b8 a4 g4 
+  d'2 r4 d4 
+  dis8 cis8 dis8 b8 e4 b4   %15
   e,1 
+  
 }
-
 
 \score {
   <<

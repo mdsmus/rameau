@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -6,66 +5,72 @@
   composer = "J. S. Bach"
 }
 
-global =  {
-  \time 4/4 
+
+global = {
+  \time 4/4
   \key a \major
 }
 
-soprano = \relative c {
-  a''4 a gis a 
-  b2 a4 b 
-  cis b a2 
-  cis4 d e d 
-  cis b cis2 
-  b a4 b 
-  cis b a gis 
+
+soprano = \relative c'' {
+  a4 a4 gis4 a4 
+  b2 a4 b4 
+  cis4 b4 a2 
+  cis4 d4 e4 d4 
+  cis4 b4 cis2   %5
+  b2 a4 b4 
+  cis4 b4 a4 gis4 
   a4. gis8 gis2 
-  a4 a gis a 
-  b2 a4 b 
-  cis b8 a a2 
+  a4 a4 gis4 a4 
+  b2 a4 b4   %10
+  cis4 b8 a8 a2 
+  
 }
 
-
-alto = \relative c {
-  e'4 e e e8 fis 
-  gis2 fis4 e 
-  e e e2 
-  a4 a a4. b4 a8 gis b4 a16 gis a4 
+alto = \relative c' {
+  e4 e4 e4 e8 fis8 
+  gis2 fis4 e4 
+  e4 e4 e2 
+  a4 a4 a4. b8~ 
+  b8 a8 gis8 b4 a16 gis16 a4   %5
   gis2 fis4. e8 
-  e a fis gis4 fis f8 
-  fis f fis2 e4 
-  fis e e e 
-  e2 cis8 fis e4. a8 gis4 e2 
+  e8 a8 fis8 gis4 fis4 f8 
+  fis8 f8 fis2 e4 
+  fis4 e4 e4 e4 
+  e2 cis8 fis8 e4~   %10
+  e8 a8 gis4 e2 
+  
 }
 
-
-tenor = \relative c {
-  cis'4 cis b cis 
-  e2 cis8 d cis b4 a gis8 cis2 
-  e4 fis e fis8 e 
-  e4 e e2 
-  e cis4 b 
-  a4. gis8 cis c16 cis dis8 cis 
+tenor = \relative c' {
+  cis4 cis4 b4 cis4 
+  e2 cis8 d8 cis8 b8~ 
+  b8 a4 gis8 cis2 
+  e4 fis4 e4 fis8 e8 
+  e4 e4 e2   %5
+  e2 cis4 b4 
+  a4. gis8 cis8 c16 cis16 dis8 cis8 
   cis1 
-  cis4 cis b a2 gis4 a8 d cis b 
-  a e' e8. d16 cis2 
+  cis4 cis4 b4 a4~ 
+  a4 gis4 a8 d8 cis8 b8   %10
+  a8 e'8 e8. d16 cis2 
+  
 }
-
 
 baixo = \relative c {
-  a8 b cis d e4 a, 
-  e'2 fis4 gis 
-  a e a,2 
-  a'8 gis fis4 cis fis8 gis 
-  a4 e8 gis a4 a, 
-  e'2 fis4 gis 
-  a8 fis dis f fis dis c cis 
-  fis, gis a b cis2 
-  fis4 cis8 d e4 cis8 a 
-  e'2 fis4 gis 
-  a e a,2 
+  a8 b8 cis8 d8 e4 a,4 
+  e'2 fis4 gis4 
+  a4 e4 a,2 
+  a'8 gis8 fis4 cis4 fis8 gis8 
+  a4 e8 gis8 a4 a,4   %5
+  e'2 fis4 gis4 
+  a8 fis8 dis8 f8 fis8 dis8 c8 cis8 
+  fis,8 gis8 a8 b8 cis2 
+  fis4 cis8 d8 e4 cis8 a8 
+  e'2 fis4 gis4   %10
+  a4 e4 a,2 
+  
 }
-
 
 \score {
   <<

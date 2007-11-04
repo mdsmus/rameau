@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -6,86 +5,76 @@
   composer = "J. S. Bach"
 }
 
-global =  {
-  \time 4/4 
+
+global = {
+  \time 4/4
   \key g \major
 }
 
-soprano = \relative c {
-  \partial 4 g''8 a 
-  b4 c d c 
-  b a b b 
-  b a8 b c b a4 
-  g a g g8 a 
-  b4 c d c 
-  b a b b 
-  b a8 b c b a4 
-  g a g g 
-  a b c b 
-  a b a a 
-  b c d c 
-  b a b g 
-  a b c8 b a4 
-  g8 e fis4 g2 
+
+soprano = \relative c'' {
+  \repeat volta 2 {
+    \partial 4 g8  a8 
+    b4 c4 d4 c4 
+    b4 a4 b4 b4 
+    b4 a8 b8 c8 b8 a4 
+    g4 a4 g4 } g4 
+  a4 b4 c4 b4   %5
+  a4 b4 a4 a4 
+  b4 c4 d4 c4 
+  b4 a4 b4 g4 
+  a4 b4 c8 b8 a4 
+  g8 e8 fis4 g2   %10
+  
 }
 
-
-alto = \relative c {
-  \partial 4 d'4 
-  g g fis e8 fis 
-  g4 fis g d 
-  e e8 d c d d4 
-  d8 g fis e d4 d 
-  g g fis e8 fis 
-  g4 fis g d 
-  e e8 d c d d4 
-  d8 g fis e d4 d 
-  d d c8 d e4 
-  e8 d d c16 b c4 d 
-  d e fis e 
-  d c8 e16 dis e4 e 
-  e d c d 
-  d8 e d4 d2 
+alto = \relative c' {
+  \repeat volta 2 {
+    \partial 4 d4 
+    g4 g4 fis4 e8 fis8 
+    g4 fis4 g4 d4 
+    e4 e8 d8 c8 d8 d4 
+    d8 g8 fis8 e8 d4 } d4 
+  d4 d4 c8 d8 e4   %5
+  e8 d8 d8 c16 b16 c4 d4 
+  d4 e4 fis4 e4 
+  d4 c8 e16 dis16 e4 e4 
+  e4 d4 c4 d4 
+  d8 e8 d4 d2   %10
+  
 }
 
-
-tenor = \relative c {
-  \partial 4 b'8 c 
-  d4 e a,8 b c4 
-  d d d g, 
-  g2. c8 a 
-  d c16 b c4 b b8 c 
-  d4 e a,8 b c4 
-  d d d g, 
-  g2. c8 a 
-  d c16 b c4 b b 
-  fis gis a gis 
-  a gis e a 
-  g g a g8 a 
-  b4 e,8 fis g4 b 
-  e,8 fis g4 g fis 
-  g8 c a4 b2 
+tenor = \relative c' {
+  \repeat volta 2 {
+    \partial 4 b8  c8 
+    d4 e4 a,8 b8 c4 
+    d4 d4 d4 g,4 
+    g2. c8 a8 
+    d8 c16 b16 c4 b4 } b4 
+  fis4 gis4 a4 gis4   %5
+  a4 gis4 e4 a4 
+  g4 g4 a4 g8 a8 
+  b4 e,8 fis8 g4 b4 
+  e,8 fis8 g4 g4 fis4 
+  g8 c8 a4 b2   %10
+  
 }
-
 
 baixo = \relative c {
-  \partial 4 g4 
-  g'8 fis e4 d a 
-  b8 c d4 g, g'8 fis 
-  e d c b a g fis4 
-  b8 g d'4 g, g 
-  g'8 fis e4 d a 
-  b8 c d4 g, g'8 fis 
-  e d c b a g fis4 
-  b8 g d'4 g, g 
-  d' c8 b a4 d8 e 
-  f4 e a, fis' 
-  g8 fis e4 d e8 fis 
-  g4 a e e8 d 
-  c4 b a8 b c4 
-  b8 c d4 g,2 
+  \repeat volta 2 {
+    \partial 4 g4 
+    g'8 fis8 e4 d4 a4 
+    b8 c8 d4 g,4 g'8 fis8 
+    e8 d8 c8 b8 a8 g8 fis4 
+    b8 g8 d'4 g,4 } g4 
+  d'4 c8 b8 a4 d8 e8   %5
+  f4 e4 a,4 fis'4 
+  g8 fis8 e4 d4 e8 fis8 
+  g4 a4 e4 e8 d8 
+  c4 b4 a8 b8 c4 
+  b8 c8 d4 g,2   %10
+  
 }
-
 
 \score {
   <<

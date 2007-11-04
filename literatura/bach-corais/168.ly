@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -6,62 +5,68 @@
   composer = "J. S. Bach"
 }
 
-global =  {
-  \time 4/4 
+
+global = {
+  \time 4/4
   \key d \minor
 }
 
-soprano = \relative c {
-  \partial 4 d'4 
-  f g a bes 
-  a g c bes 
-  a2 s4 d 
-  c bes a g 
-  f g f dis 
-  d2 s4 a' 
-  bes c d d 
-  c g8 a bes4 a 
+
+soprano = \relative c' {
+  \partial 4 d4 
+    f4 g4 a4 bes4 
+  a4 g4 c4 bes4 
+  a2 r4 d4 
+  c4 bes4 a4 g4 
+  f4 g4 f4 dis4   %5
+  d2 r4 a'4 
+  bes4 c4 d4 d4 
+  c4 g8 a8 bes4 a4 
   g1 
+  
 }
 
-
-alto = \relative c {
-  \partial 4 d'4 
-  a8 f'4 e8 f4 d8 e 
+alto = \relative c' {
+  \partial 4 d4 
+    a8 f'4 e8 f4 d8 e8 
   fis4 g4. a4 g8 
-  fis2 s4 bes4. a4 g f dis d8 dis d c bes c a 
-  bes2 s4 c 
-  d8 f g a bes4 g8 f 
-  dis f g4 g4. fis8 
+  fis2 r4 bes4~ 
+  bes8 a4 g4 f4 dis8~ 
+  dis8 d8 dis8 d8 c8 bes8 c8 a8   %5
+  bes2 r4 c4 
+  d8 f8 g8 a8 bes4 g8 f8 
+  dis8 f8 g4 g4. fis8 
   d1 
+  
 }
 
-
-tenor = \relative c {
-  \partial 4 g'4 
-  f8 a d c c4 g 
-  a16 bes c4 bes16 a g8 d' d4 
-  d2 s4 f16*7 dis16 d16*7 c16 bes2 bes4 f2 
-  f s4 f 
-  f' dis f d 
-  g, c d4. c8 
+tenor = \relative c' {
+  \partial 4 g4 
+    f8 a8 d8 c8 c4 g4 
+  a16 bes16 c4 bes16 a16 g8 d'8 d4 
+  d2 r4 f4~ 
+  f8. dis16 d4~ d8. c16 bes4~ 
+  bes4 bes4 f2   %5
+  f2 r4 f4 
+  f'4 dis4 f4 d4 
+  g,4 c4 d4. c8 
   b1 
+  
 }
-
 
 baixo = \relative c {
   \partial 4 g4 
-  d' bes8 c f4 g 
-  d e4. fis8 g4 
-  d2 s4 bes 
-  f' g d dis 
-  bes8 a g4 a8 g a f 
-  bes2 s4 f'8 dis 
-  d4 c bes b 
-  c8 d dis4 bes8 c d4 
+    d'4 bes8 c8 f4 g4 
+  d4 e4. fis8 g4 
+  d2 r4 bes4 
+  f'4 g4 d4 dis4 
+  bes8 a8 g4 a8 g8 a8 f8   %5
+  bes2 r4 f'8 dis8 
+  d4 c4 bes4 b4 
+  c8 d8 dis4 bes8 c8 d4 
   g,1 
+  
 }
-
 
 \score {
   <<

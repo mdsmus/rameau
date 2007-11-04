@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -6,70 +5,72 @@
   composer = "J. S. Bach"
 }
 
-global =  {
-  \time 4/4 
+
+global = {
+  \time 4/4
   \key a \major
 }
 
-soprano = \relative c {
-  \partial 4 a''4 
-  e' e e e 
-  fis e8 d cis4 b 
-  cis8 dis e4 e8 fis dis4 
+
+soprano = \relative c'' {
+  \partial 4 a4 
+    e'4 e4 e4 e4 
+  fis4 e8 d8 cis4 b4 
+  cis8 dis8 e4 e8 fis8 dis4 
   e2. e4 
-  e e e8 d cis d 
-  e4 d8 cis b4 e 
-  d cis b b8 cis 
-  a b cis d e4 e 
-  d cis b b 
-  a1 
+  e4 e4 e8 d8 cis8 d8   %5
+  e4 d8 cis8 b4 e4 
+  d4 cis4 b4 b8 cis8 
+  a8 b8 cis8 d8 e4 e4 
+  d4 cis4 b4 b4 
+  a1   %10
+  
 }
 
-
-alto = \relative c {
-  \partial 4 e'4 
-  e8 fis gis4 a a 
-  a gis e e 
-  e8 fis gis4 fis gis8 a 
+alto = \relative c' {
+  \partial 4 e4 
+    e8 fis8 gis4 a4 a4 
+  a4 gis4 e4 e4 
+  e8 fis8 gis4 fis4 gis8 a8 
   gis2. gis4 
-  a gis8 fis e4 e8 d 
-  cis a fis'4 gis cis8 b 
-  a4. gis8 fis4 gis 
-  fis8 gis a b cis4 fis, 
-  fis8 gis a4 a gis 
-  e1 
+  a4 gis8 fis8 e4 e8 d8   %5
+  cis8 a8 fis'4 gis4 cis8 b8 
+  a4. gis8 fis4 gis4 
+  fis8 gis8 a8 b8 cis4 fis,4 
+  fis8 gis8 a4 a4 gis4 
+  e1   %10
+  
 }
 
-
-tenor = \relative c {
-  \partial 4 cis'4 
-  b e8 d cis d e4 
-  d8 cis b4 a gis 
-  a b b b 
+tenor = \relative c' {
+  \partial 4 cis4 
+    b4 e8 d8 cis8 d8 e4 
+  d8 cis8 b4 a4 gis4 
+  a4 b4 b4 b4 
   b2. b4 
-  cis b8 a b4 a 
-  a a e' gis, 
-  a8 b cis a d4. cis8 
-  cis4 fis, gis cis 
-  d8 e fis4 fis e8 d 
-  cis1 
+  cis4 b8 a8 b4 a4   %5
+  a4 a4 e'4 gis,4 
+  a8 b8 cis8 a8 d4. cis8 
+  cis4 fis,4 gis4 cis4 
+  d8 e8 fis4 fis4 e8 d8 
+  cis1   %10
+  
 }
 
-
-baixo = \relative c {
-  \partial 4 a'4 
-  gis e a8 b cis a 
-  d,4 e a, e' 
-  a gis8 a b4 b, 
-  e2. e8 d 
-  cis d e fis gis e a4 
-  cis, d e cis 
-  fis8 gis a4. gis8 fis f 
-  fis4 e8 d cis4 ais' 
-  b fis8 e d b e4 
-  a,1 
+baixo = \relative c' {
+  \partial 4 a4 
+    gis4 e4 a8 b8 cis8 a8 
+  d,4 e4 a,4 e'4 
+  a4 gis8 a8 b4 b,4 
+  e2. e8 d8 
+  cis8 d8 e8 fis8 gis8 e8 a4   %5
+  cis,4 d4 e4 cis4 
+  fis8 gis8 a4. gis8 fis8 f8 
+  fis4 e8 d8 cis4 ais'4 
+  b4 fis8 e8 d8 b8 e4 
+  a,1   %10
+  
 }
-
 
 \score {
   <<

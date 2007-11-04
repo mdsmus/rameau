@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -6,75 +5,76 @@
   composer = "J. S. Bach"
 }
 
-global =  {
-  \time 4/4 
+
+global = {
+  \time 4/4
   \key fis \minor
 }
 
-soprano = \relative c {
-  \partial 4 fis'8 gis 
-  a4 gis fis fis8 gis 
-  a4 gis fis cis' 
-  b a gis gis 
-  a a b b 
-  cis cis b a 
-  gis2 fis4 cis' 
-  b a8 gis gis4 cis 
-  b a gis gis 
-  a a b b 
-  cis cis b a8 gis 
-  gis2 fis 
+
+soprano = \relative c' {
+  \partial 4 fis8  gis8 
+    a4 gis4 fis4 fis8 gis8 
+  a4 gis4 fis4 cis'4 
+  b4 a4 gis4 gis4 
+  a4 a4 b4 b4 
+  cis4 cis4 b4 a4   %5
+  gis2 fis4 cis'4 
+  b4 a8 gis8 gis4 cis4 
+  b4 a4 gis4 gis4 
+  a4 a4 b4 b4 
+  cis4 cis4 b4 a8 gis8   %10
+  gis2 fis2 
+  
 }
 
-
-alto = \relative c {
-  \partial 4 cis'4 
-  fis f fis fis 
-  fis f cis fis 
-  fis8 f fis4 f f 
-  fis fis fis8 gis16 a gis4 
-  gis8 fis f fis gis4. fis8 
-  fis4 f cis fis 
-  fis8 f fis4 f fis8 e 
-  dis e fis dis e4 gis8 f 
-  fis4 a8 fis d4 b'8 gis 
-  a g fis4. f8 fis4. f16 dis f4 cis2 
+alto = \relative c' {
+  \partial 4 cis4 
+    fis4 f4 fis4 fis4 
+  fis4 f4 cis4 fis4 
+  fis8 f8 fis4 f4 f4 
+  fis4 fis4 fis8 gis16 a16 gis4 
+  gis8 fis8 f8 fis8 gis4. fis8   %5
+  fis4 f4 cis4 fis4 
+  fis8 f8 fis4 f4 fis8 e8 
+  dis8 e8 fis8 dis8 e4 gis8 f8 
+  fis4 a8 fis8 d4 b'8 gis8 
+  a8 g8 fis4. f8 fis4~   %10
+  fis8 f16 dis16 f4 cis2 
+  
 }
 
-
-tenor = \relative c {
-  \partial 4 a'8 b 
-  cis4 cis8 b a4 b 
-  cis cis8 b a4 a 
-  b cis cis cis 
-  cis d d8 e16 fis e8 d 
-  cis4 b8 a d cis cis d 
-  d b gis cis a4 a 
-  b8 cis dis4 cis cis 
-  fis, b b cis 
-  cis8 a d4 d8 b e4 
-  e8 cis fis e d cis dis4 
-  cis8 gis cis b a2 
+tenor = \relative c' {
+  \partial 4 a8  b8 
+    cis4 cis8 b8 a4 b4 
+  cis4 cis8 b8 a4 a4 
+  b4 cis4 cis4 cis4 
+  cis4 d4 d8 e16 fis16 e8 d8 
+  cis4 b8 a8 d8 cis8 cis8 d8   %5
+  d8 b8 gis8 cis8 a4 a4 
+  b8 cis8 dis4 cis4 cis4 
+  fis,4 b4 b4 cis4 
+  cis8 a8 d4 d8 b8 e4 
+  e8 cis8 fis8 e8 d8 cis8 dis4   %10
+  cis8 gis8 cis8 b8 a2 
+  
 }
-
 
 baixo = \relative c {
   \partial 4 fis4 
-  fis16 gis a b cis8 cis, d4 d 
-  cis8 b cis4 fis, fis' 
-  gis a8 b cis4 cis, 
-  fis8 e d cis d b e4 
-  a,8 a' gis fis4 f8 fis d 
-  b gis cis4 fis, fis'8 e 
-  d cis c4 cis a 
-  b8 cis dis b e4 f8 cis 
-  fis4 fis8 d g4 gis8 e 
-  a4 ais8 fis b4 c8 gis 
-  cis4 cis, fis2 
+    fis16 gis16 a16 b16 cis8 cis,8 d4 d4 
+  cis8 b8 cis4 fis,4 fis'4 
+  gis4 a8 b8 cis4 cis,4 
+  fis8 e8 d8 cis8 d8 b8 e4 
+  a,8 a'8 gis8 fis4 f8 fis8 d8   %5
+  b8 gis8 cis4 fis,4 fis'8 e8 
+  d8 cis8 c4 cis4 a4 
+  b8 cis8 dis8 b8 e4 f8 cis8 
+  fis4 fis8 d8 g4 gis8 e8 
+  a4 ais8 fis8 b4 c8 gis8   %10
+  cis4 cis,4 fis2 
+  
 }
-
-
-
 
 \score {
   <<

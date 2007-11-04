@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -6,90 +5,96 @@
   composer = "J. S. Bach"
 }
 
-global =  {
-  \time 4/4 
+
+global = {
+  \time 4/4
   \key g \major
 }
 
-soprano = \relative c {
-  \partial 4 g''4 
-  g d g a 
-  b2 s4 d 
-  e d c4. d8 
-  b2 s4 d 
-  c b a g 
-  a2 s4 b 
-  g c b a 
-  g2 s4 b8 c 
-  d4 d c b 
-  a2 s4 b 
-  g g a b 
-  c2 b4 d 
-  c a b c 
-  d2 s4 g, 
-  a b c b 
-  a2 g 
+
+soprano = \relative c'' {
+  \partial 4 g4 
+    g4 d4 g4 a4 
+  b2 r4 d4 
+  e4 d4 c4. d8 
+  b2 r4 d4 
+  c4 b4 a4 g4   %5
+  a2 r4 b4 
+  g4 c4 b4 a4 
+  g2 r4 b8 c8 
+  d4 d4 c4 b4 
+  a2 r4 b4   %10
+  g4 g4 a4 b4 
+  c2 b4 d4 
+  c4 a4 b4 c4 
+  d2 r4 g,4 
+  a4 b4 c4 b4   %15
+  a2 g2 
+  
 }
 
-
-alto = \relative c {
-  \partial 4 d'4 
-  d a d e8 fis 
-  g2 s4 g4. fis8 g4. fis16 e fis4 
-  g2 s4 g4. fis8 g4. fis8 g g, 
-  d'2 s4 fis 
-  fis8 e16 fis g8 a4 g8 g fis 
-  d2 s4 g 
-  g g g8 fis g4 
-  g fis s4 fis 
-  e d e e 
-  e2 e4 d8 f 
-  e g4 fis8 g4 g 
-  g2 s4 e4. fis8 g4. fis8 g4 
-  g8 fis16 e fis4 d2 
+alto = \relative c' {
+  \partial 4 d4 
+    d4 a4 d4 e8 fis8 
+  g2 r4 g4~ 
+  g8 fis8 g4. fis16 e16 fis4 
+  g2 r4 g4~ 
+  g8 fis8 g4. fis8 g8 g,8   %5
+  d'2 r4 fis4 
+  fis8 e16 fis16 g8 a4 g8 g8 fis8 
+  d2 r4 g4 
+  g4 g4 g8 fis8 g4 
+  g4 fis4 r4 fis4   %10
+  e4 d4 e4 e4 
+  e2 e4 d8 f8 
+  e8 g4 fis8 g4 g4 
+  g2 r4 e4~ 
+  e8 fis8 g4. fis8 g4   %15
+  g8 fis16 e16 fis4 d2 
+  
 }
 
-
-tenor = \relative c {
-  \partial 4 b'8 a 
-  g4 fis g c 
-  d2 s4 d 
-  c d e8 d16 c d4 
-  d2 s4 b 
-  c d d4. cis8 
-  fis2 s4 b, 
-  b e8 d d4 d8. c16 
-  b2 s4 d 
-  d8 c b4 c d 
-  d2 s4 b 
-  b8 c d4 c b4. a16 gis a4 a8 gis g4 
-  g d' d e 
-  d2 s4 b 
-  c8 d d e16 d c4 d 
-  e d8. c16 b2 
+tenor = \relative c' {
+  \partial 4 b8  a8 
+    g4 fis4 g4 c4 
+  d2 r4 d4 
+  c4 d4 e8 d16 c16 d4 
+  d2 r4 b4 
+  c4 d4 d4. cis8   %5
+  fis2 r4 b,4 
+  b4 e8 d8 d4 d8. c16 
+  b2 r4 d4 
+  d8 c8 b4 c4 d4 
+  d2 r4 b4   %10
+  b8 c8 d4 c4 b4~ 
+  b8 a16 gis16 a4 a8 gis8 g4 
+  g4 d'4 d4 e4 
+  d2 r4 b4 
+  c8 d8 d8 e16 d16 c4 d4   %15
+  e4 d8. c16 b2 
+  
 }
-
 
 baixo = \relative c {
-  \partial 4 g8 a 
-  b c d c b4 a 
-  g2 s4 b 
-  c4. b8 a4 d, 
-  g2 s4 g 
-  a b8 c d4 e 
-  d2 s4 dis 
-  e4. fis8 g4 d 
-  g,2 s4 g8 a 
-  b4. e8 a,4 b8 c 
-  d2 s4 dis 
-  e8 d c b c b a gis 
-  a b c d e4 b 
-  c d g8 fis e4 
-  b2 s4 e8 d 
-  c4 b8 e a,4 b8 g 
-  c4 d g,2 
+  \partial 4 g8  a8 
+    b8 c8 d8 c8 b4 a4 
+  g2 r4 b4 
+  c4. b8 a4 d,4 
+  g2 r4 g4 
+  a4 b8 c8 d4 e4   %5
+  d2 r4 dis4 
+  e4. fis8 g4 d4 
+  g,2 r4 g8 a8 
+  b4. e8 a,4 b8 c8 
+  d2 r4 dis4   %10
+  e8 d8 c8 b8 c8 b8 a8 gis8 
+  a8 b8 c8 d8 e4 b4 
+  c4 d4 g8 fis8 e4 
+  b2 r4 e8 d8 
+  c4 b8 e8 a,4 b8 g8   %15
+  c4 d4 g,2 
+  
 }
-
 
 \score {
   <<

@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -6,70 +5,72 @@
   composer = "J. S. Bach"
 }
 
-global =  {
-  \time 4/4 
+
+global = {
+  \time 4/4
   \key g \major
 }
 
-soprano = \relative c {
-  \partial 4 g''4 
-  g g a g 
-  c d c2 
-  b8 c d4 e d8 c 
-  b4 a g g 
-  c b8 c d4 a 
-  g8 fis e4 d d 
-  a' a a b 
-  c8 b a4 g8 a b4 
-  a2 g4 g 
-  g2 g 
+
+soprano = \relative c'' {
+  \partial 4 g4 
+    g4 g4 a4 g4 
+  c4 d4 c2 
+  b8 c8 d4 e4 d8 c8 
+  b4 a4 g4 g4 
+  c4 b8 c8 d4 a4   %5
+  g8 fis8 e4 d4 d4 
+  a'4 a4 a4 b4 
+  c8 b8 a4 g8 a8 b4 
+  a2 g4 g4 
+  g2 g2   %10
+  
 }
 
-
-alto = \relative c {
-  \partial 4 d'4 
-  e d8 e fis4 e 
-  g g8 f e2 
-  g8 a b4 c8 b a4 
-  g fis d d8 e 
-  fis4 g g fis8 e 
-  d b cis4 a a 
-  d cis fis g 
-  a8 g4 fis8 e a g4 
-  fis2 d8 e f4 
-  e e d2 
+alto = \relative c' {
+  \partial 4 d4 
+    e4 d8 e8 fis4 e4 
+  g4 g8 f8 e2 
+  g8 a8 b4 c8 b8 a4 
+  g4 fis4 d4 d8 e8 
+  fis4 g4 g4 fis8 e8   %5
+  d8 b8 cis4 a4 a4 
+  d4 cis4 fis4 g4 
+  a8 g4 fis8 e8 a8 g4 
+  fis2 d8 e8 f4 
+  e4 e4 d2   %10
+  
 }
 
-
-tenor = \relative c {
-  \partial 4 b'4 
-  c b a8 d b4 
-  e8 c b4 g2 
-  e'4 f g d 
-  d4. c8 b4 g 
-  a d8 c b g d'4 
-  d a8 g fis4 fis8 g 
-  a b cis e d4 d 
-  e8 d e d4 c8 b c 
-  d2 d4 b 
-  g c b2 
+tenor = \relative c' {
+  \partial 4 b4 
+    c4 b4 a8 d8 b4 
+  e8 c8 b4 g2 
+  e'4 f4 g4 d4 
+  d4. c8 b4 g4 
+  a4 d8 c8 b8 g8 d'4   %5
+  d4 a8 g8 fis4 fis8 g8 
+  a8 b8 cis8 e8 d4 d4 
+  e8 d8 e8 d4 c8 b8 c8 
+  d2 d4 b4 
+  g4 c4 b2   %10
+  
 }
 
-
-baixo = \relative c {
-  \partial 4 g'8 fis 
-  e fis g4 d e8 d 
-  c4 g c2 
-  e4 d c fis, 
-  g8 b d4 g, b 
-  a g8 a b c d c 
-  b g a4 d d8 e 
-  fis g a cis, d c b4 
-  a8 b c d e fis g4 
-  d2 b8 a g4 
-  c8 e16 d c8 c, g'2 
+baixo = \relative c' {
+  \partial 4 g8  fis8 
+    e8 fis8 g4 d4 e8 d8 
+  c4 g4 c2 
+  e4 d4 c4 fis,4 
+  g8 b8 d4 g,4 b4 
+  a4 g8 a8 b8 c8 d8 c8   %5
+  b8 g8 a4 d4 d8 e8 
+  fis8 g8 a8 cis,8 d8 c8 b4 
+  a8 b8 c8 d8 e8 fis8 g4 
+  d2 b8 a8 g4 
+  c8 e16 d16 c8 c,8 g'2   %10
+  
 }
-
 
 \score {
   <<
