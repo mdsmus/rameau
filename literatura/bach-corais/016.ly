@@ -49,7 +49,7 @@ alto = \relative c {
   fis fis g a 
   g fis8 gis ais4 b 
   ais2 s4 cis 
-  b8 a g a a4 g8 fis 
+  b8 a g4 a g8 fis 
   e4 d8 e fis4 e8 d 
   cis2. cis4 
   d d cis cis 
