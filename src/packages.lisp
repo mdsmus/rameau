@@ -49,6 +49,6 @@
            #:*tempered-intervals* #:*tempered-system* #:*systems* #:*system*
            #:make-sequencia-de-notas #:string-lexer #:stringify #:aif
            #:*intervals-name* #:*intervals-quantity* #:*accidentals* #:tempered #:tonal
-           #:temperley-metrifica)
+           #:temperley-metrifica #:pardo->gabarito)
   (:use #:cl #:yacc #:lisp-unit))
 

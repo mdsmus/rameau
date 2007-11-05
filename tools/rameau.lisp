@@ -217,8 +217,11 @@ Exemplo: (split-word \"foo\") => (F O O)"
            (if result
                (incf count-ok)
                (push numero-seg wrong-list))
-           (print-gab-columns numero-seg n (print-chord gab flags) (print-chord pardo flags) d result flags))
-      (format t "~%~$ % correto, gab: ~a, pardo: ~a~%" (percent count-ok size-gab) size-gab size-algo)
+           (print-gab-columns numero-seg n (print-chord gab flags)
+                              (print-chord (pardo->gabarito pardo) flags)
+                              d result flags))
+      (format t "~%~$ % correto, gab: ~a, pardo: ~a~%"
+              (percent count-ok size-gab) size-gab size-algo)
       (format t "segmentos errados: ~a~%" (nreverse wrong-list)))))
 
 (defun print-help-item (item)

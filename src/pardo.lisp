@@ -17,6 +17,9 @@
   (gabarito)
   (segmento))
 
+(defun pardo->gabarito (acorde)
+  (nconc (subseq acorde 0 2) (list 0) (subseq acorde 2)))
+
 (defun group-and-count (segment)
   "Agrupa as notas de mesmo pitch e conta quantas ocorrem no segmento"
   (when segment
