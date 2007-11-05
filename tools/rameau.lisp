@@ -367,9 +367,11 @@ Exemplo: (split-word \"foo\") => (F O O)"
                        (get-item (intern (string-upcase comando)) *dados*))
                (progn
                  (format t "comando ~a não reconhecido~%" comando)
-                 (format t "você deve entrar um dos comandos: ~{~(~a~)~^ ~}~%" (get-comandos)))))
+                 (format t "você deve entrar um dos comandos: ~{~(~a~)~^ ~}~%"
+                         (get-comandos)))))
           ((member comando (get-comandos) :test #'string=)
            (funcall (read-from-string comando) dados flags files))
           (t (format t "comando ~a não reconhecido~%" comando)
-             (format t "você deve entrar um dos comandos: ~{~(~a~)~^ ~}~%" (get-comandos)))))
+             (format t "você deve entrar um dos comandos: ~{~(~a~)~^ ~}~%"
+                     (get-comandos)))))
   0)
