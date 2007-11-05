@@ -1,21 +1,15 @@
 (in-package #:rameau)
 
-(defun parse-acrescimos (modo acrescimos)
+(defun parse-acrescimos (acrescimos)
   ;; por enquanto só funciona com acordes simples, como Cm7
   (when acrescimos
-    (let* ((set (first (cl-ppcre:split "\\." acrescimos)))
-           (setima (cond ((string= "~" modo) set)
-                         ((string= "o" modo) (concat set "-"))
-                         (t set))))
-      (if (= (length setima) 1)
-          setima
-          (substitute #\+ #\m setima)))))
+    (first (cl-ppcre:split "\\." acrescimos))))
 
 (defun get-modo (abrev)
   (case (string->symbol abrev)
     (m "min")
-    (° "dim")
-    (ø "half-dim")
+    (° (values "dim" '7-))
+    (ø (values "dim" '7))
     (+ "aug")
     (! "inc")
     (t "maj")))
@@ -47,10 +41,13 @@ fundamental do acorde."
   (let ((cifra-list (cl-ppcre:split "/" cifra)))
     (cl-ppcre:register-groups-bind (fundamental modo acrescimos)
         ("([cdefgab]+[#b]?)(m|°|ø|!|\\+)?([0-9\\.mb\\+]+)?" (first cifra-list) :sharedp t)
-      (remove-if #'null (list (parse-fundamental fundamental)
-                              (get-modo modo)
-                              (qual-inversao? fundamental (second cifra-list))
-                              (parse-acrescimos modo acrescimos))))))
+      (multiple-value-bind (modo acrescimos-modo)
+          (get-modo modo)
+        (remove-if #'null (list (parse-fundamental fundamental)
+                                modo
+                                (qual-inversao? fundamental (second cifra-list))
+                                acrescimos-modo
+                                (parse-acrescimos acrescimos)))))))
 
 ;; TODO: lidar com 7m 7M, 5+, etc
 (defun get-intervalo-inversao-pop (modo inversao)
@@ -81,10 +78,13 @@ fundamental do acorde."
                        (case modo
                          (maj (format nil "~a" fundamental))
                          (min (format nil "~am" fundamental))
-                         (dim (format nil "~a°" fundamental))
-                         (half-dim (format nil "~aø" fundamental))
+                         (dim (if (eq '7- acrescimos)
+                                  (format nil "~a°" fundamental)
+                                  (format nil "~aø" fundamental)))
                          (aug (format nil "~a+" fundamental)))
-                       acrescimos
+                       (if (eq modo 'dim)
+                           ""
+                           acrescimos)
                        (get-inversao-pop fundamental modo inversao)))))))
 
 (defun expand-mel (stream char)
@@ -106,13 +106,13 @@ fundamental do acorde."
 (defun expande-cifra-setima (cifra)
   (let* ((cifra1 (cifra->acorde (first cifra)))
          (modo (second cifra1))
-         (setima (parse-acrescimos modo (second cifra))))
+         (setima (parse-acrescimos (second cifra))))
     (list '* 2 (list cifra1 (append cifra1 (list setima))))))
 
 (defun setima-no-baixo (acorde setima)
   (destructuring-bind (fund modo inversao &rest resto) acorde
     (declare (ignore inversao))
-    (remove-if #'null (list fund modo 3 (parse-acrescimos modo setima) resto))))
+    (remove-if #'null (list fund modo 3 (parse-acrescimos setima) resto))))
 
 (defun expande-cifra-setima-baixo (cifra)
   (let ((cifra1 (cifra->acorde (first cifra)))
