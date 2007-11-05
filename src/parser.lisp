@@ -21,6 +21,7 @@
   ("\\d+/\\d+" (return (values 'NUMBER (read-from-string lexer:%0))))
   ("(128|16|32|64|1|2|4|8)" (return (values 'DUR lexer::%0)))
   ("\\\\breve" (return (values 'DUR "1")))
+  ("\\\\longa" (return (values 'DUR "1/2")))
   ("\\d+" (return (values 'NUMBER lexer:%0)))
   ("\\*\\d+/\\d+" (return (values 'MULTIPLICA lexer:%0)))
   ("\\*\\d+" (return (values 'MULTIPLICA lexer:%0)))
