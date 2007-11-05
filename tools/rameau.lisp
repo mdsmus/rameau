@@ -253,11 +253,14 @@ Exemplo: (split-word \"foo\") => (F O O)"
         (write-line string-result)
         (write-line (subseq (last1 (cl-ppcre:split "\\n" string-result)) 34)))))
 
-(defun run-analise-harmonica (files)
+(defun run-analise-harmonica (flags files)
   (dolist (file files)
     (let ((resultado (with-system rameau:tempered
                        (gera-gabarito-pardo (parse-file file)))))
-      (format t "~%  * ~a: [pardo] ~(~a~) ~%" (pathname-name file) resultado))))
+      (format t "~%  * ~a: [pardo] ~(~a~) ~%"
+              (pathname-name file)
+              (mapcar (lambda (x) (print-chord (pardo->gabarito x)  flags))
+                      resultado)))))
 
 (defun run-compara-gabarito (flags files)
   (let (ok no)
@@ -304,10 +307,10 @@ Exemplo: (split-word \"foo\") => (F O O)"
          (rameau-quit))
         ((member 'g flags)
          (run-compara-gabarito flags files))
-        ((member 'a flags)
-         (run-analise-harmonica files))
         ((member 't flags)
-         (print-analise-temperley files))))
+         (print-analise-temperley flags files))
+        (t  ; -a implicito
+         (run-analise-harmonica flags files))))
 
 (defun processa-files (item f &optional (ext ".ly"))
   (let* ((path (concat (rameau-path) (get-item item *lily-dir-list*  #'equal)))
