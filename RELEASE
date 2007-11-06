@@ -1,0 +1,25 @@
+; -*- org -*-
+
+* Rameau 1.1, 06 novembro 2007
+
+Esse release tem as seguintes melhorias:
+
+** interface com usuário de rameau melhorada
+   a nova interface é mais simples e intuitiva de usar.
+** corais de bach processados
+   os corais foram limpos para serem lidos e depurados mais facilmente
+   por seres humanos.
+
+* Rameau 1.0, 14 outubro 2007
+
+Esse release envolve o trabalho de 7 meses e contém os seguintes
+recursos:
+
+** estrutura básica do programa, que envolve:
+   1. analisador léxico e sintático para o formato usado pelo lilypond
+   2. arquivos de teste (regressão, exemplos, e unidade)
+   3. biblioteca para lidar com elementos musicais (musiclib)
+** análise harmônica usando o algoritmo do pardo
+** programa binário para testes, conversão e comparação de resultados
+** formato de cifras "pop" para geração de gabaritos
+** arquivo lilypond de 371 corais, sendo que a maioria deles foram "limpos"
