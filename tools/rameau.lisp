@@ -55,8 +55,7 @@
                          ("-v" "verbose")
                          ("-m n" "o número de testes errados para imprimir")))
                        (análise
-                        (("-a" "gera análise harmônica (padrão)")
-                         ("-g" "compara com gabarito")
+                        (("-g" "compara com gabarito")
                          ("-n" "mostra as notas de cada segmento" "-v")
                          ("-d" "mostra as durações de cada segmento" "-v")
                          ("-l" "mostra formato de gabarito como listas" "-v")
@@ -302,10 +301,7 @@ Exemplo: (split-word \"foo\") => (F O O)"
     (format t "   temperley: ~(~a~) ~%" (temperley-metrifica (parse-file file)))))
 
 (defun run-analise (flags files)
-  (cond ((and (member 'a flags) (member 'g flags))
-         (write-line "As opções -a e -g não podem ser dadas ao mesmo tempo")
-         (rameau-quit))
-        ((member 'g flags)
+  (cond ((member 'g flags)
          (run-compara-gabarito flags files))
         ((member 't flags)
          (print-analise-temperley flags files))

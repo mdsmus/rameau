@@ -21,7 +21,6 @@ para todas as ações, enquanto outras só para análise:
   -m n  o número de testes errados para imprimir 
 
 * [análise]
-  -a    gera análise harmônica (padrão) 
   -g    compara com gabarito 
   -n    mostra as notas de cada segmento (implica em -v)
   -d    mostra as durações de cada segmento (implica em -v)
