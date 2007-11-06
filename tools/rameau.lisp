@@ -212,10 +212,9 @@ Exemplo: (split-word \"foo\") => (F O O)"
          for d in dur
          for numero-seg from 1
          for result = (compara-gabarito-pardo-individual pardo gab)
+         if result do (incf count-ok)
+         else do (push numero-seg wrong-list)
          do
-           (if result
-               (incf count-ok)
-               (push numero-seg wrong-list))
            (print-gab-columns numero-seg n (print-chord gab flags)
                               (print-chord (pardo->gabarito pardo) flags)
                               d result flags))
