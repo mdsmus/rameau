@@ -79,7 +79,7 @@ baixo = \relative c {
   \repeat volta 2 {
     bes4 d4 bes4 
     c4 f4 bes4 
-    e4 f4 g4 
+    e,4 f4 g4 
     f2 f4 
     bes,4 d4 bes4     %5
     c4 bes4 a4 

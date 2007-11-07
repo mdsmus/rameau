@@ -35,8 +35,8 @@ soprano = \relative c'' {
 
 alto = \relative c' {
   \repeat volta 2 {
-    fis2 fis2 f4 fis4 
-    gis2 f2 fis2 
+    fis2 fis2 eis4 fis4 
+    gis2 eis2 fis2 
     g2 e2 d2 
     d2 cis2 a2 
     d2 e2 d2     %5
@@ -78,7 +78,7 @@ tenor = \relative c' {
 baixo = \relative c {
   \repeat volta 2 {
     b2 b'4 a4 gis4 fis4 
-    f2 cis2 fis2 
+    eis2 cis2 fis2 
     b,2 cis2 d2 
     a'2 a,2 d2 
     fis2 cis2 d2     %5

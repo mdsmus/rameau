@@ -28,7 +28,7 @@ soprano = \relative c {
 
 alto = \relative c {
   \repeat volta 2 {
-    r4 a''4 a4 g4 
+    r4 a''4 a4 gis4 
     e4 a4 a4 gis4 
     e4 a4 gis4 gis4 }
   r4 a4 g4 f4~ 
@@ -47,7 +47,7 @@ tenor = \relative c {
     a8 c8 b8 a8 b4 b4 }
   r4 e4 d4 d4 
   c2 r4 d4   %5
-  c4 c8 ais8 a2 
+  c4 c8 bes8 a2 
   r4 cis4 d4. c8~ 
   c8 b4 a4 gis4 a8 
   b4 e4 e4 e8 d8 

@@ -7,3 +7,6 @@ os seguintes corais não foram processados:
 95: split errado
 141: tem varias notas erradas
 150: reverte
+
+197: faltava um partial. corrigir duracoes
+199: consertar problema com repeticao e partial
