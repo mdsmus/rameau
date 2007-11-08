@@ -1,4 +1,4 @@
-  2.0  [9 novembro]
+  2.0  [19 novembro]
 - gera lilypond com analise harmonica em baixo (grafico)
 - codigo gerar midi
 - inserir numeros de seg. minimos na representação grafica do coral [kroger]
