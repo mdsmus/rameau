@@ -28,6 +28,17 @@
   (inicio)
   (dur))
 
+(defmethod copy ((obj sequencia-de-notas))
+  (make-sequencia-de-notas :notas (copy (sequencia-de-notas-notas obj))
+                           :inicio (sequencia-de-notas-inicio obj)
+                           :dur (sequencia-de-notas-dur obj)))
+
+(defmethod copy ((obj evento))
+  (make-evento :pitch (evento-pitch obj)
+               :octave (evento-octave obj)
+               :dur (evento-dur obj)
+               :inicio (evento-inicio obj)))
+
 (defun cria-nota (nota &optional (octave "") dur articulation dur2) 
   (declare (ignore articulation))
   (let ((dur (if dur2 dur2 dur)))

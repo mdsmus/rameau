@@ -158,6 +158,19 @@ quantos acidentes ou oitavas uma nota tem."
   (if (> n 0)
       (cons list (repeat-list (- n 1) list))))
 
+(defgeneric copy (obj)
+  (:documentation "Copia um objeto"))
+
+(defmethod copy ((obj list))
+  (mapcar #'copy obj))
+
+(defmethod copy (obj)
+  obj)
+
+(defun repeat-copy (n list)
+  (if (> n 0)
+      (cons (copy list) (repeat-copy (- n 1) list))))
+
 (defun expande-multiplicacoes (gab)
   (when gab
     (let ((atual (first gab))

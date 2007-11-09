@@ -106,6 +106,9 @@
 
 (defclass voice (no-op-node) ())
 
+(defmethod copy ((obj ast-node))
+  (make-instance (type-of obj) :expr (copy (node-expr obj))))
+
 (defun parse-music-block (a block b)
   (declare (ignore a b))
   (make-instance 'music-block :expr block))
@@ -164,7 +167,7 @@
 
 (defun parse-repeat-block (a b dur block)
   (declare (ignore a))
-  (make-instance 'music-block :expr (repeat-list (/ 1 dur) block)))
+  (make-instance 'music-block :expr (repeat-copy (/ 1 dur) block)))
 
 (defun parse-dur (dur)
   (/ 1 (parse-integer dur)))
