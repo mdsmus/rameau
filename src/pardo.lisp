@@ -2,12 +2,12 @@
 (in-package #:rameau)
 
 (deftemplates *pardo-templates* 
-  ((maj) (0 4 7))
-  ((maj 7) (0 4 7 10))
-  ((min) (0 3 7))
-  ((dim 7-) (0 3 6 9))
-  ((dim 7) (0 3 6 10))
-  ((dim) (0 3 6))
+  ((maj 0) (0 4 7))
+  ((maj 0 7) (0 4 7 10))
+  ((min 0) (0 3 7))
+  ((dim 0 7-) (0 3 6 9))
+  ((dim 0 7) (0 3 6 10))
+  ((dim 0) (0 3 6))
   )
 
 (defstruct nota-pardo
@@ -143,33 +143,29 @@
                                        (segment-to-template segmento)))
                           *pardo-templates*))))
 
+
 (defun gera-gabarito-pardo (musica)
   (let ((segmentos (segmentos-minimos musica)))
     (values
      (mapcar #'nota-pardo-gabarito
-             (reduce #'desempata-pardo (mapcar #'pardo segmentos) :from-end t :initial-value nil))
+             (reduce #'desempata-pardo (mapcar #'pardo segmentos)
+                     :from-end t :initial-value nil))
      segmentos)))
      
 
 (defun compara-gabarito-pardo-individual (resultado gabarito)
   (let ((nota (note->code (stringify (first resultado))))
         (nota-certa (note->code (stringify (first gabarito))))
-        (acorde (rest resultado))
+        (acorde (cons (second resultado)
+                      (rest (rest (rest resultado)))))
         (acorde-certo (cons (second gabarito)
                             (rest (rest (rest gabarito))))))
     (and (equal nota nota-certa)
          (equal (mapcar #'stringify acorde) (mapcar #'stringify acorde-certo)))))
 
-(defun compara-gabarito-pardo (resultado gabarito)
-  (if (and (null resultado)
-           (null gabarito))
-      t
-      (and
-       (let ((res (first resultado))
-             (gab (first gabarito)))
-         (if (atom (first gab))
-             (compara-gabarito-pardo-individual res gab)
-             (some (lambda (x)
-                     (compara-gabarito-pardo-individual res x))
-                   gab)))
-       (compara-gabarito-pardo (rest resultado) (rest gabarito)))))
+(defun compara-gabarito-pardo (res gab)
+  (if (atom (first gab))
+      (compara-gabarito-pardo-individual res gab)
+      (some (lambda (x)
+              (compara-gabarito-pardo-individual res x))
+            gab)))

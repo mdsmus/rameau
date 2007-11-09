@@ -211,12 +211,12 @@ Exemplo: (split-word \"foo\") => (F O O)"
          for n in notas
          for d in dur
          for numero-seg from 1
-         for result = (compara-gabarito-pardo-individual pardo gab)
+         for result = (compara-gabarito-pardo pardo gab)
          if result do (incf count-ok)
          else do (push numero-seg wrong-list)
          do
            (print-gab-columns numero-seg n (print-chord gab flags)
-                              (print-chord (pardo->gabarito pardo) flags)
+                              (print-chord pardo flags)
                               d result flags))
       (format t "~%~$ % correto, gab: ~a, pardo: ~a~%"
               (percent count-ok size-gab) size-gab size-algo)
@@ -257,7 +257,7 @@ Exemplo: (split-word \"foo\") => (F O O)"
                        (gera-gabarito-pardo (parse-file file)))))
       (format t "~%  * ~a: [pardo] ~(~a~) ~%"
               (pathname-name file)
-              (mapcar (lambda (x) (print-chord (pardo->gabarito x)  flags))
+              (mapcar (lambda (x) (print-chord x  flags))
                       resultado)))))
 
 (defun run-compara-gabarito (flags files)
