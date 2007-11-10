@@ -1,11 +1,11 @@
 
- /***************************************************************************/
- /*                                                                         */
- /*       Copyright (C) 2000 Daniel Sleator and David Temperley             */
- /*           See http://www.link.cs.cmu.edu/music-analysis                 */
- /*        for information about commercial use of this system              */
- /*                                                                         */
- /***************************************************************************/
+/***************************************************************************/
+/*                                                                         */
+/*       Copyright (C) 2000 Daniel Sleator and David Temperley             */
+/*           See http://www.link.cs.cmu.edu/music-analysis                 */
+/*        for information about commercial use of this system              */
+/*                                                                         */
+/***************************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,11 +22,11 @@
 
    The labeling is chosen so as to maximize the sum of four components:
 
-     Compatibility of the proposed root label with the notes in it.
-     variance penalty of the sequence of root labels.
-     strong beat penalty which occurs when a root begins
-     ornamental dissonance penaty.
- */
+   Compatibility of the proposed root label with the notes in it.
+   variance penalty of the sequence of root labels.
+   strong beat penalty which occurs when a root begins
+   ornamental dissonance penaty.
+*/
 
 /* This function computes the compatibility score of a note (in terms of
    its TPC) and with respect to a particular root.  This is for 1 second
@@ -35,34 +35,34 @@
 
 /*
 
-variance: half life of 2 seconds....
+  variance: half life of 2 seconds....
 
-variance penalty for each "chord span".
-Its distance from its center of gravity times
-its duration (in seconds) times 3.
+  variance penalty for each "chord span".
+  Its distance from its center of gravity times
+  its duration (in seconds) times 3.
 
-strong beat penalty.  Penalizes chord changes that are on weak beats.
-(For example, rapid chord changes are penalized.)  It's
+  strong beat penalty.  Penalizes chord changes that are on weak beats.
+  (For example, rapid chord changes are penalized.)  It's
 
-      MAX( (2/S) - 1.5 , 0)
+  MAX( (2/S) - 1.5 , 0)
 
-where S is the length of the highest level beat of the beginning of this
-chord.  (It's zero if there's no change between this and the previous
-chord.)
+  where S is the length of the highest level beat of the beginning of this
+  chord.  (It's zero if there's no change between this and the previous
+  chord.)
 
-Ornamental dissonance penalty:
-   It is applied when a note has a compatibility of 0 with its root.
-   Take the time in seconds between a note's onset and the onset of the
-   next note whose pitch differs by -2, -1, 1, or 2 from the current note.
-   Let that time be D.  The penalty is 2 + 3D + D^2
+  Ornamental dissonance penalty:
+  It is applied when a note has a compatibility of 0 with its root.
+  Take the time in seconds between a note's onset and the onset of the
+  next note whose pitch differs by -2, -1, 1, or 2 from the current note.
+  Let that time be D.  The penalty is 2 + 3D + D^2
 
-   If (in subsequent processing) a note is split into several notes or
-   chords, the ornamental dissonance penalty is only applied to the
-   FIRST such note.  This note-wise hypothetical penalty should be
-   computed for all of the notes once at the beginning.
+  If (in subsequent processing) a note is split into several notes or
+  chords, the ornamental dissonance penalty is only applied to the
+  FIRST such note.  This note-wise hypothetical penalty should be
+  computed for all of the notes once at the beginning.
 
 
-Voice Leading Rule:
+  Voice Leading Rule:
 
   Penalty for spelling two notes that are a half step apart in pitch and
   close together in time, spelling them 7 steps apart on the line of
@@ -102,7 +102,7 @@ Voice Leading Rule:
 */
 
 int next_prime_up(int start) {
-/* return the next prime up from start */
+  /* return the next prime up from start */
   int i;
   start = start | 1; /* make it odd */
   for (;;) {
@@ -127,108 +127,108 @@ static long int total_hash_cost;
 static long int N_hash_lookups;
 
 void initialize_hashing(void) {
-    table_size = next_prime_up(4000);
-    hash_prime_1 = next_prime_up(100);
-    hash_prime_2 = next_prime_up(200);
-    hash_prime_3 = next_prime_up(300);
-    hash_prime_4 = next_prime_up(400);
+  table_size = next_prime_up(4000);
+  hash_prime_1 = next_prime_up(100);
+  hash_prime_2 = next_prime_up(200);
+  hash_prime_3 = next_prime_up(300);
+  hash_prime_4 = next_prime_up(400);
     
-    total_hash_cost = 0;
-    N_hash_lookups = 0;
+  total_hash_cost = 0;
+  N_hash_lookups = 0;
 }
 
 int hash(int int_tpc_cog, int int_har_cog, TPC root, TPC window) {
-    /* given these parameters, this figures out which bucket it goes in */
-    int x;
-    x = hash_prime_1 * root
-	+ hash_prime_2 * int_tpc_cog
-	+ hash_prime_3 * int_har_cog
-	+ hash_prime_4 * window;
-    return (abs(x) % table_size);
+  /* given these parameters, this figures out which bucket it goes in */
+  int x;
+  x = hash_prime_1 * root
+    + hash_prime_2 * int_tpc_cog
+    + hash_prime_3 * int_har_cog
+    + hash_prime_4 * window;
+  return (abs(x) % table_size);
 }
 
 void free_hash_table(Bucket ** table) {
-    int i;
-    Bucket * pn, * xpn;
+  int i;
+  Bucket * pn, * xpn;
     
-    for (i = 0; i<table_size; i++) {
-	for (pn = table[i]; pn != NULL; pn = xpn) {
+  for (i = 0; i<table_size; i++) {
+    for (pn = table[i]; pn != NULL; pn = xpn) {
 	    xpn = pn->next;
 	    xfree(pn);
-	}
     }
-    xfree(table);
+  }
+  xfree(table);
 }
 
 Bucket ** create_hash_table(void) {
-    int i;
-    Bucket ** table;
-    table = (Bucket **) xalloc(table_size * sizeof (Bucket *));
-    if (table == NULL) {
-	fprintf(stderr, "%s: Could not allocate a table of size %d\n", this_program, table_size);
-	my_exit(1);
-    }
-    for (i = 0; i<table_size; i++) {
-	table[i] = NULL;
-    }
-    return table;
+  int i;
+  Bucket ** table;
+  table = (Bucket **) xalloc(table_size * sizeof (Bucket *));
+  if (table == NULL) {
+    fprintf(stderr, "%s: Could not allocate a table of size %d\n", this_program, table_size);
+    my_exit(1);
+  }
+  for (i = 0; i<table_size; i++) {
+    table[i] = NULL;
+  }
+  return table;
 }
 
 Bucket * lookup_in_table(int int_tpc_cog, int int_har_cog, TPC root, TPC window, Bucket ** table) {
-    int h;
-    Bucket * pn;
+  int h;
+  Bucket * pn;
     
-    N_hash_lookups++;
-    h = hash(int_tpc_cog, int_har_cog, root, window);
-    for (pn = table[h]; pn != NULL; pn = pn->next) {
-	if (pn->int_tpc_cog == int_tpc_cog && pn->int_har_cog == int_har_cog && pn->root == root && pn->window == window) return pn;
-	total_hash_cost++;
-    }
-    return NULL;
+  N_hash_lookups++;
+  h = hash(int_tpc_cog, int_har_cog, root, window);
+  for (pn = table[h]; pn != NULL; pn = pn->next) {
+    if (pn->int_tpc_cog == int_tpc_cog && pn->int_har_cog == int_har_cog && pn->root == root && pn->window == window) return pn;
+    total_hash_cost++;
+  }
+  return NULL;
 }
 
 Bucket * insert_into_table(int int_tpc_cog, int int_har_cog, TPC root, TPC window, Bucket ** table) {
-    int h;
-    Bucket * pn;
-    h = hash(int_tpc_cog, int_har_cog, root, window);
-    pn = (Bucket *) xalloc(sizeof(Bucket));
-    if (pn == NULL) {
-	fprintf(stderr, "%s: malloc failed while allocating a bucket\n", this_program);
-	my_exit(1);    
-    }
+  int h;
+  Bucket * pn;
+  h = hash(int_tpc_cog, int_har_cog, root, window);
+  pn = (Bucket *) xalloc(sizeof(Bucket));
+  if (pn == NULL) {
+    fprintf(stderr, "%s: malloc failed while allocating a bucket\n", this_program);
+    my_exit(1);    
+  }
     
-    pn->next = table[h];
-    table[h] = pn;
-    pn->int_har_cog = int_har_cog;
-    pn->int_tpc_cog = int_tpc_cog;
-    pn->root = root;
-    pn->window = window;
-    pn->score = 0.0; 
-    return pn;
+  pn->next = table[h];
+  table[h] = pn;
+  pn->int_har_cog = int_har_cog;
+  pn->int_tpc_cog = int_tpc_cog;
+  pn->root = root;
+  pn->window = window;
+  pn->score = 0.0; 
+  return pn;
 }
 
 Bucket * put_in_table(int int_tpc_cog, int int_har_cog, TPC root, TPC window, Bucket ** table) {
-    /* if there's an appropriate bucket, return it, otherwise insert it */
-    /* not super efficient cause it computes the hash function twice */
-    Bucket *b;
-    b = lookup_in_table(int_tpc_cog, int_har_cog, root, window, table);
-    if (b != NULL) return b;
-    return insert_into_table(int_tpc_cog, int_har_cog, root, window, table);
+  /* if there's an appropriate bucket, return it, otherwise insert it */
+  /* not super efficient cause it computes the hash function twice */
+  Bucket *b;
+  b = lookup_in_table(int_tpc_cog, int_har_cog, root, window, table);
+  if (b != NULL) return b;
+  return insert_into_table(int_tpc_cog, int_har_cog, root, window, table);
 }
 
 
 void cleanup_harmonic (void) {
-    int i;
-    for (i=0; i<N_chords; i++) {
-	free_hash_table(column_table[i].table);
-    }
-    xfree(column_table);
+  int i;
+  for (i=0; i<N_chords; i++) {
+    free_hash_table(column_table[i].table);
+  }
+  xfree(column_table);
 }
 
 double ornamental_dissonance_penalty(double delta) {
-    /* this must be an increasing function of delta (for positive delta)  */
-    /* or the code won't find the minimum one */
-    return odp_constant + odp_linear_factor*delta + odp_quadratic_factor*delta*delta;
+  /* this must be an increasing function of delta (for positive delta)  */
+  /* or the code won't find the minimum one */
+  return odp_constant + odp_linear_factor*delta + odp_quadratic_factor*delta*delta;
 }
 
 #define DEFAULT_TIME 10.0
@@ -263,20 +263,21 @@ void label_notes_with_ornamental_dissonance_penalties(Note * nl) {
    (that were not available at the time the above function computed
    the odps. */
 void modify_ornamental_dissonance_penalties(Chord *m_clist) {
-    float odp_modifier;
-    Chord * ch;
-    Note *note;
-    for (ch = m_clist; ch!=NULL; ch=ch->next) {
-        /* 9/3 - Davy changed this: the modifying factor is now the max of 1.0 and (1.4)*sqrt(ch->level_time/1000.0) */
-	/* the following test avoids updating the ODP twice for a given note. */
-	if (ch->is_first_chord) {
-	    for (note=ch->note; note != NULL; note=note->next) {     
-	        if ((1.4)*sqrt(ch->level_time/1000.0) > 1.0) odp_modifier=1.0; 
-		else odp_modifier = (1.4)*sqrt(ch->level_time/1000.0); 
-		note->orn_dis_penalty *= odp_modifier;		
+  float odp_modifier;
+  Chord * ch;
+  Note *note;
+  for (ch = m_clist; ch!=NULL; ch=ch->next) {
+    /* 9/3 - Davy changed this: the modifying factor is
+       now the max of 1.0 and (1.4)*sqrt(ch->level_time/1000.0) */
+    /* the following test avoids updating the ODP twice for a given note. */
+    if (ch->is_first_chord) {
+      for (note=ch->note; note != NULL; note=note->next) {     
+        if ((1.4)*sqrt(ch->level_time/1000.0) > 1.0) odp_modifier=1.0; 
+        else odp_modifier = (1.4)*sqrt(ch->level_time/1000.0); 
+        note->orn_dis_penalty *= odp_modifier;		
 	    }
-	}
     }
+  }
 }
 
 void label_notes_with_voice_leading_neighbor(Note *nl) {
@@ -308,259 +309,259 @@ void label_notes_with_voice_leading_neighbor(Note *nl) {
 }
 	
 double compatibility(TPC root, TPC note) {
-    /* if the abs of this is > .01 it's considered to be non-zero
-       from the perspective of computing ornamental dissonance */
-    switch (note - root) {
-    case -6: return compat_value[0];
-    case -5: return compat_value[1];
-    case -4: return compat_value[2];
-    case -3: return compat_value[3];
-    case -2: return compat_value[4];
-    case -1: return compat_value[5];
-    case 0: return compat_value[6];
-    case 1: return compat_value[7];
-    case 2: return compat_value[8];
-    case 3: return compat_value[9];
-    case 4: return compat_value[10];
-    case 5: return compat_value[11];
-    default: return -10.0;
-    }
+  /* if the abs of this is > .01 it's considered to be non-zero
+     from the perspective of computing ornamental dissonance */
+  switch (note - root) {
+  case -6: return compat_value[0];
+  case -5: return compat_value[1];
+  case -4: return compat_value[2];
+  case -3: return compat_value[3];
+  case -2: return compat_value[4];
+  case -1: return compat_value[5];
+  case 0: return compat_value[6];
+  case 1: return compat_value[7];
+  case 2: return compat_value[8];
+  case 3: return compat_value[9];
+  case 4: return compat_value[10];
+  case 5: return compat_value[11];
+  default: return -10.0;
+  }
 }
 
 
 double note_ornamental_dissonance_penalty(TPC root, TPC tpc, Chord * chord, Note * note, int same_roots) {
-    /* same_roots is 1 if the root at this point and the previous point are the same */
-    if (same_roots && !chord->is_first_chord) return 0.0;
-    if (same_roots && !note->is_first_note) return 0.0;
-    if (compatibility(root, tpc) != -10.0) return 0.0;  /* used to be compatibility != 0 */
-    else return note->orn_dis_penalty;
+  /* same_roots is 1 if the root at this point and the previous point are the same */
+  if (same_roots && !chord->is_first_chord) return 0.0;
+  if (same_roots && !note->is_first_note) return 0.0;
+  if (compatibility(root, tpc) != -10.0) return 0.0;  /* used to be compatibility != 0 */
+  else return note->orn_dis_penalty;
 }
 
 double tpc_variance(double cog, TPC tpc, double my_mass, double decayed_prior_note_mass) {
-    double delta_cog;
-    delta_cog = fabs(cog - (double) tpc);
-    return (delta_cog * delta_cog * my_mass);
-    /* Davy changed this: used to be   return (delta_cog * delta_cog * my_mass * decayed_prior_note_mass); */
+  double delta_cog;
+  delta_cog = fabs(cog - (double) tpc);
+  return (delta_cog * delta_cog * my_mass);
+  /* Davy changed this: used to be   return (delta_cog * delta_cog * my_mass * decayed_prior_note_mass); */
 }
 
 TPC apply_window(TPC base_tpc, TPC window) {
-    /* Translate the base_tpc into the [window, window+12) */
-    return (base_tpc - window + 12000000)%12 + window;  /* 12000000 is to get C to to mods properly */
+  /* Translate the base_tpc into the [window, window+12) */
+  return (base_tpc - window + 12000000)%12 + window;  /* 12000000 is to get C to to mods properly */
 }
 
 int is_canonical_window(Note *note, TPC window) {
-    /* it's "canonical" if one of the notes of the chord is mapped to 
-       window by the apply_window function.  In case the chord has no notes, only
-       the window=0 is considered canonical */
-    if (note == NULL) return (window == 0);
-    for (; note != NULL; note = note->next) {
-	if (window == apply_window(note->base_tpc, window)) return TRUE;
-    }
-    return FALSE;
+  /* it's "canonical" if one of the notes of the chord is mapped to 
+     window by the apply_window function.  In case the chord has no notes, only
+     the window=0 is considered canonical */
+  if (note == NULL) return (window == 0);
+  for (; note != NULL; note = note->next) {
+    if (window == apply_window(note->base_tpc, window)) return TRUE;
+  }
+  return FALSE;
 }
 
 int windows_differ_in_chord(TPC window1, TPC window2, Chord *chord) {
-    /* Return TRUE if the two given windows give different TPCs for some note of this chord */
-    /* Applies if this chord is a continuation, or to notes that are continuations */
-    Note * note;
-    for (note = chord->note; note != NULL; note = note->next) {
-	if ((!note->is_first_note || !chord->is_first_chord)
-	    && apply_window(note->base_tpc, window1) != apply_window(note->base_tpc, window2)) return TRUE;
-    }
-    return FALSE;
+  /* Return TRUE if the two given windows give different TPCs for some note of this chord */
+  /* Applies if this chord is a continuation, or to notes that are continuations */
+  Note * note;
+  for (note = chord->note; note != NULL; note = note->next) {
+    if ((!note->is_first_note || !chord->is_first_chord)
+        && apply_window(note->base_tpc, window1) != apply_window(note->base_tpc, window2)) return TRUE;
+  }
+  return FALSE;
 }
 
 double compute_voice_leading_penalty(Chord *chord, double tpc_cog, int window) {
-    Note * note;
-    double total;
-    total = 0.0;
-    if (!chord->is_first_chord) return 0.0;
-    for (note = chord->note; note != NULL; note = note->next) {
-	if (!note->is_first_note) continue;
-	if ((note->voice_leading_neighbor == 1) && (apply_window(note->base_tpc, window) > 4.0 + tpc_cog)) {
+  Note * note;
+  double total;
+  total = 0.0;
+  if (!chord->is_first_chord) return 0.0;
+  for (note = chord->note; note != NULL; note = note->next) {
+    if (!note->is_first_note) continue;
+    if ((note->voice_leading_neighbor == 1) && (apply_window(note->base_tpc, window) > 4.0 + tpc_cog)) {
 	    total += voice_leading_penalty;
-	}
-	if ((note->voice_leading_neighbor == -1) && (apply_window(note->base_tpc, window) < -4.0 + tpc_cog)) {
-	    total += voice_leading_penalty;
-	}
     }
-    return total;
+    if ((note->voice_leading_neighbor == -1) && (apply_window(note->base_tpc, window) < -4.0 + tpc_cog)) {
+	    total += voice_leading_penalty;
+    }
+  }
+  return total;
 }
 
 void tpc_choice_score(TPC root, TPC window, int same_roots, Chord *ch, double my_mass, double decayed_prior_note_mass, double tpc_cog) {
-    /* tpc_cog is the PRIOR center of gravity. */
+  /* tpc_cog is the PRIOR center of gravity. */
     
-    int i, nnotes;
-    Note *note;
-    TPC tpc;
-    double score, compat, orn_diss_penalty, variance;
-    double average_tpc;
+  int i, nnotes;
+  Note *note;
+  TPC tpc;
+  double score, compat, orn_diss_penalty, variance;
+  double average_tpc;
     
-    for (nnotes=0, note=ch->note; note != NULL; note = note->next) nnotes++;
+  for (nnotes=0, note=ch->note; note != NULL; note = note->next) nnotes++;
     
-    side_effect.compatibility = 0.0;
-    side_effect.orn_diss_penalty = 0.0;
-    side_effect.tpc_variance = 0.0;
+  side_effect.compatibility = 0.0;
+  side_effect.orn_diss_penalty = 0.0;
+  side_effect.tpc_variance = 0.0;
     
-    /* strong beat penalty */
-    if (same_roots) {
-	side_effect.strong_beat_penalty = 0.0;
-    } else {
-	if (prechord_mode) {
+  /* strong beat penalty */
+  if (same_roots) {
+    side_effect.strong_beat_penalty = 0.0;
+  } else {
+    if (prechord_mode) {
 	    side_effect.strong_beat_penalty = ((sbp_weight * 1000.0)/ch->level_time) - sbp_constant;  
-            /* Alternative penalty in "prechord" mode */
+      /* Alternative penalty in "prechord" mode */
 	    /* Actually this is identical to the below ---DS */
-	} else {
+    } else {
 	    side_effect.strong_beat_penalty = ((sbp_weight * 1000.0)/ch->level_time) - sbp_constant;
-	}
-	if (side_effect.strong_beat_penalty < 0.0) side_effect.strong_beat_penalty = 0.0;
     }
+    if (side_effect.strong_beat_penalty < 0.0) side_effect.strong_beat_penalty = 0.0;
+  }
     
-    for (i=0, note=ch->note; note != NULL; note = note->next, i++) {
-	tpc = apply_window(note->base_tpc, window);
+  for (i=0, note=ch->note; note != NULL; note = note->next, i++) {
+    tpc = apply_window(note->base_tpc, window);
 	    
-	/* compatibility */
-	if(compatibility(root, tpc) == -10.0) compat = 0;
-	else compat = compatibility(root, tpc) * my_mass * compat_factor;
+    /* compatibility */
+    if(compatibility(root, tpc) == -10.0) compat = 0;
+    else compat = compatibility(root, tpc) * my_mass * compat_factor;
 	
-	/* orn dis penalty */
-	orn_diss_penalty = note_ornamental_dissonance_penalty(root, tpc, ch, note, same_roots);
+    /* orn dis penalty */
+    orn_diss_penalty = note_ornamental_dissonance_penalty(root, tpc, ch, note, same_roots);
 	
-	/* tpc variance */
-	variance = tpc_variance(tpc_cog, tpc, my_mass, decayed_prior_note_mass);
+    /* tpc variance */
+    variance = tpc_variance(tpc_cog, tpc, my_mass, decayed_prior_note_mass);
 	
-	score = compat - orn_diss_penalty - tpc_var_factor * variance;
+    score = compat - orn_diss_penalty - tpc_var_factor * variance;
 	
-	side_effect.tpc_choice[i] = tpc;
+    side_effect.tpc_choice[i] = tpc;
 
-	side_effect.compatibility += compat;
-	side_effect.orn_diss_penalty += orn_diss_penalty;
-	side_effect.tpc_variance += variance;
-    }
-    /* now compute the tpc_cog, and put it in side_effect.tpc_cog */
+    side_effect.compatibility += compat;
+    side_effect.orn_diss_penalty += orn_diss_penalty;
+    side_effect.tpc_variance += variance;
+  }
+  /* now compute the tpc_cog, and put it in side_effect.tpc_cog */
     
-    average_tpc = 0;
-    for (i=0; i<nnotes; i++) {
-	average_tpc += (double)(side_effect.tpc_choice[i])/nnotes;
-    }
-    side_effect.tpc_cog =
-	(tpc_cog * decayed_prior_note_mass + average_tpc * nnotes * my_mass)/(nnotes * my_mass + decayed_prior_note_mass);
+  average_tpc = 0;
+  for (i=0; i<nnotes; i++) {
+    average_tpc += (double)(side_effect.tpc_choice[i])/nnotes;
+  }
+  side_effect.tpc_cog =
+    (tpc_cog * decayed_prior_note_mass + average_tpc * nnotes * my_mass)/(nnotes * my_mass + decayed_prior_note_mass);
 }
 
 void prune_table(Bucket ** table, int column) {
-    int h;
-    Bucket * bu, *xbu, *best, *nbu;
-    int count=0, badcount=0;
+  int h;
+  Bucket * bu, *xbu, *best, *nbu;
+  int count=0, badcount=0;
     
-    best = NULL;
-    for (h=0; h<table_size; h++) {
-	for (bu = table[h]; bu != NULL; bu = bu->next) {
+  best = NULL;
+  for (h=0; h<table_size; h++) {
+    for (bu = table[h]; bu != NULL; bu = bu->next) {
 	    if(best == NULL || best->score < bu->score) best = bu;
 	    count++;
-	}
     }
+  }
     
-    for (h=0; h<table_size; h++) {
-	nbu = NULL;
-	for (bu = table[h]; bu != NULL; bu = xbu) {
+  for (h=0; h<table_size; h++) {
+    nbu = NULL;
+    for (bu = table[h]; bu != NULL; bu = xbu) {
 	    xbu = bu->next;
 	    
 	    if (bu->score < best->score - pruning_cutoff) {
-		badcount++;
-		xfree(bu);
+        badcount++;
+        xfree(bu);
 	    } else {
-		bu->next = nbu;
-		nbu = bu;
+        bu->next = nbu;
+        nbu = bu;
 	    }
-	}
-	table[h] = nbu;
     }
-    if (verbosity >= 1) {
-	printf("Finished unit %3d.  (keeping %5d options out of %5d)\n", column, count-badcount, count);
-    }
+    table[h] = nbu;
+  }
+  if (verbosity >= 1) {
+    printf("Finished unit %3d.  (keeping %5d options out of %5d)\n", column, count-badcount, count);
+  }
 }
 
 void initialize_harmonic(Chord *nl) {
-    Chord * xnl;
-    Note * note;
-    double delta_t, decay;
-    int i, n;
-    for (N_chords = 0, xnl = nl; xnl != NULL; xnl = xnl->next) N_chords++;  /* compute N_chords */
+  Chord * xnl;
+  Note * note;
+  double delta_t, decay;
+  int i, n;
+  for (N_chords = 0, xnl = nl; xnl != NULL; xnl = xnl->next) N_chords++;  /* compute N_chords */
     
-    column_table = (Column*) xalloc (N_chords * sizeof(Column));
-    if (column_table == NULL) {
-	fprintf(stderr, "%s: Malloc failed\n", this_program);
-	my_exit(1);
-    }
-    for (i = 0, xnl = nl; xnl != NULL; xnl = xnl->next, i++) {
-	for (n=0, note=xnl->note; note != NULL; note = note->next) n++; /* count number of notes */
+  column_table = (Column*) xalloc (N_chords * sizeof(Column));
+  if (column_table == NULL) {
+    fprintf(stderr, "%s: Malloc failed\n", this_program);
+    my_exit(1);
+  }
+  for (i = 0, xnl = nl; xnl != NULL; xnl = xnl->next, i++) {
+    for (n=0, note=xnl->note; note != NULL; note = note->next) n++; /* count number of notes */
 	
-	column_table[i].chord = xnl;
-	column_table[i].table = create_hash_table();
+    column_table[i].chord = xnl;
+    column_table[i].table = create_hash_table();
 	
-	column_table[i].my_mass = ((double) xnl->duration)/(1000.0);
+    column_table[i].my_mass = ((double) xnl->duration)/(1000.0);
 	
-	/* this part computes the chord masses */
-	if (i == 0) {
+    /* this part computes the chord masses */
+    if (i == 0) {
 	    column_table[i].chord_mass = column_table[i].my_mass;
 	    column_table[i].note_mass = n*column_table[i].my_mass;
 	    column_table[i].decayed_prior_note_mass = 0.0;
 	    column_table[i].decayed_prior_chord_mass = 0.0;
-	} else {
+    } else {
 	    delta_t = (double) xnl->start - column_table[i-1].chord->start;
 	    decay = exp(-alpha * delta_t);
 	    column_table[i].chord_mass = decay * column_table[i-1].chord_mass + column_table[i].my_mass;
 	    column_table[i].note_mass = decay * column_table[i-1].note_mass + n*column_table[i].my_mass;
 	    column_table[i].decayed_prior_note_mass = column_table[i-1].note_mass * decay;
 	    column_table[i].decayed_prior_chord_mass = column_table[i-1].chord_mass * decay;
-	}
-	if (verbosity >= 4) {
-	    printf("chord_mass= %6.3f  note_mass= %6.3f  dpnm= %6.3f  dpcm= %6.3f\n", 
-		   column_table[i].chord_mass,
-		   column_table[i].note_mass,
-		   column_table[i].decayed_prior_note_mass,
-		   column_table[i].decayed_prior_chord_mass);
-	}
     }
+    if (verbosity >= 4) {
+	    printf("chord_mass= %6.3f  note_mass= %6.3f  dpnm= %6.3f  dpcm= %6.3f\n", 
+             column_table[i].chord_mass,
+             column_table[i].note_mass,
+             column_table[i].decayed_prior_note_mass,
+             column_table[i].decayed_prior_chord_mass);
+    }
+  }
 }
 
 int discrete_cog(double cog) {
-    return (int) (cog * buckets_per_unit_of_cog);
+  return (int) (cog * buckets_per_unit_of_cog);
 }
 
 void initialize_first_harmonic_column(void) {
-    int b;
-    TPC root, window;
-    int tpc_prime;
-    double cog;
-    Bucket *buck;
-    for (window = LOWEST_TPC; window <= HIGHEST_TPC-11; window++) {
-	if (!is_canonical_window(column_table[0].chord->note, window)) continue;
-	for (root = -4; root <= 7; root++) {
+  int b;
+  TPC root, window;
+  int tpc_prime;
+  double cog;
+  Bucket *buck;
+  for (window = LOWEST_TPC; window <= HIGHEST_TPC-11; window++) {
+    if (!is_canonical_window(column_table[0].chord->note, window)) continue;
+    for (root = -4; root <= 7; root++) {
 	    for (tpc_prime = root-5; tpc_prime <= root+6; tpc_prime++) {
-		cog = (double) root;
-		b = discrete_cog(cog);
+        cog = (double) root;
+        b = discrete_cog(cog);
 
-		tpc_choice_score(root, window, 0, column_table[0].chord, column_table[0].my_mass, 1.0, (double)tpc_prime);
-		/* we prime the initial column with an artifical decayed_prior_mass of 1.0, and
-		   an artificial tpc_cog of tpc_prime. */
+        tpc_choice_score(root, window, 0, column_table[0].chord, column_table[0].my_mass, 1.0, (double)tpc_prime);
+        /* we prime the initial column with an artifical decayed_prior_mass of 1.0, and
+           an artificial tpc_cog of tpc_prime. */
 
-		buck = insert_into_table(discrete_cog(side_effect.tpc_cog), b, root, window, column_table[0].table);
-		buck->tpc_prime = tpc_prime;
-		buck->har_cog = cog;
+        buck = insert_into_table(discrete_cog(side_effect.tpc_cog), b, root, window, column_table[0].table);
+        buck->tpc_prime = tpc_prime;
+        buck->har_cog = cog;
 
-		buck->tpc_cog = side_effect.tpc_cog;
-		buck->har_variance = 0.0;
-		buck->tpc_variance = side_effect.tpc_variance;
-		buck->score =
-		    + side_effect.compatibility
-		    - side_effect.orn_diss_penalty
-		    - compute_voice_leading_penalty(column_table[0].chord, side_effect.tpc_cog, window);
-		/* we include all costs that don't depend on the previous choices */
-		buck->prev_bucket = NULL;
+        buck->tpc_cog = side_effect.tpc_cog;
+        buck->har_variance = 0.0;
+        buck->tpc_variance = side_effect.tpc_variance;
+        buck->score =
+          + side_effect.compatibility
+          - side_effect.orn_diss_penalty
+          - compute_voice_leading_penalty(column_table[0].chord, side_effect.tpc_cog, window);
+        /* we include all costs that don't depend on the previous choices */
+        buck->prev_bucket = NULL;
 	    }
-	}
     }
+  }
 }
 
 void compute_harmonic_table(void) {
@@ -733,125 +734,126 @@ void print_harmonic(void) {
 }
 
 void print_prechords(void) { 
-    Chord *chord;
-    int i, h;
-    int oldroot=1000;        /* Davy needs */
-    Bucket ** bucket_choice;
-    Bucket * best_b, *bb, *bu;
+  Chord *chord;
+  int i, h;
+  int oldroot=1000;        /* Davy needs */
+  Bucket ** bucket_choice;
+  Bucket * best_b, *bb, *bu;
     
-    bucket_choice = (Bucket **) xalloc(N_chords * sizeof (Bucket *));
+  bucket_choice = (Bucket **) xalloc(N_chords * sizeof (Bucket *));
     
-    best_b = NULL;
+  best_b = NULL;
     
-    for (h=0; h<table_size; h++) {
-	for (bu = column_table[N_chords-1].table[h]; bu != NULL; bu = bu->next) {
+  for (h=0; h<table_size; h++) {
+    for (bu = column_table[N_chords-1].table[h]; bu != NULL; bu = bu->next) {
 	    if(best_b == NULL || best_b->score < bu->score) best_b = bu;
-	}
     }
+  }
     
-    if (best_b == NULL) {
-	fprintf(stderr, "%s: No bucket used\n", this_program);
-	my_exit(1);
-    }
+  if (best_b == NULL) {
+    fprintf(stderr, "%s: No bucket used\n", this_program);
+    my_exit(1);
+  }
     
-    for (i = N_chords-1; i >= 0; i--) {
-	bucket_choice[i] = best_b;
-	best_b = best_b->prev_bucket;
-    }
+  for (i = N_chords-1; i >= 0; i--) {
+    bucket_choice[i] = best_b;
+    best_b = best_b->prev_bucket;
+  }
     
-    for (i=0; i<N_chords; i++) {
-	chord = column_table[i].chord;
-	bb = bucket_choice[i];
+  for (i=0; i<N_chords; i++) {
+    chord = column_table[i].chord;
+    bb = bucket_choice[i];
 	
-	if (oldroot != bb->root && oldroot != 1000) {
-	  printf("Prechord %5d\n", chord->start);
-	}
-	oldroot = bb->root;
-    }   
+    if (oldroot != bb->root && oldroot != 1000) {
+      printf("Prechord %5d\n", chord->start);
+    }
+    oldroot = bb->root;
+  }   
     
-    xfree(bucket_choice);
+  xfree(bucket_choice);
 }
 
 char * note_string(Note *note) {
-    static int i = 0;
-    static char str[2][100];
-    char * answer;
-    i = (i+1) % 2;
-    answer = str[i];
-    sprintf(answer, "[%d %d] pitch = %d  is_first_note = %d directnote = %lu",
-	    note->start, note->start+note->duration, note->pitch, note->is_first_note,
-	    (long int) note->directnote);
-    return answer;
+  static int i = 0;
+  static char str[2][100];
+  char * answer;
+  i = (i+1) % 2;
+  answer = str[i];
+  sprintf(answer, "[%d %d] pitch = %d  is_first_note = %d directnote = %lu",
+          note->start, note->start+note->duration, note->pitch, note->is_first_note,
+          (long int) note->directnote);
+  return answer;
 }
 
 void compute_direct_notes_TPCs(int should_print_chords) { 
-    /* This function assignes a TPC value to all of the direct notes in the 
-       global_DN_list */
-    Note * note;
-    Chord *chord;
-    int i, j, h;
-    Bucket ** bucket_choice;
-    Bucket * best_b, *bb, *bu;
+  /* This function assignes a TPC value to all of the direct notes in the 
+     global_DN_list */
+  Note * note;
+  Chord *chord;
+  int i, j, h;
+  Bucket ** bucket_choice;
+  Bucket * best_b, *bb, *bu;
     
-    bucket_choice = (Bucket **) xalloc(N_chords * sizeof (Bucket *));
+  bucket_choice = (Bucket **) xalloc(N_chords * sizeof (Bucket *));
     
-    best_b = NULL;
+  best_b = NULL;
     
-    for (h=0; h<table_size; h++) {
-	for (bu = column_table[N_chords-1].table[h]; bu != NULL; bu = bu->next) {
+  for (h=0; h<table_size; h++) {
+    for (bu = column_table[N_chords-1].table[h]; bu != NULL; bu = bu->next) {
 	    if(best_b == NULL || best_b->score < bu->score) best_b = bu;
-	}
     }
+  }
     
-    if (best_b == NULL) {
-	fprintf(stderr, "%s: No bucket used\n", this_program);
-	my_exit(1);
-    }
+  if (best_b == NULL) {
+    fprintf(stderr, "%s: No bucket used\n", this_program);
+    my_exit(1);
+  }
     
-    for (i = N_chords-1; i >= 0; i--) {
-	bucket_choice[i] = best_b;
-	best_b = best_b->prev_bucket;
-    }
+  for (i = N_chords-1; i >= 0; i--) {
+    bucket_choice[i] = best_b;
+    best_b = best_b->prev_bucket;
+  }
     
-    for (i=0; i<N_chords; i++) {
-	chord = column_table[i].chord;
-	bb = bucket_choice[i];
+  for (i=0; i<N_chords; i++) {
+    chord = column_table[i].chord;
+    bb = bucket_choice[i];
 	
-	if (i == 0) {
+    if (i == 0) {
 	    tpc_choice_score(bb->root, bb->window, 0, chord,
-			     column_table[i].my_mass, 1.0, (double) bb->tpc_prime);
-	} else {
+                       column_table[i].my_mass, 1.0, (double) bb->tpc_prime);
+    } else {
 	    tpc_choice_score(bb->root, bb->window, bucket_choice[i-1]->root == bb->root, chord,
-			     column_table[i].my_mass, column_table[i].decayed_prior_note_mass, bucket_choice[i-1]->tpc_cog);
-	}
+                       column_table[i].my_mass, column_table[i].decayed_prior_note_mass, bucket_choice[i-1]->tpc_cog);
+    }
 
-	/* debugging stuff
-	if (chord->start >= 49000 && chord->start <= 50800) {
-	    for (j=0, note = chord->note; note != NULL; note = note->next, j++) {
-		printf("----> j=%d   chord = %lu [%d %d]   %s\n", j, (long int) chord, chord->start, chord->start + chord->duration, note_string(note));
-	    }
-	}
-	*/
+    /* debugging stuff
+       if (chord->start >= 49000 && chord->start <= 50800) {
+       for (j=0, note = chord->note; note != NULL; note = note->next, j++) {
+       printf("----> j=%d   chord = %lu [%d %d]   %s\n", j, (long int) chord, chord->start, chord->start + chord->duration, note_string(note));
+       }
+       }
+    */
 
-	for (j=0, note = chord->note; note != NULL; note = note->next, j++) {
+    for (j=0, note = chord->note; note != NULL; note = note->next, j++) {
 	    if (note->directnote->tpc != UNINITIALIZED_TPC && note->directnote->tpc != side_effect.tpc_choice[j]) {
-		fprintf(stderr, "%s: Conflicting TPC values for a note.  time = %d  note = %d\n", this_program, note->start, note->pitch);
-		fprintf(stderr, "----> j=%d   chord = %lu [%d %d]   %s\n",
-			j, (long int) chord, chord->start, chord->start + chord->duration, note_string(note));
-		my_exit(1);
+        fprintf(stderr, "%s: Conflicting TPC values for a note.  time = %d  note = %d\n", this_program, note->start, note->pitch);
+        fprintf(stderr, "----> j=%d   chord = %lu [%d %d]   %s\n",
+                j, (long int) chord, chord->start, chord->start + chord->duration, note_string(note));
+        my_exit(1);
 	    }
 	    note->directnote->tpc = side_effect.tpc_choice[j];
-	}
-    }    
+    }
+  }    
 
-    if (should_print_chords) {
-	for (i=0; i<N_chords; i++) {
+  if (should_print_chords) {
+    for (i=0; i<N_chords; i++) {
 	    chord = column_table[i].chord;
 	    bb = bucket_choice[i];
-	    printf("Chord %6d %6d %2d\n", chord->start, (chord->start)+(chord->duration), bb->root);
-	}
+	    printf("Chord %6d %6d %2d\n", 
+             chord->start, (chord->start)+(chord->duration), bb->root);
     }
+  }
 
-    xfree(bucket_choice);
+  xfree(bucket_choice);
 }
 

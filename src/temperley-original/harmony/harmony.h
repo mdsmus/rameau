@@ -16,35 +16,11 @@
 
 #define MAX_BEAT_LEVEL 5
 
-/* The following definitions are used both in tpc.c and in harmonic.c */
-#if 0
-OBS #define OCT_ABOVE ( 2)  /* consider this many octaves above the base_TPC for a note */
-OBS #define OCT_BELOW (-2)  /* number to consider below the base_TPC for a note */
-#endif
 
 #define LOWEST_TPC (-24)   /* The lowest TPC that the program will generate for
 			      the spelling of a note */
 #define HIGHEST_TPC (34)   /* The highest */
 
-#if 0
-OBS #define N_OCTS (OCT_ABOVE - OCT_BELOW + 1)
-OBS 
-OBS #define MAX_TPC (11 + 12*OCT_ABOVE)  /* the highest TPC that can occur */
-OBS #define MIN_TPC ( 0 + 12*OCT_BELOW)  /* the lowest TPC that can occur */
-OBS 
-OBS #define N_TPC (MAX_TPC - MIN_TPC + 1)
-#endif
-
-/* The average TPC of what we've seen so far is a real number, but will
-   be put into discrete buckets.  To this end, we need to define the buckets */
-
-#if 0
-OBS #define BUCKETS_PER_UNIT  5
-OBS 
-OBS /* obsolete? */
-OBS #define BUCKET_SIZE (1/BUCKETS_PER_UNIT)   /* the size of the buckets for stuffing info about TPC */
-OBS #define N_BUCKETS  ((MAX_TPC - MIN_TPC) * BUCKETS_PER_UNIT)  /* total number of buckets */
-#endif
 
 typedef int Pitch;
 typedef int NPC;
@@ -107,11 +83,13 @@ typedef struct chord_struct {
   int start;
   int duration;
   int level;
-  int level_time;    /* this is just a shortcut to save writing beatlevel[level].units * baseunit */
+  int level_time;    
+  /* this is just a shortcut to save writing beatlevel[level].units * baseunit */
   Note * note;       /* the linked list of notes in this chord */
-  char is_first_chord;         /* am I the first chord originating from a given chord computed by
-				  build_metered_chord_representation()?  Needed for ornamental
-				  dissonance computation */
+  char is_first_chord;         
+  /* am I the first chord originating from a given chord computed by
+     build_metered_chord_representation()?  Needed for ornamental
+     dissonance computation */
   struct chord_struct * next;
 } Chord;
 
@@ -130,26 +108,24 @@ typedef struct beat_struct {
 
 typedef struct bucket_struct {
   float score;           /* the following keep the choices that were made to achieve the above result */
-
-  /*  double compatibility, strong_beat_penalty, orn_diss_penalty; */
-                          /* these are here for debugging purposes only.
-                             not needed for the algorithm */
+  
 
   int tpc_prime;          /* this is used only by buckets in the 1st
-			     column.  It's used to prime the
-			     tpc_choice_score function with a variety of
-			     different options in the 1st column */
+                             column.  It's used to prime the
+                             tpc_choice_score function with a variety of
+                             different options in the 1st column */
 
   float tpc_variance, har_variance;
-                          /* these two are not actually used for except
-                             printing out the solution for debugging
-                             purposes */
+  /* these two are not actually used for except
+     printing out the solution for debugging
+     purposes */
 
   float tpc_cog, har_cog;      /* the actual center of gravity achieved with this solution */
-
+  
   /* the following 4 things are what is used to lookup this buck in the hash table */
   int int_tpc_cog, int_har_cog;  /* integerized versions of the above
-				    actually, it's not really needed to store these and the float versions */
+                                    actually, it's not really needed to 
+                                    store these and the float versions */
   TPC root, window;
 
   struct bucket_struct * next;  /* pointer to the next bucket in this hash bucket */
@@ -167,8 +143,9 @@ typedef struct {
                       /* at the moment this note begins.  These masses decay with time. */
   double note_mass;   /* this is the decaying note mass, counting this note and all prior ones */
 
-  double decayed_prior_note_mass; /* the mass of all the notes prior to this one, decayed according to the
-				     length of the last note */
+  double decayed_prior_note_mass; /* the mass of all the notes prior to 
+                                     this one, decayed according to the
+                                     length of the last note */
 
   double decayed_prior_chord_mass; /* ditto */
 
@@ -235,7 +212,8 @@ int lookup_beat(int t);
 int rlookup_beat(int t, int l, int r);
 
 /* harmonic.c */
-void tpc_choice_score(TPC root, TPC window, int same_roots, Chord *ch, double my_mass, double decayed_prior_note_mass, double tpc_cog);
+void tpc_choice_score(TPC root, TPC window, int same_roots, Chord *ch, 
+                      double my_mass, double decayed_prior_note_mass, double tpc_cog);
 void initialize_hashing(void);
 void initialize_octave_table(void);
 void initialize_harmonic(Chord *nl);

@@ -558,6 +558,30 @@
     (declare (ignore tact+2 tact-2))
     (adjust-notes pip-array)))
 
+;; Estruturas de Harmony
+
+(defstruct column
+  (chord)
+  (table)
+  (my-mass)
+  (chord-mass)
+  (note-mass)
+  (decayed-prior-note-mass)
+  (decayed-prior-chord-mass))
+
+(defstruct side-effect
+  (tpc-choice)
+  (compatibilityw)
+  (orn-diss-penalty)
+  (strong-beat-penalty)
+  (tpc-variance)
+  (tpc-cog))
+
+
+(defparameter *side-effect* (make-side-effect-struct
+                             :tpc-choice (make-array '(100) :initial-element 0)))
+
+
 ;; Funções de Harmony
 
 (defun penalidade-de-dissonancia (delta)
@@ -607,7 +631,6 @@
               (setf (evento-temperley-voice-leading-neighbor nota) -1)
               (return)))))))
 
-
   
 (defun rotula-dissonancia (musica)
   (mapl #'rotula-dissonancia-nota musica))
@@ -620,6 +643,60 @@
          (musica (loop for i in musica collect (cria-evento-temperley i))))
     (calcula-metrica musica)))
 
+(defun penaliza-dissonancia (clist)
+  (loop for ch in clist
+       (loop for note in ch
+            (setf (evento-temperley-penalidade-dissonancia note)
+                  (* (evento-temperley-penalidade-dissonancia note)
+                     (if (> (* 1.4 (sqrt (/
+                                          (evento-temperley-forca-metrica nota)
+                                          1000.0)))
+                            1.0)
+                         1.0
+                         (* 1.4 (sqrt (/
+                                       (evento-temperley-forca-metrica nota)
+                                       1000.0)))))))))
+
+(defun inicializa-tabela-harmonica (clist)
+  (let* ((n-chords (length clist))
+         (column-table (make-array (list n-chords))))
+    (loop
+       for i from 0 to (1- n-chords)
+       for ch in clist do
+         (setf (aref column-table i)
+               (make-column :chord ch :table (make-hash-table :test #'equal)
+                                      :my-mass (/ (evento-temperley-dur (first ch))
+                                                  1000.0)))
+         (let ((atual (aref column-table i))
+               (n (length ch)))
+           (if (= i 0)
+               (progn
+                 (setf (column-note-mass) (* n (column-my-mass atual)))
+                 (setf (column-chord-mass) (column-my-mass atual))
+                 (setf (column-decayed-prior-note-mass) 0.0)
+                 (setf (column-decayed-prior-chord-mass) 0.0))
+               (let* ((delta-t (coerce (- (evento-temperley-inicio (first ch))
+                                          (evento-temperley-inicio
+                                           (first (column-chord (aref column-table (1- i))))))
+                                       'float))
+                      (decay (exp (* (- alpha) delta-t))))
+                 (setf (column-chord-mass) (+ (* decay
+                                                (column-chord-mass (aref column-table (1- i))))
+                                              (column-my-mass atual)))
+                 (setf (column-note-mass) (+ (* decay
+                                                (column-note-mass (aref column-table (1- i))))
+                                             (column-my-mass atual)))
+                 (setf (column-decayed-prior-note-mass) (* decay
+                                                           (column-note-mass
+                                                            (aref column-table (1- i)))))
+                 (setf (column-decayed-prior-chord-mass) (* decay
+                                                           (column-chord-mass
+                                                            (aref column-table (1- i)))))))))
+    column-table))
+
+
+
+
 
 (defun temperley (musica)
   (let* ((musica (reduce #'nconc (segmentos-minimos musica)
@@ -627,10 +704,8 @@
          (musica (mapcar #'cria-evento-temperley musica))
          (musica (rotula-dissonancia musica))
          (musica (rotula-voice-leading musica))
-         (clist (segmentos-minimos musica))
-         (m-clist (metrifica clist musica))
-         (m-clist (penaliza-as-dissonancias m-clist))
-         (cm-clist (compacta m-clist)))
+         (m-clist (calcula-metrica musica))
+         (m-clist (penaliza-dissonancia m-clist)))
     (gera-gabarito-temperley
      (calcula-tabela-harmonica
-      (inicializa-tabela-harmonica cm-clist)))))
+      (inicializa-tabela-harmonica m-clist)))))
