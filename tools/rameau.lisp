@@ -64,15 +64,25 @@
                          ("-i" "ignora (não imprime) corais sem gabaritos")
                          ("-t" "roda metrica de temperley na musica (debug)")))))
 
-(defparameter *lily-dir-list* '(("corais" "literatura/bach-corais/")
-                                ("kostka" "literatura/kostka-payne/")
-                                ("sonatas" "literatura/beethoven-sonatas/")
-                                ("exemplos" "exemplos/")
-                                ("regressao" "regressao/")
-                                ("lily" "regressao-lily/")))
+(defun read-user-config ()
+  (aif (cl-fad:file-exists-p (concat "/home/" (sb-ext:posix-getenv "USER") "/.rameaurc"))
+       ;; TODO: checa se arquivo está vazio
+       (with-open-file (s it)
+         (read s))))
+
+(defparameter *lily-dir-list*
+  (aif (read-user-config)
+       it
+       '(("corais" "corais/")
+         ("kostka" "literatura/kostka-payne/")
+         ("sonatas" "literatura/beethoven-sonatas/")
+         ("exemplos" "exemplos/")
+         ("regressao" "regressao/")
+         ("lily" "regressao-lily/"))))
 
 (defparameter *dados* '((teste ("unidade" "regressao" "lily"))
-                        (analise ("corais" "kostka" "sonatas" "exemplos"))))
+                        (analise ("corais" "kostka" "sonatas" "exemplos"))
+                        (partitura ("corais"))))
 
 (defun percent (x total)
   (/ (* x 100.0) total))
@@ -197,6 +207,24 @@ Exemplo: (split-word \"foo\") => (F O O)"
             (when (member 'd flags) (if (listp e) (second e) e))
             (not f))))
 
+(defun unparse-dur (dur)
+  "Converte de fração para duração em lilypond. É muito simples, não
+lida com quiáltera nem mais que 1 ponto, felizmente não tem mais de 1
+ponto nos corais de bach."
+  (let ((numer (numerator dur))
+        (denom (denominator dur)))
+    (cond ((= numer 1) (format nil "~a" denom))
+          ((= numer 3) (format nil "~a." (/ denom 2)))
+          (t (split-dur numer denom)))))
+
+(defun print-lily (file gabarito algoritmo comparacao dur)
+  (let ((*package* (find-package :rameau)))
+    (let ((count-ok 0)
+          (size-gab (length gabarito))
+          (size-algo (length algoritmo)))
+      (format t "gab: ~a~%algo: ~a~%comp: ~a~%dur: ~a~%" gabarito algoritmo comparacao dur)
+      )))
+
 (defun print-gabarito (file gabarito algoritmo comparacao flags &key notas dur)
   (let ((*package* (find-package :rameau)))
     (print-gab-columns "#" "notas" "gab" "pardo" "dur" "ok?" flags)
@@ -231,7 +259,7 @@ Exemplo: (split-word \"foo\") => (F O O)"
 (defun print-help ()
   (format t "USO: rameau <ação> [dados] [opções]~%~%")
   (dolist (item *dados*)
-    (format t "     ~10a~{~a~^,~}~%" (first item) (second item)))
+    (format t "     ~13a~{~a~^,~}~%" (first item) (second item)))
   (print-help-item 'todos)
   (print-help-item 'análise)
   (rameau-quit))
@@ -307,6 +335,18 @@ Exemplo: (split-word \"foo\") => (F O O)"
         (t  ; -a implicito
          (run-analise-harmonica flags files))))
 
+(defun run-partitura (flags files)
+  (dolist (file files)
+    (multiple-value-bind (algoritmo segmento)
+        (with-system rameau:tempered (gera-gabarito-pardo (parse-file file)))
+      (let* ((file-name (pathname-name file))
+             (gabarito (processa-gabarito (tira-extensao file)))
+             (comparacao (with-system rameau:tempered
+                           (compara-gabarito-pardo algoritmo gabarito)))
+             (duracoes (mapcar (lambda (x y) (list y (evento-dur (first x))))
+                               segmento algoritmo)))
+        (print-lily file-name gabarito algoritmo comparacao duracoes)))))
+
 (defun processa-files (item f &optional (ext ".ly"))
   (let* ((path (concat (rameau-path) (get-item item *lily-dir-list*  #'equal)))
          (file-name (format nil "~a" (first f)))
@@ -340,6 +380,9 @@ Exemplo: (split-word \"foo\") => (F O O)"
 
 (defcomando analise dados flags files
   (run-analise flags (processa-files item files)))
+
+(defcomando partitura dados flags files
+  (run-partitura flags (processa-files item files)))
 
 (defun main ()
   (let* ((args (rameau-args))
