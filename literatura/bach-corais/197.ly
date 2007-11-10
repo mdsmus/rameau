@@ -145,22 +145,3 @@ baixo = \relative c {
   bes8 g8 d1
 }
 
-\score {
-  <<
-    \new Staff {
-      <<
-        \global
-        \new Voice = "1" { \voiceOne \soprano }
-        \new Voice = "2" { \voiceTwo \alto }
-      >>
-    }
-    \new Staff {
-      <<
-        \global
-        \clef "bass"
-        \new Voice = "1" {\voiceOne \tenor }
-        \new Voice = "2" { \voiceTwo \baixo \bar "|."}
-      >>
-    }
-  >>
-}
