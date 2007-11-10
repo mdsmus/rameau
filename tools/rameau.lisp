@@ -78,7 +78,8 @@
          ("sonatas" "literatura/beethoven-sonatas/")
          ("exemplos" "exemplos/")
          ("regressao" "regressao/")
-         ("lily" "regressao-lily/"))))
+         ("lily" "regressao-lily/")
+         ("corais-include" "literatura/bach-corais/"))))
 
 (defparameter *dados* '((teste ("unidade" "regressao" "lily"))
                         (analise ("corais" "kostka" "sonatas" "exemplos"))
@@ -207,7 +208,7 @@ Exemplo: (split-word \"foo\") => (F O O)"
             (when (member 'd flags) (if (listp e) (second e) e))
             (not f))))
 
-(defun unparse-dur (dur)
+(defun frac->dur-lily (dur)
   "Converte de fração para duração em lilypond. É muito simples, não
 lida com quiáltera nem mais que 1 ponto, felizmente não tem mais de 1
 ponto nos corais de bach."
@@ -217,13 +218,86 @@ ponto nos corais de bach."
           ((= numer 3) (format nil "~a." (/ denom 2)))
           (t (split-dur numer denom)))))
 
+(defun print-score (stream lyric)
+  (format stream "\\score {
+  <<
+    \\new Staff {
+      <<
+        \\global
+        \\new Voice = \"soprano\" { \\voiceOne \\soprano }
+        \\new Voice = \"alto\" { \\voiceTwo \\alto }
+      >>
+    }
+    \\new Staff {
+      <<
+        \\global
+        \\clef \"bass\"
+        \\new Devnull= \"nowhere\" \\texto
+        \\new Voice = \"tenor\" {\\voiceOne \\tenor }
+        \\new Voice = \"baixo\" { \\voiceTwo \\baixo \\bar \"|.\"}
+      >>
+    }
+   ~a
+  >>
+
+  \\layout {
+    \\context {
+      \\Lyrics
+      \\override LyricSpace #'minimum-distance = #1.0
+      \\override LyricText #'font-size = #-1
+      %\\override LyricText #'font-name = #\"Bitstream Vera Serif\"
+    }
+  }
+  \\midi {}
+}~%~%" lyric))
+
+(defun print-lyric (name)
+  (format nil "\\new Lyrics \\lyricsto \"nowhere\" \\~a~%" name))
+
+(defun print-cifra (stream name cifras)
+  (format stream "~a = \\lyricmode {
+  \\set stanza = \"~a:\"
+   ~{\"~a\" ~}
+}~%~%" name name cifras))
+
+;;; argh!
+(defun print-cifra2 (stream name cifras)
+  (format stream "~a = \\lyricmode {
+  \\set stanza = \"~a:\"
+   ~{~a ~}
+}~%~%" name name cifras))
+
+;;; BUG: não leva pausa em consideração
 (defun print-lily (file gabarito algoritmo comparacao dur)
-  (let ((*package* (find-package :rameau)))
-    (let ((count-ok 0)
-          (size-gab (length gabarito))
-          (size-algo (length algoritmo)))
-      (format t "gab: ~a~%algo: ~a~%comp: ~a~%dur: ~a~%" gabarito algoritmo comparacao dur)
-      )))
+  (let* ((*package* (find-package :rameau))
+         (path (concat (rameau-path)
+                       (get-item "corais-include" *lily-dir-list*  #'equal)))
+         (file-name (pathname-name file))
+         (dir (get-item "corais" *lily-dir-list* #'equal))
+         (out-file (format nil "~a/~a/coral-~a.ly" (rameau-path) dir file-name)))
+        
+    (with-open-file (stream out-file :direction :output :if-exists :supersede)
+      (format stream "~a~%" (file-string (concat path file-name ".lyi")))
+      (when gabarito
+        (print-cifra stream "gabarito" (mapcar #'acorde->cifra gabarito)))
+      
+      (print-cifra2 stream "pardo"
+                    (loop
+                      for pardo in algoritmo
+                      for gab in gabarito
+                      for result = (compara-gabarito-pardo pardo gab)
+                      collect
+                        (if result
+                            (acorde->cifra pardo)
+                            (format nil "\\markup{\\with-color #(x11-color 'red) \"~a\"}"
+                                    (acorde->cifra pardo)))))
+                   
+      (print-cifra stream "particoes" (loop for x from 1 to (length dur) collect x))
+      (format stream "texto = {~{c~a ~}}~%~%" (mapcar #'frac->dur-lily (mapcar #'second dur)))
+      (print-score stream (concat (print-lyric "particoes")
+                                  (print-lyric "pardo")
+                                  (when gabarito
+                                    (print-lyric "gabarito")))))))
 
 (defun print-gabarito (file gabarito algoritmo comparacao flags &key notas dur)
   (let ((*package* (find-package :rameau)))
@@ -339,13 +413,12 @@ ponto nos corais de bach."
   (dolist (file files)
     (multiple-value-bind (algoritmo segmento)
         (with-system rameau:tempered (gera-gabarito-pardo (parse-file file)))
-      (let* ((file-name (pathname-name file))
-             (gabarito (processa-gabarito (tira-extensao file)))
+      (let* ((gabarito (processa-gabarito (tira-extensao file)))
              (comparacao (with-system rameau:tempered
                            (compara-gabarito-pardo algoritmo gabarito)))
              (duracoes (mapcar (lambda (x y) (list y (evento-dur (first x))))
                                segmento algoritmo)))
-        (print-lily file-name gabarito algoritmo comparacao duracoes)))))
+        (print-lily file gabarito algoritmo comparacao duracoes)))))
 
 (defun processa-files (item f &optional (ext ".ly"))
   (let* ((path (concat (rameau-path) (get-item item *lily-dir-list*  #'equal)))
