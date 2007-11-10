@@ -1,0 +1,5 @@
+; -*- org -*-
+
+* fazer "serviço" na web para analisar harmonia de musica (coral?)
+  o sujeito entra musica em midi ou lily e recebe musica analisada
+* melhorar/modificar midi2ly para gerar midi mais limpo
