@@ -2,15 +2,15 @@ maindir = $(shell pwd)
 sbcl = /usr/bin/sbcl --noinform --noprint --disable-debugger --eval
 lisp = /usr/bin/lisp -batch -quiet -eval
 lisp-files = $(wildcard src/*.lisp src/lib/*.lisp tools/*.lisp)
-corais-ly = $(wildcard literatura/bach-corais/*.ly)
-corais-png = $(patsubst %.ly,%.png,$(corais-ly))
-corais-lyc = $(patsubst %.ly,%.lyc,$(corais-ly))
+corais-lyi = $(wildcard literatura/bach-corais/*.lyi)
+corais-png = $(patsubst %.lyi,%.png,$(corais-lyi))
+corais-ly = $(patsubst %.lyi,%.ly,$(corais-lyi))
 corais-dir = $(maindir)/corais
 
 lilypond = lilypond -I $(maindir)/literatura/bach-corais -I $(maindir)/lily
 
-vpath %.ly literatura/bach-corais
-vpath %.lyc $(corais-dir)
+vpath %.lyi literatura/bach-corais
+vpath %.ly $(corais-dir)
 vpath %.png $(corais-dir)
 
 .PHONY: update clean
@@ -37,6 +37,8 @@ update:
 	git fetch && git rebase origin/master
 	make rameau
 
+corais-ly: $(corais-ly)
+
 $(corais-dir):
 	if [ ! -d $(corais-dir) ]; then mkdir -p $(corais-dir); fi; \
 
@@ -44,14 +46,15 @@ $(corais-dir):
 corais: $(corais-png)
 
 ## BUG: regera os lyc toda vez que chama corais
-corais-fast: $(corais-lyc)
+corais-fast: $(corais-ly)
 	cd $(corais-dir); \
-	$(lilypond) --png $(notdir $(corais-lyc))
+	$(lilypond) --png $(notdir $(corais-ly))
 
-%.lyc: %.ly $(corais-dir)
-	echo '\include "$(notdir $<)" \include "score.ly"' > $(corais-dir)/$(basename $(notdir $<)).lyc
+%.ly: %.lyi $(corais-dir)
+	cat $< lily/score.lyi > $(corais-dir)/$(basename $(notdir $<)).ly
+	@if [ -f $(patsubst %.lyi,%.pop,$<) ]; then cp $(patsubst %.lyi,%.pop,$<) $(corais-dir); fi ;\
 
-%.png: %.lyc
+%.png: %.ly
 	cd $(corais-dir); \
 	$(lilypond) --png $(notdir $<)
 
