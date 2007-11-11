@@ -166,8 +166,9 @@
   (make-instance 'voice :expr block))
 
 (defun parse-repeat-block (a b dur block)
-  (declare (ignore a))
-  (make-instance 'music-block :expr (repeat-copy (/ 1 dur) block)))
+  (declare (ignore a dur))
+  block)
+;  (make-instance 'music-block :expr (repeat-copy (/ 1 dur) block)))
 
 (defun parse-dur (dur)
   (/ 1 (parse-integer dur)))

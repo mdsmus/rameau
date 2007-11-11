@@ -578,7 +578,7 @@
   (tpc-cog))
 
 
-(defparameter *side-effect* (make-side-effect-struct
+(defparameter *side-effect* (make-side-effect
                              :tpc-choice (make-array '(100) :initial-element 0)))
 
 
@@ -644,8 +644,8 @@
     (calcula-metrica musica)))
 
 (defun penaliza-dissonancia (clist)
-  (loop for ch in clist
-       (loop for note in ch
+  (loop for ch in clist do
+       (loop for note in ch do
             (setf (evento-temperley-penalidade-dissonancia note)
                   (* (evento-temperley-penalidade-dissonancia note)
                      (if (> (* 1.4 (sqrt (/

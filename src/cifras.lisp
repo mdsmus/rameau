@@ -95,7 +95,7 @@ fundamental do acorde."
 (defun expand-repeat (stream char)
   (declare (ignore char))
   (let ((*package* (find-package :rameau)))
-    `(* 2 ,@(read-delimited-list #\} stream t))))
+    `(* 1 ,@(read-delimited-list #\} stream t))))
 
 (set-macro-character #\[ #'expand-mel)
 (set-macro-character #\] (get-macro-character #\)))
