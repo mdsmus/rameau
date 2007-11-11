@@ -280,20 +280,15 @@ ponto nos corais de bach."
          (file-name (pathname-name file))
          (dir (get-item "corais" *lily-dir-list* #'equal))
          (out-file (format nil "~a/~a/coral-~a.ly" (rameau-path) dir file-name)))
-
     (with-open-file (stream out-file :direction :output :if-exists :supersede)
       (format stream "~a~%" (file-string (concat path file-name ".lyi")))
-
       (format stream "texto = {~{c~a ~}}~%~%" (mapcar #'frac->dur-lily (mapcar #'second dur)))
-
       (when (member 't flags)
         (push 'g flags)
         (push 'a flags)
         (push 'n flags))
-      
       (when (and gabarito (member 'g flags))
         (print-cifra stream "gabarito" (mapcar #'acorde->cifra gabarito)))
-      
       (when (member 'a flags)
         (print-cifra2 stream "pardo"
                       (loop
@@ -305,10 +300,8 @@ ponto nos corais de bach."
                                (acorde->cifra pardo)
                                (format nil "\\markup{\\with-color #(x11-color 'red) \"~a\"}"
                                        (acorde->cifra pardo))))))
-      
       (when (member 'n flags)
         (print-cifra stream "particoes" (loop for x from 1 to (length dur) collect x)))
-      
       (print-score stream (concat (when (member 'n flags) (print-lyric "particoes"))
                                   (when (member 'a flags) (print-lyric "pardo"))
                                   (when (and gabarito (member 'g flags))
