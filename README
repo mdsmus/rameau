@@ -13,3 +13,44 @@ exemplo:
   ln -s $(pwd)/rameau ~/bin/
 
 desse modo voce não precisa digitar ./rameau e sim rameau.
+
+2. GERANDO CORAIS COM ANÁLISE
+
+Para gerar a partitura de um coral com a análise harmonica abaixo use
+o comando make. Por exemplo, o comando abaixo gera a partitura do
+coral 3 com números de partição, análise usando o algorítmo de pardo e
+gabarito:
+
+  make coral-003.png
+
+Para gerar a partitura de todos os corais com análise é só digitar:
+
+  make corais-partitura
+
+[nota: o lilypond tem dado erros estranhos para gerar esses corais,
+então provavelmente voce terá que entrar o comando:]
+
+  make -k corais-partitura
+
+3. GERANDO PARTITURA DOS CORAIS SEM ANÁLISE
+
+Se você quiser ver a partitura de um coral sem as análises é só usar
+make, como no exemplo abaixo:
+
+  make 001.png
+
+Os corais com análise tem o prefixo "coral-", enquanto as partituras
+sem análise não tem.
+
+Para gerar a partitura de todos os corais é só digitar:
+
+  make corais
+
+(e esperar um bocado). Esse comando tem a vantagem de só compilar os
+corais necessários. Por exemplo, se você já gerou os 100 primeiros
+corais e não houve nenhuma alteração nesses corais, se der o comando
+novamente ele deve começar pelo coral 101. Contudo ele pode ser um
+pouco lento, o comando abaixo gera sempre todos os corais, mas pode
+ser mais rápido para gerar todos os corais:
+
+  make corais-fast
