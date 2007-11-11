@@ -1,5 +1,12 @@
 ; -*- org -*-
 
+* Rameau 1.2, 11 novembro 2007
+
+Esse release tem as seguintes melhorias:
+
+** gera partitura dos corais com análise, número de partição e gabarito. 
+   Indica em vermelho os acordes que diferem entre o gabarito e a análise
+
 * Rameau 1.1, 06 novembro 2007
 
 Esse release tem as seguintes melhorias:
@@ -9,6 +16,7 @@ Esse release tem as seguintes melhorias:
 ** corais de bach processados
    os corais foram limpos para serem lidos e depurados mais facilmente
    por seres humanos.
+
 
 * Rameau 1.0, 14 outubro 2007
 
