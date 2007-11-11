@@ -12,4 +12,7 @@
 - limpar packages.lisp
 - limpar utils
 - fazer genos-lib: separar utils e musiclib
-
+* refatorar para usar bibliotecas que já existem:
+- usar cl-arnesi (tirar aif, acond de utils)
+- investigar se dá para/precisa  usar s-utils
+- usar WITH-UNIQUE-NAMES de cl-utilities
