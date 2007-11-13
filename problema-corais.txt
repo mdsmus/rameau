@@ -10,3 +10,6 @@ os seguintes corais não foram processados:
 
 197: faltava um partial. corrigir duracoes
 199: consertar problema com repeticao e partial
+202: compasso 15: problema no contralto com a riemenschneider
+205: necessaria revisao. ha partes faltando
+
