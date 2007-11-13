@@ -1,0 +1,35 @@
+I=G
+
+I |
+IV (b) V V7 vi (c) V6 (g b) |
+ii (b) (g) V I\fermata V6 |
+I (f#) IV6 (a) I6*2 IV (b) |
+(g) I6/4 V7 I\fermata :||
+
+I |
+V6 (e) (e) iii6 IV (b) (e) V |
+(a) I (g) V7 I\fermata IV (a) |
+I [V2]/IV IV6 (d) (c) [V6/5]/IV IV (f#) |
+vi (f# a) (f# b) [V7]/V*2 V\fermata I (a c) |
+I*2 IV (b) V6 V6/5 [V6]/vi |
+(b) (g#) ii [V]/ii\fermata [V]/ii [V6]/ii |
+ii (b) ii6 ii [iv6]/ii (e g#) (e) [iio6]/ii |
+(g#) ii6/4 (a) [V7]/ii\fermata ii (f#) |
+I [vii~7 i (c) (e) iv6/4 V6 V6/5]/v |
+[(e) i (d) V I\fermata]/v iii (c) |
+vi (a) (g) V I (f#) vi (c) |
+(f#) (a) (c) I ii6 (a) ii6/5 (b) IV |
+(g) (a) V V7 I\fermata ||
+
+---
+legenda:
+*2 - duplicação de acorde. I*2 = I I
+o - tríade diminuta. viio = sétimo grau diminuto
+o7 - tétrade diminuta
+~7 - tétrade semidiminuta
+\fermata - fermata neste ponto
+[..]/. - dominante secundária. [ii V]/V V I (ex. I=C am D G C)
+() - nota melódica
+| - barra de compasso
+:|| - ritornello
+|| - barra dupla
