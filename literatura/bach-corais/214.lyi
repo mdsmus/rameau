@@ -64,7 +64,7 @@ alto = \relative c' {
   d4. c16 b16 a4 d8 b8 
   c2 e4 e4 
   e4 e4 e8 f8 g8 f8~ 
-  f8 e4 d16 c16 b4 ais4 
+  f8 e4 d16 c16 b4 bes4 
   c4 f4. e4 d8   %20
   c2 e4. d8 
   c4 d4 e8 g4 fis8 
@@ -81,15 +81,15 @@ tenor = \relative c' {
     b4 b4 c4 b4 
     a4. e'8 f8 d8 b8 e16 d16 
     c2 d4 e4 
-    f8 e8 d4. c16 ais16 a8 b16 a16 
-    gis1     %5
-    r4 } g4 g4 c8 a8 
+    f8 e8 d4. c16 bes16 a8 b16 a16 
+    gis1 }    %5
+    r4 g4 g4 c8 a8 
   b4 c8 g8 g4~ g8. f16 
   e2 r4 g4 
   g4 c4 c8 d8 d4 
   c8 d8 e4. b8 e8 d8   %10
   c2 e4 e4 
-  d4. c8 ais4 a4 
+  d4. c8 bes4 a4 
   a2 r4 c4~ 
   c8 b8 a4 a4 g8 b8 
   c2 r4 c4   %15
@@ -98,7 +98,7 @@ tenor = \relative c' {
   c4 b4 a4 d4 
   g,8 c16 b16 a8 b16 a16 gis4 g4 
   a4 d4. b8 c8 g8   %20
-  g2 c4 c8 ais8 
+  g2 c4 c8 bes8 
   a8 g8 f4 g8 e'8 a,8 d16 c16 
   b2 e4 d8 e8 
   f8 e8 d8 c8 b8 cis8 d8 a8 
@@ -139,4 +139,3 @@ baixo = \relative c {
   e1 
   
 }
-

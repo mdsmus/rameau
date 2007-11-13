@@ -29,7 +29,7 @@ soprano = \relative c' {
   ees2 c4 
   a4 bes8 a8 g8 f8 
   f'4. bes,8 g'4~ 
-  g8 f8 ees8 d8 c8 bes8   %15
+  g8 f8 \appoggiatura ees8 d4 c8 bes8   %15
   bes2. 
   
 }
@@ -47,7 +47,7 @@ alto = \relative c' {
     f2 } f4 
   f2 f4 
   ees4. g8 ees8 d8   %10
-  ees4 gis4 g4 
+  ees4 aes4 g4 
   g2 g4 
   f4 g4 a4 
   bes4. bes8 bes4 
@@ -90,8 +90,8 @@ baixo = \relative c' {
     c4 d8 c8 d8 bes8 
     f2 } f'8 ees8 
   d4 ees8 d8 c8 bes8 
-  ees4. ees8 gis4~   %10
-  gis8 g8 f4 g4 
+  ees4. ees8 aes4~   %10
+  aes8 g8 f4 g4 
   c,2 ees4 
   f2 ees4 
   d4 g8 f8 ees8 d8 
@@ -99,4 +99,3 @@ baixo = \relative c' {
   bes2. 
   
 }
-

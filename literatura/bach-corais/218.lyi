@@ -12,9 +12,10 @@ global =  {
 }
 
 soprano = \relative c {
+  \repeat volta 2 {
   g''4 g 
   fis g a bes 
-  a2 g 
+  a2 g }
   bes4 a g bes 
   a g fis2 
   f4 ees d g 
@@ -39,7 +40,7 @@ alto = \relative c {
   ees d e4 d2 
   a8 bes c4 bes8 c d4 
   ees d d2 
-  g4 a bes bes8 gis 
+  g4 a bes bes8 aes 
   g f f4 g f8 ees 
   d2 f4 f 
   f f f8 ees d4 
@@ -88,5 +89,3 @@ baixo = \relative c {
   b4 c4. bes16 a bes8 g 
   c a d4 g,1 
 }
-
-
