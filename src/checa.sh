@@ -1,6 +1,6 @@
 #!/bin/sh
 
-funcoes=$(egrep -ho "\((defun|defmethod)[ ]+[0-9a-zA-Z><\!\$&\*\?/-]+ " *.lisp | sed 's/(\(defun\|defmethod\) //g' | sort |uniq)
+funcoes=$(egrep -o "\((defun|defmethod)[ ]+[0-9a-zA-Z><\!\$&\*\?/-]+ " *.lisp | sed 's/(\(defun\|defmethod\) //g' | sort |uniq)
 testes=$(grep define-test test-*.lisp | awk '{print $2}' | sort | uniq)
 
 conta=$(echo "$funcoes" | wc -l)
