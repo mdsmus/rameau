@@ -106,11 +106,7 @@
     (let ((function (thing-at-point 'symbol)))
       (end-of-line)
       (newline-and-indent)
-      (snippet-insert "(assert-equal $${resultado} (foo $${argumentos}))"))))
-
-(define-key slime-mode-map [(alt control u)] 'rameau-cria-teste-defun)
-(define-key slime-mode-map [(alt control r)] 'rameau-run-test)
-(define-key slime-mode-map [(control return)] 'rameau-new-test)
+      (snippet-insert (concat "(assert-equal $${resultado} (" function " $${argumentos}))")))))
 
 (defun rameau-get-defun-name ()
   (beginning-of-defun)
@@ -129,6 +125,29 @@
       (progn
         (forward-whitespace 1)
         (thing-at-point 'sexp))))
+
+(defun rameau-show-test ()
+  (interactive)
+  (save-excursion
+    (let ((function (rameau-get-defun-name))
+          (file (buffer-file-name))
+          (test-file (rameau-test-filename))
+          (buffer (file-name-nondirectory (rameau-test-filename))))
+      (if (search "test-" (buffer-file-name))
+          (princ "você já está no arquivo de teste!")
+          (let ((package (rameau-get-package)))
+            (if (file-exists-p test-file)
+                (progn
+                  (find-file test-file)
+                  (beginning-of-buffer)
+                  (if (word-search-forward (concat "(define-test " function) nil t)
+                      (progn
+                        (beginning-of-defun)
+                        (copy-sexp-as-kill-nomark))
+                      (push "função não tem teste" kill-ring)))
+                (princ "não existe arquivo de teste :-("))))
+      (find-file file)
+      (princ (first kill-ring)))))
 
 (defun rameau-cria-teste-defun ()
   (interactive)
@@ -155,5 +174,10 @@
       (goto-char slime-repl-input-start-mark)
       (insert (concat "(run-tests " test-name ")"))
       (slime-repl-return))))
+
+(define-key slime-mode-map [(alt control u)] 'rameau-cria-teste-defun)
+(define-key slime-mode-map [(alt control r)] 'rameau-run-test)
+(define-key slime-mode-map [(alt control s)] 'rameau-show-test)
+(define-key slime-mode-map [(control return)] 'rameau-new-test)
 
 (provide 'rameau)
