@@ -1,0 +1,4 @@
+; -*- org -*-
+
+* enfatizar sistema base para testes
+* enfatizar que re-implementação é importante em ciencia
