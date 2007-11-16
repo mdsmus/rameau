@@ -10,6 +10,7 @@
 ;; Parametros do programa Harmony
 
 (defparameter verbosity 2)
+(defparameter buckets-per-unit-of-cog 5.0)
 (defparameter pruning-cutoff   10.0)
 (defparameter compat-values   '(-5.0 -5.0 -10.0 1.0 -3.0 -10.0 5.0 3.0 -10.0 -10.0 2.0 -10.0))
 (defparameter tpc-var-factor   0.3)
@@ -57,7 +58,8 @@
   (evento-rameau)
   (penalidade-dissonancia)
   (forca-metrica)
-  (voice-leading-neighbor))
+  (voice-leading-neighbor)
+  (tpc))
 
 (defun evento-temperley-dur (e)
   (evento-dur (evento-temperley-evento-rameau e)))
@@ -578,8 +580,15 @@
   (tpc-cog))
 
 
+;; constantes de harmony
+
+(defparameter lowest-tpc -24)
+(defparameter highest-tpc 34)
+
+
 (defparameter *side-effect* (make-side-effect
                              :tpc-choice (make-array '(100) :initial-element 0)))
+
 
 
 ;; Funções de Harmony
@@ -694,8 +703,45 @@
                                                             (aref column-table (1- i)))))))))
     column-table))
 
+(defun apply-window (note window)
+  (+ window (evento-temperley-pitch note)))
 
+(defun is-canonical-window (chord window)
+  (if (null chord)
+      (= window 0)
+      (progn
+        (loop for note in chord do
+             (if (= window (apply-window note window))
+                 (return-from is-canonical-window t)))
+        nil)))
 
+(defun discrete-cog (cog)
+  (round (* cog buckets-per-unit-of-cog)))
+
+(defun tpc-choice-score (root window same-roots ch my-mass decayed-prior-note-mass tpc-cog column-table)
+  (let* ((nnotes (length ch)))
+    (setf (side-effect-compatibility *side-effect*) 0.0
+          (side-effect-ornd-dis-penalty *side-effect*) 0.0
+          (side-effect-tpc-variance *side-effect*) 0.0)
+    (if (> same-roots 0)
+        (setf (side-effect-strong-beat-penalty *side-effect*) 0.0)
+        (progn
+          (setf (side-effect-strong-beat-penalty *side-effect*)
+                (- (/ (* sbp-weight 1000.0)
+                      
+                    )
+
+(defun initialize-first-harmonic-column (column-table)
+  (loop for window from lowest-tpc to (- highest-tpc 11)
+     when (is-canonical-window (column-chord (aref column-table 0)) window)
+     do
+       (loop for root from -4 to 7 do
+            (loop for tpc-prime from (- root 5) to (+ root 6) do
+                 (let ((cog (coerce 'float root))
+                       (b (discrete-cog cog)))
+                   (tpc-choice-score root window 0 (column-chord (aref column-table 0))
+                                     (column-my-mass (aref column-table 0)) 1.0
+                                     (coerce 'float tpc-prime) column-table)
 
 
 (defun temperley (musica)
