@@ -292,14 +292,17 @@ ponto nos corais de bach."
       (when (member 'a flags)
         (print-cifra2 stream "pardo"
                       (loop
-                         for pardo in algoritmo
-                         for gab in gabarito
-                         for result = (compara-gabarito-pardo pardo gab)
+                         for numero-seg from 0 to (max (length algoritmo) (length gabarito))
+                         for pardo = (nth numero-seg algoritmo)
+                         for gab = (nth numero-seg gabarito)
+                         for result = (when (and pardo gab)
+                                        (compara-gabarito-pardo pardo gab))
                          collect
-                           (if result
-                               (acorde->cifra pardo)
-                               (format nil "\\markup{\\with-color #(x11-color 'red) \"~a\"}"
-                                       (acorde->cifra pardo))))))
+                           (when pardo
+                             (if result
+                                 (acorde->cifra pardo)
+                                 (format nil "\\markup{\\with-color #(x11-color 'red) \"~a\"}"
+                                         (acorde->cifra pardo)))))))
       (when (member 'n flags)
         (print-cifra stream "particoes" (loop for x from 1 to (length dur) collect x)))
       (print-score stream (concat (when (member 'n flags) (print-lyric "particoes"))
@@ -316,18 +319,24 @@ ponto nos corais de bach."
           (size-algo (length algoritmo))
           (wrong-list))
       (loop
-         for gab in gabarito
-         for pardo in algoritmo
          for n in notas
          for d in dur
-         for numero-seg from 1
-         for result = (compara-gabarito-pardo pardo gab)
+         for numero-seg from 0
+         for pardo = (nth numero-seg algoritmo)
+         for gab = (nth numero-seg gabarito)
+         for result = (when (and pardo gab)
+                        (compara-gabarito-pardo pardo gab))
          if result do (incf count-ok)
          else do (push numero-seg wrong-list)
          do
-           (print-gab-columns numero-seg n (print-chord gab flags)
-                              (print-chord pardo flags)
-                              d result flags))
+           (print-gab-columns
+                   (1+ numero-seg)
+                   n
+                   (if gab (print-chord gab flags))
+                   (if pardo (print-chord pardo flags))
+                   d
+                   result
+                   flags))
       (format t "~%~$ % correto, gab: ~a, pardo: ~a~%"
               (percent count-ok size-gab) size-gab size-algo)
       (format t "segmentos errados: ~a~%" (nreverse wrong-list)))))
