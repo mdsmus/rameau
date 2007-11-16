@@ -14,7 +14,7 @@ global =  {
 soprano = \relative c {
   \partial 4 e'4 
   g a c a 
-  a2 s4 c 
+  a2 r c 
   c b a a 
   g2. c4 
   c c b a 
@@ -124,7 +124,7 @@ soprano = \relative c {
 alto = \relative c {
   \partial 4 b'4 
   e f4. e8 d4 
-  c2 s4 e8 fis 
+  c2 r e8 fis 
   g a4 g fis16 e fis4 
   d2. g4. fis16 e fis8 a4 g16 fis e8 d 
   d g4 fis16 e fis4 e8 g4 f e16 d c4 d16 e f8 
@@ -218,7 +218,7 @@ alto = \relative c {
 tenor = \relative c {
   \partial 4 g'4 
   b d g,4. f8 
-  e2 s4 c'8 d 
+  e2 r c'8 d 
   e d d4 e16 d c4 d16 c 
   b2. e4. d16 c d2 c8 d16 c 
   b8 e16 d cis4 d e 
@@ -314,7 +314,7 @@ tenor = \relative c {
 baixo = \relative c {
   \partial 4 e,4 
   e' d c d 
-  a2 s4 a' 
+  a2 r a' 
   e8 fis g4 c, d 
   g,2. e'4 
   a d,8 e16 fis g4. fis8 
