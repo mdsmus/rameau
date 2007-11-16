@@ -32,20 +32,20 @@ pode ser uma nota melódica. Essa forma expande para
 
 C--7 => (* 2 ((C MAJ 0) (C MAJ 0 7)))
 
-A forma <acorde>__7 funciona como <acorde>--7 mas no segundo segmento
-a sétima está no baixo. A expansão, contudo, é diferente:
+A forma <acorde>_-7 funciona como <acorde>--7, mas quando a sétima
+está no baixo:
 
-C__7 => (C MAJ 0) (C MAJ 3 7)
+C_-7 => (C MAJ 0) ((C MAJ 3 7) (m! bes))
 
 A foma <acorde>==7 expande em dois acordes onde o segundo tem a
 sétima:
 
 C==7 => (C MAJ 0) (C MAJ 0 7)
 
-A forma <acorde>_-7 funciona como <acorde>--7, mas quando a sétima
-está no baixo:
+A forma <acorde>__7 funciona como <acorde>==7 mas no segundo segmento
+a sétima está no baixo:
 
-C_-7 => (C MAJ 0) ((C MAJ 3 7) (m! bes))
+C__7 => (C MAJ 0) (C MAJ 3 7)
 
 Outras extensões podem ser entradas separadas por ponto. [esse recurso
 ainda não foi completamente implementado. outras extensões além da
