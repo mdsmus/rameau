@@ -1,7 +1,10 @@
 (in-package #:rameau)
 
+(defparameter *inversoes-pop* '((1 0) (3 1) (5 2) (7 3)))
+
 (defun parse-acrescimos (acrescimos)
-  ;; por enquanto só funciona com acordes simples, como Cm7
+  "Por enquanto ignora qualquer acrescimo que não é sétima. Acrescimos
+deve ser uma string."
   (when acrescimos
     (first (cl-ppcre:split "\\." acrescimos))))
 
@@ -19,12 +22,10 @@
     (latin->lily fundamental)))
 
 (defun %chord-interval-code (fundamental baixo)
-  "Retorna uma lista com o intervalo tonal entre o baixo e a
-fundamental do acorde."
+  "Retorna o interval-code do intervalo entre o baixo e a fundamental
+do acorde."
   (interval->code (interval (note->code baixo)
                             (note->code fundamental))))
-
-(defparameter *inversoes-pop* '((1 0) (3 1) (5 2) (7 3)))
 
 (defun qual-inversao? (fundamental baixo)
   (if baixo
@@ -35,9 +36,12 @@ fundamental do acorde."
       0))
 
 (defun qual-intervalo-no-baixo? (inversao)
+  "Retorna a nota (i.e. 1, 3, 5, 7, mas sem qualidade) do acorde que
+está no baixo de acordo com a inversão."
   (first (find inversao *inversoes-pop* :key #'second)))
 
 (defun cifra->acorde (cifra)
+  "Essa espera que cifra seja uma string em minúscula."
   (let ((cifra-list (cl-ppcre:split "/" cifra)))
     (cl-ppcre:register-groups-bind (fundamental modo acrescimos)
         ("([cdefgab]+[#b]?)(m|°|ø|!|\\+)?([0-9\\.mb\\+]+)?" (first cifra-list) :sharedp t)
@@ -55,7 +59,16 @@ fundamental do acorde."
                         (case inversao
                           (1 modo)
                           (2 'just)
-                          (3 'min)))))
+                          (3 'min)
+                          (t (error "não conheço essa inversão"))))))
+;;; 1 minor
+;;; 1 major
+;;; 2 just
+;;; 2 dim
+;;; 2 aug
+;;; 3 min
+;;; 3 maj
+;;; 3 dim
 
 (defun get-inversao-pop (tonica modo inversao)
   (unless (= inversao 0)
