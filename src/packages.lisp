@@ -1,7 +1,7 @@
 g(in-package #:cl-user)
 
 (defpackage #:rameau
-  (:export #:acerta-times #:agrupa-inicio #:agrupa-por #:add-lily-ext
+  (:export #:acerta-times #:agrupa-inicio #:agrupa-por #:add-lily-ext #:converte-strings
            #:add-pop-ext #:tem-ext? #:tira-extensao #:troca-extensao
            #:*dur* #:*environment* #:*expression-parser* #:*main-dir*
            #:parse-acrescimos #:get-modo #:parse-fundamental
