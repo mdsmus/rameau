@@ -1,4 +1,4 @@
-;; Port para Common Lisp dos programas de análise harmônica Harmony e Meter.
+;; Port para Common Lisp dos programas de analise harmonica Harmony e Meter.
 ;; Copyright (C) 2000 Daniel Sleator and David Temperley 
 ;; See http://www.link.cs.cmu.edu/music-analysis
 ;; for information about commercial use of this system
@@ -24,6 +24,7 @@
 (defparameter half-life   2.0)
 (defparameter voice-leading-penalty   3.0)
 (defparameter voice-leading-time   1.0)
+(defparameter alpha (/ (log 2.0) (* half-life 1000)))
 
 ;; Parametros do programa Meter
 
@@ -284,7 +285,7 @@
   (let ((base (base-score (pip-notas (aref pip-array (bl-pip (aref bl-array base-beat))))
                           use-higher-base)))
     (if (< (- base-beat back) 0)
-        (values base -1) ;; retirada dependência em is-first-beat
+        (values base -1) 
         (let ((choice)
               (best-score 0.0))
           (loop for try from 2 to 3 do
@@ -571,9 +572,22 @@
   (decayed-prior-note-mass)
   (decayed-prior-chord-mass))
 
+(defstruct bucket
+  (int-tpc-cog)
+  (int-har-cog)
+  (score)
+  (tpc-prime)
+  (tpc-variance)
+  (har-variance)
+  (tpc-cog)
+  (har-cog)
+  (root)
+  (window)
+  (prev-bucket))
+
 (defstruct side-effect
   (tpc-choice)
-  (compatibilityw)
+  (compatibility)
   (orn-diss-penalty)
   (strong-beat-penalty)
   (tpc-variance)
@@ -591,7 +605,7 @@
 
 
 
-;; Funções de Harmony
+;; Funcoes de Harmony
 
 (defun penalidade-de-dissonancia (delta)
   (+ odp-constant
@@ -604,7 +618,7 @@
         (nota (first musica))
         (musica (rest musica)))
     (setf (evento-temperley-penalidade-dissonancia nota)
-          (penalidades-de-dissonancia default-time))
+          (penalidade-de-dissonancia default-time))
     (dolist (f-nota musica)
       (when (not (= (evento-temperley-pitch nota)
                     (evento-temperley-pitch f-nota)))
@@ -620,7 +634,7 @@
                                  (evento-temperley-inicio nota))
                               1000.0)))
               (setf (evento-temperley-penalidade-dissonancia nota)
-                    (penalidades-de-dissonancia delta-t))
+                    (penalidade-de-dissonancia delta-t))
               (return)))))))
 
 (defun rotula-voice-leading-nota (musica)
@@ -658,13 +672,14 @@
             (setf (evento-temperley-penalidade-dissonancia note)
                   (* (evento-temperley-penalidade-dissonancia note)
                      (if (> (* 1.4 (sqrt (/
-                                          (evento-temperley-forca-metrica nota)
+                                          (evento-temperley-forca-metrica note)
                                           1000.0)))
                             1.0)
                          1.0
                          (* 1.4 (sqrt (/
-                                       (evento-temperley-forca-metrica nota)
-                                       1000.0)))))))))
+                                       (evento-temperley-forca-metrica note)
+                                       1000.0))))))))
+  clist)
 
 (defun inicializa-tabela-harmonica (clist)
   (let* ((n-chords (length clist))
@@ -680,56 +695,99 @@
                (n (length ch)))
            (if (= i 0)
                (progn
-                 (setf (column-note-mass) (* n (column-my-mass atual)))
-                 (setf (column-chord-mass) (column-my-mass atual))
-                 (setf (column-decayed-prior-note-mass) 0.0)
-                 (setf (column-decayed-prior-chord-mass) 0.0))
+                 (setf (column-note-mass atual) (* n (column-my-mass atual)))
+                 (setf (column-chord-mass atual) (column-my-mass atual))
+                 (setf (column-decayed-prior-note-mass atual) 0.0)
+                 (setf (column-decayed-prior-chord-mass atual) 0.0))
                (let* ((delta-t (coerce (- (evento-temperley-inicio (first ch))
                                           (evento-temperley-inicio
                                            (first (column-chord (aref column-table (1- i))))))
                                        'float))
                       (decay (exp (* (- alpha) delta-t))))
-                 (setf (column-chord-mass) (+ (* decay
-                                                (column-chord-mass (aref column-table (1- i))))
-                                              (column-my-mass atual)))
-                 (setf (column-note-mass) (+ (* decay
-                                                (column-note-mass (aref column-table (1- i))))
-                                             (column-my-mass atual)))
-                 (setf (column-decayed-prior-note-mass) (* decay
-                                                           (column-note-mass
-                                                            (aref column-table (1- i)))))
-                 (setf (column-decayed-prior-chord-mass) (* decay
-                                                           (column-chord-mass
-                                                            (aref column-table (1- i)))))))))
+                 (setf (column-chord-mass atual) (+ (* decay
+                                                       (column-chord-mass (aref column-table (1- i))))
+                                                    (column-my-mass atual)))
+                 (setf (column-note-mass atual) (+ (* decay
+                                                      (column-note-mass (aref column-table (1- i))))
+                                                   (column-my-mass atual)))
+                 (setf (column-decayed-prior-note-mass atual) (* decay
+                                                                 (column-note-mass
+                                                                  (aref column-table (1- i)))))
+                 (setf (column-decayed-prior-chord-mass atual) (* decay
+                                                                  (column-chord-mass
+                                                                   (aref column-table (1- i)))))))))
     column-table))
 
 (defun apply-window (note window)
-  (+ window (evento-temperley-pitch note)))
+  (let ((base-tpc (mod (+ 2 (* 7 (evento-temperley-pitch note)) 12000000) 12)))
+    (+ window (mod (+ base-tpc 12000000 (- window)) 12))))
 
 (defun is-canonical-window (chord window)
   (if (null chord)
       (= window 0)
-      (progn
-        (loop for note in chord do
-             (if (= window (apply-window note window))
-                 (return-from is-canonical-window t)))
-        nil)))
+        (loop for note in chord
+           when (= window (apply-window note window))
+           do (return t)
+           finally (return nil))))
 
 (defun discrete-cog (cog)
   (round (* cog buckets-per-unit-of-cog)))
 
+(defun compatibility (root tpc)
+  (let ((i (- tpc root)))
+    (if (and (>= i 0) (< i (length compat-values)))
+        (nth i compat-values)
+        -10.0)))
+
+(defun note-ornamental-dissonance-penalty (root tpc chord note same-roots)
+  (if (= -10.0 (compatibility root tpc))
+      0.0
+      (evento-temperley-penalidade-dissonancia note)))
+
+(defun tpc-variance (cog tpc my-mass decayed-prior-chord-mass)
+  (let ((delta-cog (abs (- cog tpc))))
+    (* delta-cog delta-cog my-mass)))
+
 (defun tpc-choice-score (root window same-roots ch my-mass decayed-prior-note-mass tpc-cog column-table)
   (let* ((nnotes (length ch)))
     (setf (side-effect-compatibility *side-effect*) 0.0
-          (side-effect-ornd-dis-penalty *side-effect*) 0.0
+          (side-effect-orn-diss-penalty *side-effect*) 0.0
           (side-effect-tpc-variance *side-effect*) 0.0)
     (if (> same-roots 0)
         (setf (side-effect-strong-beat-penalty *side-effect*) 0.0)
-        (progn
-          (setf (side-effect-strong-beat-penalty *side-effect*)
-                (- (/ (* sbp-weight 1000.0)
-                      
-                    )
+        (setf (side-effect-strong-beat-penalty *side-effect*)
+              (max (- (/ (* sbp-weight 1000.0) (evento-temperley-forca-metrica (first ch))) sbp-constant) 0.0)))
+    (loop for i from 0
+       for note in ch do
+         (let* ((tpc (apply-window note window))
+                (compat (if (eq -10.0 (compatibility root tpc))
+                            0
+                            (* (compatibility root tpc) my-mass)))
+                (orn-diss-penalty (note-ornamental-dissonance-penalty root tpc ch note same-roots))
+                (variance (tpc-variance tpc-cog tpc my-mass decayed-prior-note-mass))
+                (score (- compat orn-diss-penalty (* tpc-var-factor variance))))
+           (incf (aref (side-effect-tpc-choice *side-effect*) i) tpc)
+           (incf (side-effect-compatibility *side-effect*) compat)
+           (incf (side-effect-orn-diss-penalty *side-effect*) orn-diss-penalty)
+           (incf (side-effect-tpc-variance *side-effect*) variance)))
+    (let ((average-tpc 0))
+      (loop for i from 0 to (1- nnotes) do
+           (incf average-tpc (coerce (/ (aref (side-effect-tpc-choice *side-effect*) i)
+                                        nnotes)
+                                     'float)))
+      (setf (side-effect-tpc-cog *side-effect*)
+            (/ (+ (* tpc-cog decayed-prior-note-mass) (* average-tpc nnotes my-mass))
+               (+ (* nnotes my-mass) decayed-prior-note-mass))))))
+
+(defun compute-voice-leading-penalty (chord tpc-cog window)
+  (let ((total 0.0))
+    (loop for note in chord
+       when (or (and (eq 1 (evento-temperley-voice-leading-neighbor note))
+                     (> (apply-window note window) (+ 4.0 tpc-cog)))
+                (and (eq -1 (evento-temperley-voice-leading-neighbor note))
+                     (> (apply-window note window) (+ -4.0 tpc-cog))))
+       do (incf total voice-leading-penalty))
+    total))
 
 (defun initialize-first-harmonic-column (column-table)
   (loop for window from lowest-tpc to (- highest-tpc 11)
@@ -737,12 +795,150 @@
      do
        (loop for root from -4 to 7 do
             (loop for tpc-prime from (- root 5) to (+ root 6) do
-                 (let ((cog (coerce 'float root))
-                       (b (discrete-cog cog)))
+                 (let* ((cog (coerce root 'float))
+                        (b (discrete-cog cog)))
                    (tpc-choice-score root window 0 (column-chord (aref column-table 0))
                                      (column-my-mass (aref column-table 0)) 1.0
-                                     (coerce 'float tpc-prime) column-table)
+                                     (coerce tpc-prime 'float) column-table)
+                   (setf (gethash (list (discrete-cog (side-effect-tpc-cog *side-effect*))
+                                        b
+                                        root
+                                        window)
+                                  (column-table (aref column-table 0)))
+                         (make-bucket :int-tpc-cog (discrete-cog (side-effect-tpc-cog *side-effect*))
+                                      :int-har-cog b
+                                      :root root
+                                      :window window
+                                      :tpc-prime tpc-prime
+                                      :tpc-cog (side-effect-tpc-cog *side-effect*)
+                                      :har-cog cog
+                                      :har-variance 0.0
+                                      :tpc-variance (side-effect-tpc-variance *side-effect*)
+                                      :score (+ (side-effect-compatibility *side-effect*)
+                                                (- (side-effect-orn-diss-penalty *side-effect*))
+                                                (- (compute-voice-leading-penalty
+                                                    (column-chord (aref column-table 0))
+                                                    (side-effect-tpc-cog *side-effect*)
+                                                    window))))))))))
 
+(defun windows-differ-in-chord (window1 window2 chord)
+  (loop for note in chord
+       when (not (= (apply-window note window1)
+                    (apply-window note window2)))
+       do (return t)
+       finally (return nil)))
+
+(defun prune-table (table)
+  (let ((count 0)
+        (badcount 0)
+        (best nil)
+        (newtable (make-hash-table :test #'equal)))
+    (loop for h being the hash-keys in table using (hash-value bu) do
+         (incf count)
+         (when (or (null best) (> (bucket-score bu) (bucket-score best)))
+               (setf best bu)))
+    (loop for h being the hash-keys in table using (hash-value bu) do
+         (if (< (bucket-score bu) (- (bucket-score best) pruning-cutoff))
+             (incf badcount)
+             (setf (gethash h newtable) bu)))
+    (clrhash table)
+    newtable))
+
+(defun calcula-tabela-harmonica (column-table chords)
+  (initialize-first-harmonic-column column-table)
+  (loop for column from 1 to (1- (length chords)) do
+       (loop for window from lowest-tpc to (- highest-tpc 11)
+          when (is-canonical-window (column-chord (aref column-table column)) window) do
+            (loop for h being the hash-keys in (column-table (aref column-table (1- column)))
+               using (hash-value bu) do
+                 (loop
+                    for my-root from (floor (- (bucket-har-cog bu) 12.0))
+                    to (round (+ (bucket-har-cog bu) 12.0)) do
+                      (let* ((current-cog (coerce my-root 'float))
+                             (delta-cog (- current-cog (bucket-har-cog bu)))
+                             (har-variance (abs (* delta-cog
+                                                   (column-my-mass (aref column-table column))
+                                                   har-var-factor)))
+                             (note-relable-penalty 0.0))
+                        (tpc-choice-score my-root
+                                          window
+                                          (if (= (bucket-root bu) my-root) 1 0)
+                                          (column-chord (aref column-table column))
+                                          (column-my-mass (aref column-table column))
+                                          (column-decayed-prior-note-mass (aref column-table column))
+                                          (bucket-tpc-cog bu)
+                                          column-table)
+                        (when (windows-differ-in-chord (bucket-window bu)
+                                                       window
+                                                       (column-chord (aref column-table column)))
+                          (setf note-relable-penalty 1000.0))
+                        (let* ((local-voice-leading-penalty (compute-voice-leading-penalty
+                                                             (column-chord (aref column-table column))
+                                                             (side-effect-tpc-cog *side-effect*)
+                                                             window))
+                               (score (- (+ (bucket-score bu)
+                                            (side-effect-compatibility *side-effect*))
+                                         (side-effect-orn-diss-penalty *side-effect*)
+                                         har-variance
+                                         (* tpc-var-factor (side-effect-tpc-variance *side-effect*))
+                                         note-relable-penalty
+                                         local-voice-leading-penalty))
+                               (new-cog
+                                (/
+                                 (+
+                                  (* (bucket-har-cog bu)
+                                     (column-decayed-prior-note-mass (aref column-table column)))
+                                  (* current-cog
+                                     (column-my-mass (aref column-table column))))
+                                 (column-chord-mass (aref column-table column))))
+                               (int-tpc-cog (discrete-cog (side-effect-tpc-cog *side-effect*)))
+                               (int-har-cog (discrete-cog new-cog))
+                               (bu1 (gethash (list int-tpc-cog
+                                                   int-har-cog
+                                                   my-root
+                                                   window)
+                                             (column-table (aref column-table column))))
+                               (new-guy (not bu1)))
+                          (when new-guy
+                            (let ((b (make-bucket :int-tpc-cog int-tpc-cog
+                                                  :int-har-cog int-har-cog
+                                                  :root my-root
+                                                  :window window)))
+                              (setf (gethash (list int-tpc-cog
+                                                   int-har-cog
+                                                   my-root
+                                                   window)
+                                             (column-table (aref column-table column)))
+                                    b)
+                              (setf bu1 b)))
+                        (when (or new-guy
+                                  (> score (bucket-score bu1)))
+                          (setf (bucket-score bu1) score
+                                (bucket-har-variance bu1) har-variance
+                                (bucket-tpc-variance bu1) (side-effect-tpc-variance *side-effect*)
+                                (bucket-har-cog bu1) new-cog
+                                (bucket-tpc-cog bu1) (side-effect-tpc-cog *side-effect*)
+                                (bucket-prev-bucket bu1) bu)))))))
+       (setf (column-table (aref column-table column))
+             (prune-table (column-table (aref column-table column)))))
+  column-table)
+
+(defun gera-gabarito-temperley (column-table chords)
+  (let* ((n-chords (length chords))
+         (bucket-choice (make-array (list n-chords)))
+         (best-b nil))
+    (loop for i from 0 to (1- n-chords) do
+         (setf (aref bucket-choice i) (make-bucket)))
+    (loop for h being the hash-keys in (column-table (aref column-table (1- n-chords)))
+       using (hash-value bu)
+       when (or (null best-b) (< (bucket-score best-b) (bucket-score bu))) do
+         (setf best-b bu))
+    (format t "~a" best-b)
+    (loop for i from (1- n-chords) downto 0 do
+         (setf (aref bucket-choice i) best-b
+               best-b (bucket-prev-bucket best-b)))
+    (loop for i from 0 to (1- n-chords)
+       collect (bucket-root (aref bucket-choice i)))))
 
 (defun temperley (musica)
   (let* ((musica (reduce #'nconc (segmentos-minimos musica)
@@ -753,5 +949,5 @@
          (m-clist (calcula-metrica musica))
          (m-clist (penaliza-dissonancia m-clist)))
     (gera-gabarito-temperley
-     (calcula-tabela-harmonica
-      (inicializa-tabela-harmonica m-clist)))))
+     (calcula-tabela-harmonica (inicializa-tabela-harmonica m-clist) m-clist)
+     m-clist)))

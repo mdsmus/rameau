@@ -413,10 +413,10 @@ ponto nos corais de bach."
     (unless (member 'v flags)
       (print-ok/no-list (list (reverse ok) (reverse no))))))
 
-(defun print-analise-temperley (files)
+(defun print-analise-temperley (flags files)
   (dolist (file files)
     (format t "~% * ~a~%" (pathname-name file))
-    (format t "   temperley: ~(~a~) ~%" (temperley-metrifica (parse-file file)))))
+    (format t "   temperley: ~(~a~) ~%" (temperley (parse-file file)))))
 
 (defun run-analise (flags files)
   (cond ((member 'g flags)
