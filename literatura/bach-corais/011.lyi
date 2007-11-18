@@ -16,7 +16,7 @@ soprano = \relative c {
   e c d e 
   f2 d4 d 
   d c c b 
-  c2 r d 
+  c2 s4 d 
   d d d e 
   c2 c4 c 
   b c d d 
@@ -24,7 +24,7 @@ soprano = \relative c {
   e c d e 
   f2 d4 d 
   d c c b 
-  c2 r d 
+  c2 s4 d 
   d d d e 
   c2 c4 c 
   b c d d 
@@ -51,7 +51,7 @@ alto = \relative c {
   g g g g 
   f8 g a4 ais a 
   g g a g 
-  g2 r g8 fis 
+  g2 s4 g8 fis 
   g4. fis8 g4 g 
   g f8 e f4 g 
   g8 f e4 a g8 f 
@@ -59,7 +59,7 @@ alto = \relative c {
   g g g g 
   f8 g a4 ais a 
   g g a g 
-  g2 r g8 fis 
+  g2 s4 g8 fis 
   g4. fis8 g4 g 
   g f8 e f4 g 
   g8 f e4 a g8 f 
@@ -91,7 +91,7 @@ tenor = \relative c {
   c8 d e4 d c 
   c f f a, 
   b c f8 e d4 
-  e2 r b8 a 
+  e2 s4 b8 a 
   b a b c d4 c8 ais 
   ais4 a8 g a4 e' 
   d c2 b4 
@@ -99,7 +99,7 @@ tenor = \relative c {
   c8 d e4 d c 
   c f f a, 
   b c f8 e d4 
-  e2 r b8 a 
+  e2 s4 b8 a 
   b a b c d4 c8 ais 
   ais4 a8 g a4 e' 
   d c2 b4 
@@ -129,7 +129,7 @@ baixo = \relative c {
   c c' b ais 
   a g8 f ais4 fis 
   g8 f e4 f g 
-  c,2 r g 
+  c,2 s4 g 
   g'8 fis g a b g c4 
   f,2 f4 e8 f 
   g4 a8 g f4 g8 g, 
@@ -137,7 +137,7 @@ baixo = \relative c {
   c c' b ais 
   a g8 f ais4 fis 
   g8 f e4 f g 
-  c,2 r g 
+  c,2 s4 g 
   g'8 fis g a b g c4 
   f,2 f4 e8 f 
   g4 a8 g f4 g8 g, 
