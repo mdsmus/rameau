@@ -381,6 +381,27 @@ ponto nos corais de bach."
               (mapcar (lambda (x) (print-chord x  flags))
                       resultado)))))
 
+(defun processa-gabarito-pop (file)
+  (let ((*package* (find-package :rameau)))
+    (mapcar (lambda (x)
+              (let ((cifra (pop2cifra x)))
+                (if (stringp cifra)
+                    (read-from-string (string-upcase cifra))
+                    (converte-strings cifra))))
+            (read-pop-file file))))
+
+(defun processa-gabarito (file)
+  "Transforma um gabarito de texto em sexp."
+  (let* ((*package* (find-package :rameau))
+         (nome-gab (concat file ".gab"))
+         (nome-pop (concat file ".pop"))
+         (gabarito (cond ((cl-fad:file-exists-p nome-gab) 
+                          (read-from-string (format nil "(~a)" (file-string nome-gab))))
+                         ((cl-fad:file-exists-p nome-pop)
+                          (processa-gabarito-pop nome-pop))
+                         (t nil))))
+    (expande-multiplicacoes gabarito)))
+
 (defun run-compara-gabarito (flags files)
   (let (ok no)
     (dolist (file files)
