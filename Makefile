@@ -38,7 +38,6 @@ doc:
 
 update: 
 	git fetch && git rebase origin/master
-	make rameau
 
 corais-ly: $(corais-ly)
 
