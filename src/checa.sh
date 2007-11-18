@@ -9,7 +9,8 @@ echo "As seguintes funções [$conta] estão sem testes de unidade:"
 echo 
 for f in $funcoes
 do
-    if [ "$(echo "$testes" | grep $f)" == "" ]
+    foo=$(echo $f | awk -F: '{print $2}')
+    if [ "$(echo "$testes" | grep $foo)" == "" ]
     then
         echo  "$f "
     fi
