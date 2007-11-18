@@ -169,16 +169,16 @@ baixo (valor da inversão modificado)."
           ((rest cifra7sb) (expande-cifra-super-setima-baixo cifra7sb))
           ((rest cifra*)   (multiplica-cifra cifra*))
           ((rest cifra6+)  (expande-cifra-sexta-aumentada cifra6+))
-          (t (cifra->acorde cifra-string))))
+          (t (cifra->acorde cifra-string)))))
+  
+(defun print-mel (pop)
+  (destructuring-bind (s &rest notas) pop
+    (declare (ignore s))
+    (format nil "(m! ~{~(~a~)~^ ~})" (mapcar #'latin->lily notas))))
 
-  (defun print-mel (pop)
-    (destructuring-bind (s &rest notas) pop
-      (declare (ignore s))
-      (format nil "(m! ~{~(~a~)~^ ~})" (mapcar #'latin->lily notas))))
-
-  (defun print-repeat (pop)
-    (destructuring-bind (s valor &rest cifras) pop
-      (format nil "(~a ~a~%~{~( ~a~%~)~})" s valor (mapcar #'pop2cifra cifras)))))
+(defun print-repeat (pop)
+  (destructuring-bind (s valor &rest cifras) pop
+    (format nil "(~a ~a~%~{~( ~a~%~)~})" s valor (mapcar #'pop2cifra cifras))))
 
 (defun print-annotate (lista)
   (destructuring-bind (s nota anotacao) lista

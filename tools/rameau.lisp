@@ -293,8 +293,8 @@ ponto nos corais de bach."
         (print-cifra2 stream "pardo"
                       (loop
                          for numero-seg from 0 to (max (length algoritmo) (length gabarito))
-                         for pardo = (nth numero-seg algoritmo)
-                         for gab = (nth numero-seg gabarito)
+                         for pardo in algoritmo
+                         for gab  in gabarito
                          for result = (when (and pardo gab)
                                         (compara-gabarito-pardo pardo gab))
                          collect
@@ -322,21 +322,23 @@ ponto nos corais de bach."
          for n in notas
          for d in dur
          for numero-seg from 0
-         for pardo = (nth numero-seg algoritmo)
-         for gab = (nth numero-seg gabarito)
+         for pardo in algoritmo
+         for gab in gabarito
          for result = (when (and pardo gab)
                         (compara-gabarito-pardo pardo gab))
+         then (when (and pardo gab)
+                (compara-gabarito-pardo pardo gab))
          if result do (incf count-ok)
          else do (push numero-seg wrong-list)
          do
            (print-gab-columns
-                   (1+ numero-seg)
-                   n
-                   (if gab (print-chord gab flags))
-                   (if pardo (print-chord pardo flags))
-                   d
-                   result
-                   flags))
+            (1+ numero-seg)
+            n
+            (if gab (print-chord gab flags))
+            (if pardo (print-chord pardo flags))
+            d
+            result
+            flags))
       (format t "~%~$ % correto, gab: ~a, pardo: ~a~%"
               (percent count-ok size-gab) size-gab size-algo)
       (format t "segmentos errados: ~a~%" (nreverse wrong-list)))))
@@ -384,6 +386,7 @@ ponto nos corais de bach."
     (dolist (file files)
       (multiple-value-bind (algoritmo segmento)
           (with-system rameau:tempered (gera-gabarito-pardo (parse-file file)))
+        (format t "tamanhos pardo: ~a gabarito: ~a ~%" (length algoritmo) (length segmento))
         (let* ((file-name (pathname-name file))
                (gabarito (processa-gabarito (tira-extensao file)))
                (notas (with-system rameau:tempered (mapcar #'lista-notas segmento)))

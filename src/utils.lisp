@@ -183,12 +183,13 @@ quantos acidentes ou oitavas uma nota tem."
           (cons atual (expande-multiplicacoes resto))))))
 
 (defun processa-gabarito-pop (file)
-  (mapcar (lambda (x)
-            (let ((cifra (pop2cifra x)))
-              (if (stringp cifra)
-                  (read-from-string (string-upcase cifra))
-                  (converte-strings cifra))))
-          (read-pop-file file)))
+  (let ((*package* (find-package :rameau)))
+    (mapcar (lambda (x)
+              (let ((cifra (pop2cifra x)))
+                (if (stringp cifra)
+                    (read-from-string (string-upcase cifra))
+                    (converte-strings cifra))))
+            (read-pop-file file))))
 
 (defun processa-gabarito (file)
   "Transforma um gabarito de texto em sexp."

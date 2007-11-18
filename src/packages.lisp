@@ -1,4 +1,4 @@
-(in-package #:cl-user)
+g(in-package #:cl-user)
 
 (defpackage #:rameau
   (:export #:acerta-times #:agrupa-inicio #:agrupa-por #:add-lily-ext
@@ -47,7 +47,7 @@
            #:evento-dur #:evento-octave #:evento-inicio #:pop2cifra
            #:*notes* #:*rests* #:*tonal-system* #:*tonal-intervals*
            #:*tempered-intervals* #:*tempered-system* #:*systems* #:*system*
-           #:make-sequencia-de-notas #:string-lexer #:stringify #:aif
+           #:make-sequencia-de-notas #:string-lexer #:stringify #:print-repeat #:aif
            #:*intervals-name* #:*intervals-quantity* #:*accidentals* #:tempered #:tonal
            #:temperley #:pardo->gabarito)
   (:use #:cl #:yacc #:lisp-unit))
