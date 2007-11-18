@@ -117,12 +117,18 @@ está no baixo de acordo com a inversão."
 (set-macro-character #\} (get-macro-character #\)))
 
 (defun expande-cifra-setima (cifra)
+  "Aceita uma lista com a fundamental e a sétima como strings e
+retorna uma lista com a notação de gabarito para 'dupla
+possibilidade'."
   (let* ((cifra1 (cifra->acorde (first cifra)))
          (modo (second cifra1))
          (setima (parse-acrescimos (second cifra))))
     (list '* 2 (list cifra1 (append cifra1 (list setima))))))
 
 (defun setima-no-baixo (acorde setima)
+  "Acorde é uma lista com fundamental, modo e inversão e sétima é o
+valor da sétima como string. Retorna um novo acorde com a sétima no
+baixo (valor da inversão modificado)."
   (destructuring-bind (fund modo inversao &rest resto) acorde
     (declare (ignore inversao))
     (remove-if #'null (list fund modo 3 (parse-acrescimos setima) resto))))
@@ -148,6 +154,7 @@ está no baixo de acordo com a inversão."
   (substitute (second cifra) "maj" (cifra->acorde (first cifra)) :test #'equal))
 
 (defun processa-cifra (cifra)
+  "Converte uma cifra simbolica para lista no formato de gabarito."
   (let* ((cifra-string (stringify cifra))
          (cifra7 (cl-ppcre:split "--" cifra-string))
          (cifra7s (cl-ppcre:split "==" cifra-string))
@@ -162,16 +169,16 @@ está no baixo de acordo com a inversão."
           ((rest cifra7sb) (expande-cifra-super-setima-baixo cifra7sb))
           ((rest cifra*)   (multiplica-cifra cifra*))
           ((rest cifra6+)  (expande-cifra-sexta-aumentada cifra6+))
-          (t (cifra->acorde cifra-string)))))
+          (t (cifra->acorde cifra-string))))
 
-(defun print-mel (pop)
-  (destructuring-bind (s &rest notas) pop
-    (declare (ignore s))
-    (format nil "(m! ~{~(~a~)~^ ~})" (mapcar #'latin->lily notas))))
+  (defun print-mel (pop)
+    (destructuring-bind (s &rest notas) pop
+      (declare (ignore s))
+      (format nil "(m! ~{~(~a~)~^ ~})" (mapcar #'latin->lily notas))))
 
-(defun print-repeat (pop)
-  (destructuring-bind (s valor &rest cifras) pop
-    (format nil "(~a ~a~%~{~( ~a~%~)~})" s valor (mapcar #'pop2cifra cifras))))
+  (defun print-repeat (pop)
+    (destructuring-bind (s valor &rest cifras) pop
+      (format nil "(~a ~a~%~{~( ~a~%~)~})" s valor (mapcar #'pop2cifra cifras)))))
 
 (defun print-annotate (lista)
   (destructuring-bind (s nota anotacao) lista

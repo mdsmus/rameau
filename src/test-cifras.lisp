@@ -47,7 +47,6 @@
   (assert-equal '("des" "min" 1 "7") (cifra->acorde "dbm7/fb"))
   (assert-equal '("c" "maj" 0 "7m") (cifra->acorde "c7m")))
 
-
 (define-test get-intervalo-inversao-pop
   (assert-equal 55 (get-intervalo-inversao-pop 'min 2))
   (assert-equal 55 (get-intervalo-inversao-pop 'maj 2))
@@ -75,3 +74,30 @@
   (assert-equal "Cm7/Eb" (acorde->cifra '("c" min 1 "7")))
   (assert-equal "Cm7" (acorde->cifra '("c" min 7)))
   (assert-equal "Cm" (acorde->cifra '("c" min))))
+
+(define-test expande-cifra-setima
+  (assert-equal '(* 2 (("c" "maj" 0) ("c" "maj" 0 "7m"))) (expande-cifra-setima '("c" "7m"))))
+
+(define-test setima-no-baixo
+  (assert-equal '("c" "maj" 3 "7") (setima-no-baixo '("c" "maj" 1) "7")))
+
+(define-test processa-cifra
+  (assert-equal '("c" "min" 1 "7m") (processa-cifra 'cm7m/eb))
+  (assert-equal '("c" "maj" 0) (processa-cifra 'c)))
+
+(define-test expande-cifra-setima-baixo
+  (assert-equal "(c min 0)
+(c min 3 7)" (expande-cifra-setima-baixo '("c" "min"))))
+
+(define-test expande-cifra-super-setima-baixo
+  (assert-equal '(* 2 (("c" "maj" 0) ("c" "maj" 3 "maj"))) (expande-cifra-super-setima-baixo '("c" "maj"))))
+
+(define-test expande-cifra-super-setima
+  (assert-equal "(c maj 0)
+(c maj 3 7)" (expande-cifra-setima-baixo '("c" "maj"))))
+
+(define-test multiplica-cifra
+  (assert-equal '(* 2 ("c" "maj" 0)) (multiplica-cifra '("c" 2))))
+
+(define-test expande-cifra-sexta-aumentada
+  (assert-equal '("c" "it" 0) (expande-cifra-sexta-aumentada '("c" "it"))))
