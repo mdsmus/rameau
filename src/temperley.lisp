@@ -607,6 +607,13 @@
 
 ;; Funcoes de Harmony
 
+(defun pitch-to-npc (p)
+  (mod (+ p  12000000) 12))
+
+(defun base-tpc (n)
+  (mod (+ 2 (* 7 n) 12000000)
+       12))
+
 (defun penalidade-de-dissonancia (delta)
   (+ odp-constant
      (* odp-linear_factor delta)
@@ -719,8 +726,10 @@
     column-table))
 
 (defun apply-window (note window)
-  (let ((base-tpc (mod (+ 2 (* 7 (evento-temperley-pitch note)) 12000000) 12)))
-    (+ window (mod (+ base-tpc 12000000 (- window)) 12))))
+  (let ((base-tpc (base-tpc (pitch-to-npc (evento-temperley-pitch note)))))
+    (+ (mod (+ base-tpc (- window) 12000000)
+            12)
+       window)))
 
 (defun is-canonical-window (chord window)
   (if (null chord)
@@ -740,15 +749,17 @@
         -10.0)))
 
 (defun note-ornamental-dissonance-penalty (root tpc chord note same-roots)
+  (declare (ignore same-roots chord))
   (if (= -10.0 (compatibility root tpc))
       0.0
       (evento-temperley-penalidade-dissonancia note)))
 
 (defun tpc-variance (cog tpc my-mass decayed-prior-chord-mass)
+  (declare (ignore decayed-prior-chord-mass))
   (let ((delta-cog (abs (- cog tpc))))
     (* delta-cog delta-cog my-mass)))
 
-(defun tpc-choice-score (root window same-roots ch my-mass decayed-prior-note-mass tpc-cog column-table)
+(defun tpc-choice-score (root window same-roots ch my-mass decayed-prior-note-mass tpc-cog)
   (let* ((nnotes (length ch)))
     (setf (side-effect-compatibility *side-effect*) 0.0
           (side-effect-orn-diss-penalty *side-effect*) 0.0
@@ -764,8 +775,7 @@
                             0
                             (* (compatibility root tpc) my-mass)))
                 (orn-diss-penalty (note-ornamental-dissonance-penalty root tpc ch note same-roots))
-                (variance (tpc-variance tpc-cog tpc my-mass decayed-prior-note-mass))
-                (score (- compat orn-diss-penalty (* tpc-var-factor variance))))
+                (variance (tpc-variance tpc-cog tpc my-mass decayed-prior-note-mass)))
            (incf (aref (side-effect-tpc-choice *side-effect*) i) tpc)
            (incf (side-effect-compatibility *side-effect*) compat)
            (incf (side-effect-orn-diss-penalty *side-effect*) orn-diss-penalty)
@@ -799,7 +809,7 @@
                         (b (discrete-cog cog)))
                    (tpc-choice-score root window 0 (column-chord (aref column-table 0))
                                      (column-my-mass (aref column-table 0)) 1.0
-                                     (coerce tpc-prime 'float) column-table)
+                                     (coerce tpc-prime 'float))
                    (setf (gethash (list (discrete-cog (side-effect-tpc-cog *side-effect*))
                                         b
                                         root
@@ -866,8 +876,7 @@
                                           (column-chord (aref column-table column))
                                           (column-my-mass (aref column-table column))
                                           (column-decayed-prior-note-mass (aref column-table column))
-                                          (bucket-tpc-cog bu)
-                                          column-table)
+                                          (bucket-tpc-cog bu))
                         (when (windows-differ-in-chord (bucket-window bu)
                                                        window
                                                        (column-chord (aref column-table column)))
@@ -923,6 +932,15 @@
              (prune-table (column-table (aref column-table column)))))
   column-table)
 
+(let ((letters '("F" "C" "G" "D" "A" "E" "B")))
+  (defun tpc-string (tpc)
+    (let* ((letl (mod (1- tpc) 7))
+           (letl (if (< letl 0) (- letl) letl))
+           (sharps (/ (- tpc 1 letl) 7))
+           (accidental (if (< sharps 0) "b" "#"))
+           (sharps (abs sharps)))
+      (string->symbol (concat (nth letl letters) (repeat-string sharps accidental))))))
+
 (defun gera-gabarito-temperley (column-table chords)
   (let* ((n-chords (length chords))
          (bucket-choice (make-array (list n-chords)))
@@ -933,12 +951,11 @@
        using (hash-value bu)
        when (or (null best-b) (< (bucket-score best-b) (bucket-score bu))) do
          (setf best-b bu))
-    (format t "~a" best-b)
     (loop for i from (1- n-chords) downto 0 do
          (setf (aref bucket-choice i) best-b
                best-b (bucket-prev-bucket best-b)))
     (loop for i from 0 to (1- n-chords)
-       collect (bucket-root (aref bucket-choice i)))))
+       collect (tpc-string (bucket-root (aref bucket-choice i))))))
 
 (defun temperley (musica)
   (let* ((musica (reduce #'nconc (segmentos-minimos musica)
