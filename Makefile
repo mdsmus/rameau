@@ -18,7 +18,7 @@ vpath %.png $(corais-dir)
 
 .PHONY: update clean
 
-rameau: $(lisp-files)
+rameau: $(lisp-files) corais-ly
 	${sbcl} "(load \"tools/make-image.lisp\")"
 
 cmurameau: $(lisp-files)
