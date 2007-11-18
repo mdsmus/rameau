@@ -61,7 +61,7 @@ corais-partitura-fast: $(corais-ly)
 	$(lilypond) --png $(notdir $(corais-ly-partitura))
 
 %.ly: %.lyi $(corais-dir)
-	cat $< lily/score.lyi > $(corais-dir)/$(basename $(notdir $<)).ly
+	@cat $< lily/score.lyi > $(corais-dir)/$(basename $(notdir $<)).ly
 	@if [ -f $(patsubst %.lyi,%.pop,$<) ]; then cp $(patsubst %.lyi,%.pop,$<) $(corais-dir); fi ;\
 
 coral-%.png: %.ly rameau
