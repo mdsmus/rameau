@@ -51,5 +51,5 @@
            #:*intervals-name* #:*intervals-quantity* #:*accidentals* #:tempered #:tonal
            #:temperley #:pardo->gabarito)
   (:use #:cl #:yacc #:lisp-unit)
-  (:import-from #:it.bese.arnesi #:aif ))
+  (:import-from #:it.bese.arnesi #:aif #:it))
 
