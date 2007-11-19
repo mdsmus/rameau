@@ -14,16 +14,7 @@
 
 (defun troca-extensao (file ext)
   (if (tem-ext? file) (concat (tira-extensao file) ext) file))
-  
-(defmacro aif (test-form then-form &optional else-form)
-  "Macro anafófica que retorna o elemento no predicado ('it') se for
-verdadeiro."
-  (let ((it (intern (symbol-name 'it))))
-    `(let ((,it ,test-form))
-       (if ,it
-           ,then-form
-           ,else-form))))
-
+ 
 (defmacro defcached (funcname args &body body)
   (let ((cache (gensym))
         (func (gensym)))
@@ -37,10 +28,6 @@ verdadeiro."
 (defun concat (&rest strings)
   "Concatenate a bunch of strings."
   (apply #'concatenate 'string strings))
-
-(defun last1 (list)
-  "Retuns the last element of a list."
-  (first (last list)))
 
 (defun sort-set (set)
   "Sort a set in crescent order. "

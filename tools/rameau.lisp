@@ -8,9 +8,14 @@
                    (space 1)
                    (speed 1)))
 
+
 (asdf:oos 'asdf:load-op :rameau :verbose nil)
 
-(use-package :rameau)
+(defpackage :rameau-tools
+  (:use #:cl #:rameau #:it.bese.arnesi)
+  (:export #:main)
+  (:import-from #:sb-ext #:*posix-argv*))
+(in-package :rameau-tools)
 
 ;;; As funções dependentes de implementação devem ficar aqui
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -519,7 +524,7 @@ ponto nos corais de bach."
           ((equal comando "help") (print-help))
           ((equal comando "-h") (print-help))
           ((and (null dados) (string= comando "teste"))
-           (funcall (read-from-string comando) "all" flags files))
+           (teste "all" flags files))
           ((and comando (null dados))
            (if (member comando (get-comandos) :test #'string=)
                (format t "as opções de ~a são: ~{~a ~}~%"
@@ -530,7 +535,7 @@ ponto nos corais de bach."
                  (format t "você deve entrar um dos comandos: ~{~(~a~)~^ ~}~%"
                          (get-comandos)))))
           ((member comando (get-comandos) :test #'string=)
-           (funcall (read-from-string comando) dados flags files))
+           (funcall (symbol-function (intern (string-upcase comando) :rameau-tools)) dados flags files))
           (t (format t "comando ~a não reconhecido~%" comando)
              (format t "você deve entrar um dos comandos: ~{~(~a~)~^ ~}~%"
                      (get-comandos)))))

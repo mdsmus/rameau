@@ -1,4 +1,4 @@
-g(in-package #:cl-user)
+(in-package #:cl-user)
 
 (defpackage #:rameau
   (:export #:acerta-times #:agrupa-inicio #:agrupa-por #:add-lily-ext #:converte-strings
@@ -21,7 +21,7 @@ g(in-package #:cl-user)
            #:get-accidentals #:get-exp #:get-flat #:get-interval-name
            #:get-interval-quantity #:get-sharp #:get-system-intervals
            #:get-system-item #:get-system-module #:get-system-notes
-           #:group-and-count #:interval #:interval->code #:inversion #:last1
+           #:group-and-count #:interval #:interval->code #:inversion 
            #:lista-notas #:match-note-representation #:max-predicado
            #:menos-de-uma-quarta #:menos-mod-96 #:merge-exprs
            #:modificador-oitava #:module #:move-evento-no-tempo
@@ -47,8 +47,9 @@ g(in-package #:cl-user)
            #:evento-dur #:evento-octave #:evento-inicio #:pop2cifra
            #:*notes* #:*rests* #:*tonal-system* #:*tonal-intervals*
            #:*tempered-intervals* #:*tempered-system* #:*systems* #:*system*
-           #:make-sequencia-de-notas #:string-lexer #:stringify #:print-repeat #:aif
+           #:make-sequencia-de-notas #:string-lexer #:stringify #:print-repeat
            #:*intervals-name* #:*intervals-quantity* #:*accidentals* #:tempered #:tonal
            #:temperley #:pardo->gabarito)
-  (:use #:cl #:yacc #:lisp-unit))
+  (:use #:cl #:yacc #:lisp-unit)
+  (:import-from #:it.bese.arnesi #:aif ))
 
