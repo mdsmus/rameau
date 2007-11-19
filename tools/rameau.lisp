@@ -105,7 +105,7 @@
 (defun char->symbol (char)
   "Retorna o símbolo representado pelo caractere char.
 Exemplo: (char->symbol #\a) => A"
-  (intern (string-upcase (string char))))
+  (intern (string-upcase (string char)) :rameau-tools))
 
 (defun split-word (word)
   "Retorna uma lista de símbolos para cada letra da palavra 'word'.
