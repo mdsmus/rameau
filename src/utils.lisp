@@ -5,38 +5,36 @@
 
 (in-package :rameau-utils)
 
-(defparameter rameau-base::*utils-funcs*
-  '(
-    add-lily-ext
-    add-pop-ext
-    assoc-item
-    concat
-    converte-strings
-    copy
-    count-subseq
-    defcached
-    destringify
-    exclude-repetition
-    expande-multiplicacoes
-    file-string
-    max-predicado
-    no-op
-    octave-from-string
-    pula
-    repeat-list
-    retorna-n-segmentos
-    smallest
-    sort-set
-    stringify
-    string->symbol
-    symbol->number
-    repeat-copy
-    repeat-string
-    tem-ext?
-    tira-extensao
-    troca-extensao
-    ))
-(mapcar #'export rameau-base::*utils-funcs*)
+(register-and-export-symbols '(
+                               add-lily-ext
+                               add-pop-ext
+                               assoc-item
+                               concat
+                               converte-strings
+                               copy
+                               count-subseq
+                               defcached
+                               destringify
+                               exclude-repetition
+                               expande-multiplicacoes
+                               file-string
+                               max-predicado
+                               no-op
+                               octave-from-string
+                               pula
+                               repeat-list
+                               retorna-n-segmentos
+                               smallest
+                               sort-set
+                               stringify
+                               string->symbol
+                               symbol->number
+                               repeat-copy
+                               repeat-string
+                               tem-ext?
+                               tira-extensao
+                               troca-extensao
+                               ))
 
 
 (defun add-lily-ext (file)
