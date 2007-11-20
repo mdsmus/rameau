@@ -9,9 +9,9 @@
   :components (
                (:file "rameau-base")
                (:file "utils")
+               (:file "musiclib")
                (:file "packages")
                (:file "formato")
-               (:file "musiclib")
                (:file "segmento")
                (:file "parser")
                (:file "parser-grammar")

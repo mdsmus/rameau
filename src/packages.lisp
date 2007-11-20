@@ -28,8 +28,9 @@
            #:transpoe #:transpose #:with-system #:make-evento
            #:pop2cifra #:print-repeat #:tempered #:tonal
            #:temperley #:pardo->gabarito)
-  (:use #:rameau-base #:rameau-utils #:cl #:it.bese.arnesi #:lisp-unit)
+  (:use #:rameau-base #:rameau-utils #:rameau-musiclib #:cl #:it.bese.arnesi #:lisp-unit)
   (:import-from #:it.bese.arnesi #:aif #:it))
 
 (in-package :rameau)
 (mapcar #'export rameau-base::*utils-funcs*)
+(mapcar #'export rameau-base::*musiclib-funcs*)

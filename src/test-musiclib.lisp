@@ -1,71 +1,6 @@
 (in-package #:rameau)
 
 
-(define-test get-system-item
-  (assert-equal '(*TONAL-SYSTEM* 96 *TONAL-INTERVALS*) (get-system-item 'tonal))
-  (assert-equal '(*TEMPERED-SYSTEM* 12 *TEMPERED-INTERVALS*) (get-system-item 'tempered)))
-
-(define-test get-system-module
-    (assert-equal 96 (get-system-module 'tonal))
-    (assert-equal 12 (get-system-module 'tempered)))
-
-(define-test get-system-intervals
-    (assert-equal
-     '((1 JUST) (1 AUG) (1 AUG 2) (1 AUG 3) (1 AUG 4) (1 AUG 5) (1 AUG 6) (2 DIM 6)
-       (2 DIM 5) (2 DIM 4) (2 DIM 3) (2 DIM 2) (2 DIM) (2 MIN) (2 MAJ) (2 AUG)
-       (2 AUG 2) (2 AUG 3) (2 AUG 4) (2 AUG 5) (2 AUG 6) (3 DIM 6) (3 DIM 5)
-       (3 DIM 4) (3 DIM 3) (3 DIM 2) (3 DIM) (3 MIN) (3 MAJ) (3 AUG) (3 AUG 2)
-       (3 AUG 3) (3 AUG 4) (3 AUG 5) (3 AUG 6) (4 DIM 6) (4 DIM 5) (4 DIM 4)
-       (4 DIM 3) (4 DIM 2) (4 DIM) (4 JUST) (4 AUG) (4 AUG 2) (4 AUG 3) (4 AUG 4)
-       (4 AUG 5) (4 AUG 6) (4 AUG 7) (5 DIM 6) (5 DIM 5) (5 DIM 4) (5 DIM 3)
-       (5 DIM 2) (5 DIM) (5 JUST) (5 AUG) (5 AUG 2) (5 AUG 3) (5 AUG 4) (5 AUG 5)
-       (5 AUG 6) (6 DIM 6) (6 DIM 5) (6 DIM 4) (6 DIM 3) (6 DIM 2) (6 DIM) (6 MIN)
-       (6 MAJ) (6 AUG) (6 AUG 2) (6 AUG 3) (6 AUG 4) (6 AUG 5) (6 AUG 6) (7 DIM 6)
-       (7 DIM 5) (7 DIM 4) (7 DIM 3) (7 DIM 2) (7 DIM) (7 MIN) (7 MAJ) (7 AUG)
-       (7 AUG 2) (7 AUG 3) (7 AUG 4) (7 AUG 5) (7 AUG 6) (8 DIM 6) (8 DIM 5)
-       (8 DIM 4) (8 DIM 3) (8 DIM 2) (8 DIM) (8 JUST))
-     (get-system-intervals 'tonal))
-    (assert-equal
-     '((1 JUST) (2 MIN) (2 MAJ) (3 MIN) (3 MAJ) (4 JUST)
-       (5 DIM) (5 JUST) (6 MIN) (6 MAJ) (7 MIN) (7 MAJ) (8 JUST))
-     (get-system-intervals 'tempered)))
-
-(define-test get-accidentals
-    (assert-equal '("es" "is") (get-accidentals 'lily))
-    (assert-equal '("b" "#") (get-accidentals 'latin)))
-
-(define-test %get-accidental
-    (assert-equal "es" (%get-accidental 'lily #'first))
-    (assert-equal "is" (%get-accidental 'lily #'second))
-    (assert-equal nil (%get-accidental 'lily #'third))
-    (assert-equal "b" (%get-accidental 'latin #'first))
-    (assert-equal "#" (%get-accidental 'latin #'second))
-    (assert-equal nil (%get-accidental 'latin #'third)))
-    
-(define-test get-sharp
-  (assert-equal "is" (get-sharp 'lily))
-  (assert-equal "#" (get-sharp 'latin)))
-
-(define-test get-flat
-  (assert-equal "es" (get-flat 'lily))
-  (assert-equal "b" (get-flat 'latin)))
-
-(define-test get-interval-name
-  (assert-equal 'diminished (get-interval-name 'dim))
-  (assert-equal 'augmented (get-interval-name 'aug))
-  (assert-equal 'major (get-interval-name 'maj))
-  (assert-equal 'minor (get-interval-name 'min)))
-
-(define-test get-interval-quantity
-  (assert-equal nil (get-interval-quantity 0))
-  (assert-equal nil (get-interval-quantity 1))
-  (assert-equal 'double (get-interval-quantity 2))
-  (assert-equal 'triple (get-interval-quantity 3))
-  (assert-equal 'quadruple (get-interval-quantity 4))
-  (assert-equal 'pentuple (get-interval-quantity 5))
-  (assert-equal 'hextuple (get-interval-quantity 6))
-  (assert-equal 'heptuple (get-interval-quantity 7)))
-
 (define-test code->note
   (assert-equal '(c 0) (code->note 0))
   (assert-equal '(c -1) (code->note 95))
@@ -76,11 +11,6 @@
   (assert-equal '(d 0) (with-system tempered (code->note 14)))
   (assert-equal '(c 0) (with-system tempered (code->note 96))))
 
-(define-test %note->code
-  (assert-equal 0 (%note->code 'c))
-  (assert-equal 14 (%note->code 'd))
-  (assert-equal 0 (with-system tempered (%note->code 'c)))
-  (assert-equal 2 (with-system tempered (%note->code 'd))))
 
 (define-test note?
   (assert-true (note? "cis"))
@@ -106,11 +36,6 @@
     (assert-equal nil (match-note-representation "c#" 'lily))
     (assert-equal 1 (match-note-representation "c#" 'latin))
     (assert-equal 1 (match-note-representation "cis" 'lily)))
-
-(define-test %parse-note
-  (assert-equal 95 (%parse-note "ces" 'lily 'tonal))
-  (assert-equal 0 (%parse-note "c" 'lily 'tonal))
-  (assert-equal 1 (%parse-note "c#" 'latin 'tonal)))
 
 (define-test note->code
   (assert-equal 0 (note->code "c"))

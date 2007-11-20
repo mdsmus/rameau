@@ -3,7 +3,12 @@
 ;;             (d -1) is Db (d flat)
 ;; interval-code is alist representing an interval
 
-(in-package #:rameau)
+(defpackage :rameau-musiclib
+  (:use #:rameau-base #:cl #:it.bese.arnesi #:rameau-utils))
+
+
+(in-package #:rameau-musiclib)
+
 
 (defvar *notes* '(#\c #\d #\e #\f #\g #\a #\b #\C #\D #\E #\F #\G #\A #\B))
 
@@ -149,18 +154,18 @@ first argument to this function, otherwise it could mistakenly return
 EXAMPLE: (match-note-representation \"cis\" 'latin) returns nil."
   (or (search (get-flat representation) note)
       (search (get-sharp representation) note)))
-
+(defun my-position (&rest args) (apply #'position args))
 (defun %parse-note (note representation system)
   "Returns the numeric code for a note according with the representation and system.
 EXAMPLE: (%parse-note \"ces\" 'lily 'tonal) returns 95. This is a low
 level function, you should use note->code instead."
   (let ((note-code-tonal
-         (position (list (string->symbol (subseq note 0 1))
-                         (number-of-accidentals (subseq note 1) representation))
+         (my-position (list (string->symbol (subseq note 0 1))
+                            (number-of-accidentals (subseq note 1) representation))
                    (get-system-notes 'tonal)
                    :test #'equal))
         (note-code-tempered
-         (+ (position (list (string->symbol (subseq note 0 1)) 0)
+         (+ (my-position (list (string->symbol (subseq note 0 1)) 0)
                       (get-system-notes 'tempered)
                       :test #'equal)
             (number-of-accidentals (subseq note 1) representation))))
@@ -361,3 +366,60 @@ EXAMPLE: (equal-sets? '(0 3 7) '(8 1 4)) returns T."
   `(defparameter ,name ',templates))
 
 
+(defparameter rameau-base::*musiclib-funcs*
+  '(
+    a
+    b
+    c
+    d
+    e
+    f
+    g
+    maj
+    min
+    dim
+    aug
+    just
+    lily
+    latin
+    prime
+    with-system
+    number-of-accidentals
+    match-note-representation
+    sort-form-list
+    tempered
+    tonal
+    get-system-notes
+    code->note
+    note->code
+    note?
+    rest?
+    latin->lily
+    print-accidentals
+    print-note
+    module
+    lily->latin
+    transpose
+    inversion
+    interval
+    interval->code
+    code->interval
+    print-interval
+    rotate
+    set-rotate
+    set-inversion
+    set-transpose
+    set-transpose-to-0
+    set-intervals
+    set-symmetric?
+    set-form-list
+    smaller-sets
+    smaller-sets-comparisson
+    smallest-set
+    normal-form
+    prime-form
+    set-equal?
+    deftemplates
+    ))
+
+(mapcar #'export rameau-base::*musiclib-funcs*)

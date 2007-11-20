@@ -128,7 +128,7 @@
                           (nota-pardo-resultado x))
                         (avalia-segmento-notas (second template)
                                                segmento
-                                               *tempered-system*))))
+                                               (get-system-notes 'tempered)))))
     (dolist (r resultados)
       (setf (nota-pardo-gabarito r) (cons (nota-pardo-root r)
                                           (first template))))
