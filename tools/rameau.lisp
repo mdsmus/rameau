@@ -445,7 +445,7 @@ ponto nos corais de bach."
 (defun print-analise-temperley (flags files)
   (dolist (file files)
     (format t "~% * ~a~%" (pathname-name file))
-    (format t "   temperley: ~(~a~) ~%" (with-system rameau:tempered (temperley (parse-file file))))))
+    (format t "   temperley: ~(~a~) ~%" (with-system rameau:tempered (temperley:temperley (parse-file file))))))
 
 (defun run-analise (flags files)
   (cond ((member 'g flags)

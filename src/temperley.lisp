@@ -5,7 +5,11 @@
 ;;
 ;; Here be dragons
 
-(in-package :rameau)
+(defpackage :temperley
+  (:use #:cl #:rameau #:it.bese.arnesi)
+  (:export #:temperley))
+
+(in-package :temperley)
 
 ;; Parametros do programa Harmony
 
