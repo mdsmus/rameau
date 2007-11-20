@@ -15,6 +15,7 @@
 
 ;; *notes-names* é útil para o parser
 
+
 (in-package #:rameau)
 
 (defstruct evento
@@ -39,6 +40,9 @@
   (mapcar (lambda (x)
             (print-note (code->note (evento-pitch x)) 'latin))
           (sort segmento #'compara-notas)))
+
+(defun pitches (segmento)
+  (mapcar #'evento-pitch segmento))
 
 (defun calcula-duracoes (segmento algoritmo)
   (mapcar (lambda (x y) (list y (evento-dur (first x)))) segmento algoritmo))

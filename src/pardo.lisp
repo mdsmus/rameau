@@ -1,5 +1,10 @@
 ;; Implementação do algoritmo de pardo.
-(in-package #:rameau)
+
+(defpackage :rameau.pardo
+  (:use #:rameau #:cl #:it.bese.arnesi)
+  (:export #:compara-gabarito-pardo #:gera-gabarito-pardo))
+
+(in-package #:rameau.pardo)
 
 (deftemplates *pardo-templates* 
   ((maj 0) (0 4 7))
@@ -29,7 +34,7 @@
 
 (defun segment-to-template (segment)
   "Converte um segmento em um formato pronto para ser comparado com um template."
-  (let* ((segment (mapcar #'evento-pitch segment))
+  (let* ((segment (pitches segment))
          (segment (sort segment #'<)))
     (group-and-count segment)))
 

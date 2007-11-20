@@ -12,7 +12,7 @@
 (asdf:oos 'asdf:load-op :rameau :verbose nil)
 
 (defpackage :rameau-tools
-  (:use #:cl #:rameau #:it.bese.arnesi)
+  (:use #:cl #:rameau #:it.bese.arnesi #:rameau.pardo #:rameau.temperley)
   (:export #:main)
   (:import-from #:sb-ext #:*posix-argv*))
 (in-package :rameau-tools)
@@ -444,7 +444,7 @@ ponto nos corais de bach."
 (defun print-analise-temperley (flags files)
   (dolist (file files)
     (format t "~% * ~a~%" (pathname-name file))
-    (format t "   temperley: ~(~a~) ~%" (with-system rameau:tempered (temperley:temperley (parse-file file))))))
+    (format t "   temperley: ~(~a~) ~%" (with-system rameau:tempered (temperley (parse-file file))))))
 
 (defun run-analise (flags files)
   (cond ((member 'g flags)

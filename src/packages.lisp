@@ -27,6 +27,7 @@
            #:sort-set #:string->symbol #:symbol->number #:template-prob
            #:transpoe #:transpose #:with-system #:make-evento
            #:pop2cifra #:print-repeat #:tempered #:tonal
+           #:pitches
            #:temperley #:pardo->gabarito)
   (:use #:rameau-base #:rameau-utils #:rameau-musiclib #:cl #:it.bese.arnesi #:lisp-unit)
   (:import-from #:it.bese.arnesi #:aif #:it))
