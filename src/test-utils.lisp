@@ -1,7 +1,5 @@
 (in-package :rameau)
 
-(use-package '#:lisp-unit)
-
 (define-test compara-notas
   (assert-true
    (compara-notas (make-evento :pitch 0 :octave 1)

@@ -1,4 +1,43 @@
-(in-package #:rameau)
+
+
+(defpackage :rameau-utils
+  (:use #:rameau-base #:cl #:it.bese.arnesi))
+
+(in-package :rameau-utils)
+
+(defparameter rameau-base::*utils-funcs*
+  '(
+    add-lily-ext
+    add-pop-ext
+    assoc-item
+    concat
+    converte-strings
+    copy
+    count-subseq
+    defcached
+    destringify
+    exclude-repetition
+    expande-multiplicacoes
+    file-string
+    max-predicado
+    no-op
+    octave-from-string
+    pula
+    repeat-list
+    retorna-n-segmentos
+    smallest
+    sort-set
+    stringify
+    string->symbol
+    symbol->number
+    repeat-copy
+    repeat-string
+    tem-ext?
+    tira-extensao
+    troca-extensao
+    ))
+(mapcar #'export rameau-base::*utils-funcs*)
+
 
 (defun add-lily-ext (file)
   (if (tem-ext? file) file (concat file ".ly")))
@@ -123,18 +162,6 @@ quantos acidentes ou oitavas uma nota tem."
            (*package* (find-package :rameau)))
       (values data (read-sequence data s)))))
 
-(defun compara-notas (x y)
-  (let ((a (evento-octave x))
-        (b (evento-octave y)))
-    (if (= a b)
-        (< (evento-pitch x) (evento-pitch y))
-        (< a b))))
-
-(defun lista-notas (segmento)
-  (mapcar (lambda (x)
-            (print-note (code->note (evento-pitch x)) 'latin))
-          (sort segmento #'compara-notas)))
-
 (defun no-op (musica)
   (mapcar #'lista-notas (segmentos-minimos musica)))
 
@@ -168,3 +195,5 @@ quantos acidentes ou oitavas uma nota tem."
                                         (expande-multiplicacoes (rest (rest atual)))))
            (expande-multiplicacoes resto))
           (cons atual (expande-multiplicacoes resto))))))
+
+

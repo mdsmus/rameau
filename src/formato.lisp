@@ -28,6 +28,21 @@
   (inicio)
   (dur))
 
+(defun compara-notas (x y)
+  (let ((a (evento-octave x))
+        (b (evento-octave y)))
+    (if (= a b)
+        (< (evento-pitch x) (evento-pitch y))
+        (< a b))))
+
+(defun lista-notas (segmento)
+  (mapcar (lambda (x)
+            (print-note (code->note (evento-pitch x)) 'latin))
+          (sort segmento #'compara-notas)))
+
+(defun calcula-duracoes (segmento algoritmo)
+  (mapcar (lambda (x y) (list y (evento-dur (first x)))) segmento algoritmo))
+
 (defmethod copy ((obj sequencia-de-notas))
   (make-sequencia-de-notas :notas (copy (sequencia-de-notas-notas obj))
                            :inicio (sequencia-de-notas-inicio obj)

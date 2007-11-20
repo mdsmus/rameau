@@ -7,8 +7,9 @@
   :serial t
   :depends-on (:yacc :lexer :cl-fad :cl-ppcre :lisp-unit :arnesi)
   :components (
-               (:file "packages")
+               (:file "rameau-base")
                (:file "utils")
+               (:file "packages")
                (:file "formato")
                (:file "musiclib")
                (:file "segmento")

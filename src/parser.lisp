@@ -1,5 +1,5 @@
 (in-package #:rameau)
-
+(use-package :yacc)
 (defparameter *filename* nil)
 
 (lexer:deflexer string-lexer
@@ -304,7 +304,7 @@
         (*dur* 1/4))
     (declare (special *environment* *dur*))
     (remove-if (lambda (x) (null (evento-pitch x)))
-               (aif (parse-with-lexer (string-lexer str) *expression-parser*)
+               (aif (yacc:parse-with-lexer (string-lexer str) *expression-parser*)
                     (sequencia-de-notas-notas it)
                     it))))
 

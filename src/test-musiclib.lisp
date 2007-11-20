@@ -1,5 +1,5 @@
 (in-package #:rameau)
-(use-package :lisp-unit)
+
 
 (define-test get-system-item
   (assert-equal '(*TONAL-SYSTEM* 96 *TONAL-INTERVALS*) (get-system-item 'tonal))

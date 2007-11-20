@@ -1,5 +1,5 @@
 (in-package #:rameau)
-(use-package :lisp-unit)
+
 
 (define-test pop2cifra
   (assert-equal '(* 2 (("fis" "dim" 3) ("fis" "dim" 3 "7-"))) (pop2cifra 'f#°/a--7))

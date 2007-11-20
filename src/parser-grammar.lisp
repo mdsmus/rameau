@@ -1,6 +1,7 @@
 (in-package #:rameau)
+(use-package :yacc)
 
-(define-parser *expression-parser*
+(yacc:define-parser *expression-parser*
   (:start-symbol start)
   (:terminals (WHITESPACE
                NEW-STAFF

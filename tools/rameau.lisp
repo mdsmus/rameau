@@ -418,8 +418,7 @@ ponto nos corais de bach."
                (notas (with-system rameau:tempered (mapcar #'lista-notas segmento)))
                (comparacao (with-system rameau:tempered
                              (compara-gabarito-pardo algoritmo gabarito)))
-               (duracoes (mapcar (lambda (x y) (list y (evento-dur (first x))))
-                                 segmento algoritmo)))
+               (duracoes (calcula-duracoes segmento algoritmo)))
           (cond
             ((member 'e flags)
              (unless comparacao

@@ -1,5 +1,4 @@
 (in-package :rameau)
-(use-package '#:lisp-unit)
 
 (define-test fim-evento
   (assert-equal
