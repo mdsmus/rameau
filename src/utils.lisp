@@ -1,9 +1,9 @@
 
 
-(defpackage :rameau-utils
+(defpackage :genoslib
   (:use #:rameau-base #:cl #:it.bese.arnesi))
 
-(in-package :rameau-utils)
+(in-package :genoslib)
 
 (register-and-export-symbols '(
                                add-lily-ext

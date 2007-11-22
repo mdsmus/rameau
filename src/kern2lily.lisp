@@ -1,4 +1,8 @@
-(in-package #:rameau)
+
+(defpackage :kern2lily
+  (:use #:cl #:rameau #:it.bese.arnesi))
+
+(in-package #:kern2lily)
 
 (defparameter file "/home/kroger/doc/pesquisa/analise-harmonica/literatura/bach-violin-partitas/partita-2-4.krn")
 

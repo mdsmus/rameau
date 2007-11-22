@@ -3,11 +3,8 @@
 ;;             (d -1) is Db (d flat)
 ;; interval-code is alist representing an interval
 
-(defpackage :rameau-musiclib
-  (:use #:rameau-base #:cl #:it.bese.arnesi #:rameau-utils))
 
-
-(in-package #:rameau-musiclib)
+(in-package #:genoslib)
 
 (register-and-export-symbols '(
                                a

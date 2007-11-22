@@ -19,8 +19,7 @@
    #:pop2cifra
    #:pitches
    )
-  (:use #:rameau-base #:rameau-utils #:rameau-musiclib #:cl #:it.bese.arnesi #:lisp-unit)
-  (:import-from #:it.bese.arnesi #:aif #:it))
+  (:use #:rameau-base #:genoslib  #:cl #:it.bese.arnesi #:lisp-unit))
 
 (in-package :rameau)
 (export-rameau-symbols)
