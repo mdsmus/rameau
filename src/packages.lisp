@@ -14,6 +14,11 @@
    #:pop2cifra
    #:read-pop-file
    #:segmentos-minimos
+   #:evento-pitch
+   #:evento-dur
+   #:evento-octave
+   #:evento-inicio
+   #:make-evento
    )
   (:use #:rameau-base #:genoslib  #:cl #:it.bese.arnesi #:lisp-unit))
 
