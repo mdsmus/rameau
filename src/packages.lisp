@@ -3,21 +3,17 @@
 
 (defpackage #:rameau
   (:export
-   #:cifra->acorde
    #:acorde->cifra
-   #:read-pop-file
-   #:7+
-   #:extract-cifra
-   #:expande-cifra-setima
-   #:expand-mel
-   #:gera-gabarito-file
-   #:parse-file
-   #:compara-notas
-   #:lista-notas
-   #:segmentos-minimos
    #:calcula-duracoes
-   #:pop2cifra
+   #:cifra->acorde
+   #:compara-notas
+   #:gera-gabarito-file
+   #:lista-notas
+   #:parse-file
    #:pitches
+   #:pop2cifra
+   #:read-pop-file
+   #:segmentos-minimos
    )
   (:use #:rameau-base #:genoslib  #:cl #:it.bese.arnesi #:lisp-unit))
 
