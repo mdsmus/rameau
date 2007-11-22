@@ -1,6 +1,5 @@
 (in-package #:cl-user)
 
-
 (defpackage #:rameau
   (:export
    #:acorde->cifra

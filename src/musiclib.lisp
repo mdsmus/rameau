@@ -6,61 +6,23 @@
 
 (in-package #:genoslib)
 
-(register-and-export-symbols '(
-                               a
-                               b
-                               c
-                               d
-                               e
-                               f
-                               g
-                               maj
-                               min
-                               dim
-                               aug
-                               just
-                               lily
-                               latin
-                               prime
-                               with-system
+(register-and-export-symbols '( a b c d e f g maj min dim aug just
+                               lily latin prime with-system
                                number-of-accidentals
                                match-note-representation
-                               sort-form-list
-                               tempered
-                               tonal
-                               get-system-notes
-                               code->note
-                               note->code
-                               note?
-                               rest?
-                               latin->lily
-                               print-accidentals
-                               print-note
-                               module
-                               lily->latin
-                               transpose
-                               inversion
-                               interval
-                               interval->code
-                               code->interval
-                               print-interval
-                               rotate
-                               set-rotate
-                               set-inversion
-                               set-transpose
-                               set-transpose-to-0
-                               set-intervals
-                               set-symmetric?
-                               set-form-list
-                               smaller-sets
-                               smaller-sets-comparisson
-                               smallest-set
-                               normal-form
-                               prime-form
-                               set-equal?
-                               deftemplates
-                               ))
-
+                               sort-form-list tempered tonal
+                               get-system-notes code->note note->code
+                               note? rest? latin->lily
+                               print-accidentals print-note module
+                               lily->latin transpose inversion
+                               interval interval->code code->interval
+                               print-interval rotate set-rotate
+                               set-inversion set-transpose
+                               set-transpose-to-0 set-intervals
+                               set-symmetric? set-form-list
+                               smaller-sets smaller-sets-comparisson
+                               smallest-set normal-form prime-form
+                               set-equal? deftemplates ))
 
 (defvar *notes* '(#\c #\d #\e #\f #\g #\a #\b #\C #\D #\E #\F #\G #\A #\B))
 
