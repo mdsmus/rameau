@@ -1,10 +1,10 @@
 ;; Implementação do algoritmo de pardo.
 
-(defpackage :rameau.pardo
+(defpackage :rameau-pardo
   (:use #:rameau #:cl #:it.bese.arnesi)
   (:export #:compara-gabarito-pardo #:gera-gabarito-pardo))
 
-(in-package #:rameau.pardo)
+(in-package #:rameau-pardo)
 
 (deftemplates *pardo-templates* 
   ((maj 0) (0 4 7))
