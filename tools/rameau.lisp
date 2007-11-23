@@ -228,6 +228,21 @@ ponto nos corais de bach."
           ((= numer 3) (format nil "~a." (/ denom 2)))
           (t (split-dur numer denom)))))
 
+(defun intervalo (s1 s2)
+  "Retorna o intervalo entre dois segmentos."
+  (if (null s2)
+      0
+      (- (evento-inicio (first s2))
+         (fim-evento (first s1)))))
+
+(defun print-duracoes (segmento)
+  (loop for s = segmento then (rest s)
+     unless s return res
+     collect (frac->dur-lily (evento-dur (first (first s)))) into res
+     unless (= 0 (intervalo (first s) (second s)))
+       collect (frac->dur-lily (intervalo (first s) (second s))) into res))
+       
+
 (defun print-score (stream lyric)
   (format stream "\\score {
   <<
@@ -264,21 +279,15 @@ ponto nos corais de bach."
 (defun print-lyric (name)
   (format nil "\\new Lyrics \\lyricsto \"nowhere\" \\~a~%" name))
 
-(defun print-cifra (stream name cifras)
-  (format stream "~a = \\lyricmode {
+(defmacro with-print-cifra ((stream name) &body body)
+  `(progn
+     (format ,stream "~a = \\lyricmode {
   \\set stanza = \"~a:\"
-   ~{\"~a\" ~}
-}~%~%" name name cifras))
+" ,name ,name)
+     ,@body
+     (format ,stream "~%}~%~%")))
 
-;;; argh!
-(defun print-cifra2 (stream name cifras)
-  (format stream "~a = \\lyricmode {
-  \\set stanza = \"~a:\"
-   ~{~a ~}
-}~%~%" name name cifras))
-
-;;; BUG: não leva pausa em consideração
-(defun print-lily (flags file gabarito algoritmo comparacao dur)
+(defun print-lily (flags file gabarito algoritmo comparacao segmento)
   (let* ((*package* (find-package :rameau))
          (path (concat (rameau-path)
                        (get-item "corais-include" *lily-dir-list*  #'equal)))
@@ -287,29 +296,44 @@ ponto nos corais de bach."
          (out-file (format nil "~a/~a/coral-~a.ly" (rameau-path) dir file-name)))
     (with-open-file (stream out-file :direction :output :if-exists :supersede)
       (format stream "~a~%" (file-string (concat path file-name ".lyi")))
-      (format stream "texto = {~{c~a ~}}~%~%" (mapcar #'frac->dur-lily (mapcar #'second dur)))
+      (format stream "texto = {~{c~a ~}}~%~%" (print-duracoes segmento))
       (when (member 't flags)
         (push 'g flags)
         (push 'a flags)
         (push 'n flags))
       (when (and gabarito (member 'g flags))
-        (print-cifra stream "gabarito" (mapcar #'acorde->cifra gabarito)))
+        (with-print-cifra (stream "gabarito")
+          (loop for i in gabarito
+             for s = segmento then (rest s)
+             unless s return it
+             do (format stream "\"~a\" " (acorde->cifra i))
+             unless (= 0 (intervalo (first s) (second s)))
+             do (format stream "\" \" "))))
       (when (member 'a flags)
-        (print-cifra2 stream "pardo"
-                      (loop
-                         for numero-seg from 0 to (max (length algoritmo) (length gabarito))
-                         for pardo in algoritmo
-                         for gab  in gabarito
-                         for result = (when (and pardo gab)
-                                        (compara-gabarito-pardo pardo gab))
-                         collect
-                           (when pardo
-                             (if result
-                                 (acorde->cifra pardo)
-                                 (format nil "\\markup{\\with-color #(x11-color 'red) \"~a\"}"
-                                         (acorde->cifra pardo)))))))
+        (with-print-cifra (stream "pardo")
+          (loop 
+             for pardo-lista = algoritmo then (rest pardo-lista)
+             for gab-lista = gabarito then (rest gab-lista)
+             for s = segmento then (rest s)
+             unless s return 0
+             unless pardo-lista return 0
+             with pardo = (first pardo-lista)
+             with gab = (first gab-lista)
+             if (compara-gabarito-pardo pardo gab) do
+               (format stream "\"~a\" " (if pardo (acorde->cifra pardo) " "))
+             else do
+               (format stream "\\markup{\\with-color #(x11-color 'red) \"~a\"}"
+                       (if pardo (acorde->cifra pardo) " "))
+             unless (= 0 (intervalo (first s) (second s)))
+               do (format stream "\" \""))))
       (when (member 'n flags)
-        (print-cifra stream "particoes" (loop for x from 1 to (length dur) collect x)))
+        (with-print-cifra (stream "particoes")
+          (loop for x from 1
+             for s = segmento then (rest s)
+             unless s return 0
+             do (format stream "\"~a\" " x)
+             unless (= 0 (intervalo (first s) (second s)))
+             do (format stream "\"~a\" " x))))
       (print-score stream (concat (when (member 'n flags) (print-lyric "particoes"))
                                   (when (member 'a flags) (print-lyric "pardo"))
                                   (when (and gabarito (member 'g flags))
@@ -456,10 +480,8 @@ ponto nos corais de bach."
         (with-system rameau:tempered (gera-gabarito-pardo (parse-file file)))
       (let* ((gabarito (processa-gabarito (tira-extensao file)))
              (comparacao (with-system rameau:tempered
-                           (compara-gabarito-pardo algoritmo gabarito)))
-             (duracoes (mapcar (lambda (x y) (list y (evento-dur (first x))))
-                               segmento algoritmo)))
-        (print-lily flags file gabarito algoritmo comparacao duracoes)))))
+                           (compara-gabarito-pardo algoritmo gabarito))))
+        (print-lily flags file gabarito algoritmo comparacao segmento)))))
 
 (defun processa-files (item f &optional (ext ".ly"))
   (let* ((path (concat (rameau-path) (get-item item *lily-dir-list*  #'equal)))

@@ -77,6 +77,7 @@ está no baixo de acordo com a inversão."
                 'latin)))
 
 (defun acorde->cifra (acorde)
+  (unless acorde (error))
   (cond ((equal (first acorde) 'm!) "m!")
         ((listp (first acorde)) (acorde->cifra (first acorde)))
         (t (destructuring-bind (tonica &optional modo inv acresc &rest resto) acorde
