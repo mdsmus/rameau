@@ -2,7 +2,7 @@
 
 (defpackage #:rameau
   (:export #:acorde->cifra #:calcula-duracoes #:cifra->acorde
-  #:compara-notas #:gera-gabarito-file #:lista-notas #:parse-file
+  #:compara-notas #:lista-notas #:parse-file
   #:pitches #:pop2cifra #:read-pop-file #:segmentos-minimos
   #:evento-pitch #:evento-dur #:evento-octave #:evento-inicio
   #:make-evento #:fim-evento #:processa-cifras)

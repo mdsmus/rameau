@@ -203,7 +203,3 @@ baixo (valor da inversão modificado)."
 (defun read-pop-file (file)
   (let ((*package* (find-package :rameau)))
     (read-from-string (format nil "(~a)" (file-string file)))))
-
-(defun gera-gabarito-file (file)
-  (with-open-file (f (troca-extensao file ".gab") :direction :output :if-exists :supersede)
-    (format f "~{~(~a~)~%~}" (processa-cifras (read-pop-file file)))))
