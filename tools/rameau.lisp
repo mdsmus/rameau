@@ -12,7 +12,7 @@
 (asdf:oos 'asdf:load-op :rameau :verbose nil)
 
 (defpackage :rameau-tools
-  (:use #:cl #:rameau #:it.bese.arnesi #:rameau.pardo #:rameau.temperley)
+  (:use #:cl #:rameau #:it.bese.arnesi #:rameau-pardo #:rameau-temperley)
   (:export #:main)
   (:import-from #:sb-ext #:*posix-argv*))
 (in-package :rameau-tools)
