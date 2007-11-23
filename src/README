@@ -1,2 +1,0 @@
-(asdf 'rameau)
-(lisp-unit:run-all-tests :rameau)
