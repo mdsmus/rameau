@@ -315,10 +315,10 @@ ponto nos corais de bach."
              for pardo-lista = algoritmo then (rest pardo-lista)
              for gab-lista = gabarito then (rest gab-lista)
              for s = segmento then (rest s)
+             for pardo = (first pardo-lista) then (first pardo-lista)
+             for gab = (first gab-lista) then (first gab-lista)
              unless s return 0
              unless pardo-lista return 0
-             with pardo = (first pardo-lista)
-             with gab = (first gab-lista)
              if (compara-gabarito-pardo pardo gab) do
                (format stream "\"~a\" " (if pardo (acorde->cifra pardo) " "))
              else do
