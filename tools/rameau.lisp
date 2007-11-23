@@ -387,13 +387,7 @@ ponto nos corais de bach."
                       resultado)))))
 
 (defun processa-gabarito-pop (file)
-  (let ((*package* (find-package :rameau)))
-    (mapcar (lambda (x)
-              (let ((cifra (pop2cifra x)))
-                (if (stringp cifra)
-                    (read-from-string (string-upcase cifra))
-                    (converte-strings cifra))))
-            (read-pop-file file))))
+  (processa-cifras (read-pop-file file)))
 
 (defun processa-gabarito (file)
   "Transforma um gabarito de texto em sexp."
@@ -539,3 +533,4 @@ ponto nos corais de bach."
              (format t "você deve entrar um dos comandos: ~{~(~a~)~^ ~}~%"
                      (get-comandos)))))
   0)
+

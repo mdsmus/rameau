@@ -123,7 +123,7 @@ possibilidade'."
   (let* ((cifra1 (cifra->acorde (first cifra)))
          (modo (second cifra1))
          (setima (parse-acrescimos (second cifra))))
-    (list '* 2 (list cifra1 (append cifra1 (list setima))))))
+    (list (list '* 2 (list cifra1 (append cifra1 (list setima)))))))
 
 (defun setima-no-baixo (acorde setima)
   "Acorde é uma lista com fundamental, modo e inversão e sétima é o
@@ -136,22 +136,22 @@ baixo (valor da inversão modificado)."
 (defun expande-cifra-setima-baixo (cifra)
   (let ((cifra1 (cifra->acorde (first cifra)))
         (setima (second cifra)))
-    (format nil "~a~%~a" cifra1 (setima-no-baixo cifra1 setima))))
+    (list cifra1 (setima-no-baixo cifra1 setima))))
 
 (defun expande-cifra-super-setima-baixo (cifra)
   (let ((cifra1 (cifra->acorde (first cifra)))
         (setima (second cifra)))
-    (list '* 2 (list cifra1 (setima-no-baixo cifra1 setima)))))
+    (list cifra1 (list (setima-no-baixo cifra1 setima) (list 'm! setima)))))
 
 (defun expande-cifra-super-setima (cifra)
   (let ((acorde (cifra->acorde (first cifra))))
-    (format nil "~a~%~a" acorde (append acorde (list (second cifra))))))
+    (list acorde (append acorde (list (second cifra))))))
 
 (defun multiplica-cifra (cifra)
-  (list '* (second cifra) (cifra->acorde (first cifra))))
+  (list (list '* (second cifra) (cifra->acorde (first cifra)))))
 
 (defun expande-cifra-sexta-aumentada (cifra)
-  (substitute (second cifra) "maj" (cifra->acorde (first cifra)) :test #'equal))
+  (list (substitute (second cifra) "maj" (cifra->acorde (first cifra)) :test #'equal)))
 
 (defun processa-cifra (cifra)
   "Converte uma cifra simbolica para lista no formato de gabarito."
@@ -169,31 +169,35 @@ baixo (valor da inversão modificado)."
           ((rest cifra7sb) (expande-cifra-super-setima-baixo cifra7sb))
           ((rest cifra*)   (multiplica-cifra cifra*))
           ((rest cifra6+)  (expande-cifra-sexta-aumentada cifra6+))
-          (t (cifra->acorde cifra-string)))))
+          (t (list (cifra->acorde cifra-string))))))
   
 (defun print-mel (pop)
   (destructuring-bind (s &rest notas) pop
     (declare (ignore s))
-    (format nil "(m! ~{~(~a~)~^ ~})" (mapcar #'latin->lily notas))))
+    (list 'm! (mapcar #'latin->lily notas))))
 
 (defun print-repeat (pop)
   (destructuring-bind (s valor &rest cifras) pop
-    (format nil "(~a ~a~%~{~( ~a~%~)~})" s valor (mapcar #'pop2cifra cifras))))
+    `(,s ,valor ,@(processa-cifras cifras))))
 
 (defun print-annotate (lista)
   (destructuring-bind (s nota anotacao) lista
     (declare (ignore s))
     (format nil "(~{~a ~}~s)" (processa-cifra nota) anotacao)))
 
+(defun processa-cifras (cifras)
+  (reduce #'nconc cifras :from-end t :key #'pop2cifra))
+
 (defun pop2cifra (pop)
-  (cond ((listp pop)
-         (case (first pop)
-           (an! (print-annotate pop))
-           (m! (print-mel pop))
-           (*  (print-repeat pop))
-           (t  (mapcar #'pop2cifra pop))))
-        ((stringp pop) (format nil "; ~a" pop))
-        (t (processa-cifra pop))))
+  (converte-strings
+   (cond ((listp pop)
+          (case (first pop)
+            (an! (list (print-annotate pop)))
+            (m! (list (print-mel pop)))
+            (*  (list (print-repeat pop)))
+           (t  (processa-cifras pop))))
+         ((stringp pop) (format nil "; ~a" pop))
+         (t (processa-cifra pop)))))
 
 (defun read-pop-file (file)
   (let ((*package* (find-package :rameau)))
@@ -201,4 +205,4 @@ baixo (valor da inversão modificado)."
 
 (defun gera-gabarito-file (file)
   (with-open-file (f (troca-extensao file ".gab") :direction :output :if-exists :supersede)
-    (format f "~{~(~a~)~%~}" (mapcar #'pop2cifra (read-pop-file file)))))
+    (format f "~{~(~a~)~%~}" (processa-cifras (read-pop-file file)))))
