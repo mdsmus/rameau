@@ -6,7 +6,7 @@
   (assert-equal '(* 2 (("c" "maj" 0) ("c" "maj" 0 "7"))) (pop2cifra 'c--7))
   (assert-equal (format nil "(c maj 0)~%(c maj 3 7)") (pop2cifra 'c__7))
   (assert-equal (format nil "(c maj 0)~%(c maj 0 7)") (pop2cifra 'c==7))
-  (assert-equal  '(* 2 (("c" "maj" 0) ("c" "maj" 3 "7"))) (pop2cifra 'c_-7)))
+  (assert-equal (format nil "(c maj 0)~%((c maj 3 7) (m! bes))") (pop2cifra 'c_-7)))
 
 (define-test parse-acrescimos
   (assert-equal "7m" (parse-acrescimos "7m.13b"))
