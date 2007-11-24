@@ -12,3 +12,7 @@ clisprameau
 auto
 *.png
 corais
+*.o
+src/temperley-original/harmony/harmony
+src/temperley-original/meter/meter
+src/temperley-original/mftext-release-07/mftext
