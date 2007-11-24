@@ -18,7 +18,7 @@
                (:file "pardo")
                (:file "temperley")
                (:file "cifras")
-               (:file "sbcl")
+               #+sbcl(:file "sbcl")
                (:file "kern2lily")
                (:file "test-utils")
                (:file "test-musiclib")

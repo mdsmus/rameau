@@ -1,5 +1,7 @@
 (in-package "SB-PROFILE")
 
+(defvar *print-functions-not-called* t)
+
 (defun report ()
   "Report results from profiling. The results are approximately adjusted
 for profiling overhead. The compensation may be rather inaccurate when
@@ -33,5 +35,14 @@ Lisp process."
                 #'>=
                 :key #'time-info-seconds))
     (print-profile-table time-info-list)
+
+    (when (and no-call-name-list *print-functions-not-called*)
+      (format *trace-output*
+              "~%These functions were not called:~%~{~<~%~:; ~S~>~}~%"
+              (sort no-call-name-list #'string<
+                    :key (lambda (name)
+                           (symbol-name (fun-name-block-name name))))))
+
     (values)))
+
 

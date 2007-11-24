@@ -14,7 +14,7 @@
 (defpackage :rameau-tools
   (:use #:cl #:rameau #:it.bese.arnesi #:rameau-pardo #:rameau-temperley)
   (:export #:main)
-  (:import-from #:sb-ext #:*posix-argv*))
+  #+sbcl(:import-from #:sb-ext #:*posix-argv*))
 (in-package :rameau-tools)
 
 ;;; As funções dependentes de implementação devem ficar aqui
@@ -35,7 +35,9 @@
                        #+clisp (ext:default-directory))))
 
 (defun rameau-profile ()
-  #+sbcl(sb-profile:profile "RAMEAU")
+  #+sbcl(progn
+         (setf sb-profile::*print-functions-not-called* nil)
+         (sb-profile:profile "RAMEAU"))
   #+cmu(profile:profile-all :package "RAMEAU"))
 
 (defun rameau-report ()
