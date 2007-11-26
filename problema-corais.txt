@@ -13,3 +13,4 @@ os seguintes corais não foram processados:
 202: compasso 15: problema no contralto com a riemenschneider
 205: necessaria revisao. ha partes faltando
 
+252: corrigir repeticao

@@ -71,14 +71,14 @@ alto = \relative c {
   f ees d f8 g 
   a4 d, g8 f f4 
   ees8 d c f f4 f 
-  f8 d ees f g gis g f 
+  f8 d ees f g aes g f 
   ees2 f4 g2 f8 ees d4 d'8 c 
-  bes gis g f ees g c bes 
+  bes aes g f ees g c bes 
   a4 d, g g 
-  f ees8 f g4 gis 
+  f ees8 f g4 aes 
   g g2 g4 
   g f8*5 g8 
-  gis4 g g2 
+  aes4 g g2 
   f4 f2 g4 
   g2 g4 f 
   g f f2. 
@@ -92,7 +92,7 @@ tenor = \relative c {
   d8 a bes4 c c 
   d2. a8 bes 
   c d ees4 d a 
-  bes gis g c 
+  bes aes g c 
   c bes bes a 
   f2. bes4 
   bes8 c d4 c f 
@@ -100,20 +100,20 @@ tenor = \relative c {
   d8 a bes4 c c 
   d2. a8 bes 
   c d ees4 d a 
-  bes gis g c 
+  bes aes g c 
   c bes bes a 
   f2. f8 a 
   c4 c d d8 c 
-  bes4 gis g c 
+  bes4 aes g c 
   c c f c 
-  bes8 gis g4 f bes 
+  bes8 aes g4 f bes 
   a bes8 a g a bes4 
   bes a bes bes 
   c c c b 
   g2 d'4 c 
-  bes gis a2 
+  bes aes a2 
   bes4 b c2. bes4 bes bes 
-  gis8 bes c d ees4 f 
+  aes8 bes c d ees4 f 
   d ees2 d4 
   c f ees d8 ees 
   f4 ees8 d c4 bes 
@@ -147,14 +147,14 @@ baixo = \relative c {
   d bes ees4 bes bes' 
   fis g8 f ees f ees d 
   c4 f bes, bes' 
-  a gis g8 f g4 
+  a aes g8 f g4 
   c,2 d4 ees 
   e f f fis 
-  g g gis g 
+  g g aes g 
   fis g f e 
-  f8 g gis4 g f 
+  f8 g aes4 g f 
   g c,2 g'4 
-  gis a2 bes4 
+  aes a2 bes4 
   b2 c4 g 
   a bes8 c bes a g f 
   ees g f ees d c f4 
