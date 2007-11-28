@@ -780,7 +780,7 @@
                             (* (compatibility root tpc) my-mass)))
                 (orn-diss-penalty (note-ornamental-dissonance-penalty root tpc ch note same-roots))
                 (variance (tpc-variance tpc-cog tpc my-mass decayed-prior-note-mass)))
-           (incf (aref (side-effect-tpc-choice *side-effect*) i) tpc)
+           (setf (aref (side-effect-tpc-choice *side-effect*) i) tpc)
            (incf (side-effect-compatibility *side-effect*) compat)
            (incf (side-effect-orn-diss-penalty *side-effect*) orn-diss-penalty)
            (incf (side-effect-tpc-variance *side-effect*) variance)))
