@@ -629,6 +629,8 @@
          (loop for f-nota-list = (cdr nota-list) then (cdr f-nota-list)
             for f-nota = (first f-nota-list) then (first f-nota-list)
             unless f-nota-list do (return)
+            unless (= (evento-temperley-inicio nota)
+                      (evento-temperley-inicio f-nota))
             do
               (when (not (= (evento-temperley-pitch nota)
                             (evento-temperley-pitch f-nota)))
@@ -644,7 +646,8 @@
                                        (evento-temperley-inicio nota))
                                     1000.0)))
                     (setf (evento-temperley-penalidade-dissonancia nota)
-                          (penalidade-de-dissonancia delta-t))))))))
+                          (penalidade-de-dissonancia delta-t))
+                    (return)))))))
   musica)
 
 (defun rotula-voice-leading (musica)
@@ -955,7 +958,7 @@
   (format t "Score: ~a~%" (bucket-score bu))
   (loop for i = bu then (bucket-prev-bucket i)
      unless i do (return)
-     do (format t "Root: ~a~%" (tpc-string (bucket-root i)))))
+     do (format t "Root ~a, Window ~a~%" (tpc-string (bucket-root i)) (bucket-window i))))
 
 (defun gera-gabarito-temperley (column-table chords)
   (let* ((n-chords (length chords))
