@@ -169,6 +169,7 @@ EXAMPLE: (match-note-representation \"cis\" 'latin) returns nil."
   (or (search (get-flat representation) note)
       (search (get-sharp representation) note)))
 (defun my-position (&rest args) (apply #'position args))
+
 (defun %parse-note (note representation system)
   "Returns the numeric code for a note according with the representation and system.
 EXAMPLE: (%parse-note \"ces\" 'lily 'tonal) returns 95. This is a low
