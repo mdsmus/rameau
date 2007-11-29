@@ -611,12 +611,6 @@
 
 ;; Funcoes de Harmony
 
-(defun pitch-to-npc (p)
-  (mod (+ p  12000000) 12))
-
-(defun base-tpc (n)
-  (mod (+ 2 (* 7 n) 12000000)
-       12))
 
 (defun penalidade-de-dissonancia (delta)
   (+ odp-constant
@@ -624,53 +618,54 @@
      (* odp-quadratic-factor delta delta)))
      
 
-(defun rotula-dissonancia-nota (musica)
-  (let ((default-time 10.0)
-        (nota (first musica))
-        (musica (rest musica)))
-    (setf (evento-temperley-penalidade-dissonancia nota)
-          (penalidade-de-dissonancia default-time))
-    (dolist (f-nota musica)
-      (when (not (= (evento-temperley-pitch nota)
-                    (evento-temperley-pitch f-nota)))
-        (if (or (= (evento-temperley-pitch nota)
-                   (+ (evento-temperley-pitch f-nota) 1))
-                (= (evento-temperley-pitch nota)
-                   (+ (evento-temperley-pitch f-nota) 2))
-                (= (evento-temperley-pitch nota)
-                   (+ (evento-temperley-pitch f-nota) -1))
-                (= (evento-temperley-pitch nota)
-                   (+ (evento-temperley-pitch f-nota) -2)))
-            (let ((delta-t (/ (- (evento-temperley-inicio f-nota)
-                                 (evento-temperley-inicio nota))
-                              1000.0)))
-              (setf (evento-temperley-penalidade-dissonancia nota)
-                    (penalidade-de-dissonancia delta-t))
-              (return)))))))
-
-(defun rotula-voice-leading-nota (musica)
-  (let ((nota (first musica))
-        (musica (rest musica)))
-    (setf (evento-temperley-voice-leading-neighbor nota) nil)
-    (dolist (f-nota musica)
-      (let ((delta-t (/ (- (evento-temperley-inicio f-nota)
-                           (+ (evento-temperley-inicio nota) (evento-temperley-dur nota)))
-                        1000.0)))
-        (when (> delta-t 0)
-            (when (> delta-t voice-leading-time) (return))
-            (when (= (evento-temperley-pitch nota) (+ 1 (evento-temperley-pitch f-nota)))
-              (setf (evento-temperley-voice-leading-neighbor nota) 1)
-              (return))
-            (when (= (evento-temperley-pitch nota) (- (evento-temperley-pitch f-nota) 1))
-              (setf (evento-temperley-voice-leading-neighbor nota) -1)
-              (return)))))))
-
-  
 (defun rotula-dissonancia (musica)
-  (mapl #'rotula-dissonancia-nota musica))
+  (let ((default-time 10.0))
+    (loop for nota-list = musica then (cdr nota-list)
+       for nota = (first nota-list) then (first nota-list)
+       unless nota-list do (return)
+       do
+         (setf (evento-temperley-penalidade-dissonancia nota)
+               (penalidade-de-dissonancia default-time))
+         (loop for f-nota-list = (cdr nota-list) then (cdr f-nota-list)
+            for f-nota = (first f-nota-list) then (first f-nota-list)
+            unless f-nota-list do (return)
+            do
+              (when (not (= (evento-temperley-pitch nota)
+                            (evento-temperley-pitch f-nota)))
+                (when (or (= (evento-temperley-pitch nota)
+                             (+ (evento-temperley-pitch f-nota) 1))
+                          (= (evento-temperley-pitch nota)
+                             (+ (evento-temperley-pitch f-nota) 2))
+                          (= (evento-temperley-pitch nota)
+                             (+ (evento-temperley-pitch f-nota) -1))
+                          (= (evento-temperley-pitch nota)
+                             (+ (evento-temperley-pitch f-nota) -2)))
+                  (let ((delta-t (/ (- (evento-temperley-inicio f-nota)
+                                       (evento-temperley-inicio nota))
+                                    1000.0)))
+                    (setf (evento-temperley-penalidade-dissonancia nota)
+                          (penalidade-de-dissonancia delta-t))))))))
+  musica)
 
 (defun rotula-voice-leading (musica)
-  (mapl #'rotula-voice-leading-nota musica))
+  (loop for nota-list = musica then (cdr nota-list)
+     for nota = (first nota-list) then (first nota-list)
+     unless nota-list do (return)
+     do
+       (setf (evento-temperley-voice-leading-neighbor nota) 0)
+       (dolist (f-nota nota-list)
+         (let ((delta-t (/ (- (evento-temperley-inicio f-nota)
+                              (+ (evento-temperley-inicio nota) (evento-temperley-dur nota)))
+                           1000.0)))
+           (when (> delta-t 0)
+             (when (> delta-t voice-leading-time) (return))
+             (when (= (evento-temperley-pitch nota) (+ 1 (evento-temperley-pitch f-nota)))
+               (setf (evento-temperley-voice-leading-neighbor nota) 1)
+               (return))
+            (when (= (evento-temperley-pitch nota) (- (evento-temperley-pitch f-nota) 1))
+              (setf (evento-temperley-voice-leading-neighbor nota) -1)
+              (return))))))
+  musica)
 
 (defun temperley-metrifica (musica)
   (let* ((musica (reduce #'nconc (segmentos-minimos musica) :from-end t))
@@ -682,14 +677,10 @@
        (loop for note in ch do
             (setf (evento-temperley-penalidade-dissonancia note)
                   (* (evento-temperley-penalidade-dissonancia note)
-                     (if (> (* 1.4 (sqrt (/
-                                          (evento-temperley-forca-metrica note)
-                                          1000.0)))
-                            1.0)
-                         1.0
-                         (* 1.4 (sqrt (/
-                                       (evento-temperley-forca-metrica note)
-                                       1000.0))))))))
+                     (max 1.0
+                          (* 1.4 (sqrt (/ (* (evento-temperley-forca-metrica note)
+                                             (evento-temperley-dur note))
+                                          1000.0))))))))
   clist)
 
 (defun inicializa-tabela-harmonica (clist)
@@ -729,8 +720,20 @@
                                                                    (aref column-table (1- i)))))))))
     column-table))
 
+(defun pitch-to-tpc (note)
+  (labels
+      ((pitch-to-npc (p)
+         (mod (+ p  12000000) 12))
+       (base-tpc (n)
+         (mod (+ 2 (* 7 n) 12000000)
+              12)))
+    (declare (fixnum note)
+             (inline pitch-to-npc base-tpc))
+    (base-tpc (pitch-to-npc note))))
+
 (defun apply-window (note window)
-  (let ((base-tpc (base-tpc (pitch-to-npc (evento-temperley-pitch note)))))
+  (declare (fixnum note window))
+  (let ((base-tpc (pitch-to-tpc note)))
     (+ (mod (+ base-tpc (- window) 12000000)
             12)
        window)))
@@ -739,7 +742,7 @@
   (if (null chord)
       (= window 0)
         (loop for note in chord
-           when (= window (apply-window note window))
+           when (= window (apply-window (evento-temperley-pitch note) window))
            do (return t)
            finally (return nil))))
 
@@ -747,19 +750,22 @@
   (round (* cog buckets-per-unit-of-cog)))
 
 (defun compatibility (root tpc)
-  (let ((i (- tpc root)))
+  (declare (fixnum root tpc))
+  (let ((i (+ 6 (- tpc root))))
     (if (and (>= i 0) (< i (length compat-values)))
         (nth i compat-values)
         -10.0)))
 
 (defun note-ornamental-dissonance-penalty (root tpc chord note same-roots)
   (declare (ignore same-roots chord))
-  (if (= -10.0 (compatibility root tpc))
+  (if (not (= -10.0 (compatibility root tpc)))
       0.0
       (evento-temperley-penalidade-dissonancia note)))
 
 (defun tpc-variance (cog tpc my-mass decayed-prior-chord-mass)
-  (declare (ignore decayed-prior-chord-mass))
+  (declare (ignore decayed-prior-chord-mass)
+           (float cog my-mass decayed-prior-chord-mass)
+           (fixnum tpc))
   (let ((delta-cog (abs (- cog tpc))))
     (* delta-cog delta-cog my-mass)))
 
@@ -774,7 +780,7 @@
               (max (- (/ (* sbp-weight 1000.0) (evento-temperley-forca-metrica (first ch))) sbp-constant) 0.0)))
     (loop for i from 0
        for note in ch do
-         (let* ((tpc (apply-window note window))
+         (let* ((tpc (apply-window (evento-temperley-pitch note) window))
                 (compat (if (eq -10.0 (compatibility root tpc))
                             0
                             (* (compatibility root tpc) my-mass)))
@@ -797,9 +803,9 @@
   (let ((total 0.0))
     (loop for note in chord
        when (or (and (eq 1 (evento-temperley-voice-leading-neighbor note))
-                     (> (apply-window note window) (+ 4.0 tpc-cog)))
+                     (> (apply-window (evento-temperley-pitch note) window) (+ 4.0 tpc-cog)))
                 (and (eq -1 (evento-temperley-voice-leading-neighbor note))
-                     (> (apply-window note window) (+ -4.0 tpc-cog))))
+                     (> (apply-window (evento-temperley-pitch note) window) (+ -4.0 tpc-cog))))
        do (incf total voice-leading-penalty))
     total))
 
@@ -837,8 +843,8 @@
 
 (defun windows-differ-in-chord (window1 window2 chord)
   (loop for note in chord
-       when (not (= (apply-window note window1)
-                    (apply-window note window2)))
+       when (not (= (apply-window (evento-temperley-pitch note) window1)
+                    (apply-window (evento-temperley-pitch note) window2)))
        do (return t)
        finally (return nil)))
 
@@ -945,6 +951,12 @@
            (sharps (abs sharps)))
       (string->symbol (concat (nth letl letters) (repeat-string sharps accidental))))))
 
+(defun exibe-score-roots (bu)
+  (format t "Score: ~a~%" (bucket-score bu))
+  (loop for i = bu then (bucket-prev-bucket i)
+     unless i do (return)
+     do (format t "Root: ~a~%" (tpc-string (bucket-root i)))))
+
 (defun gera-gabarito-temperley (column-table chords)
   (let* ((n-chords (length chords))
          (bucket-choice (make-array (list n-chords)))
@@ -953,6 +965,7 @@
          (setf (aref bucket-choice i) (make-bucket)))
     (loop for h being the hash-keys in (column-table (aref column-table (1- n-chords)))
        using (hash-value bu)
+       ;do (exibe-score-roots bu)
        when (or (null best-b) (< (bucket-score best-b) (bucket-score bu))) do
          (setf best-b bu))
     (loop for i from (1- n-chords) downto 0 do

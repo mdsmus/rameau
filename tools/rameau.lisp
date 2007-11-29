@@ -37,7 +37,10 @@
 (defun rameau-profile ()
   #+sbcl(progn
          (setf sb-profile::*print-functions-not-called* nil)
-         (sb-profile:profile "RAMEAU"))
+         (sb-profile:profile "RAMEAU")
+         (sb-profile:profile "RAMEAU-TEMPERLEY")
+         (sb-profile:profile "RAMEAU-PARDO")
+         (sb-profile:profile "GENOSLIB"))
   #+cmu(profile:profile-all :package "RAMEAU"))
 
 (defun rameau-report ()
@@ -69,7 +72,7 @@
                          ("-e" "só mostra os testes que tem erro" "-v")
                          ("-c" "só mostra os testes corretos" "-v")
                          ("-i" "ignora (não imprime) corais sem gabaritos")
-                         ("-t" "roda metrica de temperley na musica (debug)")))
+                         ("-s" "roda harmonia de temperley na musica")))
                        (partitura
                         (("-n" "imprime número de partições")
                          ("-g" "imprime gabarito")
@@ -154,7 +157,7 @@ Exemplo: (split-word \"foo\") => (F O O)"
   (rest (assoc flag list :test #'string=)))
 
 (defun maptrace (lista-string)
-  (eval (append '(trace) (mapcar #'string->symbol lista-string))))
+  (eval (append '(trace) (mapcar (compose #'read-from-string #'string-upcase) lista-string))))
 
 (defun get-comandos ()
   (mapcar #'(lambda (item) (format nil "~(~a~)" (first item))) *dados*))
@@ -469,7 +472,7 @@ ponto nos corais de bach."
 (defun run-analise (flags files)
   (cond ((member 'g flags)
          (run-compara-gabarito flags files))
-        ((member 't flags)
+        ((member 's flags)
          (print-analise-temperley flags files))
         (t  ; -a implicito
          (run-analise-harmonica flags files))))
