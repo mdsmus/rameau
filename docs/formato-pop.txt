@@ -30,7 +30,7 @@ ser visto como um acode de sétima do primeiro, mas a sétima também
 pode ser uma nota melódica. Essa forma expande para 
 (* 2 (<acorde> <acorde com sétima)), por exemplo:
 
-C--7 => (* 2 ((C MAJ 0) (C MAJ 0 7)))
+C--7 => (C MAJ 0) ((C MAJ 0 7) (m! bes))
 
 A forma <acorde>_-7 funciona como <acorde>--7, mas quando a sétima
 está no baixo:
@@ -47,9 +47,8 @@ a sétima está no baixo:
 
 C__7 => (C MAJ 0) (C MAJ 3 7)
 
-Outras extensões podem ser entradas separadas por ponto. [esse recurso
-ainda não foi completamente implementado. outras extensões além da
-sétima serão silenciosamente ignoradas] Por exemplo:
+Outras extensões podem ser entradas separadas por ponto. A sétima deve
+extritamente ser a primeira extensão.
 
 Cm7.9b.13/Eb
 
