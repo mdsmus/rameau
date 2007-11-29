@@ -14,3 +14,5 @@ os seguintes corais não foram processados:
 205: necessaria revisao. ha partes faltando
 
 252: corrigir repeticao
+253: corrigir repeticao
+261: repeticao
