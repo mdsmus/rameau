@@ -1,21 +1,15 @@
-
-
 (defpackage :genoslib
   (:use #:rameau-base #:cl #:it.bese.arnesi))
 
 (in-package :genoslib)
 
-(register-and-export-symbols '( add-lily-ext add-pop-ext assoc-item
-                               concat converte-strings copy
-                               count-subseq defcached destringify
-                               exclude-repetition
-                               expande-multiplicacoes file-string
-                               max-predicado no-op octave-from-string
-                               pula repeat-list retorna-n-segmentos
-                               smallest sort-set stringify
-                               string->symbol symbol->number
-                               repeat-copy repeat-string tem-ext?
-                               tira-extensao troca-extensao ))
+(register-and-export-symbols
+ '(add-lily-ext add-pop-ext assoc-item concat converte-strings copy
+   count-subseq defcached destringify exclude-repetition
+   expande-multiplicacoes file-string max-predicado no-op
+   octave-from-string pula repeat-list retorna-n-segmentos smallest
+   sort-set stringify string->symbol symbol->number repeat-copy
+   repeat-string tem-ext? tira-extensao troca-extensao read-file-as-sexp))
 
 (defun add-lily-ext (file)
   (if (tem-ext? file) file (concat file ".ly")))
@@ -174,4 +168,6 @@ quantos acidentes ou oitavas uma nota tem."
            (expande-multiplicacoes resto))
           (cons atual (expande-multiplicacoes resto))))))
 
+(defun read-file-as-sexp (file)
+  (read-from-string (format nil "(~a)" (file-string file))))
 
