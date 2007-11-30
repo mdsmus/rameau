@@ -69,12 +69,11 @@
                          ("-n" "mostra as notas de cada segmento" "-v")
                          ("-d" "mostra as durações de cada segmento" "-v")
                          ("-l" "mostra formato de gabarito como listas" "-v")
-                         ("-i" "ignora (não imprime) corais sem gabaritos")
-                         ("-s" "roda harmonia de temperley na musica")))
+                         ("-i" "ignora (não imprime) corais sem gabaritos")))
                        (partitura
                         (("-n" "imprime número de partições")
                          ("-g" "imprime gabarito")
-                         ("-a" "imprime análise (pardo)")
+                         ("-a" "imprime análise")
                          ("-t" "imprime tudo")))))
 
 (defun read-user-config ()

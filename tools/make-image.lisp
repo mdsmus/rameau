@@ -9,7 +9,7 @@
 (push (concatenate 'string (main-path) "src/") asdf:*central-registry*)
 (push (concatenate 'string (main-path) "src/lib/") asdf:*central-registry*)
 
-#-ecl(load "tools/rameau.lisp")
+#-ecl(load "src/rameau.lisp")
 #+sbcl(sb-ext:save-lisp-and-die "rameau" :executable t :toplevel #'rameau-tools:main)
 #+cmu(extensions:save-lisp "cmurameau" :init-function #'rameau-tools:main)
 #+ecl(progn (compile-file "tools/rameau.lisp" :system-p t)
