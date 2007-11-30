@@ -7,7 +7,7 @@
 
 (defpackage :rameau-temperley
   (:use #:cl #:rameau #:it.bese.arnesi)
-  (:export #:temperley))
+  (:export #:temperley #:compara-gabarito-temperley))
 
 (in-package :rameau-temperley)
 
@@ -982,6 +982,11 @@
        collect (list (string->symbol (tpc-string (bucket-root (aref bucket-choice i))))
                      'maj
                      0))))
+
+(defun compara-gabarito-temperley (resultado gabarito)
+  (if (listp (first gabarito))
+      (some (lambda (x) (compara-gabarito-temperley resultado x)) gabarito)
+      (equal (first resultado) (first gabarito))))
 
 (defun temperley (musica)
   (let* ((musica (reduce #'nconc (segmentos-minimos musica)

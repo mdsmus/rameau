@@ -211,18 +211,21 @@ Exemplo: (split-word \"foo\") => (F O O)"
       (acorde->cifra list)))
 
 ;; BUG: ok? não imprime por cause do (not f)
-(defun print-gab-columns (a b c d e f g flags)
-  (let ((string (if (member 'l flags)
-                    "~4a~@[~15a~]~(~30a~)~(~15a~)~(~15a~)~@[~10a~]~@[*~]~%"
-                    "~4a~@[~15a~]~10a~10a~10a~@[~10a~]~@[*~]~%")))
+(defun print-gab-columns (a b c d flags)
+  (let ((string "~4a~@[~15a~]~(~30a~)~@[~10a~]"))
     (format t string
             a
             (when (member 'n flags) b)
             c
-            d
-            (when (member 's flags) e)
-            (when (member 'd flags) (if (listp f) (second f) f))
-            (not g))))
+            (when (member 'd flags) (if (listp d) (second d) d)))))
+
+(defun print-res-alg (alg res flags)
+  (let ((string (if (member 'l flags)
+                    "~(~15a~)~:[*~; ~]"
+                    "~10a~:[*~; ~]")))
+    (format t string
+            alg
+            (not res))))
 
 (defun frac->dur-lily (dur)
   "Converte de fração para duração em lilypond. É muito simples, não
@@ -347,9 +350,10 @@ ponto nos corais de bach."
 
 (defun print-gabarito (file gabarito algoritmo temperley comparacao flags &key notas dur)
   (let ((*package* (find-package :rameau)))
-    (print-gab-columns "#" "notas" "gab" "pardo" "temperley" "dur" "ok?" flags)
+    (print-gab-columns "#" "notas" "gab" "dur" flags)
     (write-line (repeat-string 80 "-"))
     (let ((count-ok 0)
+          (count-ok-temp 0)
           (size-gab (length gabarito))
           (size-algo (length algoritmo))
           (wrong-list))
@@ -358,24 +362,33 @@ ponto nos corais de bach."
          for d in dur
          for numero-seg from 0
          for pardo in algoritmo
-         for temp in temperley
+         for temperley = temperley then (rest temperley)
+         for temp = (first temperley) then (rest temperley)
          for gab in gabarito
          for result = (when (and pardo gab)
                         (compara-gabarito-pardo pardo gab))
          then (when (and pardo gab)
                 (compara-gabarito-pardo pardo gab))
+         for result-temp = (when (and temp gab)
+                             (compara-gabarito-temperley temp gab))
+         then (when (and temp gab)
+                             (compara-gabarito-temperley temp gab))
          if result do (incf count-ok)
+         if result-temp do (incf count-ok-temp)
          else do (push numero-seg wrong-list)
          do
            (print-gab-columns
             (1+ numero-seg)
-            n
             (if gab (print-chord gab flags))
-            (if pardo (print-chord pardo flags))
-            (if temp (print-chord temp flags))
+            n
             d
-            result
-            flags))
+            flags)
+           (print-res-alg (if pardo (print-chord pardo flags)) result flags)
+           (when temp
+            (print-res-alg (if temp (print-chord temp flags))
+                           result-temp flags))
+           (format t "~%"))
+
       (format t "~%~$ % correto, gab: ~a, pardo: ~a~%"
               (percent count-ok size-gab) size-gab size-algo)
       (format t "segmentos errados: ~a~%" (nreverse wrong-list)))))
