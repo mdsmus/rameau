@@ -161,7 +161,7 @@ position."
                               (chord-inversion root (second poplist))
                               (parse-extensions mode extensions))))))
 
-(defun parse-7 (root 7th)
+(defun %parse-7 (root 7th)
   (mapcar #'%parse-pop (list root (concat root 7th))))
 
 ;;; eu tenho que saber que nota é a sétima para dizer que é nota
@@ -169,32 +169,32 @@ position."
 ;;; tipo da setima se for fazer lista gab direto. eu acho melhor saber
 ;;; qual a nota e compor coisas do tipo: c__7: (c c7/bb)
 
-(defun parse-7-bass (root 7th)
-  (let ((triad (parse-pop root)))
+(defun %parse-7-bass (root 7th)
+  (let ((triad (%parse-pop root)))
     (list triad (append (nthcdr 2 triad) (list 3 (parse-seventh 7th))))))
 
-(defun parse-7-opt (root 7th)
+(defun %parse-7-opt (root 7th)
   root)
 
-(defun parse-7-opt-bass (root 7th)
+(defun %parse-7-opt-bass (root 7th)
   root)
 
-(defun parse-multiplication (root 7th)
+(defun %parse-multiplication (root 7th)
   root)
 
-(defun parse-other (list)
+(defun %parse-other (list)
   ;; e.g. 6 aumentada
   list)
 
 (defun parse-pop (pop)
   "Converte uma cifra simbolica para lista no formato de gabarito."
   (let ((pop-string (stringify pop))
-        (parse-table '(("--" parse-7-opt)
-                       ("==" parse-7)
-                       ("__" parse-7-bass)
-                       ("_-" parse-7-opt)
-                       ("\\*" parse-multiplication)
-                       ("-" parse-other)))) ;; tem que ser o último da lista
+        (parse-table '(("--" %parse-7-opt)
+                       ("==" %parse-7)
+                       ("__" %parse-7-bass)
+                       ("_-" %parse-7-opt)
+                       ("\\*" %parse-multiplication)
+                       ("-" %parse-other)))) ;; tem que ser o último da lista
     (aif (loop
             for item in parse-table
             for regex = (cl-ppcre:split (first item) pop-string)
