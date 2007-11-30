@@ -19,3 +19,11 @@
 * gabaritos corais (sama e givaldo)
   http://lists.genos.mus.br/pipermail/genos-pesquisa/2007-November/001132.html
 * proximos passos
+
+
+[adições de passos]
+* temperley agora aparece o resultado com -gvs. Precisa de extensão melhor que s. 
+  Renomear trace?
+* Seria bom um método para passar que algoritmos se quer rodar em rameau analisa
+* Novo formato de gabarito
+

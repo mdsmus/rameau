@@ -211,17 +211,18 @@ Exemplo: (split-word \"foo\") => (F O O)"
       (acorde->cifra list)))
 
 ;; BUG: ok? não imprime por cause do (not f)
-(defun print-gab-columns (a b c d e f flags)
+(defun print-gab-columns (a b c d e f g flags)
   (let ((string (if (member 'l flags)
-                    "~4a~@[~15a~]~(~30a~)~(~15a~)~@[~10a~]~@[*~]~%"
-                    "~4a~@[~15a~]~10a~10a~@[~10a~]~@[*~]~%")))
+                    "~4a~@[~15a~]~(~30a~)~(~15a~)~(~15a~)~@[~10a~]~@[*~]~%"
+                    "~4a~@[~15a~]~10a~10a~10a~@[~10a~]~@[*~]~%")))
     (format t string
             a
             (when (member 'n flags) b)
             c
             d
-            (when (member 'd flags) (if (listp e) (second e) e))
-            (not f))))
+            (when (member 's flags) e)
+            (when (member 'd flags) (if (listp f) (second f) f))
+            (not g))))
 
 (defun frac->dur-lily (dur)
   "Converte de fração para duração em lilypond. É muito simples, não
@@ -344,9 +345,9 @@ ponto nos corais de bach."
                                   (when (and gabarito (member 'g flags))
                                         (print-lyric "gabarito")))))))
 
-(defun print-gabarito (file gabarito algoritmo comparacao flags &key notas dur)
+(defun print-gabarito (file gabarito algoritmo temperley comparacao flags &key notas dur)
   (let ((*package* (find-package :rameau)))
-    (print-gab-columns "#" "notas" "gab" "pardo" "dur" "ok?" flags)
+    (print-gab-columns "#" "notas" "gab" "pardo" "temperley" "dur" "ok?" flags)
     (write-line (repeat-string 80 "-"))
     (let ((count-ok 0)
           (size-gab (length gabarito))
@@ -357,6 +358,7 @@ ponto nos corais de bach."
          for d in dur
          for numero-seg from 0
          for pardo in algoritmo
+         for temp in temperley
          for gab in gabarito
          for result = (when (and pardo gab)
                         (compara-gabarito-pardo pardo gab))
@@ -370,6 +372,7 @@ ponto nos corais de bach."
             n
             (if gab (print-chord gab flags))
             (if pardo (print-chord pardo flags))
+            (if temp (print-chord temp flags))
             d
             result
             flags))
@@ -441,39 +444,34 @@ ponto nos corais de bach."
                (notas (with-system rameau:tempered (mapcar #'lista-notas segmento)))
                (comparacao (with-system rameau:tempered
                              (compara-gabarito-pardo algoritmo gabarito)))
+               (temperley (when (member 's flags)
+                            (with-system rameau:tempered (temperley (parse-file file)))))
                (duracoes (calcula-duracoes segmento algoritmo)))
           (cond
             ((member 'e flags)
              (unless comparacao
                (push 'v flags)
-               (print-gabarito file-name gabarito algoritmo comparacao
+               (print-gabarito file-name gabarito algoritmo temperley comparacao
                                flags :dur duracoes :notas notas)))
             ((member 'c flags)
              (push 'v flags)
              (when comparacao
-               (print-gabarito file-name gabarito algoritmo comparacao
+               (print-gabarito file-name gabarito algoritmo temperley comparacao
                                flags :dur duracoes :notas notas)))
             ((and (not gabarito) (not (member 'i flags)))
              (format t "~&[ERRO] o gabarito de ~a não existe~%" file-name))
             ((or (member 'v flags) (member 'n flags) (member 'd flags))
              (push 'v flags)
-             (print-gabarito file-name gabarito algoritmo comparacao
+             (print-gabarito file-name gabarito algoritmo temperley comparacao
                              flags :dur duracoes :notas notas))
             (gabarito
              (if comparacao (push file-name ok) (push file-name no)))))))
     (unless (member 'v flags)
       (print-ok/no-list (list (reverse ok) (reverse no))))))
 
-(defun print-analise-temperley (flags files)
-  (dolist (file files)
-    (format t "~% * ~a~%" (pathname-name file))
-    (format t "   temperley: ~(~a~) ~%" (with-system rameau:tempered (temperley (parse-file file))))))
-
 (defun run-analise (flags files)
   (cond ((member 'g flags)
          (run-compara-gabarito flags files))
-        ((member 's flags)
-         (print-analise-temperley flags files))
         (t  ; -a implicito
          (run-analise-harmonica flags files))))
 
