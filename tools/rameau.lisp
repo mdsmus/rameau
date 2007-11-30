@@ -61,7 +61,7 @@
                         (("-h" "ajuda")
                          ("-f" "arquivos")
                          ("-p" "profile")
-                         ("-d" "debug")
+                         ("-x i" "ativa código de depuração para os itens i")
                          ("-v" "verbose")
                          ("-m n" "o número de testes errados para imprimir")))
                        (análise
@@ -99,6 +99,33 @@
 (defparameter *dados* '((teste ("unidade" "regressao" "lily"))
                         (analise ("corais" "kostka" "sonatas" "exemplos"))
                         (partitura ("corais"))))
+
+;;; Norvig's functions for debugging in PAIP, p. 124
+
+(defvar *dbg-ids* nil "identifiers used by dbg")
+
+(defun dbg (id format-string &rest args)
+  "Print debugging info if (DEBUG ID) has been specified."
+  (when (member id *dbg-ids*)
+    (fresh-line *debug-io*)
+    (apply #'format *debug-io* (concat " => DEBUG: " format-string) args)))
+
+(defun dbg-indent (id indent format-string &rest args)
+  "Print indented debugging info if (DEBUG ID) has been specified."
+  (when (member id *dbg-ids*)
+    (fresh-line *debug-io*)
+    (dotimes (i indent) (princ " " *debug-io*))
+    (apply #'format *debug-io* (concat " => DEBUG: " format-string) args)))
+
+(defun rameau-debug (&rest ids)
+  "Start dbg output on the given ids."
+  (setf *dbg-ids* (union ids *dbg-ids*)))
+
+(defun rameau-undebug (&rest ids)
+  "Stop dbg on the ids. With no ids, stop dbg altogether."
+  (setf *dbg-ids* (if (null ids)
+                      nill
+                      (set-difference *dbg-ids* ids))))
 
 (defun percent (x total)
   (/ (* x 100.0) total))
@@ -483,6 +510,10 @@ ponto nos corais de bach."
       (print-ok/no-list (list (reverse ok) (reverse no))))))
 
 (defun run-analise (flags files)
+  ;;; exemplo de uso de código de depuração
+  (dbg 'flags "lista de opções (run-analise): ~a~%" flags)
+  (dbg 'files "arquivos (run-analise): ~a~%" files)
+  
   (cond ((member 'g flags)
          (run-compara-gabarito flags files))
         (t  ; -a implicito
@@ -544,13 +575,17 @@ ponto nos corais de bach."
          (flags-list (if (> (length args) 2) (arg->list (subseq args 2))))
          (files (get-flag-list "-f" flags-list))
          (trace (get-flag-list "-t" flags-list))
+         (debug (get-flag-list "-x" flags-list))
          (max-error (first (get-flag-list "-m" flags-list)))
          (flags (if flags-list (get-lone-flags flags-list))))
 
+    (when debug
+      (loop for item in debug do
+           (rameau-debug (intern (string-upcase item) :rameau-tools))))
     (when trace (maptrace trace))
     (when max-error (setf max-print-error (read-from-string max-error)))
     (when (member 'h flags) (print-help))
-    
+
     (cond ((null comando) (print-help))
           ((equal comando "help") (print-help))
           ((equal comando "-h") (print-help))
