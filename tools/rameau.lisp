@@ -69,8 +69,6 @@
                          ("-n" "mostra as notas de cada segmento" "-v")
                          ("-d" "mostra as durações de cada segmento" "-v")
                          ("-l" "mostra formato de gabarito como listas" "-v")
-                         ("-e" "só mostra os testes que tem erro" "-v")
-                         ("-c" "só mostra os testes corretos" "-v")
                          ("-i" "ignora (não imprime) corais sem gabaritos")
                          ("-s" "roda harmonia de temperley na musica")))
                        (partitura
@@ -239,7 +237,9 @@ Exemplo: (split-word \"foo\") => (F O O)"
 
 ;; BUG: ok? não imprime por cause do (not f)
 (defun print-gab-columns (a b c d flags)
-  (let ((string "~4a~@[~15a~]~(~30a~)~@[~10a~]"))
+  (let ((string (if (member 'l flags)
+                    "~4a~@[~15a~]~(~15a~)~@[~10a~]"
+                    "~4a~@[~15a~]~10a~@[~10a~]")))
     (format t string
             a
             (when (member 'n flags) b)
@@ -248,11 +248,11 @@ Exemplo: (split-word \"foo\") => (F O O)"
 
 (defun print-res-alg (alg res flags)
   (let ((string (if (member 'l flags)
-                    "~(~15a~)~:[*~; ~]"
-                    "~10a~:[*~; ~]")))
+                    "~(~15a~)~:[*~; ~] "
+                    "~10a~:[*~; ~] ")))
     (format t string
             alg
-            (not res))))
+            res)))
 
 (defun frac->dur-lily (dur)
   "Converte de fração para duração em lilypond. É muito simples, não
@@ -375,9 +375,13 @@ ponto nos corais de bach."
                                   (when (and gabarito (member 'g flags))
                                         (print-lyric "gabarito")))))))
 
-(defun print-gabarito (file gabarito algoritmo temperley comparacao flags &key notas dur)
+(defun print-gabarito (file gabarito algoritmo temperley flags &key notas dur)
   (let ((*package* (find-package :rameau)))
     (print-gab-columns "#" "notas" "gab" "dur" flags)
+    (print-res-alg "Pardo" "ok?" flags)
+    (when (member 's flags)
+      (print-res-alg "Temperley" "ok?" flags))
+    (format t "~%")
     (write-line (repeat-string 80 "-"))
     (let ((count-ok 0)
           (count-ok-temp 0)
@@ -389,8 +393,8 @@ ponto nos corais de bach."
          for d in dur
          for numero-seg from 0
          for pardo in algoritmo
-         for temperley = temperley then (rest temperley)
-         for temp = (first temperley) then (rest temperley)
+         for temp-lista = temperley then (rest temp-lista)
+         for temp = (first temp-lista) then (first temp-lista)
          for gab in gabarito
          for result = (when (and pardo gab)
                         (compara-gabarito-pardo pardo gab))
@@ -406,18 +410,18 @@ ponto nos corais de bach."
          do
            (print-gab-columns
             (1+ numero-seg)
-            (if gab (print-chord gab flags))
             n
+            (if gab (print-chord gab flags))
             d
             flags)
            (print-res-alg (if pardo (print-chord pardo flags)) result flags)
-           (when temp
+           (when (member 's flags)
             (print-res-alg (if temp (print-chord temp flags))
                            result-temp flags))
            (format t "~%"))
 
-      (format t "~%~$ % correto, gab: ~a, pardo: ~a~%"
-              (percent count-ok size-gab) size-gab size-algo)
+      (format t "~%~$ % correto, gab: ~a, pardo: ~a, temperley correto: ~a%~%"
+              (percent count-ok size-gab) size-gab size-algo (percent count-ok-temp size-gab))
       (format t "segmentos errados: ~a~%" (nreverse wrong-list)))))
 
 (defun print-help-item (item)
@@ -482,30 +486,16 @@ ponto nos corais de bach."
         (let* ((file-name (pathname-name file))
                (gabarito (processa-gabarito (tira-extensao file)))
                (notas (with-system rameau:tempered (mapcar #'lista-notas segmento)))
-               (comparacao (with-system rameau:tempered
-                             (compara-gabarito-pardo algoritmo gabarito)))
                (temperley (when (member 's flags)
                             (with-system rameau:tempered (temperley (parse-file file)))))
                (duracoes (calcula-duracoes segmento algoritmo)))
           (cond
-            ((member 'e flags)
-             (unless comparacao
-               (push 'v flags)
-               (print-gabarito file-name gabarito algoritmo temperley comparacao
-                               flags :dur duracoes :notas notas)))
-            ((member 'c flags)
-             (push 'v flags)
-             (when comparacao
-               (print-gabarito file-name gabarito algoritmo temperley comparacao
-                               flags :dur duracoes :notas notas)))
             ((and (not gabarito) (not (member 'i flags)))
              (format t "~&[ERRO] o gabarito de ~a não existe~%" file-name))
             ((or (member 'v flags) (member 'n flags) (member 'd flags))
              (push 'v flags)
-             (print-gabarito file-name gabarito algoritmo temperley comparacao
-                             flags :dur duracoes :notas notas))
-            (gabarito
-             (if comparacao (push file-name ok) (push file-name no)))))))
+             (print-gabarito file-name gabarito algoritmo temperley
+                             flags :dur duracoes :notas notas))))))
     (unless (member 'v flags)
       (print-ok/no-list (list (reverse ok) (reverse no))))))
 
