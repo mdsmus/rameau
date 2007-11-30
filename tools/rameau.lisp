@@ -61,7 +61,7 @@
                         (("-h" "ajuda")
                          ("-f" "arquivos")
                          ("-p" "profile")
-                         ("-d i" "ativa código de depuração para os itens i")
+                         ("-x i" "ativa código de depuração para os itens i")
                          ("-v" "verbose")
                          ("-m n" "o número de testes errados para imprimir")))
                        (análise
@@ -562,7 +562,7 @@ ponto nos corais de bach."
          (flags-list (if (> (length args) 2) (arg->list (subseq args 2))))
          (files (get-flag-list "-f" flags-list))
          (trace (get-flag-list "-t" flags-list))
-         (debug (get-flag-list "-d" flags-list))
+         (debug (get-flag-list "-x" flags-list))
          (max-error (first (get-flag-list "-m" flags-list)))
          (flags (if flags-list (get-lone-flags flags-list))))
 
