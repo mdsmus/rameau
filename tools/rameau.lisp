@@ -61,7 +61,7 @@
                         (("-h" "ajuda")
                          ("-f" "arquivos")
                          ("-p" "profile")
-                         ("-d" "debug")
+                         ("-d i" "ativa código de depuração para os itens i")
                          ("-v" "verbose")
                          ("-m n" "o número de testes errados para imprimir")))
                        (análise
@@ -573,8 +573,6 @@ ponto nos corais de bach."
     (when max-error (setf max-print-error (read-from-string max-error)))
     (when (member 'h flags) (print-help))
 
-    
-    
     (cond ((null comando) (print-help))
           ((equal comando "help") (print-help))
           ((equal comando "-h") (print-help))
