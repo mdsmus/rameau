@@ -10,6 +10,7 @@
    #:calcula-duracoes
    #:cifra->acorde
    #:compara-notas
+   #:filtra-algoritmos
    #:lista-notas
    #:parse-file
    #:pitches
@@ -41,3 +42,12 @@
 (defun registra-algoritmo (nome processa compara)
   (push (make-algoritmo :nome nome :processa processa :compara compara)
         *algoritmos*))
+
+(defun filtra-algoritmos (algoritmos)
+  (if algoritmos
+    (loop for alg in algoritmos
+         append (loop for i in *algoritmos*
+                   when (> (count-subseq alg (string-downcase (algoritmo-nome i))) 0)
+                   collect i))
+    *algoritmos*))
+

@@ -69,7 +69,8 @@
                          ("-n" "mostra as notas de cada segmento" "-v")
                          ("-d" "mostra as durações de cada segmento" "-v")
                          ("-l" "mostra formato de gabarito como listas" "-v")
-                         ("-i" "ignora (não imprime) corais sem gabaritos")))
+                         ("-i" "ignora (não imprime) corais sem gabaritos")
+                         ("-a <algoritmos>" "seleciona os algoritmos usados")))
                        (partitura
                         (("-n" "imprime número de partições")
                          ("-g" "imprime gabarito")
@@ -550,6 +551,7 @@ ponto nos corais de bach."
          (flags-list (if (> (length args) 2) (arg->list (subseq args 2))))
          (files (get-flag-list "-f" flags-list))
          (trace (get-flag-list "-t" flags-list))
+         (algoritmos (get-flag-list "-a" flags-list))
          (debug (get-flag-list "-x" flags-list))
          (max-error (first (get-flag-list "-m" flags-list)))
          (flags (if flags-list (get-lone-flags flags-list))))
@@ -560,7 +562,8 @@ ponto nos corais de bach."
     (when trace (maptrace trace))
     (when max-error (setf max-print-error (read-from-string max-error)))
     (when (member 'h flags) (print-help))
-
+    (when algoritmos
+      (setf *algoritmos* (filtra-algoritmos algoritmos)))
     (cond ((null comando) (print-help))
           ((equal comando "help") (print-help))
           ((equal comando "-h") (print-help))
