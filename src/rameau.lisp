@@ -2,17 +2,17 @@
 
 #+cmu(setf ext::*complain-about-illegal-switches* nil)
 
-(declaim (optimize (compilation-speed 0)
+(declaim (optimize (compilation-speed 1)
                    (debug 3)
-                   (safety 3)
-                   (space 1)
-                   (speed 1)))
+                   (safety 1)
+                   (space 0)
+                   (speed 3)))
 
 
 (asdf:oos 'asdf:load-op :rameau :verbose nil)
 
 (defpackage :rameau-tools
-  (:use #:cl #:rameau #:it.bese.arnesi #:rameau-pardo #:rameau-temperley)
+  (:use #:cl #:rameau #:it.bese.arnesi)
   (:export #:main)
   #+sbcl(:import-from #:sb-ext #:*posix-argv*))
 (in-package :rameau-tools)
@@ -237,8 +237,8 @@ Exemplo: (split-word \"foo\") => (F O O)"
 ;; BUG: ok? não imprime por cause do (not f)
 (defun print-gab-columns (a b c d flags)
   (let ((string (if (member 'l flags)
-                    "~4a~@[~15a~]~(~15a~)~@[~10a~]"
-                    "~4a~@[~15a~]~10a~@[~10a~]")))
+                    "~4a~@[~15a~]~(~15a~)~@[~10a~]|"
+                    "~4a~@[~15a~]~10a~@[~10a~]|")))
     (format t string
             a
             (when (member 'n flags) b)
@@ -247,8 +247,8 @@ Exemplo: (split-word \"foo\") => (F O O)"
 
 (defun print-res-alg (alg res flags)
   (let ((string (if (member 'l flags)
-                    "~(~15a~)~:[*~; ~] "
-                    "~10a~:[*~; ~] ")))
+                    "~(~15a~)~:[*~; ~]|"
+                    "~10a~:[*~; ~]|")))
     (format t string
             alg
             res)))
@@ -374,54 +374,37 @@ ponto nos corais de bach."
                                   (when (and gabarito (member 'g flags))
                                         (print-lyric "gabarito")))))))
 
-(defun print-gabarito (file gabarito algoritmo temperley flags &key notas dur)
-  (let ((*package* (find-package :rameau)))
+(defun print-gabarito (file gabarito resultados flags &key notas dur)
+  (let ((*package* (find-package :rameau))
+        (size-gab (length gabarito)))
     (print-gab-columns "#" "notas" "gab" "dur" flags)
-    (print-res-alg "Pardo" "ok?" flags)
-    (when (member 's flags)
-      (print-res-alg "Temperley" "ok?" flags))
+    (loop for a in *algoritmos*
+       do (print-res-alg (algoritmo-nome a) "ok?" flags))
     (format t "~%")
     (write-line (repeat-string 80 "-"))
-    (let ((count-ok 0)
-          (count-ok-temp 0)
-          (size-gab (length gabarito))
-          (size-algo (length algoritmo))
-          (wrong-list))
+    (let ((counts (repeat-list (length *algoritmos*) 0)))
       (loop
          for n in notas
          for d in dur
          for numero-seg from 0
-         for pardo in algoritmo
-         for temp-lista = temperley then (rest temp-lista)
-         for temp = (first temp-lista) then (first temp-lista)
          for gab in gabarito
-         for result = (when (and pardo gab)
-                        (compara-gabarito-pardo pardo gab))
-         then (when (and pardo gab)
-                (compara-gabarito-pardo pardo gab))
-         for result-temp = (when (and temp gab)
-                             (compara-gabarito-temperley temp gab))
-         then (when (and temp gab)
-                             (compara-gabarito-temperley temp gab))
-         if result do (incf count-ok)
-         if result-temp do (incf count-ok-temp)
-         else do (push numero-seg wrong-list)
+         for res = resultados then (avanca-todos res)
          do
-           (print-gab-columns
-            (1+ numero-seg)
-            n
-            (if gab (print-chord gab flags))
-            d
-            flags)
-           (print-res-alg (if pardo (print-chord pardo flags)) result flags)
-           (when (member 's flags)
-            (print-res-alg (if temp (print-chord temp flags))
-                           result-temp flags))
+           (print-gab-columns (1+ numero-seg) n (if gab (print-chord gab flags)) d flags)
+           (loop
+              for a in *algoritmos*
+              for i from 0
+              for r in res
+              for alg = (first r) then (first r)
+              for certo? = (funcall (algoritmo-compara a) alg gab)
+              then (funcall (algoritmo-compara a) alg gab)
+              do (print-res-alg (if alg (print-chord alg flags)) certo? flags)
+              when certo? do (incf (nth i counts)))
            (format t "~%"))
-
-      (format t "~%~$ % correto, gab: ~a, pardo: ~a, temperley correto: ~a%~%"
-              (percent count-ok size-gab) size-gab size-algo (percent count-ok-temp size-gab))
-      (format t "segmentos errados: ~a~%" (nreverse wrong-list)))))
+      (format t "~% correto:~%")
+      (loop  for i in counts
+         for a in *algoritmos* do
+           (format t "  ~a: ~a%~%" (algoritmo-nome a) (percent i size-gab))))))
 
 (defun print-help-item (item)
   (format t "~%~(* [~a]~)~%" item)
@@ -479,22 +462,25 @@ ponto nos corais de bach."
 (defun run-compara-gabarito (flags files)
   (let (ok no)
     (dolist (file files)
-      (multiple-value-bind (algoritmo segmento)
-          (with-system rameau:tempered (gera-gabarito-pardo (parse-file file)))
-        (format t "tamanhos pardo: ~a gabarito: ~a ~%" (length algoritmo) (length segmento))
-        (let* ((file-name (pathname-name file))
-               (gabarito (processa-gabarito (tira-extensao file)))
-               (notas (with-system rameau:tempered (mapcar #'lista-notas segmento)))
-               (temperley (when (member 's flags)
-                            (with-system rameau:tempered (temperley (parse-file file)))))
-               (duracoes (calcula-duracoes segmento algoritmo)))
-          (cond
-            ((and (not gabarito) (not (member 'i flags)))
-             (format t "~&[ERRO] o gabarito de ~a não existe~%" file-name))
-            ((or (member 'v flags) (member 'n flags) (member 'd flags))
-             (push 'v flags)
-             (print-gabarito file-name gabarito algoritmo temperley
-                             flags :dur duracoes :notas notas))))))
+      (let* ((musica (parse-file file))
+             (segmentos (segmentos-minimos musica))
+             (resultados (loop for a in *algoritmos* collect
+                              (funcall (algoritmo-processa a) segmentos)))
+             (gabarito (processa-gabarito (tira-extensao file)))
+             (file-name (pathname-name file))
+             (notas (mapcar #'lista-notas segmentos))
+             (duracoes (calcula-duracoes segmentos)))
+        (format t "tamanhos:~%  gabarito: ~a~%" (length gabarito))
+        (loop for i in resultados
+           for a in *algoritmos*
+           do (format t "  ~a: ~a~%" (algoritmo-nome a) (length i)))
+        (cond
+          ((and (not gabarito) (not (member 'i flags)))
+           (format t "~&[ERRO] o gabarito de ~a não existe~%" file-name))
+          ((or (member 'v flags) (member 'n flags) (member 'd flags))
+           (push 'v flags)
+           (print-gabarito file-name gabarito resultados
+                           flags :dur duracoes :notas notas)))))
     (unless (member 'v flags)
       (print-ok/no-list (list (reverse ok) (reverse no))))))
 
