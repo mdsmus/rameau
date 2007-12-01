@@ -8,14 +8,14 @@ deve ser uma string."
   (when acrescimos
     (first (cl-ppcre:split "\\." acrescimos))))
 
+;;; tem que usar cond no lugar de case porque cmucl não reconheçe °
 (defun get-modo (abrev)
-  (case (string->symbol abrev)
-    (m "min")
-    (° (values "dim" '7-))
-    (ø (values "dim" '7))
-    (+ "aug")
-    (! "inc")
-    (t "maj")))
+  (cond ((string= "m" abrev) "min")
+        ((string= "°" abrev) (values "dim" '7-))
+        ((string= "ø" abrev) (values "dim" '7))
+        ((string= "+" abrev) "aug")
+        ((string= "!" abrev) "inc")
+        (t "maj")))
 
 (defun parse-fundamental (fundamental)
   (when fundamental
@@ -77,7 +77,6 @@ está no baixo de acordo com a inversão."
                 'latin)))
 
 (defun acorde->cifra (acorde)
-  (unless acorde (error))
   (cond ((equal (first acorde) 'm!) "m!")
         ((listp (first acorde)) (acorde->cifra (first acorde)))
         (t (destructuring-bind (tonica &optional modo inv acresc &rest resto) acorde
