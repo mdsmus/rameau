@@ -51,6 +51,12 @@
   #+clisp(ext:exit)
   #+sbcl(quit))
 
+(defun read-user-config ()
+  (aif (cl-fad:file-exists-p (concat "/home/" #+sbcl(sb-ext:posix-getenv "USER") "/.rameaurc"))
+       ;; TODO: checa se arquivo está vazio
+       (with-open-file (s it)
+         (read s))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defparameter max-print-error 10
@@ -76,12 +82,6 @@
                          ("-g" "imprime gabarito")
                          ("-a" "imprime análise (pardo)")
                          ("-t" "imprime tudo")))))
-
-(defun read-user-config ()
-  (aif (cl-fad:file-exists-p (concat "/home/" (sb-ext:posix-getenv "USER") "/.rameaurc"))
-       ;; TODO: checa se arquivo está vazio
-       (with-open-file (s it)
-         (read s))))
 
 (defparameter *lily-dir-list*
   (aif (read-user-config)

@@ -10,10 +10,11 @@
 (push (concatenate 'string (main-path) "src/lib/") asdf:*central-registry*)
 
 #-ecl(load "tools/rameau.lisp")
+#+ecl (require 'rameau)
 #+sbcl(sb-ext:save-lisp-and-die "rameau" :executable t :toplevel #'rameau-tools:main)
 #+cmu(extensions:save-lisp "cmurameau" :init-function #'rameau-tools:main)
 #+ecl(progn (compile-file "tools/rameau.lisp" :system-p t)
-            ;;(c:build-program "eclrameau" :lisp-files '("rameau.o"))
+            (c:build-program "eclrameau" :lisp-files '("tools/rameau.o"))
             )
 
 #+clisp(ext:saveinitmem "clisprameau" :script t :quiet t :executable t :init-function #'rameau-tools:main)
