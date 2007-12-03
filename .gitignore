@@ -13,6 +13,7 @@ auto
 *.png
 corais
 *.o
+*.x86f
 src/temperley-original/harmony/harmony
 src/temperley-original/meter/meter
 src/temperley-original/mftext-release-07/mftext
