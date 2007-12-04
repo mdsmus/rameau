@@ -22,7 +22,7 @@
         (cmu-args #+cmu extensions:*command-line-strings*)
         (clisp-args #+clisp *args*))
     (cond (sbcl-args (rest sbcl-args))
-          (cmu-args (subseq cmu-args 3))
+          (cmu-args (subseq cmu-args (1+ (position "cmurameau" cmu-args :test #'string=))))
           (clisp-args clisp-args)
           (t (error "algum problema com argumentos")))))
 
@@ -373,6 +373,7 @@ ponto nos corais de bach."
                                         (print-lyric "gabarito")))))))
 
 (defun print-gabarito (file gabarito algoritmo temperley flags &key notas dur)
+  (declare (ignore file))
   (let ((*package* (find-package :rameau)))
     (print-gab-columns "#" "notas" "gab" "dur" flags)
     (print-res-alg "Pardo" "ok?" flags)
@@ -441,6 +442,7 @@ ponto nos corais de bach."
       (print-ok/no-list (parse-summary files))))
 
 (defun run-unidade (flags files)
+  (declare (ignore files))
   (let ((string-result
          (with-output-to-string (string)
            (let ((*standard-output* string))
