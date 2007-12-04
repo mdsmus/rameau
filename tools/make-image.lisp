@@ -1,3 +1,13 @@
+#+sbcl(declaim (sb-ext:muffle-conditions warning style-warning sb-ext:compiler-note))
+
+#+cmu(setf ext::*complain-about-illegal-switches* nil)
+
+(declaim (optimize (compilation-speed 0)
+                   (debug 3)
+                   (safety 3)
+                   (space 1)
+                   (speed 1)))
+
 #+(or sbcl ecl) (require 'asdf)
 
 (defun main-path ()
