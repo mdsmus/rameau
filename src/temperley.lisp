@@ -896,7 +896,7 @@
                         (when (windows-differ-in-chord (bucket-window bu)
                                                        window
                                                        (column-chord (aref column-table column)))
-                          (setf note-relable-penalty 0.0));1000.0)) ; fixme: faz diferença isso?
+                          (setf note-relable-penalty 0.0));1000.0)) ; fixme: faz diferenÃ§a isso?
                         (let* ((local-voice-leading-penalty (compute-voice-leading-penalty
                                                              (column-chord (aref column-table column))
                                                              (side-effect-tpc-cog *side-effect*)
