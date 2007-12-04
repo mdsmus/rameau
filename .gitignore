@@ -5,6 +5,7 @@ rameau
 *.fasl
 *.fas
 cmurameau
+eclrameau
 clisprameau
 *.aux
 *.log
@@ -17,3 +18,6 @@ corais
 src/temperley-original/harmony/harmony
 src/temperley-original/meter/meter
 src/temperley-original/mftext-release-07/mftext
+src/*.c
+src/*.h
+src/*.data

@@ -8,9 +8,6 @@
                    (space 1)
                    (speed 1)))
 
-
-(asdf:oos 'asdf:load-op :rameau :verbose nil)
-
 (defpackage :rameau-tools
   (:use #:cl #:rameau #:it.bese.arnesi #:rameau-pardo #:rameau-temperley)
   (:export #:main)
@@ -27,7 +24,7 @@
     (cond (sbcl-args (rest sbcl-args))
           (cmu-args (subseq cmu-args 3))
           (clisp-args clisp-args)
-          )))
+          (t (error "algum problema com argumentos")))))
 
 (defun rameau-path ()
   (format nil "~a" (or #+sbcl *default-pathname-defaults*
