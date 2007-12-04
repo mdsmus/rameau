@@ -6,8 +6,7 @@
 ;; Here be dragons
 
 (defpackage :rameau-temperley
-  (:use #:cl #:rameau #:it.bese.arnesi)
-  (:export #:temperley #:compara-gabarito-temperley))
+  (:use #:cl #:rameau #:it.bese.arnesi))
 
 (in-package :rameau-temperley)
 
@@ -988,9 +987,8 @@
       (some (lambda (x) (compara-gabarito-temperley resultado x)) gabarito)
       (equal (first resultado) (first gabarito))))
 
-(defun temperley (musica)
-  (let* ((musica (reduce #'nconc (segmentos-minimos musica)
-                         :from-end t))
+(defun temperley (segmentos)
+  (let* ((musica (reduce #'append segmentos :from-end t))
          (musica (mapcar #'cria-evento-temperley musica))
          (musica (rotula-dissonancia musica))
          (musica (rotula-voice-leading musica))
@@ -999,3 +997,5 @@
     (gera-gabarito-temperley
      (calcula-tabela-harmonica (inicializa-tabela-harmonica m-clist) m-clist)
      m-clist)))
+
+(registra-algoritmo "Temperley" #'temperley #'compara-gabarito-temperley)

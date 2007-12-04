@@ -44,8 +44,8 @@
 (defun pitches (segmento)
   (mapcar #'evento-pitch segmento))
 
-(defun calcula-duracoes (segmento algoritmo)
-  (mapcar (lambda (x y) (list y (evento-dur (first x)))) segmento algoritmo))
+(defun calcula-duracoes (segmento)
+  (mapcar (lambda (x) (evento-dur (first x))) segmento))
 
 (defmethod copy ((obj sequencia-de-notas))
   (make-sequencia-de-notas :notas (copy (sequencia-de-notas-notas obj))
