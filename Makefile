@@ -17,7 +17,7 @@ vpath %.pop $(corais-dir)
 vpath %.log $(corais-dir)
 vpath %.png $(corais-dir)
 
-.PHONY: update clean all doc update corais-ly corais
+.PHONY: update clean all doc update corais-ly corais corais-partitura
 
 default: corais-ly rameau
 
@@ -47,7 +47,7 @@ corais-ly: $(corais-ly)
 ## BUG: regera os png quando não precisa (mas não faz isso sempre)
 corais: $(corais-png)
 
-corais-partitura: $(corais-png-partitura)
+corais-partitura: rameau $(corais-png-partitura)
 
 ## BUG: regera os lyc quando não precisa (mas não faz isso sempre)
 corais-fast: $(corais-ly)

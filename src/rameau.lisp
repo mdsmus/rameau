@@ -1,3 +1,4 @@
+<<<<<<< HEAD:src/rameau.lisp
 #+sbcl(declaim (sb-ext:muffle-conditions warning style-warning sb-ext:compiler-note))
 
 #+cmu(setf ext::*complain-about-illegal-switches* nil)
@@ -8,6 +9,8 @@
                    (space 0)
                    (speed 3)))
 
+=======
+>>>>>>> origin/master:tools/rameau.lisp
 (defpackage :rameau-tools
   (:use #:cl #:rameau #:it.bese.arnesi)
   (:export #:main)
@@ -22,7 +25,7 @@
         (cmu-args #+cmu extensions:*command-line-strings*)
         (clisp-args #+clisp *args*))
     (cond (sbcl-args (rest sbcl-args))
-          (cmu-args (subseq cmu-args 3))
+          (cmu-args (subseq cmu-args (1+ (position "cmurameau" cmu-args :test #'string=))))
           (clisp-args clisp-args)
           (t (error "algum problema com argumentos")))))
 
@@ -372,9 +375,15 @@ ponto nos corais de bach."
                                   (when (and gabarito (member 'g flags))
                                         (print-lyric "gabarito")))))))
 
+<<<<<<< HEAD:src/rameau.lisp
 (defun print-gabarito (file gabarito resultados flags &key notas dur)
   (let ((*package* (find-package :rameau))
         (size-gab (length gabarito)))
+=======
+(defun print-gabarito (file gabarito algoritmo temperley flags &key notas dur)
+  (declare (ignore file))
+  (let ((*package* (find-package :rameau)))
+>>>>>>> origin/master:tools/rameau.lisp
     (print-gab-columns "#" "notas" "gab" "dur" flags)
     (loop for a in *algoritmos*
        do (print-res-alg (algoritmo-nome a) "ok?" flags))
@@ -424,6 +433,7 @@ ponto nos corais de bach."
       (print-ok/no-list (parse-summary files))))
 
 (defun run-unidade (flags files)
+  (declare (ignore files))
   (let ((string-result
          (with-output-to-string (string)
            (let ((*standard-output* string))
