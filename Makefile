@@ -13,10 +13,15 @@ lilypond = lilypond -I $(maindir)/literatura/bach-corais -I $(maindir)/lily
 
 vpath %.lyi literatura/bach-corais
 vpath %.ly $(corais-dir)
+vpath %.pop $(corais-dir)
 vpath %.log $(corais-dir)
 vpath %.png $(corais-dir)
 
-.PHONY: update clean
+.PHONY: update clean all doc update corais-ly corais
+
+default: corais-ly rameau
+
+all-rameau: rameau cmurameau clisprameau
 
 rameau: $(lisp-files)
 	${sbcl} "(load \"tools/make-image.lisp\")"
@@ -30,8 +35,6 @@ eclrameau: $(lisp-files)
 clisprameau: $(lisp-files)
 	clisp -ansi -K full -x  "(load \"tools/make-image.lisp\")"
 
-all: rameau cmurameau clisprameau corais-ly
-
 doc:
 	cd docs ;\
 	make pdf
@@ -40,9 +43,6 @@ update:
 	git fetch && git rebase origin/master
 
 corais-ly: $(corais-ly)
-
-$(corais-dir):
-	if [ ! -d $(corais-dir) ]; then mkdir -p $(corais-dir); fi; \
 
 ## BUG: regera os png quando não precisa (mas não faz isso sempre)
 corais: $(corais-png)
@@ -60,14 +60,15 @@ corais-partitura-fast: $(corais-ly)
 	cd $(corais-dir); \
 	$(lilypond) --png $(notdir $(corais-ly-partitura))
 
-%.ly: %.lyi $(corais-dir)
+%.ly: %.lyi
+	@if [ ! -d $(corais-dir) ]; then mkdir -p $(corais-dir); fi;
 	@cat $< lily/score.lyi > $(corais-dir)/$(basename $(notdir $<)).ly
-	@if [ -f $(patsubst %.lyi,%.pop,$<) ]; then cp $(patsubst %.lyi,%.pop,$<) $(corais-dir); fi ;\
+	@if [ -f $(patsubst %.lyi,%.pop,$<) ]; then cp $(patsubst %.lyi,%.pop,$<) $(corais-dir); fi
 
 coral-%.png: %.ly 
 	./rameau partitura corais -t -f $(notdir $(basename $<))
 	cd $(corais-dir); \
-	$(lilypond) --png $< 2> $(corais-dir)/coral-$(notdir $(basename $<)).log
+	$(lilypond) --png coral-$(notdir $<) 2> $(corais-dir)/coral-$(notdir $(basename $<)).log
 
 %.png: %.ly
 	cd $(corais-dir); \
