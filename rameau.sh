@@ -1,3 +1,3 @@
 #!/bin/sh
 
-cmucl -core cmurameau $@
+cmucl -batch -quiet -noinit -core cmurameau $@
