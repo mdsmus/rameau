@@ -1,16 +1,3 @@
-<<<<<<< HEAD:src/rameau.lisp
-#+sbcl(declaim (sb-ext:muffle-conditions warning style-warning sb-ext:compiler-note))
-
-#+cmu(setf ext::*complain-about-illegal-switches* nil)
-
-(declaim (optimize (compilation-speed 1)
-                   (debug 3)
-                   (safety 1)
-                   (space 0)
-                   (speed 3)))
-
-=======
->>>>>>> origin/master:tools/rameau.lisp
 (defpackage :rameau-tools
   (:use #:cl #:rameau #:it.bese.arnesi)
   (:export #:main)
@@ -375,15 +362,9 @@ ponto nos corais de bach."
                                   (when (and gabarito (member 'g flags))
                                         (print-lyric "gabarito")))))))
 
-<<<<<<< HEAD:src/rameau.lisp
-(defun print-gabarito (file gabarito resultados flags &key notas dur)
-  (let ((*package* (find-package :rameau))
-        (size-gab (length gabarito)))
-=======
 (defun print-gabarito (file gabarito algoritmo temperley flags &key notas dur)
   (declare (ignore file))
   (let ((*package* (find-package :rameau)))
->>>>>>> origin/master:tools/rameau.lisp
     (print-gab-columns "#" "notas" "gab" "dur" flags)
     (loop for a in *algoritmos*
        do (print-res-alg (algoritmo-nome a) "ok?" flags))
