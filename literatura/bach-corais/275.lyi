@@ -64,13 +64,13 @@ tenor = \relative c' {
 }
 
 baixo = \relative c {
-  \partial 4 f4 
+  \partial 4 eis4 
     fis4 gis4 a4 cis,4 
   b4 e4 a,4 a'4 
   cis,4 cis8 d8 e4 cis4 
   fis2 e4 e4 
   fis4 gis4 a4 d,4   %5
-  e2. f4 
+  e2. eis4 
   fis4 gis4 a4 ais4 
   b2 fis4 a4 
   gis4 fis8 e8 dis4 e4 
