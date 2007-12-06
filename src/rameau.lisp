@@ -54,6 +54,7 @@
                         (("-h" "ajuda")
                          ("-f" "arquivos")
                          ("-p" "profile")
+                         ("-a <algoritmos>" "Usa <algoritmos> para fazer a análise")
                          ("-x i" "ativa código de depuração para os itens i")
                          ("-v" "verbose")
                          ("-m n" "o número de testes errados para imprimir")))
@@ -62,12 +63,10 @@
                          ("-n" "mostra as notas de cada segmento" "-v")
                          ("-d" "mostra as durações de cada segmento" "-v")
                          ("-l" "mostra formato de gabarito como listas" "-v")
-                         ("-i" "ignora (não imprime) corais sem gabaritos")
-                         ("-a <algoritmos>" "seleciona os algoritmos usados")))
+                         ("-i" "ignora (não imprime) corais sem gabaritos")))
                        (partitura
                         (("-n" "imprime número de partições")
                          ("-g" "imprime gabarito")
-                         ("-a" "imprime análise")
                          ("-t" "imprime tudo")))))
 
 (defparameter *lily-dir-list*
@@ -310,7 +309,7 @@ ponto nos corais de bach."
      ,@body
      (format ,stream "~%}~%~%")))
 
-(defun print-lily (flags file gabarito algoritmo comparacao segmento)
+(defun print-lily (file gabarito resultados  flags notas)
   (let* ((*package* (find-package :rameau))
          (path (concat (rameau-path)
                        (get-item "corais-include" *lily-dir-list*  #'equal)))
@@ -319,7 +318,7 @@ ponto nos corais de bach."
          (out-file (format nil "~a/~a/coral-~a.ly" (rameau-path) dir file-name)))
     (with-open-file (stream out-file :direction :output :if-exists :supersede)
       (format stream "~a~%" (file-string (concat path file-name ".lyi")))
-      (format stream "texto = {~{c~a ~}}~%~%" (print-duracoes segmento))
+      (format stream "texto = {~{c~a ~}}~%~%" (print-duracoes notas))
       (when (member 't flags)
         (push 'g flags)
         (push 'a flags)
@@ -327,50 +326,49 @@ ponto nos corais de bach."
       (when (and gabarito (member 'g flags))
         (with-print-cifra (stream "gabarito")
           (loop for i in gabarito
-             for s = segmento then (rest s)
+             for s = notas then (rest s)
              unless s return it
              do (format stream "\"~a\" " (acorde->cifra i))
              unless (= 0 (intervalo (first s) (second s)))
              do (format stream "\" \" "))))
-      (when (member 'a flags)
-        (with-print-cifra (stream "pardo")
-          (loop 
-             for pardo-lista = algoritmo then (rest pardo-lista)
-             for gab-lista = gabarito then (rest gab-lista)
-             for s = segmento then (rest s)
-             for pardo = (first pardo-lista) then (first pardo-lista)
-             for gab = (first gab-lista) then (first gab-lista)
-             unless s return 0
-             unless pardo-lista return 0
-             if (compara-gabarito-pardo pardo gab) do
-               (format stream "\"~a\" " (if pardo (acorde->cifra pardo) " "))
-             else do
-               (format stream "\\markup{\\with-color #(x11-color 'red) \"~a\"}"
-                       (if pardo (acorde->cifra pardo) " "))
-             unless (= 0 (intervalo (first s) (second s)))
-               do (format stream "\" \""))))
+      (loop for a in *algoritmos*
+         for r in resultados do
+           (with-print-cifra (stream (concat "\"" (algoritmo-nome a) "\""))
+             (loop 
+                for alg-lista = r then (rest alg-lista)
+                for gab-lista = gabarito then (rest gab-lista)
+                for s = notas then (rest s)
+                for res = (first alg-lista) then (first alg-lista)
+                for gab = (first gab-lista) then (first gab-lista)
+                unless s return 0
+                unless alg-lista return 0
+                if (funcall (algoritmo-compara a) res gab) do
+                  (format stream "\"~a\" " (if res (acorde->cifra res) " "))
+                else do
+                  (format stream "\\markup{\\with-color #(x11-color 'red) \"~a\"}"
+                          (if res (acorde->cifra res) " "))
+                unless (= 0 (intervalo (first s) (second s))) do
+                  (format stream "\" \""))))
       (when (member 'n flags)
         (with-print-cifra (stream "particoes")
           (loop for x from 1
-             for s = segmento then (rest s)
+             for s = notas then (rest s)
              unless s return 0
              do (format stream "\"~a\" " x)
              unless (= 0 (intervalo (first s) (second s)))
              do (format stream "\"~a\" " x))))
-      (print-score stream (concat (when (member 'n flags) (print-lyric "particoes"))
-                                  (when (member 'a flags) (print-lyric "pardo"))
-                                  (when (and gabarito (member 'g flags))
-                                        (print-lyric "gabarito")))))))
+      (print-score stream (reduce #'concat
+                                  (append
+                                   (list (when (member 'n flags) (print-lyric "particoes")))
+                                   (loop for a in *algoritmos* collect
+                                        (print-lyric (algoritmo-nome a)))
+                                   (list
+                                    (when (and gabarito (member 'g flags))
+                                      (print-lyric "gabarito")))))))))
 
-<<<<<<< HEAD:src/rameau.lisp
 (defun print-gabarito (file gabarito resultados flags &key notas dur)
   (let ((*package* (find-package :rameau))
         (size-gab (length gabarito)))
-=======
-(defun print-gabarito (file gabarito algoritmo temperley flags &key notas dur)
-  (declare (ignore file))
-  (let ((*package* (find-package :rameau)))
->>>>>>> origin/master:tools/rameau.lisp
     (print-gab-columns "#" "notas" "gab" "dur" flags)
     (loop for a in *algoritmos*
        do (print-res-alg (algoritmo-nome a) "ok?" flags))
@@ -455,29 +453,30 @@ ponto nos corais de bach."
     (expande-multiplicacoes gabarito)))
 
 (defun run-compara-gabarito (flags files)
-  (let (ok no)
-    (dolist (file files)
-      (let* ((musica (parse-file file))
-             (segmentos (segmentos-minimos musica))
-             (resultados (loop for a in *algoritmos* collect
-                              (funcall (algoritmo-processa a) segmentos)))
-             (gabarito (processa-gabarito (tira-extensao file)))
-             (file-name (pathname-name file))
-             (notas (mapcar #'lista-notas segmentos))
-             (duracoes (calcula-duracoes segmentos)))
-        (format t "tamanhos:~%  gabarito: ~a~%" (length gabarito))
-        (loop for i in resultados
-           for a in *algoritmos*
-           do (format t "  ~a: ~a~%" (algoritmo-nome a) (length i)))
-        (cond
-          ((and (not gabarito) (not (member 'i flags)))
+  (with-system rameau:tempered
+    (let (ok no)
+      (dolist (file files)
+        (let* ((musica (parse-file file))
+               (segmentos (segmentos-minimos musica))
+               (resultados (loop for a in *algoritmos* collect
+                                (funcall (algoritmo-processa a) segmentos)))
+               (gabarito (processa-gabarito (tira-extensao file)))
+               (file-name (pathname-name file))
+               (notas (mapcar #'lista-notas segmentos))
+               (duracoes (calcula-duracoes segmentos)))
+          (format t "tamanhos:~%  gabarito: ~a~%" (length gabarito))
+          (loop for i in resultados
+             for a in *algoritmos*
+             do (format t "  ~a: ~a~%" (algoritmo-nome a) (length i)))
+          (cond
+            ((and-bind (not gabarito) (not (member 'i flags)))
            (format t "~&[ERRO] o gabarito de ~a não existe~%" file-name))
-          ((or (member 'v flags) (member 'n flags) (member 'd flags))
-           (push 'v flags)
-           (print-gabarito file-name gabarito resultados
-                           flags :dur duracoes :notas notas)))))
-    (unless (member 'v flags)
-      (print-ok/no-list (list (reverse ok) (reverse no))))))
+            ((or (member 'v flags) (member 'n flags) (member 'd flags))
+             (push 'v flags)
+             (print-gabarito file-name gabarito resultados
+                             flags :dur duracoes :notas notas)))))
+      (unless (member 'v flags)
+        (print-ok/no-list (list (reverse ok) (reverse no)))))))
 
 (defun run-analise (flags files)
   ;;; exemplo de uso de código de depuração
@@ -491,15 +490,15 @@ ponto nos corais de bach."
 
 (defun run-partitura (flags files)
   (when (member 'v flags) (format t "gerando "))
-  (dolist (file files)
-    (when (member 'v flags) (format t "~a " (pathname-name file)))
-    (multiple-value-bind (algoritmo segmento)
-        (with-system rameau:tempered (gera-gabarito-pardo (parse-file file)))
+  (with-system rameau:tempered
+    (dolist (file files)
+      (when (member 'v flags) (format t "~a " (pathname-name file)))
       (let* ((gabarito (processa-gabarito (tira-extensao file)))
-             (comparacao (with-system rameau:tempered
-                           (compara-gabarito-pardo algoritmo gabarito))))
-        (print-lily flags file gabarito algoritmo comparacao segmento)))))
-
+             (segmento (segmentos-minimos (parse-file file)))
+             (resultados (loop for a in *algoritmos* collect
+                               (funcall (algoritmo-processa a) segmento))))
+        (print-lily file gabarito resultados flags segmento)))))
+  
 (defun processa-files (item f &optional (ext ".ly"))
   (let* ((path (concat (rameau-path) (get-item item *lily-dir-list*  #'equal)))
          (file-name (format nil "~a" (first f)))

@@ -22,8 +22,6 @@
 #+(or sbcl ecl) (require 'rameau)
 #+(or clisp cmu) (asdf:oos 'asdf:load-op :rameau :verbose nil)
 
-(load "tools/rameau.lisp")
-
 #+sbcl(sb-ext:save-lisp-and-die "rameau" :executable t :toplevel #'rameau-tools:main)
 
 #+cmu(extensions:save-lisp "cmurameau" :init-function #'rameau-tools:main)

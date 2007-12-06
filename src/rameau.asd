@@ -27,4 +27,5 @@
                (:file "test-cifras")
                ;;(:file "test-segmento")
                (:file "test-pardo")
+               (:file "rameau")
                ))
