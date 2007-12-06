@@ -16,3 +16,7 @@ os seguintes corais não foram processados:
 252: corrigir repeticao
 253: corrigir repeticao
 261: repeticao
+
+272: repeticao, oitava e enarmonia, ultima nota
+280: mudanca de compasso, ultima nota
+

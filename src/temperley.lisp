@@ -6,8 +6,7 @@
 ;; Here be dragons
 
 (defpackage :rameau-temperley
-  (:use #:cl #:rameau #:it.bese.arnesi)
-  (:export #:temperley))
+  (:use #:cl #:rameau #:it.bese.arnesi))
 
 (in-package :rameau-temperley)
 
@@ -780,7 +779,10 @@
     (if (> same-roots 0)
         (setf (side-effect-strong-beat-penalty *side-effect*) 0.0)
         (setf (side-effect-strong-beat-penalty *side-effect*)
-              (max (- (/ (* sbp-weight 1000.0) (evento-temperley-forca-metrica (first ch))) sbp-constant) 0.0)))
+              (max (- (/ (* sbp-weight 1000.0)
+                         (evento-temperley-forca-metrica (first ch)))
+                      sbp-constant)
+                   0.0)))
     (loop for i from 0
        for note in ch do
          (let* ((tpc (apply-window (evento-temperley-pitch note) window))
@@ -846,10 +848,10 @@
 
 (defun windows-differ-in-chord (window1 window2 chord)
   (loop for note in chord
-       when (not (= (apply-window (evento-temperley-pitch note) window1)
-                    (apply-window (evento-temperley-pitch note) window2)))
-       do (return t)
-       finally (return nil)))
+     when (not (= (apply-window (evento-temperley-pitch note) window1)
+                  (apply-window (evento-temperley-pitch note) window2)))
+     do (return-from windows-differ-in-chord t)
+     finally (return-from windows-differ-in-chord nil)))
 
 (defun prune-table (table)
   (let ((count 0)
@@ -893,7 +895,7 @@
                         (when (windows-differ-in-chord (bucket-window bu)
                                                        window
                                                        (column-chord (aref column-table column)))
-                          (setf note-relable-penalty 1000.0))
+                          (setf note-relable-penalty 0.0));1000.0)) ; fixme: faz diferença isso?
                         (let* ((local-voice-leading-penalty (compute-voice-leading-penalty
                                                              (column-chord (aref column-table column))
                                                              (side-effect-tpc-cog *side-effect*)
@@ -955,10 +957,11 @@
       (string->symbol (concat (nth letl letters) (repeat-string sharps accidental))))))
 
 (defun exibe-score-roots (bu)
-  (format t "Score: ~a~%" (bucket-score bu))
+  (format t "Bucket ~a~%" bu)
   (loop for i = bu then (bucket-prev-bucket i)
      unless i do (return)
-     do (format t "Root ~a, Window ~a~%" (tpc-string (bucket-root i)) (bucket-window i))))
+     do (format t "Root ~a~%"
+                (tpc-string (bucket-root i)))))
 
 (defun gera-gabarito-temperley (column-table chords)
   (let* ((n-chords (length chords))
@@ -975,11 +978,17 @@
          (setf (aref bucket-choice i) best-b
                best-b (bucket-prev-bucket best-b)))
     (loop for i from 0 to (1- n-chords)
-       collect (tpc-string (bucket-root (aref bucket-choice i))))))
+       collect (list (string->symbol (tpc-string (bucket-root (aref bucket-choice i))))
+                     'maj
+                     0))))
 
-(defun temperley (musica)
-  (let* ((musica (reduce #'nconc (segmentos-minimos musica)
-                         :from-end t))
+(defun compara-gabarito-temperley (resultado gabarito)
+  (if (listp (first gabarito))
+      (some (lambda (x) (compara-gabarito-temperley resultado x)) gabarito)
+      (equal (first resultado) (first gabarito))))
+
+(defun temperley (segmentos)
+  (let* ((musica (reduce #'append segmentos :from-end t))
          (musica (mapcar #'cria-evento-temperley musica))
          (musica (rotula-dissonancia musica))
          (musica (rotula-voice-leading musica))
@@ -988,3 +997,5 @@
     (gera-gabarito-temperley
      (calcula-tabela-harmonica (inicializa-tabela-harmonica m-clist) m-clist)
      m-clist)))
+
+(registra-algoritmo "Temperley" #'temperley #'compara-gabarito-temperley)

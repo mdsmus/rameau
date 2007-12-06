@@ -1,5 +1,21 @@
 ; -*- org -*-
 
+* Rameau 2.0, 04 dezembro 2007
+
+Esse release tem as seguintes melhorias desde o 1.0
+
+** multi-implementação: compila no sbcl, cmucl, clisp, e ecl
+** gera partitura dos corais com análise, número de partição e gabarito. 
+   Indica em vermelho os acordes que diferem entre o gabarito e a análise
+** interface com usuário de rameau melhorada
+   a nova interface é mais simples e intuitiva de usar.
+** corais de bach processados
+   os corais foram limpos para serem lidos e depurados mais facilmente
+   por seres humanos.
+** implementação inicial do algoritmo de temperley
+** melhor organização no sistema de pacotes
+** vários bugs consertados
+
 * Rameau 1.2, 11 novembro 2007
 
 Esse release tem as seguintes melhorias:
@@ -17,7 +33,6 @@ Esse release tem as seguintes melhorias:
    os corais foram limpos para serem lidos e depurados mais facilmente
    por seres humanos.
 
-
 * Rameau 1.0, 14 outubro 2007
 
 Esse release envolve o trabalho de 7 meses e contém os seguintes
@@ -31,3 +46,8 @@ recursos:
 ** programa binário para testes, conversão e comparação de resultados
 ** formato de cifras "pop" para geração de gabaritos
 ** arquivo lilypond de 371 corais, sendo que a maioria deles foram "limpos"
+
+* Rameau 0.0, 15 março 2007
+
+Início do código (nada de útil ainda)
+

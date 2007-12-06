@@ -13,12 +13,13 @@
   (assert-equal "7" (parse-acrescimos "7.9"))
   (assert-equal "7" (parse-acrescimos "7")))
 
-(define-test get-modo
-  (assert-equal '("dim" 7-) (multiple-value-list (get-modo '°)))
-  (assert-equal '("dim" 7) (multiple-value-list (get-modo 'ø)))
-  (assert-equal "dim" (get-modo 'ø))
-  (assert-equal "dim" (get-modo '°))
-  (assert-equal "min" (get-modo 'm)))
+;;; comenta porque o cmucl não reconhece o simbolo °
+;;; (define-test get-modo
+;;;   (assert-equal '("dim" 7-) (multiple-value-list (get-modo '°)))
+;;;   (assert-equal '("dim" 7) (multiple-value-list (get-modo 'ø)))
+;;;   (assert-equal "dim" (get-modo 'ø))
+;;;   (assert-equal "dim" (get-modo '°))
+;;;   (assert-equal "min" (get-modo 'm)))
 
 (define-test parse-fundamental
   (assert-equal "c" (parse-fundamental "c"))

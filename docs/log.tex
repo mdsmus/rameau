@@ -14,6 +14,98 @@
 
 \maketitle
 
+\chapter{Histórico}
+\label{cha:historico}
+
+\section{Visão geral}
+\label{sec:visao-geral}
+
+\begin{tabular}{ll}
+  13 março 2007  & início do repositório git \\
+                 & trabalho no parser básico de lilypond \\
+  17 julho 2007  & início da implementação de pardo \\
+  09 agosto 2007 & algoritmo de pardo gera gabaritos \\
+                 & refatoração do código e melhorias no parser \\
+  21 agosto 2007 & corais de bach e kostka-payne no repositório \\
+  26 agosto 2007 & sistema trac \\
+  28 agosto 2007 & inicio dos gabaritos \\
+  01 setembro 2007 & início musiclib \\
+  16 setembro 2007 & versão ``final'' de musiclib \\
+                   & início de refatoração \\
+  25 setembro 2007 & rameau usa asdf (finalmente!) \\
+  27 setembro 2007 & primeira implementação do formato pop \\
+  29 setembro 2007 & início de modo do emacs para formato pop \\
+  30 setembro 2007 & programa rameau-testes agora é binário \\
+                   & mais refatoração e correção de bugs \\
+  05 outubro 2007  & início do porting do código de temperley \\
+                   & otimizações no código e profiling \\
+  08 outubro 2007  & suporte para cmucl e clisp \\
+  09 outubro 2007  & melhorias no parser \\
+  13 outubro 2007  & fim dos bugs com pacotes e simbolos \\
+  14 outubro 2007  & rameau 1.0 \\
+  06 novembro 2007 & rameau 1.1 \\
+  11 novembro 2007 & rameau 1.2 \\
+\end{tabular}
+
+\section{Gabarito}
+\label{sec:gabarito}
+
+\section{Análise}
+\label{sec:analise}
+
+a escrita dos corais de bach é contrapontistica, então é fácil confundir
+as coisas harmonicamente. o exemplo anexo é tirado do coral 17 da edição
+do riemenschneider. o coral é em sol maior e o exemplo é o começo da 4a
+frase (a frase anterior terminava co uma cap em sol).
+
+\includegraphics{exemplo}
+
+nesse trecho o mais fácil (e logico) é pensar nas colcheias si no 2o
+tempo e c$\sharp$ no terceiro tempo como notas de passagem, desse modo temos:
+
+V viio V6 I
+
+por outro lado, se consideramos o si colheia do segundo tempo, o
+acorde seria Em. Outra possibilidade seria C$\sharp$ø7/E "sem a
+tônica" (mas ela foi ouvida logo antes, e esse é um idioma comum).
+Isso vale para o acorde na colcheia em c$\sharp$ no 3o tempo. Ele
+seria um F$\sharp$m, mas outros podem ouvir como um D7M (mesmo caso
+"sem tonica").
+
+o que voce acha melhor considerar:
+
+1. notas de passagem
+
+2. acorde de setima sem a tonica, considerando que a tonica foi ouvida
+   logo antes
+
+3. acordes formados naquele momento (i.e. Em e F$\sharp$m)
+
+estamos tentando ser completos no gabarito, então se o computador
+escolher 1 ou 2 estaria correto. o que voce acha?
+
+Acho preferível optar sempre pelo mais simples, o qual corresponde ao que ouvimos - para quem sabe   
+ouvir.  Então:                                                                                      
+        1. Se estamos falando de apenas uma nota                                                     
+                1.1. grau conjunto                                                                   
+                        1.1.1. a nota faz parte de um acorde mais consonante, i.e., mais próprio à   
+progressão harmônica local - considerar o acorde;                                                   
+                        1.1.2. a nota foz parte de um acorde dissonante - considerar como nota       
+melódica;                                                                                           
+                1.2. salto - verificar qual figura é formada pelo salto, etc. etc.                   
+        2. etc.                                                                                      
+                                                                                                     
+No presente caso:                                                                                    
+Embora em Sol há uma forte tendência para o tom da dominante, ou                                     
+        Sol: V viio/V V6 I                                                                           
+        Ré:  I viio   I6 IV                                                                          
+A consideração do Si produziria um acorde de vi em Sol ou ii em Ré, fora da progressão harmônica     
+local.                                                                                              
+A consideração do Dó$\sharp$ produziria um acorde de vii em Sol ou iii em Ré, fora da progressão harmônica  
+local.                                                                                              
+Consideraria ambas notas de passagem.                                                                
+Em outras palavras: considere a progressão harmônica como elemento essencial a uma decisão.          
+
 \chapter{Corais}
 \label{chap:corais}
 

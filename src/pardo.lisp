@@ -1,8 +1,7 @@
 ;; Implementação do algoritmo de pardo.
 
 (defpackage :rameau-pardo
-  (:use #:rameau #:cl #:it.bese.arnesi)
-  (:export #:compara-gabarito-pardo #:gera-gabarito-pardo))
+  (:use #:rameau #:cl #:it.bese.arnesi))
 
 (in-package #:rameau-pardo)
 
@@ -149,13 +148,10 @@
                           *pardo-templates*))))
 
 
-(defun gera-gabarito-pardo (musica)
-  (let ((segmentos (segmentos-minimos musica)))
-    (values
-     (mapcar #'nota-pardo-gabarito
-             (reduce #'desempata-pardo (mapcar #'pardo segmentos)
-                     :from-end t :initial-value nil))
-     segmentos)))
+(defun gera-gabarito-pardo (segmentos)
+  (mapcar #'nota-pardo-gabarito
+          (reduce #'desempata-pardo (mapcar #'pardo segmentos)
+                  :from-end t :initial-value nil)))
      
 
 (defun compara-gabarito-pardo-individual (resultado gabarito)
@@ -174,3 +170,5 @@
       (some (lambda (x)
               (compara-gabarito-pardo-individual res x))
             gab)))
+
+(registra-algoritmo "Pardo" #'gera-gabarito-pardo #'compara-gabarito-pardo)

@@ -1,18 +1,5 @@
-#+sbcl(declaim (sb-ext:muffle-conditions warning style-warning sb-ext:compiler-note))
-
-#+cmu(setf ext::*complain-about-illegal-switches* nil)
-
-(declaim (optimize (compilation-speed 0)
-                   (debug 3)
-                   (safety 3)
-                   (space 1)
-                   (speed 1)))
-
-
-(asdf:oos 'asdf:load-op :rameau :verbose nil)
-
 (defpackage :rameau-tools
-  (:use #:cl #:rameau #:it.bese.arnesi #:rameau-pardo #:rameau-temperley)
+  (:use #:cl #:rameau #:it.bese.arnesi)
   (:export #:main)
   #+sbcl(:import-from #:sb-ext #:*posix-argv*))
 (in-package :rameau-tools)
@@ -25,9 +12,9 @@
         (cmu-args #+cmu extensions:*command-line-strings*)
         (clisp-args #+clisp *args*))
     (cond (sbcl-args (rest sbcl-args))
-          (cmu-args (subseq cmu-args 3))
+          (cmu-args (subseq cmu-args (1+ (position "cmurameau" cmu-args :test #'string=))))
           (clisp-args clisp-args)
-          )))
+          (t (error "algum problema com argumentos")))))
 
 (defun rameau-path ()
   (format nil "~a" (or #+sbcl *default-pathname-defaults*
@@ -51,6 +38,12 @@
   #+clisp(ext:exit)
   #+sbcl(quit))
 
+(defun read-user-config ()
+  (aif (cl-fad:file-exists-p (concat "/home/" #+sbcl(sb-ext:posix-getenv "USER") "/.rameaurc"))
+       ;; TODO: checa se arquivo está vazio
+       (with-open-file (s it)
+         (read s))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defparameter max-print-error 10
@@ -61,7 +54,7 @@
                         (("-h" "ajuda")
                          ("-f" "arquivos")
                          ("-p" "profile")
-                         ("-d" "debug")
+                         ("-x i" "ativa código de depuração para os itens i")
                          ("-v" "verbose")
                          ("-m n" "o número de testes errados para imprimir")))
                        (análise
@@ -69,21 +62,13 @@
                          ("-n" "mostra as notas de cada segmento" "-v")
                          ("-d" "mostra as durações de cada segmento" "-v")
                          ("-l" "mostra formato de gabarito como listas" "-v")
-                         ("-e" "só mostra os testes que tem erro" "-v")
-                         ("-c" "só mostra os testes corretos" "-v")
                          ("-i" "ignora (não imprime) corais sem gabaritos")
-                         ("-s" "roda harmonia de temperley na musica")))
+                         ("-a <algoritmos>" "seleciona os algoritmos usados")))
                        (partitura
                         (("-n" "imprime número de partições")
                          ("-g" "imprime gabarito")
-                         ("-a" "imprime análise (pardo)")
+                         ("-a" "imprime análise")
                          ("-t" "imprime tudo")))))
-
-(defun read-user-config ()
-  (aif (cl-fad:file-exists-p (concat "/home/" (sb-ext:posix-getenv "USER") "/.rameaurc"))
-       ;; TODO: checa se arquivo está vazio
-       (with-open-file (s it)
-         (read s))))
 
 (defparameter *lily-dir-list*
   (aif (read-user-config)
@@ -99,6 +84,33 @@
 (defparameter *dados* '((teste ("unidade" "regressao" "lily"))
                         (analise ("corais" "kostka" "sonatas" "exemplos"))
                         (partitura ("corais"))))
+
+;;; Norvig's functions for debugging in PAIP, p. 124
+
+(defvar *dbg-ids* nil "identifiers used by dbg")
+
+(defun dbg (id format-string &rest args)
+  "Print debugging info if (DEBUG ID) has been specified."
+  (when (member id *dbg-ids*)
+    (fresh-line *debug-io*)
+    (apply #'format *debug-io* (concat " => DEBUG: " format-string) args)))
+
+(defun dbg-indent (id indent format-string &rest args)
+  "Print indented debugging info if (DEBUG ID) has been specified."
+  (when (member id *dbg-ids*)
+    (fresh-line *debug-io*)
+    (dotimes (i indent) (princ " " *debug-io*))
+    (apply #'format *debug-io* (concat " => DEBUG: " format-string) args)))
+
+(defun rameau-debug (&rest ids)
+  "Start dbg output on the given ids."
+  (setf *dbg-ids* (union ids *dbg-ids*)))
+
+(defun rameau-undebug (&rest ids)
+  "Stop dbg on the ids. With no ids, stop dbg altogether."
+  (setf *dbg-ids* (if (null ids)
+                      nill
+                      (set-difference *dbg-ids* ids))))
 
 (defun percent (x total)
   (/ (* x 100.0) total))
@@ -211,17 +223,23 @@ Exemplo: (split-word \"foo\") => (F O O)"
       (acorde->cifra list)))
 
 ;; BUG: ok? não imprime por cause do (not f)
-(defun print-gab-columns (a b c d e f flags)
+(defun print-gab-columns (a b c d flags)
   (let ((string (if (member 'l flags)
-                    "~4a~@[~15a~]~(~30a~)~(~15a~)~@[~10a~]~@[*~]~%"
-                    "~4a~@[~15a~]~10a~10a~@[~10a~]~@[*~]~%")))
+                    "~4a~@[~15a~]~(~15a~)~@[~10a~]|"
+                    "~4a~@[~15a~]~10a~@[~10a~]|")))
     (format t string
             a
             (when (member 'n flags) b)
             c
-            d
-            (when (member 'd flags) (if (listp e) (second e) e))
-            (not f))))
+            (when (member 'd flags) (if (listp d) (second d) d)))))
+
+(defun print-res-alg (alg res flags)
+  (let ((string (if (member 'l flags)
+                    "~(~15a~)~:[*~; ~]|"
+                    "~10a~:[*~; ~]|")))
+    (format t string
+            alg
+            res)))
 
 (defun frac->dur-lily (dur)
   "Converte de fração para duração em lilypond. É muito simples, não
@@ -344,38 +362,37 @@ ponto nos corais de bach."
                                   (when (and gabarito (member 'g flags))
                                         (print-lyric "gabarito")))))))
 
-(defun print-gabarito (file gabarito algoritmo comparacao flags &key notas dur)
+(defun print-gabarito (file gabarito algoritmo temperley flags &key notas dur)
+  (declare (ignore file))
   (let ((*package* (find-package :rameau)))
-    (print-gab-columns "#" "notas" "gab" "pardo" "dur" "ok?" flags)
+    (print-gab-columns "#" "notas" "gab" "dur" flags)
+    (loop for a in *algoritmos*
+       do (print-res-alg (algoritmo-nome a) "ok?" flags))
+    (format t "~%")
     (write-line (repeat-string 80 "-"))
-    (let ((count-ok 0)
-          (size-gab (length gabarito))
-          (size-algo (length algoritmo))
-          (wrong-list))
+    (let ((counts (repeat-list (length *algoritmos*) 0)))
       (loop
          for n in notas
          for d in dur
          for numero-seg from 0
-         for pardo in algoritmo
          for gab in gabarito
-         for result = (when (and pardo gab)
-                        (compara-gabarito-pardo pardo gab))
-         then (when (and pardo gab)
-                (compara-gabarito-pardo pardo gab))
-         if result do (incf count-ok)
-         else do (push numero-seg wrong-list)
+         for res = resultados then (avanca-todos res)
          do
-           (print-gab-columns
-            (1+ numero-seg)
-            n
-            (if gab (print-chord gab flags))
-            (if pardo (print-chord pardo flags))
-            d
-            result
-            flags))
-      (format t "~%~$ % correto, gab: ~a, pardo: ~a~%"
-              (percent count-ok size-gab) size-gab size-algo)
-      (format t "segmentos errados: ~a~%" (nreverse wrong-list)))))
+           (print-gab-columns (1+ numero-seg) n (if gab (print-chord gab flags)) d flags)
+           (loop
+              for a in *algoritmos*
+              for i from 0
+              for r in res
+              for alg = (first r) then (first r)
+              for certo? = (funcall (algoritmo-compara a) alg gab)
+              then (funcall (algoritmo-compara a) alg gab)
+              do (print-res-alg (if alg (print-chord alg flags)) certo? flags)
+              when certo? do (incf (nth i counts)))
+           (format t "~%"))
+      (format t "~% correto:~%")
+      (loop  for i in counts
+         for a in *algoritmos* do
+           (format t "  ~a: ~a%~%" (algoritmo-nome a) (percent i size-gab))))))
 
 (defun print-help-item (item)
   (format t "~%~(* [~a]~)~%" item)
@@ -397,6 +414,7 @@ ponto nos corais de bach."
       (print-ok/no-list (parse-summary files))))
 
 (defun run-unidade (flags files)
+  (declare (ignore files))
   (let ((string-result
          (with-output-to-string (string)
            (let ((*standard-output* string))
@@ -428,47 +446,35 @@ ponto nos corais de bach."
 (defun run-compara-gabarito (flags files)
   (let (ok no)
     (dolist (file files)
-      (multiple-value-bind (algoritmo segmento)
-          (with-system rameau:tempered (gera-gabarito-pardo (parse-file file)))
-        (format t "tamanhos pardo: ~a gabarito: ~a ~%" (length algoritmo) (length segmento))
-        (let* ((file-name (pathname-name file))
-               (gabarito (processa-gabarito (tira-extensao file)))
-               (notas (with-system rameau:tempered (mapcar #'lista-notas segmento)))
-               (comparacao (with-system rameau:tempered
-                             (compara-gabarito-pardo algoritmo gabarito)))
-               (duracoes (calcula-duracoes segmento algoritmo)))
-          (cond
-            ((member 'e flags)
-             (unless comparacao
-               (push 'v flags)
-               (print-gabarito file-name gabarito algoritmo comparacao
-                               flags :dur duracoes :notas notas)))
-            ((member 'c flags)
-             (push 'v flags)
-             (when comparacao
-               (print-gabarito file-name gabarito algoritmo comparacao
-                               flags :dur duracoes :notas notas)))
-            ((and (not gabarito) (not (member 'i flags)))
-             (format t "~&[ERRO] o gabarito de ~a não existe~%" file-name))
-            ((or (member 'v flags) (member 'n flags) (member 'd flags))
-             (push 'v flags)
-             (print-gabarito file-name gabarito algoritmo comparacao
-                             flags :dur duracoes :notas notas))
-            (gabarito
-             (if comparacao (push file-name ok) (push file-name no)))))))
+      (let* ((musica (parse-file file))
+             (segmentos (segmentos-minimos musica))
+             (resultados (loop for a in *algoritmos* collect
+                              (funcall (algoritmo-processa a) segmentos)))
+             (gabarito (processa-gabarito (tira-extensao file)))
+             (file-name (pathname-name file))
+             (notas (mapcar #'lista-notas segmentos))
+             (duracoes (calcula-duracoes segmentos)))
+        (format t "tamanhos:~%  gabarito: ~a~%" (length gabarito))
+        (loop for i in resultados
+           for a in *algoritmos*
+           do (format t "  ~a: ~a~%" (algoritmo-nome a) (length i)))
+        (cond
+          ((and (not gabarito) (not (member 'i flags)))
+           (format t "~&[ERRO] o gabarito de ~a não existe~%" file-name))
+          ((or (member 'v flags) (member 'n flags) (member 'd flags))
+           (push 'v flags)
+           (print-gabarito file-name gabarito resultados
+                           flags :dur duracoes :notas notas)))))
     (unless (member 'v flags)
       (print-ok/no-list (list (reverse ok) (reverse no))))))
 
-(defun print-analise-temperley (flags files)
-  (dolist (file files)
-    (format t "~% * ~a~%" (pathname-name file))
-    (format t "   temperley: ~(~a~) ~%" (with-system rameau:tempered (temperley (parse-file file))))))
-
 (defun run-analise (flags files)
+  ;;; exemplo de uso de código de depuração
+  (dbg 'flags "lista de opções (run-analise): ~a~%" flags)
+  (dbg 'files "arquivos (run-analise): ~a~%" files)
+  
   (cond ((member 'g flags)
          (run-compara-gabarito flags files))
-        ((member 's flags)
-         (print-analise-temperley flags files))
         (t  ; -a implicito
          (run-analise-harmonica flags files))))
 
@@ -528,13 +534,19 @@ ponto nos corais de bach."
          (flags-list (if (> (length args) 2) (arg->list (subseq args 2))))
          (files (get-flag-list "-f" flags-list))
          (trace (get-flag-list "-t" flags-list))
+         (algoritmos (get-flag-list "-a" flags-list))
+         (debug (get-flag-list "-x" flags-list))
          (max-error (first (get-flag-list "-m" flags-list)))
          (flags (if flags-list (get-lone-flags flags-list))))
 
+    (when debug
+      (loop for item in debug do
+           (rameau-debug (intern (string-upcase item) :rameau-tools))))
     (when trace (maptrace trace))
     (when max-error (setf max-print-error (read-from-string max-error)))
     (when (member 'h flags) (print-help))
-    
+    (when algoritmos
+      (setf *algoritmos* (filtra-algoritmos algoritmos)))
     (cond ((null comando) (print-help))
           ((equal comando "help") (print-help))
           ((equal comando "-h") (print-help))
