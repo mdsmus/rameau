@@ -57,12 +57,10 @@
                          ("-a <algoritmos>" "Usa <algoritmos> para fazer a análise")
                          ("-x i" "ativa código de depuração para os itens i")
                          ("-v" "verbose")
+                         ("-t <funções>" "mostra o trace de <funções>")
                          ("-m n" "o número de testes errados para imprimir")))
                        (análise
-                        (("-g" "compara com gabarito")
-                         ("-n" "mostra as notas de cada segmento" "-v")
-                         ("-d" "mostra as durações de cada segmento" "-v")
-                         ("-l" "mostra formato de gabarito como listas" "-v")
+                        (("-l" "mostra formato de gabarito como listas")
                          ("-i" "ignora (não imprime) corais sem gabaritos")))
                        (partitura)))
 
@@ -109,7 +107,8 @@
                       (set-difference *dbg-ids* ids))))
 
 (defun percent (x total)
-  (/ (* x 100.0) total))
+  (unless (= 0 total)
+    (/ (* x 100.0) total)))
 
 (defun get-item (item lista &optional (test #'eql))
   "Pega um item em uma lista de associação."
@@ -225,9 +224,9 @@ Exemplo: (split-word \"foo\") => (F O O)"
                     "~4a~@[~15a~]~10a~@[~10a~]|")))
     (format t string
             a
-            (when (member 'n flags) b)
+            (when (member 'v flags) b)
             c
-            (when (member 'd flags) (if (listp d) (second d) d)))))
+            (when (member 'v flags) (if (listp d) (second d) d)))))
 
 (defun print-res-alg (alg res flags)
   (let ((string (if (member 'l flags)
@@ -371,7 +370,8 @@ ponto nos corais de bach."
          for n in notas
          for d in dur
          for numero-seg from 0
-         for gab in gabarito
+         for gab-lista = gabarito then (cdr gab-lista)
+         for gab = (car gab-lista) then (car gab-lista)
          for res = resultados then (avanca-todos res)
          do
            (print-gab-columns (1+ numero-seg) n (if gab (print-chord gab flags)) d flags)
@@ -420,26 +420,14 @@ ponto nos corais de bach."
         (write-line string-result)
         (write-line (subseq (last1 (cl-ppcre:split "\\n" string-result)) 34)))))
 
-(defun run-analise-harmonica (flags files)
-  (dolist (file files)
-    (let ((resultado (with-system rameau:tempered
-                       (gera-gabarito-pardo (parse-file file)))))
-      (format t "~%  * ~a: [pardo] ~(~a~) ~%"
-              (pathname-name file)
-              (mapcar (lambda (x) (print-chord x  flags))
-                      resultado)))))
-
 (defun processa-gabarito-pop (file)
   (processa-cifras (read-pop-file file)))
 
 (defun processa-gabarito (file)
   "Transforma um gabarito de texto em sexp."
   (let* ((*package* (find-package :rameau))
-         (nome-gab (concat file ".gab"))
          (nome-pop (concat file ".pop"))
-         (gabarito (cond ((cl-fad:file-exists-p nome-gab) 
-                          (read-from-string (format nil "(~a)" (file-string nome-gab))))
-                         ((cl-fad:file-exists-p nome-pop)
+         (gabarito (cond ((cl-fad:file-exists-p nome-pop)
                           (processa-gabarito-pop nome-pop))
                          (t nil))))
     (expande-multiplicacoes gabarito)))
@@ -461,24 +449,13 @@ ponto nos corais de bach."
              for a in *algoritmos*
              do (format t "  ~a: ~a~%" (algoritmo-nome a) (length i)))
           (cond
-            ((and-bind (not gabarito) (not (member 'i flags)))
-           (format t "~&[ERRO] o gabarito de ~a não existe~%" file-name))
-            ((or (member 'v flags) (member 'n flags) (member 'd flags))
-             (push 'v flags)
+            ((and (not gabarito) (not (member 'i flags)))
+             (format t "~&[ERRO] o gabarito de ~a não existe~%" file-name))
+            ((member 'v flags)
              (print-gabarito gabarito resultados
                              flags :dur duracoes :notas notas)))))
       (unless (member 'v flags)
         (print-ok/no-list (list (reverse ok) (reverse no)))))))
-
-(defun run-analise (flags files)
-  ;;; exemplo de uso de código de depuração
-  (dbg 'flags "lista de opções (run-analise): ~a~%" flags)
-  (dbg 'files "arquivos (run-analise): ~a~%" files)
-  
-  (cond ((member 'g flags)
-         (run-compara-gabarito flags files))
-        (t  ; -a implicito
-         (run-analise-harmonica flags files))))
 
 (defun run-partitura (flags files)
   (when (member 'v flags) (format t "gerando "))
@@ -523,7 +500,7 @@ ponto nos corais de bach."
         (run-regressao flags (processa-files item files))))
 
 (defcomando analise dados flags files
-  (run-analise flags (processa-files item files)))
+  (run-compara-gabarito flags (processa-files item files)))
 
 (defcomando partitura dados flags files
   (run-partitura flags (processa-files item files)))
