@@ -25,6 +25,7 @@
    #:fim-evento
    #:processa-cifras
    #:registra-algoritmo
+   #:pops->gabs
    )
   (:use #:rameau-base #:genoslib  #:cl #:it.bese.arnesi #:lisp-unit))
 

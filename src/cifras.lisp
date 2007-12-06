@@ -52,37 +52,6 @@ está no baixo de acordo com a inversão."
                            acrescimos)
                        (get-inversao-pop fundamental modo inversao)))))))
 
-;;; (defun expande-cifra-setima (cifra)
-;;;   "Aceita uma lista com a fundamental e a sétima como strings e
-;;; retorna uma lista com a notação de gabarito para 'dupla
-;;; possibilidade'."
-;;;   (let* ((cifra1 (cifra->acorde (first cifra)))
-;;;          (modo (second cifra1))
-;;;          (setima (parse-acrescimos (second cifra))))
-;;;     (list (list '* 2 (list cifra1 (append cifra1 (list setima)))))))
-
-;;; (defun setima-no-baixo (acorde setima)
-;;;   "Acorde é uma lista com fundamental, modo e inversão e sétima é o
-;;; valor da sétima como string. Retorna um novo acorde com a sétima no
-;;; baixo (valor da inversão modificado)."
-;;;   (destructuring-bind (fund modo inversao &rest resto) acorde
-;;;     (declare (ignore inversao))
-;;;     (remove-if #'null (list fund modo 3 (parse-acrescimos setima) resto))))
-
-;;; (defun expande-cifra-setima-baixo (cifra)
-;;;   (let ((cifra1 (cifra->acorde (first cifra)))
-;;;         (setima (second cifra)))
-;;;     (list cifra1 (setima-no-baixo cifra1 setima))))
-
-;;; (defun expande-cifra-super-setima-baixo (cifra)
-;;;   (let ((cifra1 (cifra->acorde (first cifra)))
-;;;         (setima (second cifra)))
-;;;     (list cifra1 (list (setima-no-baixo cifra1 setima) (list 'm! setima)))))
-
-;;; (defun expande-cifra-super-setima (cifra)
-;;;   (let ((acorde (cifra->acorde (first cifra))))
-;;;     (list acorde (append acorde (list (second cifra))))))
-
 ;;; (defun multiplica-cifra (cifra)
 ;;;   (list (list '* (second cifra) (cifra->acorde (first cifra)))))
 
@@ -161,40 +130,18 @@ position."
                               (chord-inversion root (second poplist))
                               (parse-extensions mode extensions))))))
 
-(defun %parse-7 (root 7th)
-  (mapcar #'%parse-pop (list root (concat root 7th))))
+(defun %parse-multiplication (list)
+  list)
 
-;;; eu tenho que saber que nota é a sétima para dizer que é nota
-;;; melodica (nas funções apropriadas), tambem preciso saber qual o
-;;; tipo da setima se for fazer lista gab direto. eu acho melhor saber
-;;; qual a nota e compor coisas do tipo: c__7: (c c7/bb)
-
-(defun %parse-7-bass (root 7th)
-  (let ((triad (%parse-pop root)))
-    (list triad (append (nthcdr 2 triad) (list 3 (parse-seventh 7th))))))
-
-(defun %parse-7-opt (root 7th)
-  root)
-
-(defun %parse-7-opt-bass (root 7th)
-  root)
-
-(defun %parse-multiplication (root 7th)
-  root)
-
-(defun %parse-other (list)
+(defun %parse-6+ (list)
   ;; e.g. 6 aumentada
   list)
 
 (defun parse-pop (pop)
   "Converte uma cifra simbolica para lista no formato de gabarito."
   (let ((pop-string (stringify pop))
-        (parse-table '(("--" %parse-7-opt)
-                       ("==" %parse-7)
-                       ("__" %parse-7-bass)
-                       ("_-" %parse-7-opt)
-                       ("\\*" %parse-multiplication)
-                       ("-" %parse-other)))) ;; tem que ser o último da lista
+        (parse-table '(("\\*" %parse-multiplication)
+                       ("-" %parse-6+))))
     (aif (loop
             for item in parse-table
             for regex = (cl-ppcre:split (first item) pop-string)
@@ -204,7 +151,18 @@ position."
          (%parse-pop pop-string))))
 
 (defun parse-melodic-notes (pop)
-  (list 'm! (mapcar #'latin->lily (rest pop))))
+  (append '(m!) (mapcar #'latin->lily (rest pop))))
+
+(defun expande-multiplicacoes (gab)
+  (when gab
+    (let ((atual (first gab))
+          (resto (rest gab)))
+      (if (and (listp atual) (eq '* (first atual)))
+          (nconc
+           (reduce #'append (repeat-list (second atual)
+                                        (expande-multiplicacoes (rest (rest atual)))))
+           (expande-multiplicacoes resto))
+          (cons atual (expande-multiplicacoes resto))))))
 
 (defun parse-repetition (pop)
   (destructuring-bind (s valor &rest cifras) pop
@@ -216,12 +174,13 @@ position."
 (defun pop->gab (pop)
   "Converte uma cifra no formato pop para sua representação de
 gabarito."
+  (print pop)
   (typecase pop
     (list (case (first pop)
             (an! (parse-annotation pop))
             (m!  (parse-melodic-notes pop))
             (*   (parse-repetition pop))
-            (t   (parse-pop pop)))) ; parse-pop era processa-cifra
+            (t   (mapcar #'pop->gab pop)))) ; parse-pop era processa-cifra
     (t (parse-pop pop))))
 
 (defun pops->gabs (cifras)
@@ -234,5 +193,5 @@ formato de gabarito."
 ;;; testes
 
 (defun roda-all-pop ()
-  (loop for file in (directory "/home/kroger/doc/pesquisa/analise-harmonica/corais/*.pop") do
+  (loop for file in (directory "/home/kroger/src/rameau/corais/*.pop") do
        (print (pops->gabs (read-file-as-sexp file)))))

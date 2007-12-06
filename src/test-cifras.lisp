@@ -226,3 +226,11 @@
 
 (define-test expande-cifra-sexta-aumentada
   (assert-equal '("c" "it" 0) (expande-cifra-sexta-aumentada '("c" "it"))))
+
+(define-test expande-multiplicacoes
+  (assert-equal
+   '(foo foo foo bar bar (foo))
+   (expande-multiplicacoes '((* 3 foo) (* 2 bar) (foo))))
+  (assert-equal
+   '(foo bar foo bar (foo))
+   (expande-multiplicacoes '((* 2 foo bar) (foo)))))
