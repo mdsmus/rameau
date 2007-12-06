@@ -366,7 +366,7 @@ ponto nos corais de bach."
                                     (when (and gabarito (member 'g flags))
                                       (print-lyric "gabarito")))))))))
 
-(defun print-gabarito (file gabarito resultados flags &key notas dur)
+(defun print-gabarito (gabarito resultados flags &key notas dur)
   (let ((*package* (find-package :rameau))
         (size-gab (length gabarito)))
     (print-gab-columns "#" "notas" "gab" "dur" flags)
@@ -473,7 +473,7 @@ ponto nos corais de bach."
            (format t "~&[ERRO] o gabarito de ~a não existe~%" file-name))
             ((or (member 'v flags) (member 'n flags) (member 'd flags))
              (push 'v flags)
-             (print-gabarito file-name gabarito resultados
+             (print-gabarito gabarito resultados
                              flags :dur duracoes :notas notas)))))
       (unless (member 'v flags)
         (print-ok/no-list (list (reverse ok) (reverse no)))))))

@@ -26,7 +26,7 @@
 
 #+cmu(extensions:save-lisp "cmurameau" :init-function #'rameau-tools:main)
 
-#+ecl(progn (loop for file in '("tools/rameau.lisp"
+#+ecl(progn (loop for file in '("src/rameau.lisp"
                                 "src/cifras.lisp"
                                 "src/formato.lisp"
                                 "src/musiclib.lisp"
@@ -52,7 +52,7 @@
                                            "src/parser.o"
                                            "src/segmento.o"
                                            "src/temperley.o"
-                                           "tools/rameau.o"
+                                           "src/rameau.o"
                                            )
                              ))
 
