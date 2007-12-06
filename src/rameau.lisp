@@ -1,16 +1,3 @@
-<<<<<<< HEAD:src/rameau.lisp
-#+sbcl(declaim (sb-ext:muffle-conditions warning style-warning sb-ext:compiler-note))
-
-#+cmu(setf ext::*complain-about-illegal-switches* nil)
-
-(declaim (optimize (compilation-speed 1)
-                   (debug 3)
-                   (safety 1)
-                   (space 0)
-                   (speed 3)))
-
-=======
->>>>>>> origin/master:tools/rameau.lisp
 (defpackage :rameau-tools
   (:use #:cl #:rameau #:it.bese.arnesi)
   (:export #:main)
