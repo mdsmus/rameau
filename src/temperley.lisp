@@ -810,7 +810,7 @@
        when (or (and (eq 1 (evento-temperley-voice-leading-neighbor note))
                      (> (apply-window (evento-temperley-pitch note) window) (+ 4.0 tpc-cog)))
                 (and (eq -1 (evento-temperley-voice-leading-neighbor note))
-                     (> (apply-window (evento-temperley-pitch note) window) (+ -4.0 tpc-cog))))
+                     (< (apply-window (evento-temperley-pitch note) window) (+ -4.0 tpc-cog))))
        do (incf total voice-leading-penalty))
     total))
 
@@ -847,11 +847,7 @@
                                                     window))))))))))
 
 (defun windows-differ-in-chord (window1 window2 chord)
-  (loop for note in chord
-     when (not (= (apply-window (evento-temperley-pitch note) window1)
-                  (apply-window (evento-temperley-pitch note) window2)))
-     do (return-from windows-differ-in-chord t)
-     finally (return-from windows-differ-in-chord nil)))
+  nil)
 
 (defun prune-table (table)
   (let ((count 0)
@@ -883,8 +879,7 @@
                              (delta-cog (- current-cog (bucket-har-cog bu)))
                              (har-variance (abs (* delta-cog
                                                    (column-my-mass (aref column-table column))
-                                                   har-var-factor)))
-                             (note-relable-penalty 0.0))
+                                                   har-var-factor))))
                         (tpc-choice-score my-root
                                           window
                                           (if (= (bucket-root bu) my-root) 1 0)
@@ -892,10 +887,6 @@
                                           (column-my-mass (aref column-table column))
                                           (column-decayed-prior-note-mass (aref column-table column))
                                           (bucket-tpc-cog bu))
-                        (when (windows-differ-in-chord (bucket-window bu)
-                                                       window
-                                                       (column-chord (aref column-table column)))
-                          (setf note-relable-penalty 0.0));1000.0)) ; fixme: faz diferença isso?
                         (let* ((local-voice-leading-penalty (compute-voice-leading-penalty
                                                              (column-chord (aref column-table column))
                                                              (side-effect-tpc-cog *side-effect*)
@@ -905,7 +896,6 @@
                                          (side-effect-orn-diss-penalty *side-effect*)
                                          har-variance
                                          (* tpc-var-factor (side-effect-tpc-variance *side-effect*))
-                                         note-relable-penalty
                                          local-voice-leading-penalty))
                                (new-cog
                                 (/
@@ -956,11 +946,14 @@
            (sharps (abs sharps)))
       (string->symbol (concat (nth letl letters) (repeat-string sharps accidental))))))
 
-(defun exibe-score-roots (bu)
-  (format t "Bucket ~a~%" bu)
-  (loop for i = bu then (bucket-prev-bucket i)
+(defvar *bu* nil)
+
+(defun exibe-score-roots (stream ignore1 ignore2 ignore3)
+  (declare (ignore ignore1 ignore2 ignore3))
+  (format stream "Bucket ~a~%" *bu*)
+  (loop for i = *bu* then (bucket-prev-bucket i)
      unless i do (return)
-     do (format t "Root ~a~%"
+     do (format stream "Root ~a~%"
                 (tpc-string (bucket-root i)))))
 
 (defun gera-gabarito-temperley (column-table chords)
@@ -971,7 +964,7 @@
          (setf (aref bucket-choice i) (make-bucket)))
     (loop for h being the hash-keys in (column-table (aref column-table (1- n-chords)))
        using (hash-value bu)
-       ;do (exibe-score-roots bu)
+       do (let ((*bu* bu)) (dbg 'rameau::temperley "Scores: ~/rameau-temperley::exibe-score-roots/" bu))
        when (or (null best-b) (< (bucket-score best-b) (bucket-score bu))) do
          (setf best-b bu))
     (loop for i from (1- n-chords) downto 0 do

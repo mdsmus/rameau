@@ -6,6 +6,10 @@
 (in-package :genoslib)
 
 (register-and-export-symbols '(
+                               dbg
+                               dbg-indent
+                               rameau-debug
+                               rameau-undebug
                                add-lily-ext
                                add-pop-ext
                                assoc-item
@@ -36,6 +40,35 @@
                                tira-extensao
                                troca-extensao
                                ))
+
+;;; Norvig's functions for debugging in PAIP, p. 124
+
+
+(defvar *dbg-ids* nil "identifiers used by dbg")
+
+(defun dbg (id format-string &rest args)
+  "Print debugging info if (DEBUG ID) has been specified."
+  (when (member id *dbg-ids*)
+    (fresh-line *debug-io*)
+    (apply #'format *debug-io* (concat " => DEBUG: " format-string) args)))
+
+(defun dbg-indent (id indent format-string &rest args)
+  "Print indented debugging info if (DEBUG ID) has been specified."
+  (when (member id *dbg-ids*)
+    (fresh-line *debug-io*)
+    (dotimes (i indent) (princ " " *debug-io*))
+    (apply #'format *debug-io* (concat " => DEBUG: " format-string) args)))
+
+(defun rameau-debug (&rest ids)
+  "Start dbg output on the given ids."
+  (setf *dbg-ids* (union ids *dbg-ids*)))
+
+(defun rameau-undebug (&rest ids)
+  "Stop dbg on the ids. With no ids, stop dbg altogether."
+  (setf *dbg-ids* (if (null ids)
+                      nill
+                      (set-difference *dbg-ids* ids))))
+
 
 (defun add-lily-ext (file)
   (if (tem-ext? file) file (concat file ".ly")))
