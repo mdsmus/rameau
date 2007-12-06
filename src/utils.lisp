@@ -15,12 +15,12 @@
                                defcached
                                destringify
                                exclude-repetition
-                               expande-multiplicacoes
                                file-string
                                max-predicado
                                no-op
                                octave-from-string
                                pula
+                               read-file-as-sexp
                                repeat-list
                                retorna-n-segmentos
                                smallest
@@ -185,17 +185,5 @@ quantos acidentes ou oitavas uma nota tem."
   (if (> n 0)
       (cons (copy list) (repeat-copy (- n 1) list))))
 
-(defun expande-multiplicacoes (gab)
-  (when gab
-    (let ((atual (first gab))
-          (resto (rest gab)))
-      (if (and (listp atual) (eq '* (first atual)))
-          (nconc
-           (reduce #'append (repeat-list (second atual)
-                                        (expande-multiplicacoes (rest (rest atual)))))
-           (expande-multiplicacoes resto))
-          (cons atual (expande-multiplicacoes resto))))))
-
 (defun read-file-as-sexp (file)
   (read-from-string (format nil "(~a)" (file-string file))))
-
