@@ -66,7 +66,7 @@ corais-partitura-fast: $(corais-ly)
 	@if [ -f $(patsubst %.lyi,%.pop,$<) ]; then cp $(patsubst %.lyi,%.pop,$<) $(corais-dir); fi
 
 coral-%.png: %.ly 
-	./rameau partitura corais -t -f $(notdir $(basename $<))
+	./rameau partitura corais -f $(notdir $(basename $<))
 	cd $(corais-dir); \
 	$(lilypond) --png coral-$(notdir $<) 2> $(corais-dir)/coral-$(notdir $(basename $<)).log
 

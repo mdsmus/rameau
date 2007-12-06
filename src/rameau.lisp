@@ -64,10 +64,7 @@
                          ("-d" "mostra as durações de cada segmento" "-v")
                          ("-l" "mostra formato de gabarito como listas" "-v")
                          ("-i" "ignora (não imprime) corais sem gabaritos")))
-                       (partitura
-                        (("-n" "imprime número de partições")
-                         ("-g" "imprime gabarito")
-                         ("-t" "imprime tudo")))))
+                       (partitura)))
 
 (defparameter *lily-dir-list*
   (aif (read-user-config)
@@ -319,11 +316,7 @@ ponto nos corais de bach."
     (with-open-file (stream out-file :direction :output :if-exists :supersede)
       (format stream "~a~%" (file-string (concat path file-name ".lyi")))
       (format stream "texto = {~{c~a ~}}~%~%" (print-duracoes notas))
-      (when (member 't flags)
-        (push 'g flags)
-        (push 'a flags)
-        (push 'n flags))
-      (when (and gabarito (member 'g flags))
+      (when gabarito
         (with-print-cifra (stream "gabarito")
           (loop for i in gabarito
              for s = notas then (rest s)
@@ -349,21 +342,20 @@ ponto nos corais de bach."
                           (if res (acorde->cifra res) " "))
                 unless (= 0 (intervalo (first s) (second s))) do
                   (format stream "\" \""))))
-      (when (member 'n flags)
-        (with-print-cifra (stream "particoes")
-          (loop for x from 1
-             for s = notas then (rest s)
-             unless s return 0
-             do (format stream "\"~a\" " x)
-             unless (= 0 (intervalo (first s) (second s)))
-             do (format stream "\"~a\" " x))))
+      (with-print-cifra (stream "particoes")
+        (loop for x from 1
+           for s = notas then (rest s)
+           unless s return 0
+           do (format stream "\"~a\" " x)
+           unless (= 0 (intervalo (first s) (second s)))
+           do (format stream "\"~a\" " x)))
       (print-score stream (reduce #'concat
                                   (append
-                                   (list (when (member 'n flags) (print-lyric "particoes")))
+                                   (list (print-lyric "particoes"))
                                    (loop for a in *algoritmos* collect
                                         (print-lyric (algoritmo-nome a)))
                                    (list
-                                    (when (and gabarito (member 'g flags))
+                                    (when gabarito
                                       (print-lyric "gabarito")))))))))
 
 (defun print-gabarito (gabarito resultados flags &key notas dur)
