@@ -79,32 +79,6 @@
                         (analise ("corais" "kostka" "sonatas" "exemplos"))
                         (partitura ("corais"))))
 
-;;; Norvig's functions for debugging in PAIP, p. 124
-
-(defvar *dbg-ids* nil "identifiers used by dbg")
-
-(defun dbg (id format-string &rest args)
-  "Print debugging info if (DEBUG ID) has been specified."
-  (when (member id *dbg-ids*)
-    (fresh-line *debug-io*)
-    (apply #'format *debug-io* (concat " => DEBUG: " format-string) args)))
-
-(defun dbg-indent (id indent format-string &rest args)
-  "Print indented debugging info if (DEBUG ID) has been specified."
-  (when (member id *dbg-ids*)
-    (fresh-line *debug-io*)
-    (dotimes (i indent) (princ " " *debug-io*))
-    (apply #'format *debug-io* (concat " => DEBUG: " format-string) args)))
-
-(defun rameau-debug (&rest ids)
-  "Start dbg output on the given ids."
-  (setf *dbg-ids* (union ids *dbg-ids*)))
-
-(defun rameau-undebug (&rest ids)
-  "Stop dbg on the ids. With no ids, stop dbg altogether."
-  (setf *dbg-ids* (if (null ids)
-                      nill
-                      (set-difference *dbg-ids* ids))))
 
 (defun percent (x total)
   (unless (= 0 total)
@@ -520,7 +494,7 @@ ponto nos corais de bach."
 
     (when debug
       (loop for item in debug do
-           (rameau-debug (intern (string-upcase item) :rameau-tools))))
+           (rameau-debug (intern (string-upcase item) :rameau))))
     (when trace (maptrace trace))
     (when max-error (setf max-print-error (read-from-string max-error)))
     (when (member 'h flags) (print-help))
