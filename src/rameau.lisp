@@ -28,7 +28,11 @@
          (sb-profile:profile "RAMEAU-TEMPERLEY")
          (sb-profile:profile "RAMEAU-PARDO")
          (sb-profile:profile "GENOSLIB"))
-  #+cmu(profile:profile-all :package "RAMEAU"))
+  #+cmu (progn
+          (profile:profile-all :package "RAMEAU")
+          (profile:profile-all :package "RAMEAU-TEMPERLEY")
+          (profile:profile-all :package "RAMEAU-PARDO")
+          (profile:profile-all :package "GENOSLIB")))
 
 (defun rameau-report ()
   #+sbcl(sb-profile:report)
@@ -299,8 +303,8 @@ ponto nos corais de bach."
              do (format stream "\" \" "))))
       (loop for a in *algoritmos*
          for r in resultados do
-           (with-print-cifra (stream (concat "\"" (algoritmo-nome a) "\""))
-             (loop 
+           (with-print-cifra (stream (algoritmo-nome a))
+             (loop
                 for alg-lista = r then (rest alg-lista)
                 for gab-lista = gabarito then (rest gab-lista)
                 for s = notas then (rest s)

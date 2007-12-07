@@ -768,7 +768,7 @@
   (declare (ignore decayed-prior-chord-mass)
            (float cog my-mass decayed-prior-chord-mass)
            (fixnum tpc))
-  (let ((delta-cog (abs (- cog tpc))))
+  (let ((delta-cog (- cog tpc)))
     (* delta-cog delta-cog my-mass)))
 
 (defun tpc-choice-score (root window same-roots ch my-mass decayed-prior-note-mass tpc-cog)
