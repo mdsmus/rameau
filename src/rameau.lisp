@@ -72,13 +72,17 @@
   (aif (read-user-config)
        it
        '(("corais" "corais/")
-         ("gabaritos-corais" "literatura/bach-corais/")
          ("kostka" "literatura/kostka-payne/")
          ("sonatas" "literatura/beethoven-sonatas/")
          ("exemplos" "exemplos/")
          ("regressao" "regressao/")
          ("lily" "regressao-lily/")
          ("corais-include" "literatura/bach-corais/"))))
+
+(defparameter *gabarito-dir-list*
+  (aif (read-user-config)
+       it
+       '(("corais" "gabaritos/bach-corais/"))))
 
 (defparameter *dados* '((teste ("unidade" "regressao" "lily"))
                         (analise ("corais" "kostka" "sonatas" "exemplos"))
@@ -402,7 +406,7 @@ ponto nos corais de bach."
 (defun processa-gabarito (file)
   "Transforma um gabarito de texto em sexp."
   (let* ((*package* (find-package :rameau))
-         (nome-pop (concat (get-item "gabaritos-corais" *lily-dir-list* #'equal)
+         (nome-pop (concat (get-item "corais" *gabarito-dir-list* #'equal)
                            (add-pop-ext (pathname-name file)))))
     (when (cl-fad:file-exists-p nome-pop)
       (read-file-as-sexp nome-pop))))
