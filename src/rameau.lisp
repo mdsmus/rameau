@@ -72,6 +72,7 @@
   (aif (read-user-config)
        it
        '(("corais" "corais/")
+         ("gabaritos-corais" "literatura/bach-corais/")
          ("kostka" "literatura/kostka-payne/")
          ("sonatas" "literatura/beethoven-sonatas/")
          ("exemplos" "exemplos/")
@@ -398,17 +399,13 @@ ponto nos corais de bach."
         (write-line string-result)
         (write-line (subseq (last1 (cl-ppcre:split "\\n" string-result)) 34)))))
 
-(defun processa-gabarito-pop (file)
-  (processa-cifras (read-pop-file file)))
-
 (defun processa-gabarito (file)
   "Transforma um gabarito de texto em sexp."
   (let* ((*package* (find-package :rameau))
-         (nome-pop (concat file ".pop"))
-         (gabarito (cond ((cl-fad:file-exists-p nome-pop)
-                          (processa-gabarito-pop nome-pop))
-                         (t nil))))
-    (expande-multiplicacoes gabarito)))
+         (nome-pop (concat (get-item "gabaritos-corais" *lily-dir-list* #'equal)
+                           (add-pop-ext (pathname-name file)))))
+    (when (cl-fad:file-exists-p nome-pop)
+      (read-file-as-sexp nome-pop))))
 
 (defun run-compara-gabarito (flags files)
   (with-system rameau:tempered
