@@ -13,7 +13,6 @@ lilypond = lilypond -I $(maindir)/literatura/bach-corais -I $(maindir)/lily
 
 vpath %.lyi literatura/bach-corais
 vpath %.ly $(corais-dir)
-vpath %.pop $(corais-dir)
 vpath %.log $(corais-dir)
 vpath %.png $(corais-dir)
 
@@ -63,7 +62,6 @@ corais-partitura-fast: $(corais-ly)
 %.ly: %.lyi
 	@if [ ! -d $(corais-dir) ]; then mkdir -p $(corais-dir); fi;
 	@cat $< lily/score.lyi > $(corais-dir)/$(basename $(notdir $<)).ly
-	@if [ -f $(patsubst %.lyi,%.pop,$<) ]; then cp $(patsubst %.lyi,%.pop,$<) $(corais-dir); fi
 
 coral-%.png: %.ly 
 	./rameau partitura corais -f $(notdir $(basename $<))
