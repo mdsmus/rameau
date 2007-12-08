@@ -96,7 +96,7 @@
 
 (defclass simultaneous (ast-node) ())
 
-(defclass chord (simultaneous) ())
+(defclass chord-lily (simultaneous) ())
 
 (defclass no-op-node (ast-node) ())
 
@@ -120,7 +120,7 @@
         (setf (sequencia-de-notas-dur i) dur)
         (dolist (j (sequencia-de-notas-notas i))
           (setf (evento-dur j) dur))))
-  (make-instance 'chord :expr chord))
+  (make-instance 'chord-lily :expr chord))
 
 (defun parse-simultaneous (a simultaneous b)
   (declare (ignore a b))
