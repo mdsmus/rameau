@@ -236,7 +236,8 @@
 (defun parse-item (chord)
   (typecase chord
     (list (case (first chord)
-            (m! (make-melodic-note :notes (rest chord)))))
+            (m! (make-melodic-note :notes (rest chord)))
+            (t (mapcar #'parse-item chord))))
     (t (parse-chord chord))))
 
 (defun read-chords (list)
