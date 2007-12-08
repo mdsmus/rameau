@@ -20,3 +20,7 @@ os seguintes corais não foram processados:
 272: repeticao, oitava e enarmonia, ultima nota
 280: mudanca de compasso, ultima nota
 
+302: repeticao
+305: repeticao
+308: não compila
+

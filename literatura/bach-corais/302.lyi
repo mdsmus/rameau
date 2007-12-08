@@ -44,7 +44,7 @@ alto = \relative c' {
     \partial 4 d8  e8 
     f2~ f8 e8 
     d4 a4 bes4 
-    c8 dis8 d8 c8 b4 
+    c8 ees8 d8 c8 b4 
     e2 e8 fis8 
     g8 fis8 g2~     %5
     g4. fis8 g4 
@@ -75,20 +75,20 @@ tenor = \relative c' {
     c'2 c4 
     d4. c8 bes8 a8     %5
     g8 fis8 g4 d'4 
-    dis4 d8 a8 d8 c8 
+    ees4 d8 a8 d8 c8 
     bes2 } c8 bes8 
   a4 bes4 c4~ 
   c4 bes4 c4   %10
   d2 g,8 c8 
   a2 bes8 c8 
-  d8 bes8 dis4. d8 
-  d2 dis4 
-  f4 dis8 d8 dis8 c8   %15
-  d8 dis8 f8 f,8 g4 
+  d8 bes8 ees4. d8 
+  d2 ees4 
+  f4 ees8 d8 ees8 c8   %15
+  d8 ees8 f8 f,8 g4 
   a2 d4~ 
-  d8 bes8 dis4 d8 bes8 
+  d8 bes8 ees4 d8 bes8 
   g4 c8 a8 bes8 d8 
-  dis8 d8 c8 bes8 c8 a8   %20
+  ees8 d8 c8 bes8 c8 a8   %20
   b2. 
   
 }
@@ -101,7 +101,7 @@ baixo = \relative c' {
     a2 d4 
     c2 a4 
     g2 bes4     %5
-    dis2 d4 
+    ees2 d4 
     c4 d4 d,4 
     g2 } e'4 
   f4 g4 a4 
@@ -109,11 +109,11 @@ baixo = \relative c' {
   d8 c8 bes4 c4 
   f,2 bes8 a8 
   g4 g'4 fis4 
-  g4 f8 dis8 d8 c8 
+  g4 f8 ees8 d8 c8 
   bes4 bes'4 a4   %15
-  g4 f4 dis4 
+  g4 f4 ees4 
   d2 d4 
-  g4. dis8 bes'4~ 
+  g4. ees8 bes'4~ 
   bes4 a4 g4 
   c,4 a4 d4   %20
   g,2. 

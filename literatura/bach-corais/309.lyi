@@ -1,4 +1,4 @@
-\version "2.10.33"
+.\version "2.10.33"
 
 \header {
   title = "309 - An Wasserflüssen Babylon"
@@ -28,7 +28,7 @@ soprano = \relative c'' {
   f4 f4 bes,4 ees4 
   des4 c4 bes4 des4 
   c4 bes4 aes4 bes8 aes8 
-  fis4 f4 ees4 ees4 
+  ges4 f4 ees4 ees4 
   aes4 bes4 c4. des8   %15
   ees4 des8 c8 bes4 c8 des8 
   bes2 aes4 
@@ -43,15 +43,15 @@ alto = \relative c'' {
     aes4 g4 ees4 } ees4 
   ees8 f8 g4 f4 f8 ees8   %5
   ees4 des4 c4 f4 
-  ees4 f4 fis4 f8 g8 
+  ees4 f4 ges4 f8 g8 
   aes8 g8 aes8 bes8 g4 ees4 
   aes4 aes4 bes4 c4 
   c8 a8 bes4 a4 c4   %10
-  bes4 f8 des8 ees8 f8 fis4 
+  bes4 f8 des8 ees8 f8 ges4 
   f4 ees4 des4 bes'4 
-  ees,8 f8 fis4 f8 ees8 f4~ 
+  ees,8 f8 ges4 f8 ees8 f4~ 
   f8 ees4 d8 ees4 ees8 des8 
-  c8 bes8 aes8 fis8 aes4 aes'4   %15
+  c8 bes8 aes8 ges8 aes4 aes'4   %15
   g4 aes4 aes4 aes4~ 
   aes4 g4 ees4 
 }
@@ -84,20 +84,20 @@ baixo = \relative c' {
     des,4 ees4 f4 g8 aes8 
     bes4 ees,4 aes4 g4 
     aes8 g8 f4 c4 des4 
-    ees2 aes,4 } aes,4 
-  aes'4 g4 f8 ees8 f4   %5
-  g4 aes4 ees4 aes,4 
-  des4 aes'8 fis8 f8 ees8 des8 c8 
-  des8 ees8 f4 bes,4 ees4 
-  aes8 bes8 c4 des4 g4 
-  a4 bes4 bes,4 f'4   %10
-  a,4 bes8 c8 des8 bes8 fis'4 
-  f8 ees8 f4 f,4 bes4 
-  bes4 c8 d8 ees2 
-  d4 ees4 bes4 ees4 
-  c4 f4 ees4 aes8 g8   %15
-  f4 c8 bes8 aes4 des8 c8 
-  bes4 ees8 des8 ees4 aes,4 
+    ees2 aes,4 } aes'4 
+  g4 f8 ees8 f4 g4  %5
+  aes4 ees4 aes,4 des4
+  aes'8 ges8 f8 ees8 des8 c8 des8 ees8
+  f4 bes,4 ees4 aes8 bes8
+  c4 des4 g,4 a4
+  bes4 bes,4 f'4 a,4  %10
+  bes8 c8 des8 bes8 ges'4 f8 ees8
+  f4 f,4 bes4 bes4
+  c8 d8 ees2 d4
+  ees4 bes4 ees4 c4
+  f4 ees4 aes8 g8 f4  %15
+  c8 bes8 aes4 des8 c8 bes4
+  ees8 des8 ees4 aes,4 
   
 }
 
