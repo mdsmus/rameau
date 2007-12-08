@@ -130,9 +130,6 @@ position."
                               (chord-inversion root (second poplist))
                               (parse-extensions mode extensions))))))
 
-(defun %parse-multiplication (list)
-  list)
-
 (defun %parse-6+ (list)
   ;; e.g. 6 aumentada
   list)
@@ -153,45 +150,57 @@ position."
 (defun parse-melodic-notes (pop)
   (append '(m!) (mapcar #'latin->lily (rest pop))))
 
-(defun expande-multiplicacoes (gab)
+(defun parse-annotation (pop)
+  (format nil "(~{~a ~}~s)" (parse-pop (second pop)) (third pop)))
+
+(defun parse-multiplication (chord)
+  (if (listp chord)
+      (if (eql (first chord) '*)
+          (append (subseq chord 0 2)
+                  (mapcar #'parse-multiplication (subseq chord 2)))
+          chord)
+      (let* ((chord-string (stringify chord))
+             (pos (position #\* chord-string)))
+        (if pos
+            (list '*
+                  (parse-integer (subseq chord-string (1+ pos)))
+                  (string->symbol (subseq chord-string 0 pos)))
+            chord))))
+
+(defun expand-multiplications (gab)
   (when gab
     (let ((atual (first gab))
           (resto (rest gab)))
       (if (and (listp atual) (eq '* (first atual)))
           (nconc
            (reduce #'append (repeat-list (second atual)
-                                        (expande-multiplicacoes (rest (rest atual)))))
-           (expande-multiplicacoes resto))
-          (cons atual (expande-multiplicacoes resto))))))
+                                        (expand-multiplications (rest (rest atual)))))
+           (expand-multiplications resto))
+          (cons atual (expand-multiplications resto))))))
 
-(defun parse-repetition (pop)
-  (destructuring-bind (s valor &rest cifras) pop
-    `(,s ,valor ,@(parse-pop cifras))))
+(defun expand-chords (list)
+  (expand-multiplications (mapcar #'parse-multiplication list)))
 
-(defun parse-annotation (pop)
-  (format nil "(~{~a ~}~s)" (parse-pop (second pop)) (third pop)))
+(defun read-chords (list)
+  (expand-chords list))
 
-(defun pop->gab (pop)
-  "Converte uma cifra no formato pop para sua representação de
-gabarito."
-  (print pop)
-  (typecase pop
-    (list (case (first pop)
-            (an! (parse-annotation pop))
-            (m!  (parse-melodic-notes pop))
-            (*   (parse-repetition pop))
-            (t   (mapcar #'pop->gab pop)))) ; parse-pop era processa-cifra
-    (t (parse-pop pop))))
+;;; (defun expand-chord (pop)
+;;;   (typecase pop
+;;;     (list (case (first pop)
+;;;             (an! (parse-annotation pop))
+;;;             (m!  (parse-melodic-notes pop))
+;;;             (*   (parse-repetition pop))
+;;;             (t   (mapcar #'pop->gab pop)))) ; parse-pop era processa-cifra
+;;;     (t (parse-pop pop))))
 
-(defun pops->gabs (cifras)
-  "Converte uma lista de cifras no formato pop para uma lista no
-formato de gabarito."
-  (mapcar #'pop->gab cifras))
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; testes
 
-(defun roda-all-pop ()
-  (loop for file in (directory "/home/kroger/src/rameau/corais/*.pop") do
-       (print (pops->gabs (read-file-as-sexp file)))))
+;;; (defun roda-all-pop ()
+;;;   (loop for file in (directory "/home/kroger/src/rameau/corais/*.pop") do
+;;;        (print (pops->gabs (read-file-as-sexp file)))))
+
+;;; (read-file-as-sexp "/home/kroger/src/rameau/gabaritos/bach-corais/001.pop")

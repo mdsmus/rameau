@@ -409,7 +409,7 @@ ponto nos corais de bach."
          (nome-pop (concat (get-item "corais" *gabarito-dir-list* #'equal)
                            (add-pop-ext (pathname-name file)))))
     (when (cl-fad:file-exists-p nome-pop)
-      (read-file-as-sexp nome-pop))))
+      (read-chords (read-file-as-sexp nome-pop)))))
 
 (defun run-compara-gabarito (flags files)
   (with-system rameau:tempered
