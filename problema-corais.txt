@@ -25,3 +25,7 @@ os seguintes corais não foram processados:
 308: não compila
 
 323: repeticao e pausas no lugar de notas
+
+343: repeticao ultimo compasso
+359: repeticoes ultimo compasso
+361: repeticao e acordes
