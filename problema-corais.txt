@@ -24,3 +24,4 @@ os seguintes corais não foram processados:
 305: repeticao
 308: não compila
 
+323: repeticao e pausas no lugar de notas

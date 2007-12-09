@@ -29,14 +29,14 @@ soprano = \relative c'' {
 
 alto = \relative c' {
   fis2 e2 
-  e4 f4 fis4 gis4 
+  e4 eis4 fis4 gis4 
   fis4 e2 fis4 
   fis2 e2 
   e1   %5
   e1 
   e4 gis4 fis4 a4 
   gis2 fis2 
-  fis2. f4 
+  fis2. eis4 
   cis2 d2~   %10
   d2 cis2 
   
@@ -59,7 +59,7 @@ tenor = \relative c' {
 
 baixo = \relative c {
   fis2 gis2 
-  a4 gis4 fis4 f4 
+  a4 gis4 fis4 eis4 
   fis4 gis4 a4 fis4 
   d4 b4 e2 
   a,1   %5
