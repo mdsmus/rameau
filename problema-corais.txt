@@ -21,11 +21,6 @@ os seguintes corais não foram processados:
 280: mudanca de compasso, ultima nota
 
 302: repeticao
-305: repeticao
+305: repeticao. nosso:                  || 4 | 1 | ... | 2. :| 4 | 1 | ...
+                riemenschneider:        || 4 | 1 | ... | 2. :| 1 | ...
 308: não compila
-
-323: repeticao e pausas no lugar de notas
-
-343: repeticao ultimo compasso
-359: repeticoes ultimo compasso
-361: repeticao e acordes
