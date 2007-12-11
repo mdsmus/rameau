@@ -61,6 +61,7 @@
 	   linesearch-eval-net-one-pattern
 	   ;;
 	   patterns
+     make-patterns
 	   ;;;
 	   act-mean
 	   act-mean-sum
@@ -1375,31 +1376,31 @@ given pattern dest. Other options are experimental."
 		  num-layers
 		  :initial-contents
 		  (cons nil
-			(list-of-n (1- num-layers)
+			(list-of-n (1- (if (=  0 num-layers) 1 num-layers))
 				   (gensym "layers-")))))
 	 (sums (make-array
 		num-layers
 		:initial-contents
 		(cons nil
-		      (list-of-n (1- num-layers)
+		      (list-of-n (1-  (if (=  0 num-layers) 1 num-layers))
 				 (gensym "sums-")))))
 	 (deltas (make-array
 		  num-layers
 		  :initial-contents
 		  (cons nil
-			(list-of-n (1- num-layers)
+			(list-of-n (1-  (if (=  0 num-layers) 1 num-layers))
 				   (gensym "deltas-")))))
 	 (weights (make-array
 		   num-layers
 		   :initial-contents
 		   (cons nil
-			 (list-of-n (1- num-layers)
+			 (list-of-n (1-  (if (=  0 num-layers) 1 num-layers))
 				    (gensym "weights-")))))
 	 (de-by-dws (make-array
 		     num-layers
 		     :initial-contents
 		     (cons nil
-			   (list-of-n (1- num-layers)
+			   (list-of-n (1-  (if (=  0 num-layers) 1 num-layers))
 				      (gensym "de-by-dws")))))
 	 ;; and acts for all layers
 	 (acts (make-array
@@ -4790,3 +4791,17 @@ input-patterns and dest-patterns."
 							 (the type-act (coerce (eval da) 'type-act)))
 						     dat))))
        data)))
+
+(defun make-patterns (nodes &rest data)
+  (apply #'vector (mapcan (lambda (dat)
+                            (list
+                             (make-array
+                              nodes
+                              :element-type 'type-act
+                              :initial-contents (mapcar
+                                                 (lambda (x)
+                                                   (coerce x 'type-act))
+                                                 dat))))
+                          data)))
+                                        
+                                        
