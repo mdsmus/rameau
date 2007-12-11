@@ -86,14 +86,12 @@
   (if (tem-ext? file) (concat (tira-extensao file) ext) file))
  
 (defmacro defcached (funcname args &body body)
-  (let ((cache (gensym))
-        (func (gensym)))
+  (let ((cache (gensym)))
     `(let ((,cache (make-hash-table :test #'equal)))
-       (labels ((,func ,args ,@body))
-         (defun ,funcname ,args
-           (aif (gethash ,(cons 'list args) ,cache)
-                it
-                (setf (gethash ,(cons 'list args) ,cache) (,func ,@args))))))))
+       (defun ,funcname ,args
+         (aif (gethash ,(cons 'list args) ,cache)
+              it
+              (setf (gethash ,(cons 'list args) ,cache) (progn ,@body)))))))
 
 (defun concat (&rest strings)
   "Concatenate a bunch of strings."
