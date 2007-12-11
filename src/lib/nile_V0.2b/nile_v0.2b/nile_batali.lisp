@@ -757,146 +757,72 @@
 ;;;	   (:explain :calls :types :boxing)
 	   )
   (let* ((student-num (the fixnum (random population-size)))
-	 (student (svref population student-num))
-	 ;; stats
-	 (st-speaker-error (coerce 0.0d0 'type-act)) ; type-act
-	 (st-hearer-error (coerce 0.0d0 'type-act)) ; type-act
-	 (st-speaker-hearer-error (coerce 0.0d0 'type-act)) ; type-act
-	 (st-speaker-correct 0)		; fixnum
-	 (st-hearer-correct 0)		; fixnum
-	 (st-length 0)			; fixnum
-	 (num-episodes (* num-teachers num-meanings))
-	 ;; inner loops
-	 (teacher-num 0)
-	 (teacher nil)
-	 (meaning-num 0)
-	 (meaning (svref meanings 9))
-	 )
+         (student (svref population student-num))
+         ;; stats
+         (st-speaker-error (coerce 0.0d0 'type-act)) ; type-act
+         (st-hearer-error (coerce 0.0d0 'type-act)) ; type-act
+         (st-speaker-hearer-error (coerce 0.0d0 'type-act)) ; type-act
+         (st-speaker-correct 0)		; fixnum
+         (st-hearer-correct 0)		; fixnum
+         (st-length 0)			; fixnum
+         (num-episodes (* num-teachers num-meanings))
+         ;; inner loops
+         (teacher-num 0)
+         (teacher nil)
+         (meaning-num 0)
+         (meaning (svref meanings 9))
+         )
     (declare (fixnum student-num teacher-num meaning-num)
-	     (type type-act st-speaker-error st-hearer-error st-speaker-hearer-error)
-	     (fixnum st-speaker-correct st-hearer-correct st-length num-episodes)
-	     (type (simple-array type-act (*)) meaning))
+             (type type-act st-speaker-error st-hearer-error st-speaker-hearer-error)
+             (fixnum st-speaker-correct st-hearer-correct st-length num-episodes)
+             (type (simple-array type-act (*)) meaning))
     (dotimes (x num-teachers)
       (setq teacher-num (from-m-but-n population-size student-num)
-	    teacher (svref population teacher-num))
+            teacher (svref population teacher-num))
       ;; batali sais: Choose meaning independed of other meanings every time -
       ;; I think this is not really correct (Used n-random-integers to choose
       ;; num-meanings DISTINCT meanings every round)
       ;;
       ;; Anyway - I do it here as he did it
       (dotimes (y num-meanings)
-	(setq meaning-num (the fixnum (random meaning-size))
-	      meaning (svref meanings meaning-num))
-	(communication-episode *netspec-batali*
-			       teacher
-			       student
-			       meaning
-			       ;;
+        (setq meaning-num (the fixnum (random meaning-size))
+              meaning (svref meanings meaning-num))
+        (communication-episode *netspec-batali*
+                               teacher
+                               student
+                               meaning
+                               ;;
 ;;;			       :verbose t
-			       ;;
-			       :training :sd
-			       :eta eta
-			       ;; stats
-			       :collect-stats t
-			       :st-speaker-error-in st-speaker-error
+                               ;;
+                               :training :sd
+                               :eta eta
+                               ;; stats
+                               :collect-stats t
+                               :st-speaker-error-in st-speaker-error
 ;;; hearer error is useless with
 ;;; original batali experiment
 ;;;			       :st-hearer-error-in st-hearer-error
-			       :st-speaker-hearer-error-in st-speaker-hearer-error
-			       :st-speaker-correct-in st-speaker-correct
+                               :st-speaker-hearer-error-in st-speaker-hearer-error
+                               :st-speaker-correct-in st-speaker-correct
 ;;; dito
 ;;;			       :st-hearer-correct-in st-hearer-correct
-			       :st-length-in st-length
-			       :print-speaker teacher-num
-			       :print-hearer student-num
-			       :print-meaning meaning-num)))
+                               :st-length-in st-length
+                               :print-speaker teacher-num
+                               :print-hearer student-num
+                               :print-meaning meaning-num)))
     (format t "Stats: Round ~a Sp-Err ~a He-Err ~a Sp-He-Err ~a Sp-Co ~a He-Co ~a Len ~a~%"
-	    round 
-	    (/ st-speaker-error num-episodes 5)
-	    (/ st-hearer-error num-episodes 5)
-	    (/ st-speaker-hearer-error num-episodes 5)
-	    (/ st-speaker-correct num-episodes 1.0)
-	    (/ st-hearer-correct num-episodes 1.0)
-	    (/ st-length num-episodes *max-word-length*))))
+            round 
+            (/ st-speaker-error num-episodes 5)
+            (/ st-hearer-error num-episodes 5)
+            (/ st-speaker-hearer-error num-episodes 5)
+            (/ st-speaker-correct num-episodes 1.0)
+            (/ st-hearer-correct num-episodes 1.0)
+            (/ st-length num-episodes *max-word-length*))))
 
 (eval-when (:compile-toplevel)
   (nile_compile-tools:gc-post-compile)
   (my-tenure))
 
-#|
-(defun batali-round-cg (population population-size
-			meanings meaning-size
-			round
-			num-teachers num-meanings)
-  (declare (fixnum meaning-size round)
-	   (type (integer 1 100000) population-size num-teachers num-meanings)
-	   (optimize (speed 3) (space 2) (safety 0) (debug 0)
-		     (compilation-speed 0))
-;;;	   (:explain :calls :types :boxing)
-	   )
-  (let* ((student-num (the fixnum (random population-size)))
-	 (student (svref population student-num))
-	 ;; stats
-	 (st-speaker-error (coerce 0.0d0 'type-act)) ; type-act
-	 (st-hearer-error (coerce 0.0d0 'type-act)) ; type-act
-	 (st-speaker-hearer-error (coerce 0.0d0 'type-act)) ; type-act
-	 (st-speaker-correct 0)		; fixnum
-	 (st-hearer-correct 0)		; fixnum
-	 (st-length 0)			; fixnum
-	 (num-episodes (* num-teachers num-meanings))
-	 ;; inner loops
-	 (teacher-num 0)
-	 (teacher nil)
-	 (meaning-num 0)
-	 (meaning (svref meanings 0))
-	 )
-    (declare (fixnum student-num teacher-num meaning-num)
-	     (type type-act st-speaker-error st-hearer-error st-speaker-hearer-error)
-	     (fixnum st-speaker-correct st-hearer-correct st-length num-episodes)
-	     (type (simple-array type-act (*)) meaning))
-    (dotimes (x num-teachers)
-      (setq teacher-num (from-m-but-n population-size student-num)
-	    teacher (svref population teacher-num))
-      ;; batali sais: Choose meaning independed of other meanings every time -
-      ;; I think this is not really correct (Used n-random-integers to choose
-      ;; num-meanings DISTINCT meanings every round)
-      ;;
-      ;; Anyway - I do it here as he did it
-      (dotimes (y num-meanings)
-	(setq meaning-num (the fixnum (random meaning-size))
-	      meaning (svref meanings meaning-num))
-	(communication-episode *netspec-batali*
-			       teacher
-			       student
-			       meaning
-			       ;;
-;;;			       :verbose t
-			       ;;
-			       :training :cg
-			       :max-word-length 8
-			       ;; stats
-			       :collect-stats t
-			       :st-speaker-error-in st-speaker-error
-;;; hearer error is useless with
-;;; original batali experiment
-;;;			       :st-hearer-error-in st-hearer-error
-			       :st-speaker-hearer-error-in st-speaker-hearer-error
-			       :st-speaker-correct-in st-speaker-correct
-;;; dito
-;;;			       :st-hearer-correct-in st-hearer-correct
-			       :st-length-in st-length
-			       :print-speaker teacher-num
-			       :print-hearer student-num
-			       :print-meaning meaning-num)))
-    (format t "Stats: Round ~a Sp-Err ~a He-Err ~a Sp-He-Err ~a Sp-Co ~a He-Co ~a Len ~a~%"
-	    round 
-	    (/ st-speaker-error num-episodes 5)
-	    (/ st-hearer-error num-episodes 5)
-	    (/ st-speaker-hearer-error num-episodes 5)
-	    (/ st-speaker-correct num-episodes 1.0)
-	    (/ st-hearer-correct num-episodes 1.0)
-	    (/ st-length num-episodes 8.0))))
-|#
 
 (defun get-words (pop &optional (popsize *popsize*))
   (let ((pred-names (make-array 10 :initial-contents
@@ -993,43 +919,56 @@
     (format t "Choosing ~a meanings from ~a to communicate from ~a teachers~%" num-meanings 100 num-teachers)
     (format t "Method ~a~%" method)
     (if (eq method 'sd)
-	(format t "Learning rate ~a~%~%" inteta))
-    (let ((population (nile_compile-tools:my-tenuring (vector-of-n *popsize* (mk-net *netspec-batali*
-								     :runtime-weights t
-								     :weight-deviation 0.5))))
-	  (meanings (batali-meanings))
-	  (write-pop-next (if (/= write-pop-every 0)
-			      write-pop-every
-			    -1)))
+        (format t "Learning rate ~a~%~%" inteta))
+    (let ((population (nile_compile-tools:my-tenuring
+                        (vector-of-n *popsize* (mk-net *netspec-batali*
+                                                       :runtime-weights t
+                                                       :weight-deviation 0.5))))
+          (meanings (batali-meanings))
+          (write-pop-next (if (/= write-pop-every 0)
+                              write-pop-every
+                              -1)))
       (declare (fixnum write-pop-next))
       (ecase method
-	(sd
-	 (dotimes (cycle max-cycles)
-	   (batali-round-sd population *popsize* meanings 100 cycle num-teachers num-meanings inteta)
-	   (if post-round-func
-	       (funcall post-round-func population cycle))
-	   (if (= cycle write-pop-next)
-	       (progn
-		 (setq write-pop-next (+ cycle write-pop-every))
-		 (write population
-			:right-margin 80
-			:level 99
-			:length 10000)))))
-	(cg
-	 (dotimes (cycle max-cycles)
-	   (batali-round-cg population *popsize* meanings 100 cycle num-teachers num-meanings)
-	   (if (= cycle write-pop-next)
-	       (progn
-		 (setq write-pop-next (+ cycle write-pop-every))
-		 (format t "~a~%" population
-			 :right-margin 80
-			 :level 99
-			 :length 10000))))))
+        (sd
+         (dotimes (cycle max-cycles)
+           (batali-round-sd population
+                            *popsize*
+                            meanings
+                            100
+                            cycle
+                            num-teachers
+                            num-meanings inteta)
+           (if post-round-func
+               (funcall post-round-func population cycle))
+           (if (= cycle write-pop-next)
+               (progn
+                 (setq write-pop-next (+ cycle write-pop-every))
+                 (write population
+                        :right-margin 80
+                        :level 99
+                        :length 10000)))))
+        (cg
+         (dotimes (cycle max-cycles)
+           (batali-round-cg population
+                            *popsize*
+                            meanings
+                            100
+                            cycle
+                            num-teachers
+                            num-meanings)
+           (if (= cycle write-pop-next)
+               (progn
+                 (setq write-pop-next (+ cycle write-pop-every))
+                 (format t "~a~%" population
+                         :right-margin 80
+                         :level 99
+                         :length 10000))))))
       
       (format t "~a~%" population
-	      :right-margin 80
-	      :level 99
-	      :length 10000)
+              :right-margin 80
+              :level 99
+              :length 10000)
       nil)))
 
 (eval-when (:compile-toplevel)

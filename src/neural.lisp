@@ -13,7 +13,7 @@
 
 (in-package :rameau-neural)
 
-(defparameter *and-net* (mk-net (netspec 3 1 1)))
+(defparameter *and-net* (mk-net (netspec 3 2 1)))
 
 (defparameter *and-input* (patterns 3
                                     (0 0 0)
@@ -37,20 +37,21 @@
 
 
 (defun train-and (and-net)
-  (trainer (netspec 3 1 1)
+  (trainer (netspec 3 2 1)
            and-net
            *and-input*
            *and-output*
            :method :sd
-           :error-lim (coerce 0.01 'type-act)))
+           :error-lim (coerce 0.001 'type-act)))
 
-(defun run-and (and-net pattern-in res)
-  (all-pattern-error (netspec 3 1 1)
-                     and-net
-                     pattern-in
-                     (make-patterns 1 (list res))
-                     1))
+(defun run-and (and-net pattern-in)
+  (setf (layer-act-vec (svref and-net 0))
+        (svref pattern-in 0))
+  (activation-fn (netspec 3 2 1) and-net)
+  (aref (layer-act-vec (svref and-net 2)) 0))
+  
 
 (train-and *and-net*)
-(run-and *and-net* (patterns 3 (0 1 1)) 1)
+(run-and *and-net* (patterns 3 (0 0 0)))
 
+;(write-net *and-net*)
