@@ -1,0 +1,128 @@
+
+	NILE V0.2b INSTALL GUIDE
+
+Requirements
+============
+
+to run the code
+---------------
+
+The code of this project has been developed in Common Lisp and should
+run at least on CMU Common Lisp 18b and Allegro Common Lisp 5.0 on Sun
+Sparc Solaris and x86 Linux, though convient to use shell scripts to
+run the software are only provided for CMU CL.
+
+  * CMU CL 18b should be invocable as "cmucl"
+    (older versions may not work or may be very slow)
+
+  * Within the PROJECT subdirectory (in which the wrapper-shell
+    scripts can be found, the NILE code should be accessible in a
+    subdirectory called "code" (which may be set up as a symbolic
+    link)
+
+  * No other special environment is needed
+
+Files
+=====
+
+run_batali_sim_cmucl
+
+	A shell script to run the basic replication of Batali's
+	experiment
+
+run_generational_sim_cmucl
+
+	A shell script to run the generational variation of it
+
+run_learnability
+
+	A shell script to run a batch of learnability experiments
+
+run_demo-par5
+
+	A shell script to run a demo of training of a simple neural
+	network (problem: 5bit parity, training: 100 cycles conjugate
+	gradient updates)
+
+nile_v0.2b/nile_batali.lisp
+
+	The source code for the replication
+
+nile_v0.2b/nile_c2ompile-net-lib.lisp
+
+	Code needed at compile time of
+	nile_v0.2b/nile_compile-net-lib.lisp
+
+nile_v0.2b/nile_compile-batali-lib.lisp
+
+	Code needed to compile batali-style simulations
+
+nile_v0.2b/nile_compile-net-lib.lisp
+
+	Code needed to compile code using the basic
+	ANN simulation functionality provided by the NILE package
+
+nile_v0.2b/nile_compile-tools.lisp
+
+	Some helper code for smooth compilation of the code.
+	Also sets platform dependencies.
+	
+nile_v0.2b/nile_demos.lisp
+
+	Lisp source holding simple ANN demos, right now only
+	demo-par5 is functional (5bit parity demo)
+
+nile_v0.2b/nile_gen.lisp
+
+	Code for the generational variation
+
+nile_v0.2b/nile_learnability.lisp
+
+	Code for learnability experiments
+
+nile_v0.2b/nile_loader.lisp
+
+	Code for a proprietry loader to keep compiled files up to date
+	etc.
+
+nile_v0.2b/nile_run-net-lib.lisp
+
+	Code needed at runtime of networks
+
+nile_v0.2b/nile_stats.lisp
+
+	Generation of simple statistics used in the thesis
+
+code
+
+	symbolic link to nile_v0.2b
+
+
+How to make executables
+=======================
+
+The code supplied in nile_v0.2b/nile_loader.lisp should be used to
+load files like
+
+	(nile_loader:load-and-compile "nile_XXXX")
+
+after loading the loader itself. This way, all code will automatically
+be recompiled if compiled versions are not available or if source
+files have changed.
+
+The shell scripts provided make use of the loader code and thus no
+special action is needed to make executables. Or, put the other way
+'round, there is no way to make executables which would not depend on
+some other the other Common Lisp being installed. *)
+
+CAUTION: This mechanism is not fool proof ! If one package requires
+another, and the source file of the latter has changed while the
+former has not, it may be the case that the former is not
+automatically recompiled even though it is dependend on a package
+which has changed.
+
+*) NB: This does not apply for Allegro, which proviedes such a
+mechanism. I have also implemented some code to generate stand-alone
+packages, but as the use of Allegro is depreciated for this package
+for speed reasons, it is not described in detail here.
+
