@@ -52,12 +52,6 @@
 ;;;                            acrescimos)
 ;;;                        (get-inversao-pop fundamental modo inversao)))))))
 
-;;; ;;; (defun multiplica-cifra (cifra)
-;;; ;;;   (list (list '* (second cifra) (cifra->acorde (first cifra)))))
-
-;;; ;;; (defun expande-cifra-sexta-aumentada (cifra)
-;;; ;;;   (list (substitute (second cifra) "maj" (cifra->acorde (first cifra)) :test #'equal)))
-
 ;;; (defparameter *inversions-pop* '(1 3 5 7))
 
 ;;; (defun %chord-interval-code (root bass)
@@ -75,64 +69,6 @@
 ;;;            (position it *inversions-pop*)
 ;;;            (error "don't know inversion ~a" it))
 ;;;       0))
-
-;;; (defun parse-seventh (mode 7th)
-;;;   (cond ((and (string= mode "°") (string= 7th "7"))
-;;;          81)
-;;;         ((string= 7th "7") 82)
-;;;         ((string= 7th "7m") 83)
-;;;         (t 7th)))
-  
-;;; (defun parse-extensions (mode extensions)
-;;;   (when extensions
-;;;     (let ((ext-list (cl-ppcre:split "\\." extensions)))
-;;;       (aif (cl-ppcre:scan-to-strings "7(m|-)?" (first ext-list))
-;;;            (parse-seventh mode it)
-;;;            ;;; BUG: deve usar mapcar
-;;;            (cl-ppcre:scan-to-strings "(9|11|13)(b|\\#)?" (rest ext-list)))
-;;;       )))
-
-;;; (defun get-mode (abrev)
-;;;   (case (string->symbol abrev)
-;;;     (m "min")
-;;;     (° "dim")
-;;;     (ø "dim")
-;;;     (+ "aug")
-;;;     (! "inc")
-;;;     (t "maj")))
-
-;;; (defun %parse-pop (pop)
-;;;   "Essa espera que cifra seja uma string em minúscula."
-;;;   (let ((poplist (cl-ppcre:split "/" pop)))
-;;;     (cl-ppcre:register-groups-bind (root mode extensions)
-;;;         ("([cdefgab]+[#b]?)(m|°|ø|!|\\+)?([0-9\\.mb#]+)?" (first poplist) :sharedp t)
-;;;       (remove-if #'null (list (latin->lily root)
-;;;                               (get-mode mode)
-;;;                               (chord-inversion root (second poplist))
-;;;                               (parse-extensions mode extensions))))))
-
-;;; (defun %parse-6+ (list)
-;;;   ;; e.g. 6 aumentada
-;;;   list)
-
-;;; (defun parse-pop (pop)
-;;;   "Converte uma cifra simbolica para lista no formato de gabarito."
-;;;   (let ((pop-string (stringify pop))
-;;;         (parse-table '(("\\*" %parse-multiplication)
-;;;                        ("-" %parse-6+))))
-;;;     (aif (loop
-;;;             for item in parse-table
-;;;             for regex = (cl-ppcre:split (first item) pop-string)
-;;;             when (rest regex) do
-;;;               (return (funcall (second item) (first regex) (second regex))))
-;;;          it
-;;;          (%parse-pop pop-string))))
-
-;;; (defun parse-melodic-notes (pop)
-;;;   (append '(m!) (mapcar #'latin->lily (rest pop))))
-
-;;; (defun parse-annotation (pop)
-;;;   (format nil "(~{~a ~}~s)" (parse-pop (second pop)) (third pop)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -187,51 +123,33 @@
                 (format stream "--"))))
   notes)
 
-(defstruct (chord
-             (:print-function
-              (lambda (struct stream depth)
-                (declare (ignore depth))
-                (format stream "~:(~a~)~@[~:(~a~)~]~@[/~:(~a~)~]"
-                        (chord-root struct)
-                        (chord-seventh struct)
-                        (chord-bass struct)))))
-  root seventh bass inversion mode)
-
-;;;;;;;;;;;;;;
-
-;;; (defun parse-seventh (mode 7th)
-;;;   (cond ((and (string= mode "°") (string= 7th "7"))
-;;;          81)
-;;;         ((string= 7th "7") 82)
-;;;         ((string= 7th "7m") 83)
-;;;         (t 7th)))
+(defstruct
+    (chord
+      (:print-function
+       (lambda (struct stream depth)
+         (declare (ignore depth))
+         (format stream "~:(~a~a~)~@[~:(~a~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[/~:(~a~)~]"
+                 (chord-root struct)
+                 (chord-mode struct)
+                 (chord-7th struct)
+                 (chord-9th struct)
+                 (chord-11th struct)
+                 (chord-13th struct)
+                 (chord-bass struct)))))
+  root 7th 9th 11th 13th bass inversion mode)
   
-;;; (defun parse-extensions (mode extensions)
-;;;   (when extensions
-;;;     (let ((ext-list (cl-ppcre:split "\\." extensions)))
-;;;       (aif (cl-ppcre:scan-to-strings "7(m|-)?" (first ext-list))
-;;;            (parse-seventh mode it)
-;;;            ;;; BUG: deve usar mapcar
-;;;            (cl-ppcre:scan-to-strings "(9|11|13)(b|\\#)?" (rest ext-list)))
-;;;       )))
-
-;;; (defun get-mode (abrev)
-;;;   (case (string->symbol abrev)
-;;;     (m "min")
-;;;     (° "dim")
-;;;     (ø "dim")
-;;;     (+ "aug")
-;;;     (! "inc")
-;;;     (t "maj")))
-
 (defun parse-chord (chord)
   (let ((poplist (cl-ppcre:split "/" (stringify chord))))
-    (cl-ppcre:register-groups-bind (root mode extensions)
-        ("([cdefgab]+[#b]?)(m|°|ø|!|\\+)?([0-9\\.mb#]+)?" (first poplist) :sharedp t)
+    (cl-ppcre:register-groups-bind (root mode 7th 9th 11th 13th)
+        ("([cdefgab]+[#b]?)(m|°|ø|!|\\+)?(7[\\+-]?)?\\.?(9[b\\#]?)?\\.?(11[b\\#]?)?\\.?(13[b\\#]?)?"
+         (first poplist) :sharedp t)
       (make-chord :root root
                   :mode mode
                   :bass (second poplist)
-                  :seventh extensions))))
+                  :7th 7th
+                  :9th 9th
+                  :11th 11th
+                  :13th 13th))))
 
 (defun parse-item (chord)
   (typecase chord
@@ -242,18 +160,6 @@
 
 (defun read-chords (list)
   (mapcar #'parse-item (expand-chords list)))
-
-;;; (defun expand-chord (pop)
-;;;   (typecase pop
-;;;     (list (case (first pop)
-;;;             (an! (parse-annotation pop))
-;;;             (m!  (parse-melodic-notes pop))
-;;;             (*   (parse-repetition pop))
-;;;             (t   (mapcar #'pop->gab pop)))) ; parse-pop era processa-cifra
-;;;     (t (parse-pop pop))))
-
-
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; testes
