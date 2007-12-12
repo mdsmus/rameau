@@ -26,7 +26,7 @@ soprano = \relative c' {
   d4 cis8. b16 b4 b8 cis16 d16 
   cis4. b8 a4 g4   %10
   fis4 b4 b8 cis8 ais4 
-  b1 
+  b2. 
   
 }
 
@@ -34,7 +34,7 @@ alto = \relative c' {
   \repeat volta 2 {
     \partial 4 cis4 
     fis4 e4 d8 fis8 b8 gis8 
-    gis8 fis8 f16 dis16 f8 fis4 fis4 
+    gis8 fis8 f16 dis16 eis8 fis4 fis4 
     fis4 e8 d8 e4 e8 fis16 e16 
     d2. } b'4 
   b4 b4 a4 a4   %5
@@ -42,9 +42,9 @@ alto = \relative c' {
   a4 a4 a4. gis8 
   a8 fis8 gis4 e4 fis4 
   fis4 fis4 g8 fis8 g4 
-  gis8 fis8 f4 fis4 fis8 e8   %10
+  gis8 fis8 eis4 fis4 fis8 e8   %10
   d8 e8 fis8 g8 fis8 g16 fis16 e8 fis16 e16 
-  dis1 
+  dis2. 
   
 }
 
@@ -62,7 +62,7 @@ tenor = \relative c' {
   cis8 b8 cis8 dis8 e8 d8 e8 b8 
   gis8 a16 b16 cis4 cis4 d8 a8   %10
   a4 d8 cis8 d8 e16 d16 cis8 fis,8 
-  fis1 
+  fis2. 
   
 }
 
@@ -78,9 +78,9 @@ baixo = \relative c {
   fis8 e8 d8 cis8 d8 e16 fis16 b,4 
   cis8 d8 e4 a,4 ais4 
   b8 b'4 a8 g8 a16 b16 e,4 
-  f8 fis16 gis16 cis,4 fis4 b,8 cis8   %10
+  eis8 fis16 gis16 cis,4 fis4 b,8 cis8   %10
   d8 cis8 d8 e8 fis8 e8 fis4 
-  b,1 
+  b,2. 
   
 }
 

@@ -13,18 +13,20 @@ global =  {
 
 soprano = \relative c {
   \partial 4 cis''4 
-  d cis b cis8 d 
-  e4 fis e d 
-  cis2 r4 e 
-  d cis d b 
-  a fis8 g a4 g 
-  fis2. cis'4 
-  d cis b cis8 d 
-  e4 fis e d 
-  cis2 r4 e 
-  d cis d b 
-  a fis8 g a4 g 
-  fis2. a4 
+  \repeat volta 2 {
+    d cis b cis8 d 
+    e4 fis e d 
+    cis2 r4 e 
+    d cis d b 
+    a fis8 g a4 g } 
+%   d cis b cis8 d 
+%   e4 fis e d 
+%   cis2 r4 e 
+%   d cis d b 
+%   a fis8 g a4 g 
+  \alternative {
+    { fis2. cis'4 }
+    { fis,2. a4 }}
   g fis e fis 
   d e fis cis' 
   d cis8 b a4 b8 cis 
@@ -35,24 +37,21 @@ soprano = \relative c {
   d cis b d 
   cis b a fis8 g 
   a2 g 
-  fis1 
+  fis2. 
 }
 
 
 alto = \relative c {
   \partial 4 fis'4 
-  fis fis8 e d4 a' 
-  g fis8 gis a4 b 
-  e,2 r4 fis 
-  fis e fis d8 e 
-  fis2. e4 
-  d2. e4 
-  fis fis8 e d4 a' 
-  g fis8 gis a4 b 
-  e,2 r4 fis 
-  fis e fis d8 e 
-  fis2. e4 
-  d2. fis4 
+  \repeat volta 2 {
+    fis fis8 e d4 a' 
+    g fis8 gis a4 b 
+    e,2 r4 fis 
+    fis e fis d8 e 
+    fis2. e4 }
+  \alternative {
+  { d2. e4 }
+  { d2. fis4 }}
   e d d8 cis d4 
   d g, a a' 
   a g fis fis 
@@ -62,24 +61,21 @@ alto = \relative c {
   cis8 a' gis fis e fis g4 
   fis8 b4 ais8 fis4 b 
   b8 a a g g fis16 e d4. e8 fis4 e2 
-  d1 
+  d2. 
 }
 
 
 tenor = \relative c {
   \partial 4 ais'4 
-  b ais b a8 b 
-  cis4 d e8 fis gis4 
-  cis,2 r4 cis 
-  b8 a g4 a b8 cis 
-  d2. a4 
-  a2. ais4 
-  b ais b a8 b 
-  cis4 d e8 fis gis4 
-  cis,2 r4 cis 
-  b8 a g4 a b8 cis 
-  d2. a4 
-  a2. a4 
+  \repeat volta 2 {
+    b ais b a8 b 
+    cis4 d e8 fis gis4 
+    cis,2 r4 cis 
+    b8 a g4 a b8 cis 
+    d2. a4 }
+  \alternative {
+  { a2. ais4 }
+  { a2. a4 }}
   a a a a 
   a b8 cis fis,4 e' 
   d g, d'8 e fis4 
@@ -90,24 +86,21 @@ tenor = \relative c {
   cis8 b cis e d4 e 
   e d e8 a, a4 
   d2. cis4 
-  a1 
+  a2. 
 }
 
 
 baixo = \relative c {
   \partial 4 fis4 
-  b, fis' g fis 
-  e d cis b 
-  a2 r4 ais 
-  b e d g 
-  fis b a a, 
-  d2. cis4 
-  b fis' g fis 
-  e d cis b 
-  a2 r4 ais 
-  b e d g 
-  fis b a a, 
-  d2. d4 
+  \repeat volta 2 {
+    b, fis' g fis 
+    e d cis b 
+    a2 r4 ais 
+    b e d g 
+    fis b a a, }
+  \alternative {
+  { d2. cis4 }
+  { d2. d4 }}
   d8 cis d4 a d8 e 
   fis4 e d cis 
   d e fis8 e d cis 
@@ -118,7 +111,7 @@ baixo = \relative c {
   b fis b gis 
   a b cis d8 e 
   fis g a2 a,4 
-  d1 
+  d2. 
 }
 
 

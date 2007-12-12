@@ -24,7 +24,7 @@ soprano = \relative c'' {
   f2 ees2 
   bes'4 bes4 c4 c4   %10
   d4 d8 ees16 f16 ees2 
-  bes4 bes8 c16 cis16 c8 bes8 aes8 g8 
+  bes4 bes8 c16 des16 c8 bes8 aes8 g8 
   f8 g16 aes16 f4 ees2 
   
 }
@@ -73,9 +73,9 @@ baixo = \relative c {
   c2 g'8 f8 e8 c8 
   f8 ees8 d8 bes8 ees8 g8 aes8 f8 
   bes4 bes,4 ees2 
-  ees'8 cis8 c8 bes8 aes8 g8 f8 ees8   %10
+  ees'8 des8 c8 bes8 aes8 g8 f8 ees8   %10
   d8 c8 b8 g8 c2 
-  ees8 cis8 c8 bes8 aes8 bes8 c8 bes8 
+  ees8 des8 c8 bes8 aes8 bes8 c8 bes8 
   aes4 bes4 ees2 
   
 }

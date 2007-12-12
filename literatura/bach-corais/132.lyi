@@ -102,29 +102,29 @@ tenor = \relative c' {
   b4. c16 d16 e8 a,8 d4 
   d2 d4 c8 d8 
   e2~ e8 c8 a8 d16 c16 
-  b2 d8 c16 ais16 a4 
-  ais4 a8 d8 ais8 g8 e8 a16 g16   %5
+  b2 d8 c16 bes16 a4 
+  bes4 a8 d8 bes8 g8 e8 a16 g16   %5
   f2 f4 e8 a8 
   a8 d16 c16 b8 c16 b16 a8 c8 d8 c16 b16 
   a8 g16 a16 b8 c16 d16 e8 c8 a8 d8 
-  b2 c4. ais8 
-  a8 b8 c8 ais8 a8 ais4 a8   %10
+  b2 c4. bes8 
+  a8 b8 c8 bes8 a8 bes4 a8   %10
   a4 gis8 fis8 gis2 
   g4 a8 g8 fis4 g4~ 
   g8 d'8 c8 b8 a4. g16 f16 
-  g8 c16 ais16 a4 g2 
+  g8 c16 bes16 a4 g2 
   a4 a4 b8 g8 e'8 d16 c16   %15
-  b8 c16 ais16 a8 d16 c16 b8 d8. c16 b16 a16 
+  b8 c16 bes16 a8 d16 c16 b8 d8. c16 b16 a16 
   g2 g4 g4 
   g4 c8 d8 g,4 a4~ 
   a8 g16 f16 g4 c8 d8 e4~ 
   e8 d8 e8 d16 c16 b4 d4~   %20
-  d8 cis8 d8 a8 a4 ais8 a16 g16 
+  d8 cis8 d8 a8 a4 bes8 a16 g16 
   f2 f8 g8 a8 d8 
   d8 b8 g8 c16 b16 a4. g16 fis16 
   e8 a8 b8 e4 c8 a8 d16 c16 
-  b2 c4. ais8   %25
-  c16 ais16 c8 d8 g,8 c8 ais8 a8 b16 a16 
+  b2 c4. bes8   %25
+  c16 bes16 c8 d8 g,8 c8 bes8 a8 b16 a16 
   gis4 a2 gis4 
   e'2 e2 
   b2 r4 d4 
@@ -132,11 +132,11 @@ tenor = \relative c' {
   b2 e4 e4 
   d4 d8 c8 b4. a8~ 
   a8 g4 fis8 g4 f8 g8 
-  a8 c4 ais4 b8 e,8 a16 g16 
+  a8 c4 bes4 b8 e,8 a16 g16 
   fis2 b4 cis4   %35
   d4. c16 b16 c8 fis,4 g16 a16 
   g8 a4 g8 e'16 d16 c4 b16 a16 
-  b2 b8 ais8 a8 g8 
+  b2 b8 bes8 a8 g8 
   f4. e16 d16 e8 f16 g16 a8 b8~ 
   b8 a16 gis16 a4. gis16 fis16 gis4   %40
 }
@@ -146,7 +146,7 @@ baixo = \relative c {
   g,2 d'4 a8 b8 
   c8 d8 e8 d8 c8 a8 d4 
   g,2 d'8 e8 f4~ 
-  f8 e8 f8 ais8 g8 e8 a8 a,8   %5
+  f8 e8 f8 bes8 g8 e8 a8 a,8   %5
   d2 d4. cis8 
   d8 f4 e8 f8 a4 gis8 
   a8 e4 d8 c8 a8 d4 
@@ -164,10 +164,10 @@ baixo = \relative c {
   e8 b8 c8 d8 g,4 d'8 e8   %20
   f8 a,8 b8 cis8 d8 f,8 g8 a8 
   d,2 d'8 e8 f8 d8 
-  ais8 b8 c4. cis8 d8 dis8 
+  bes8 b8 c4. cis8 d8 dis8 
   e8 fis8 g8 e8 c8 a8 d4 
-  g,2 c8 ais8 a8 g8   %25
-  f8 a8 ais8 b8 c8 cis8 d4~ 
+  g,2 c8 bes8 a8 g8   %25
+  f8 a8 bes8 b8 c8 cis8 d4~ 
   d8 c16 b16 c8 d8 e2 
   e,4 e'2 d8 c8 
   g'2 r4 g,8 a8 
@@ -180,7 +180,7 @@ baixo = \relative c {
   fis8 b8 e,4. dis16 cis16 dis8 b8 
   e8 fis8 g8 e8 c8 a8 d4 
   g,2 g'8 cis,8 d4~ 
-  d8 c8 b8 ais8 a4. gis8 
+  d8 c8 b8 bes8 a4. gis8 
   a8 b8 c8 d8 e2   %40
 }
 
