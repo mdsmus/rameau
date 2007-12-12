@@ -53,18 +53,18 @@
 
 (defstruct
     (chord
-;;;       (:print-function
-;;;        (lambda (struct stream depth)
-;;;          (declare (ignore depth))
-;;;          (format stream "~:(~a~@[~a~]~)~@[~:(~a~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[/~:(~a~)~]"
-;;;                  (chord-fundamental struct)
-;;;                  (chord-mode struct)
-;;;                  ;;; possível bug em acordes que tenham a sétima diminuta mas não sejam X°7
-;;;                  (if (string= (chord-7th struct) "7-") "7" (chord-7th struct))
-;;;                  (chord-9th struct)
-;;;                  (chord-11th struct)
-;;;                  (chord-13th struct)
-;;;                  (chord-bass struct))))
+      (:print-function
+       (lambda (struct stream depth)
+           (declare (ignore depth))
+           (format stream "~:(~a~@[~a~]~)~@[~:(~a~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[/~:(~a~)~]"
+                   (chord-fundamental struct)
+                   (chord-mode struct)
+                 ;;; possível bug em acordes que tenham a sétima diminuta mas não sejam X°7
+                   (if (string= (chord-7th struct) "7-") "7" (chord-7th struct))
+                   (chord-9th struct)
+                   (chord-11th struct)
+                   (chord-13th struct)
+                   (chord-bass struct))))
       )
   fundamental 7th 9th 11th 13th bass inversion mode)
 
@@ -114,11 +114,13 @@ position."
 (defun read-chords (list)
   (mapcar #'parse-chord (expand-chords list)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; testes
+#|
+testes
 
-;;; (defun roda-all-pop ()
-;;;   (loop for file in (directory "/home/kroger/src/rameau/corais/*.pop") do
-;;;        (print (pops->gabs (read-file-as-sexp file)))))
+(defun roda-all-pop ()
+  (loop for file in (directory "/home/kroger/src/rameau/gabaritos/bach-corais/*.pop") do
+       (print file)
+       (print (read-chords (read-file-as-sexp file)))))
 
-;;; (read-file-as-sexp "/home/kroger/src/rameau/gabaritos/bach-corais/001.pop")
+(read-chords (read-file-as-sexp "/home/kroger/src/rameau/gabaritos/bach-corais/001.pop"))
+|#
