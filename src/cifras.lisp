@@ -52,24 +52,6 @@
 ;;;                            acrescimos)
 ;;;                        (get-inversao-pop fundamental modo inversao)))))))
 
-;;; (defparameter *inversions-pop* '(1 3 5 7))
-
-;;; (defun %chord-interval-code (root bass)
-;;;   "Retorna o interval-code do intervalo entre o bass e a root
-;;; do acorde. Expects root and bass to be a string."
-;;;   (interval->code (interval (note->code bass)
-;;;                             (note->code root))))
-
-;;; (defun chord-inversion (root bass)
-;;;   "Return the inversion number of the chord with root and bass (both
-;;; as strings). If bass is nil the chord is suposed to be in root
-;;; position."
-;;;   (if bass
-;;;       (aif (first (%chord-interval-code root bass))
-;;;            (position it *inversions-pop*)
-;;;            (error "don't know inversion ~a" it))
-;;;       0))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun expand-mel (stream char)
@@ -125,41 +107,66 @@
 
 (defstruct
     (chord
-      (:print-function
-       (lambda (struct stream depth)
-         (declare (ignore depth))
-         (format stream "~:(~a~a~)~@[~:(~a~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[/~:(~a~)~]"
-                 (chord-root struct)
-                 (chord-mode struct)
-                 (chord-7th struct)
-                 (chord-9th struct)
-                 (chord-11th struct)
-                 (chord-13th struct)
-                 (chord-bass struct)))))
-  root 7th 9th 11th 13th bass inversion mode)
-  
-(defun parse-chord (chord)
-  (let ((poplist (cl-ppcre:split "/" (stringify chord))))
-    (cl-ppcre:register-groups-bind (root mode 7th 9th 11th 13th)
+;;;       (:print-function
+;;;        (lambda (struct stream depth)
+;;;          (declare (ignore depth))
+;;;          (format stream "~:(~a~@[~a~]~)~@[~:(~a~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[/~:(~a~)~]"
+;;;                  (chord-fundamental struct)
+;;;                  (chord-mode struct)
+;;;                  ;;; possível bug em acordes que tenham a sétima diminuta mas não sejam X°7
+;;;                  (if (string= (chord-7th struct) "7-") "7" (chord-7th struct))
+;;;                  (chord-9th struct)
+;;;                  (chord-11th struct)
+;;;                  (chord-13th struct)
+;;;                  (chord-bass struct))))
+      )
+  fundamental 7th 9th 11th 13th bass inversion mode)
+
+(defparameter *inversions-pop* '(1 3 5 7))
+
+(defun %chord-interval-code (fundamental bass)
+  "Retorna o interval-code do intervalo entre o bass e a fundamental
+do acorde. Expects fundamental and bass to be a string."
+  (interval->code (interval (note->code bass)
+                            (note->code fundamental))))
+
+(defun return-inversion (fundamental bass)
+  "Return the inversion number of the chord with fundamental and bass (both
+as strings). If bass is nil the chord is suposed to be in fundamental
+position."
+  (when bass
+    (aif (first (%chord-interval-code fundamental bass))
+         (position it *inversions-pop*)
+         (error "don't know inversion ~a" it))))
+
+(defun %parse-chord (chord)
+  (let* ((poplist (cl-ppcre:split "/" (stringify chord)))
+         (bass-note (second poplist)))
+    (cl-ppcre:register-groups-bind (fundamental mode 7th 9th 11th 13th)
         ("([cdefgab]+[#b]?)(m|°|ø|!|\\+)?(7[\\+-]?)?\\.?(9[b\\#]?)?\\.?(11[b\\#]?)?\\.?(13[b\\#]?)?"
          (first poplist) :sharedp t)
-      (make-chord :root root
+      (make-chord :fundamental fundamental
+                  ;;; mode = nil é maior
                   :mode mode
-                  :bass (second poplist)
-                  :7th 7th
+                  :bass bass-note
+                  :inversion (return-inversion fundamental bass-note)
+                  :7th (if (and (string= 7th "7") (string= mode "°"))
+                           "7-"
+                           7th)
+                  
                   :9th 9th
                   :11th 11th
                   :13th 13th))))
 
-(defun parse-item (chord)
+(defun parse-chord (chord)
   (typecase chord
     (list (case (first chord)
             (m! (make-melodic-note :notes (rest chord)))
-            (t (mapcar #'parse-item chord))))
-    (t (parse-chord chord))))
+            (t (mapcar #'parse-chord chord))))
+    (t (%parse-chord chord))))
 
 (defun read-chords (list)
-  (mapcar #'parse-item (expand-chords list)))
+  (mapcar #'parse-chord (expand-chords list)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; testes
