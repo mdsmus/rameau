@@ -6,12 +6,12 @@
 (in-package #:rameau-pardo)
 
 (deftemplates *pardo-templates* 
-  ((maj 0) (0 4 7))
-  ((maj 0 7) (0 4 7 10))
-  ((min 0) (0 3 7))
-  ((dim 0 7-) (0 3 6 9))
-  ((dim 0 7) (0 3 6 10))
-  ((dim 0) (0 3 6))
+  ((nil nil) (0 4 7))
+  ((nil "7") (0 4 7 10))
+  (("m" nil) (0 3 7))
+  (("°" "7-") (0 3 6 9))
+  (("ø" "7") (0 3 6 10))
+  (("dim" nil) (0 3 6))
   )
 
 (defstruct nota-pardo
@@ -20,9 +20,6 @@
   (template)
   (gabarito)
   (segmento))
-
-(defun pardo->gabarito (acorde)
-  (nconc (subseq acorde 0 2) (list 0) (subseq acorde 2)))
 
 (defun group-and-count (segment)
   "Agrupa as notas de mesmo pitch e conta quantas ocorrem no segmento"
@@ -134,7 +131,7 @@
                                                segmento
                                                (get-system-notes 'tempered)))))
     (dolist (r resultados)
-      (setf (nota-pardo-gabarito r) (cons (nota-pardo-root r)
+      (setf (nota-pardo-gabarito r) (cons (stringify (nota-pardo-root r))
                                           (first template))))
     resultados))
 
@@ -147,25 +144,27 @@
                                        (segment-to-template segmento)))
                           *pardo-templates*))))
 
+(defun pardo->chord (pardo)
+  (let ((pardo (nota-pardo-gabarito pardo)))
+    (make-chord :fundamental (first pardo)
+                :mode (second pardo)
+                :7th (third pardo))))
 
 (defun gera-gabarito-pardo (segmentos)
-  (mapcar #'nota-pardo-gabarito
+  (mapcar #'pardo->chord
           (reduce #'desempata-pardo (mapcar #'pardo segmentos)
                   :from-end t :initial-value nil)))
      
 
 (defun compara-gabarito-pardo-individual (resultado gabarito)
-  (let ((nota (note->code (stringify (first resultado))))
-        (nota-certa (note->code (stringify (first gabarito))))
-        (acorde (cons (second resultado)
-                      (rest (rest (rest resultado)))))
-        (acorde-certo (cons (second gabarito)
-                            (rest (rest (rest gabarito))))))
-    (and (equal nota nota-certa)
-         (equal (mapcar #'stringify acorde) (mapcar #'stringify acorde-certo)))))
+  (and (chordp gabarito)
+       (compara-notes-tempered (chord-fundamental resultado)
+                               (chord-fundamental gabarito))
+       (equal (chord-mode resultado) (chord-mode gabarito))
+       (equal (chord-7th resultado) (chord-7th gabarito))))
 
 (defun compara-gabarito-pardo (res gab)
-  (if (atom (first gab))
+  (if (atom gab)
       (compara-gabarito-pardo-individual res gab)
       (some (lambda (x)
               (compara-gabarito-pardo-individual res x))

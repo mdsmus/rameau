@@ -195,10 +195,6 @@ Exemplo: (split-word \"foo\") => (F O O)"
                   (t no))))
       (format t "  [OK]: ~a [NO]: ~a ~@[~a ~]~%" (length ok) s2 no-string))))
 
-(defun print-chord (list flags)
-  (if (member 'l flags)
-      list
-      (acorde->cifra list)))
 
 ;; BUG: ok? não imprime por cause do (not f)
 (defun print-gab-columns (a b c d flags)
@@ -330,7 +326,7 @@ ponto nos corais de bach."
            unless s return 0
            do (format stream "\"~a\" " x)
            unless (= 0 (intervalo (first s) (second s)))
-           do (format stream "\"~a\" " x)))
+           do (format stream "\" \" " x)))
       (print-score stream (reduce #'concat
                                   (append
                                    (list (print-lyric "particoes"))
@@ -357,7 +353,7 @@ ponto nos corais de bach."
          for gab = (car gab-lista) then (car gab-lista)
          for res = resultados then (avanca-todos res)
          do
-           (print-gab-columns (1+ numero-seg) n (if gab (print-chord gab flags)) d flags)
+           (print-gab-columns (1+ numero-seg) n gab d flags)
            (loop
               for a in *algoritmos*
               for i from 0
@@ -365,7 +361,7 @@ ponto nos corais de bach."
               for alg = (first r) then (first r)
               for certo? = (funcall (algoritmo-compara a) alg gab)
               then (funcall (algoritmo-compara a) alg gab)
-              do (print-res-alg (if alg (print-chord alg flags)) certo? flags)
+              do (print-res-alg alg certo? flags)
               when certo? do (incf (nth i counts)))
            (format t "~%"))
       (format t "~% correto:~%")

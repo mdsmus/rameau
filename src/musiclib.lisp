@@ -12,6 +12,7 @@
                                match-note-representation
                                sort-form-list tempered tonal
                                get-system-notes code->note note->code
+                               compara-notes-tempered
                                note? rest? latin->lily
                                print-accidentals print-note module
                                lily->latin transpose inversion
@@ -216,6 +217,10 @@ usa a representação do lilypond e 'd#' usa a representação 'latin'."
             ((match-note-representation note 'lily) (%parse-note note 'lily *system*))
             ((match-note-representation note 'latin) (%parse-note note 'latin *system*))
             (t (error "tipo de nota não conhecida"))))))
+
+(defun compara-notes-tempered (notea noteb)
+  (with-system 'tempered
+    (equal (note->code notea) (note->code noteb))))
 
 (defun print-accidentals (acc repr)
   "Return a string of a note according to the numeric value of an

@@ -2,16 +2,21 @@
 
 (defpackage #:rameau
   (:export
-   #:acorde->cifra
    #:*algoritmos*
    #:algoritmo-compara
    #:algoritmo-nome
    #:algoritmo-processa
    #:calcula-duracoes
+   #:chord-fundamental
+   #:chord-mode
+   #:chord-7th
+   #:chordp
    #:compara-notas
    #:filtra-algoritmos
    #:lista-notas
+   #:make-chord
    #:parse-file
+   #:parse-chord
    #:pitches
    #:segmentos-minimos
    #:evento-pitch

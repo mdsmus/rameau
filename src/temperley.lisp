@@ -952,14 +952,14 @@
              (prune-table (column-table (aref column-table column)))))
   column-table)
 
-(let ((letters '("F" "C" "G" "D" "A" "E" "B")))
+(let ((letters '("f" "c" "g" "d" "a" "e" "b")))
   (defun tpc-string (tpc)
     (let* ((letl (mod (1- tpc) 7))
            (letl (if (< letl 0) (- letl) letl))
            (sharps (/ (- tpc 1 letl) 7))
            (accidental (if (< sharps 0) "b" "#"))
            (sharps (abs sharps)))
-      (string->symbol (concat (nth letl letters) (repeat-string sharps accidental))))))
+      (concat (nth letl letters) (repeat-string sharps accidental)))))
 
 (defvar *bu* nil)
 
@@ -979,21 +979,22 @@
          (setf (aref bucket-choice i) (make-bucket)))
     (loop for h being the hash-keys in (column-table (aref column-table (1- n-chords)))
        using (hash-value bu)
-       do (let ((*bu* bu)) (dbg 'rameau::temperley "Scores: ~/rameau-temperley::exibe-score-roots/" bu))
+       do (let ((*bu* bu)) (dbg 'rameau::temperley
+                                "Scores: ~/rameau-temperley::exibe-score-roots/" bu))
        when (or (null best-b) (< (bucket-score best-b) (bucket-score bu))) do
          (setf best-b bu))
     (loop for i from (1- n-chords) downto 0 do
          (setf (aref bucket-choice i) best-b
                best-b (bucket-prev-bucket best-b)))
     (loop for i from 0 to (1- n-chords)
-       collect (list (string->symbol (tpc-string (bucket-root (aref bucket-choice i))))
-                     'maj
-                     0))))
+       collect (make-chord :fundamental (tpc-string (bucket-root (aref bucket-choice i)))))))
 
 (defun compara-gabarito-temperley (resultado gabarito)
-  (if (listp (first gabarito))
-      (some (lambda (x) (compara-gabarito-temperley resultado x)) gabarito)
-      (equal (first resultado) (first gabarito))))
+  (when (or (chordp gabarito) (listp gabarito))
+    (if (listp gabarito)
+        (some (lambda (x) (compara-gabarito-temperley resultado x)) gabarito)
+        (compara-notes-tempered (chord-fundamental resultado)
+                                (chord-fundamental gabarito)))))
 
 (defun temperley (segmentos)
   (let* ((musica (reduce #'append segmentos :from-end t))

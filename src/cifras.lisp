@@ -68,6 +68,9 @@
       )
   fundamental 7th 9th 11th 13th bass inversion mode)
 
+(defun chordp (chord?)
+  (eq (type-of chord?) 'CHORD))
+
 (defparameter *inversions-pop* '(1 3 5 7))
 
 (defun %chord-interval-code (fundamental bass)
