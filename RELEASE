@@ -1,5 +1,14 @@
 ; -*- org -*-
 
+* Rameau 2.1, 12 dezembro 2007
+
+Esse release tem as seguintes melhorias desde 2.0
+
+** nova estrutura de dados para gabaritos
+** formato "pop* agora é o formato padrão para gabaritos
+** mais gabaritos de corais terminados (14%)
+** versão funcional de algoritimo de temperley
+
 * Rameau 2.0, 04 dezembro 2007
 
 Esse release tem as seguintes melhorias desde o 1.0
@@ -15,6 +24,7 @@ Esse release tem as seguintes melhorias desde o 1.0
 ** implementação inicial do algoritmo de temperley
 ** melhor organização no sistema de pacotes
 ** vários bugs consertados
+
 
 * Rameau 1.2, 11 novembro 2007
 
