@@ -12,8 +12,8 @@ Cm7/Eb
 C!7
 
 Os tipos de acordes são (nada) para maior, m para menor, ° para
-diminuto, ø para meio-diminuto, e ! para incompleto (i.e. sem a
-terça).
+diminuto, ø para meio-diminuto, + para aumentado, e ! para incompleto
+(i.e. sem a terça).
 
 * notas melódicas
 
@@ -23,7 +23,10 @@ A forma [<notas>] expande em (m! <notas>), por exemplo:
 
 * acorde de sétima e extensões
 
-C7m é do com setima maior e C7 é do com setima menor
+C7+ é do com setima maior e C7 é do com setima menor
+
+A sétima diminuta é 7-, contudo a sétima em C°7 é expandida para 7-
+automaticamente.
 
 Outras extensões podem ser entradas separadas por ponto. A sétima deve
 extritamente ser a primeira extensão.
