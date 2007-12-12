@@ -11,7 +11,7 @@
   (("m" nil) (0 3 7))
   (("°" "7-") (0 3 6 9))
   (("ø" "7") (0 3 6 10))
-  (("dim" nil) (0 3 6))
+  (("°" nil) (0 3 6))
   )
 
 (defstruct nota-pardo
@@ -57,7 +57,7 @@
     (+ score encontrados)))
 
 (defun da-nota-modificada (template segmento nota)
-  (let ((note-symb (string->symbol (print-note nota 'lily))))
+  (let ((note-symb (string->symbol (print-note nota 'latin))))
     (make-nota-pardo :root note-symb
                      :template template
                      :resultado (avalia-template
@@ -98,7 +98,7 @@
 (defun dim7-res (segmento proximo)
   (let* ((proxima-tonica (nota-pardo-root proximo))
          (cod (- (note->code (stringify proxima-tonica)) 1))
-         (nota (print-note (code->note cod) 'lily)))
+         (nota (print-note (code->note cod) 'latin)))
     (or (find-if
          (lambda (x)
            (equal nota (stringify (nota-pardo-root x))))
