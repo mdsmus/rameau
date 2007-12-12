@@ -1,0 +1,10 @@
+#!/bin/sh
+cd `dirname $0`/code
+cat <<EOF | cmucl
+(setf extensions:*gc-verbose* nil)
+
+(load "nile_loader")
+(nile_loader:load-and-compile "nile_demos")
+(nile_demos:demo-par5 :method :cg)
+(user::quit)
+EOF

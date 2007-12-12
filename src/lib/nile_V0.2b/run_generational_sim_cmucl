@@ -1,0 +1,25 @@
+#!/bin/sh
+
+if [ x$1 = "x" ]
+then
+	echo Choosing number of meanings = 100
+	echo ... can be specified as first argument to $0
+	echo
+	sleep 1
+	meanings=100
+else
+	meanings=$1
+fi
+
+cd `dirname $0`/code
+cat <<EOF | cmucl
+(setf extensions:*gc-verbose* nil)
+
+(load "nile_loader")
+(nile_loader:load-and-compile "nile_gen")
+(nile_gen:run-simulation 	:max-cycles 5000
+				:write-pop-every 4
+				:num-meanings $meanings
+				:eta 0.01d0)
+(user::quit)
+EOF

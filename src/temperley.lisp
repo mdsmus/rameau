@@ -867,7 +867,10 @@
 
 (defun calcula-tabela-harmonica (column-table chords)
   (initialize-first-harmonic-column column-table)
-  (loop for column from 1 to (1- (length chords)) do
+  (loop for column from 1 to (1- (length chords))
+     with this-dbg = nil
+     do
+       (setf this-dbg nil)
        (loop for window from lowest-tpc to (- highest-tpc 11)
           when (is-canonical-window (column-chord (aref column-table column)) window) do
             (loop for h being the hash-keys in (column-table (aref column-table (1- column)))
@@ -913,6 +916,18 @@
                                                    window)
                                              (column-table (aref column-table column))))
                                (new-guy (not bu1)))
+                          (when (and (not this-dbg)
+                                      (>= (side-effect-compatibility *side-effect*)
+                                         5)
+                                      (> (bucket-score bu) 0))
+                            (dbg 'rameau::temperley2 "1: ~a, 2: ~a, 3: ~a. 4: ~a, 5: ~a, 6: ~a~%"
+                                 (bucket-score bu)
+                                 (side-effect-compatibility *side-effect*)
+                                 (side-effect-orn-diss-penalty *side-effect*)
+                                 har-variance
+                                 (* tpc-var-factor (side-effect-tpc-variance *side-effect*))
+                                 local-voice-leading-penalty)
+                            (setf this-dbg t))
                           (when new-guy
                             (let ((b (make-bucket :int-tpc-cog int-tpc-cog
                                                   :int-har-cog int-har-cog
