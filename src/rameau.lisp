@@ -64,8 +64,7 @@
                          ("-t <funções>" "mostra o trace de <funções>")
                          ("-m n" "o número de testes errados para imprimir")))
                        (análise
-                        (("-l" "mostra formato de gabarito como listas")
-                         ("-i" "ignora (não imprime) corais sem gabaritos")))
+                        (("-i" "ignora (não imprime) corais sem gabaritos")))
                        (partitura)))
 
 (defparameter *lily-dir-list*
@@ -82,7 +81,8 @@
 (defparameter *gabarito-dir-list*
   (aif (read-user-config)
        it
-       '(("corais" "gabaritos/bach-corais/"))))
+       '(("corais" "gabaritos/bach-corais/")
+         ("exemplos" "gabaritos/exemplos/"))))
 
 (defparameter *dados* '((teste ("unidade" "regressao" "lily"))
                         (analise ("corais" "kostka" "sonatas" "exemplos"))
@@ -399,45 +399,42 @@ ponto nos corais de bach."
         (write-line string-result)
         (write-line (subseq (last1 (cl-ppcre:split "\\n" string-result)) 34)))))
 
-(defun processa-gabarito (file)
+(defun processa-gabarito (file item)
   "Transforma um gabarito de texto em sexp."
   (let* ((*package* (find-package :rameau))
-         (nome-pop (concat (get-item "corais" *gabarito-dir-list* #'equal)
+         (nome-pop (concat (get-item item *gabarito-dir-list* #'equal)
                            (add-pop-ext (pathname-name file)))))
     (when (cl-fad:file-exists-p nome-pop)
       (read-chords (read-file-as-sexp nome-pop)))))
 
-(defun run-compara-gabarito (flags files)
+(defun run-compara-gabarito (flags files item)
   (with-system rameau:tempered
-    (let (ok no)
-      (dolist (file files)
-        (let* ((musica (parse-file file))
-               (segmentos (segmentos-minimos musica))
-               (resultados (loop for a in *algoritmos* collect
-                                (funcall (algoritmo-processa a) segmentos)))
-               (gabarito (processa-gabarito (tira-extensao file)))
-               (file-name (pathname-name file))
-               (notas (mapcar #'lista-notas segmentos))
-               (duracoes (calcula-duracoes segmentos)))
-          (format t "tamanhos:~%  gabarito: ~a~%" (length gabarito))
-          (loop for i in resultados
-             for a in *algoritmos*
-             do (format t "  ~a: ~a~%" (algoritmo-nome a) (length i)))
-          (cond
-            ((and (not gabarito) (not (member 'i flags)))
-             (format t "~&[ERRO] o gabarito de ~a não existe~%" file-name))
-            ((member 'v flags)
-             (print-gabarito gabarito resultados
-                             flags :dur duracoes :notas notas)))))
-      (unless (member 'v flags)
-        (print-ok/no-list (list (reverse ok) (reverse no)))))))
+    (dolist (file files)
+      (let* ((musica (parse-file file))
+             (segmentos (segmentos-minimos musica))
+             (resultados (loop for a in *algoritmos* collect
+                              (funcall (algoritmo-processa a) segmentos)))
+             (gabarito (processa-gabarito (tira-extensao file) item))
+             (file-name (pathname-name file))
+             (notas (mapcar #'lista-notas segmentos))
+             (duracoes (calcula-duracoes segmentos)))
+        (format t "tamanhos:~%  gabarito: ~a~%" (length gabarito))
+        (loop for i in resultados
+           for a in *algoritmos*
+           do (format t "  ~a: ~a~%" (algoritmo-nome a) (length i)))
+        (cond
+          ((and (not gabarito) (not (member 'i flags)))
+           (format t "~&[ERRO] o gabarito de ~a não existe~%" file-name))
+          (t
+           (print-gabarito gabarito resultados
+                           flags :dur duracoes :notas notas)))))))
 
-(defun run-partitura (flags files)
+(defun run-partitura (flags files item)
   (when (member 'v flags) (format t "gerando "))
   (with-system rameau:tempered
     (dolist (file files)
       (when (member 'v flags) (format t "~a " (pathname-name file)))
-      (let* ((gabarito (processa-gabarito (tira-extensao file)))
+      (let* ((gabarito (processa-gabarito (tira-extensao file) item))
              (segmento (segmentos-minimos (parse-file file)))
              (resultados (loop for a in *algoritmos* collect
                                (funcall (algoritmo-processa a) segmento))))
@@ -475,10 +472,10 @@ ponto nos corais de bach."
         (run-regressao flags (processa-files item files))))
 
 (defcomando analise dados flags files
-  (run-compara-gabarito flags (processa-files item files)))
+  (run-compara-gabarito flags (processa-files item files) item))
 
 (defcomando partitura dados flags files
-  (run-partitura flags (processa-files item files)))
+  (run-partitura flags (processa-files item files) item))
 
 (defun main ()
   (let* ((args (rameau-args))
@@ -516,7 +513,10 @@ ponto nos corais de bach."
                  (format t "você deve entrar um dos comandos: ~{~(~a~)~^ ~}~%"
                          (get-comandos)))))
           ((member comando (get-comandos) :test #'string=)
-           (funcall (symbol-function (intern (string-upcase comando) :rameau-tools)) dados flags files))
+           (funcall (symbol-function (intern (string-upcase comando) :rameau-tools))
+                    dados
+                    flags
+                    files))
           (t (format t "comando ~a não reconhecido~%" comando)
              (format t "você deve entrar um dos comandos: ~{~(~a~)~^ ~}~%"
                      (get-comandos)))))

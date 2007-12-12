@@ -92,7 +92,7 @@
 
 (defun dim7? (notas)
   (every (lambda (x)
-           (equal "dim" (stringify (second (nota-pardo-gabarito x)))))
+           (equal "°" (stringify (second (nota-pardo-gabarito x)))))
          notas))
 
 (defun dim7-res (segmento proximo)
