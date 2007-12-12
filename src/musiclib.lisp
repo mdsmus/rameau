@@ -198,7 +198,8 @@ retorna 14."
     (tonal (position (list note 0) (get-system-notes *system*) :test #'equal))
     (tempered (position (list note 0) (get-system-notes *system*) :test #'equal))))
 
-(let ((testa-nota (cl-ppcre:create-scanner "^[a-g]((es)*|(is)*|#*|b*)$" :case-insensitive-mode t)))
+(let ((testa-nota (cl-ppcre:create-scanner "^[a-g]((es)*|(is)*|#*|b*)$"
+                                           :case-insensitive-mode t)))
   (defun note? (string)
     "Testa se uma dada string pode representar uma nota"
     (cl-ppcre:scan testa-nota string)))
@@ -219,7 +220,7 @@ usa a representação do lilypond e 'd#' usa a representação 'latin'."
             (t (error "tipo de nota não conhecida"))))))
 
 (defun compara-notes-tempered (notea noteb)
-  (with-system 'tempered
+  (with-system tempered
     (equal (note->code notea) (note->code noteb))))
 
 (defun print-accidentals (acc repr)

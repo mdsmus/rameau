@@ -46,7 +46,7 @@
 
 (defun dbg (id format-string &rest args)
   "Print debugging info if (DEBUG ID) has been specified."
-  (when (member id *dbg-ids*)
+  (when (member id *dbg-ids* :test #'string=)
     (fresh-line *debug-io*)
     (apply #'format *debug-io* (concat " => DEBUG: " format-string) args)))
 

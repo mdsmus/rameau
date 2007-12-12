@@ -987,7 +987,11 @@
          (setf (aref bucket-choice i) best-b
                best-b (bucket-prev-bucket best-b)))
     (loop for i from 0 to (1- n-chords)
-       collect (make-chord :fundamental (tpc-string (bucket-root (aref bucket-choice i)))))))
+       collect (make-chord :fundamental (print-note
+                                         (code->note
+                                          (note->code
+                                           (tpc-string (bucket-root (aref bucket-choice i)))))
+                                         'latin)))))
 
 (defun compara-gabarito-temperley (resultado gabarito)
   (when (or (chordp gabarito) (listp gabarito))
