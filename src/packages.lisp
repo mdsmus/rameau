@@ -8,14 +8,11 @@
    #:algoritmo-nome
    #:algoritmo-processa
    #:calcula-duracoes
-   #:cifra->acorde
    #:compara-notas
    #:filtra-algoritmos
    #:lista-notas
    #:parse-file
    #:pitches
-   #:pop2cifra
-   #:read-pop-file
    #:segmentos-minimos
    #:evento-pitch
    #:evento-dur
@@ -25,7 +22,7 @@
    #:fim-evento
    #:processa-cifras
    #:registra-algoritmo
-   #:pops->gabs
+   #:read-chords
    )
   (:use #:rameau-base #:genoslib  #:cl #:it.bese.arnesi #:lisp-unit))
 

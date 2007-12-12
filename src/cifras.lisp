@@ -1,59 +1,5 @@
 (in-package #:rameau)
 
-;;; (defun qual-intervalo-no-baixo? (inversao)
-;;;   "Retorna a nota (i.e. 1, 3, 5, 7, mas sem qualidade) do acorde que
-;;; está no baixo de acordo com a inversão."
-;;;   (first (find inversao *inversions-pop* :key #'second)))
-
-;;; ;; TODO: lidar com 7m 7M, 5+, etc
-;;; (defun get-intervalo-inversao-pop (modo inversao)
-;;;   (code->interval (list (qual-intervalo-no-baixo? inversao)
-;;;                         (case inversao
-;;;                           (1 modo)
-;;;                           (2 'just)
-;;;                           (3 'min)
-;;;                           (t (error "não conheço essa inversão"))))))
-;;; ;;; 1 minor
-;;; ;;; 1 major
-;;; ;;; 2 just
-;;; ;;; 2 dim
-;;; ;;; 2 aug
-;;; ;;; 3 min
-;;; ;;; 3 maj
-;;; ;;; 3 dim
-
-;;; (defun get-inversao-pop (tonica modo inversao)
-;;;   (unless (= inversao 0)
-;;;     (print-note (code->note (+ (note->code tonica)
-;;;                                (get-intervalo-inversao-pop modo inversao)))
-;;;                 'latin)))
-
-;;; (defun acorde->cifra (acorde)
-;;;   (cond ((equal (first acorde) 'm!) "m!")
-;;;         ((listp (first acorde)) (acorde->cifra (first acorde)))
-;;;         (t (destructuring-bind (tonica &optional modo inv acresc &rest resto) acorde
-;;;              (declare (ignore resto))
-;;;              (let ((fundamental (lily->latin (stringify tonica)))
-;;;                    (acrescimos (cond ((and (null acresc) (eql inv 7)) 7)
-;;;                                      (t acresc)))
-;;;                    (inversao (cond ((and (null acresc) (eql inv 7)) 0)
-;;;                                    ((null inv) 0)
-;;;                                    (t inv))))
-;;;                (format nil "~@(~a~)~@[~a~]~@[/~@(~a~)~]"
-;;;                        (case modo
-;;;                          (maj (format nil "~a" fundamental))
-;;;                          (min (format nil "~am" fundamental))
-;;;                          (dim (if (eq '7- acrescimos)
-;;;                                   (format nil "~a°" fundamental)
-;;;                                   (format nil "~aø" fundamental)))
-;;;                          (aug (format nil "~a+" fundamental)))
-;;;                        (if (eq modo 'dim)
-;;;                            ""
-;;;                            acrescimos)
-;;;                        (get-inversao-pop fundamental modo inversao)))))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defun expand-mel (stream char)
   (declare (ignore char))
   (let ((*package* (find-package :rameau)))
