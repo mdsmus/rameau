@@ -10,8 +10,7 @@
          for g = (rameau-tools::processa-gabarito f "corais")
          then (rameau-tools::processa-gabarito f "corais")
          do (format t "  no coral ~a~%" i)
-         do (treina-simple-net f g)))
+         do (loop for i from 1 to 3 do (treina-simple-net f g))))
     (format t "Treinada.~%"))
         
-
   (treina-simple-net-inicial))
