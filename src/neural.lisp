@@ -1,4 +1,8 @@
-;; Algoritmo de redes neurais, baseado na tese de T'sui (FIXME: bibliografia)
+; ----------------
+; Algoritmo de redes neurais proof-of-concept
+;  usa redes para reconhecer a tonica de um segmento
+;  minimo, ignorando contexto.
+; Só pra ter algo simples pra mostrar e testar
 
 (defpackage :rameau-neural
   (:use #:cl
@@ -10,12 +14,6 @@
 
 (in-package :rameau-neural)
 
-
-; ----------------
-; Algoritmo de redes neurais proof-of-concept
-;  usa redes para reconhecer a tonica de um segmento
-;  minimo, ignorando contexto.
-; Só pra ter algo simples pra mostrar e testar
 
 (eval-when (:compile-toplevel :load-toplevel)
   (defparameter *simple-netspec* (netspec 12 20 12))
@@ -56,7 +54,6 @@
            saida
            :method :cg
            :max-cycles 10))
-;;:error-lim (coerce 0.01 'type-act)))
 
 (defun treina-simple-net (coral gabarito)
   (with-system rameau:tempered
@@ -96,51 +93,3 @@
       (compara-gabarito-simple-net-individual resultado gabarito)))
 
 (registra-algoritmo "Simple-net" #'gera-gabarito-simple-net #'compara-gabarito-simple-net)
-
-
-#|
-;;----------------
-
-(defparameter *and-net* (mk-net (netspec 3 2 1)))
-
-(defparameter *and-input* (patterns 3
-                                    (0 0 0)
-                                    (0 0 1)
-                                    (0 1 0)
-                                    (1 0 1)
-                                    (1 0 0)
-                                    (1 1 0)
-                                    (1 1 1)))
-
-(defparameter *and-output* (patterns 1
-                                     (0)
-                                     (0)
-                                     (0)
-                                     (0)
-                                     (0)
-                                     (0)
-                                     (1)))
-
-
-
-
-(defun train-and (and-net)
-  (trainer (netspec 3 2 1)
-           and-net
-           *and-input*
-           *and-output*
-           :method :sd
-           :error-lim (coerce 0.001 'type-act)))
-
-(defun run-and (and-net pattern-in)
-  (setf (layer-act-vec (svref and-net 0))
-        (svref pattern-in 0))
-  (activation-fn (netspec 3 2 1) and-net)
-  (aref (layer-act-vec (svref and-net 2)) 0))
-  
-
-(train-and *and-net*)
-(run-and *and-net* (patterns 3 (0 0 0)))
-
-;(write-net *simple-net*)
-|#
