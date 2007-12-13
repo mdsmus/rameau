@@ -64,18 +64,6 @@
                      (prepara-entrada-treinamento (transpose-segmentos coral i))
                      (prepara-saida-treinamento (transpose-chords gabarito i)))))))
 
-(defun treina-simple-net-inicial ()
-  (format t "Agora treinando a rede neural: ")
-  (with-system rameau:tempered
-    (loop for i in '("001" "003" "004" "006")
-       for f = (first (rameau-tools::processa-files "corais" (list i)))
-       then (first (rameau-tools::processa-files "corais" (list i)))
-       for g = (rameau-tools::processa-gabarito f "corais")
-       then (rameau-tools::processa-gabarito f "corais")
-       do (format t "no coral ~a, " i)
-       collect (treina-simple-net f g)))
-  (format t ". Treinada.~%"))
-        
 (defun extrai-resultado-simple-net ()
   (let ((res (coerce (layer-act-vec (svref *simple-net* 2)) 'list)))
     (loop for i from 0
