@@ -17,9 +17,11 @@
 ;  minimo, ignorando contexto.
 ; Só pra ter algo simples pra mostrar e testar
 
-(eval-when (:load-toplevel :compile-toplevel :execute)
+(eval-when (:compile-toplevel :load-toplevel)
   (defparameter *simple-netspec* (netspec 12 20 12))
   (defvar *simple-net* (mk-net *simple-netspec*)))
+
+(defparameter *correctness-treshold* 0.9)
 
 (defun lista-de-zeros (tam)
   (repeat-list tam 0.0))
@@ -68,7 +70,8 @@
   (let ((res (coerce (layer-act-vec (svref *simple-net* 2)) 'list)))
     (loop for i from 0
        for r in res
-       when (> r 0.9) return (make-chord :fundamental (print-note (code->note i) 'latin))
+       when (> r *correctness-treshold*)
+         return (make-chord :fundamental (print-note (code->note i) 'latin))
        finally (return (make-melodic-note)))))
 
 
