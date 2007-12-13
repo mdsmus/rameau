@@ -117,6 +117,29 @@ position."
 (defun read-chords (list)
   (mapcar #'parse-chord (expand-chords list)))
 
+(defun transpose-chord (c n)
+  (if (chordp c)
+      (make-chord :fundamental (string->symbol
+                                (print-note (code->note
+                                             (+ n
+                                                (note->code
+                                                 (chord-fundamental c))))
+                                        'latin))
+                  :bass (chord-bass c)
+                  :mode (chord-mode c)
+                  :inversion (chord-inversion c)
+                  :7th (chord-7th c)
+                  :9th (chord-9th c)
+                  :11th (chord-11th c)
+                  :13th (chord-13th c))
+      c))
+
+(defun transpose-chords (chords n)
+  (loop for c in chords
+     collect (transpose-chord (if (listp c) (find-if #'chordp c) c)
+                              n)))
+
+
 #|
 testes
 

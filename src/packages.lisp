@@ -15,6 +15,7 @@
    #:filtra-algoritmos
    #:lista-notas
    #:make-chord
+   #:make-melodic-note
    #:parse-file
    #:parse-chord
    #:pitches
@@ -28,6 +29,8 @@
    #:processa-cifras
    #:registra-algoritmo
    #:read-chords
+   #:transpose-segmentos
+   #:transpose-chords
    )
   (:use #:rameau-base #:genoslib  #:cl #:it.bese.arnesi #:lisp-unit))
 

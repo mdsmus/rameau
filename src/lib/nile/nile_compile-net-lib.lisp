@@ -4568,7 +4568,7 @@ input-patterns and dest-patterns."
 						     dat))))
        data)))
 
-(defun make-patterns (nodes &rest data)
+(defun make-patterns (nodes data)
   (apply #'vector (mapcan (lambda (dat)
                             (list
                              (make-array
