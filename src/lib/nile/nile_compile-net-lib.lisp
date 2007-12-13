@@ -31,7 +31,6 @@
 
 (defpackage nile_compile-net-lib
   (:use common-lisp
-        nile_compile-tools
         nile_run-net-lib
         nile_c2ompile-net-lib)
   (:export sigmoid
@@ -81,6 +80,8 @@
 
 (in-package :nile_compile-net-lib)
 
+(defparameter *prefer-row-major-aref* nil)
+(defparameter *protect-act-fun* t)
 
 (defparameter *nile-debug* nil)
 ;;(defparameter *nile-debug* t)
