@@ -309,9 +309,10 @@
                     it))))
 
 (defun parse-file (filename)
-  (let ((*filename* filename))
-    (declare (special *filename*))
-    (parse-string (file-string filename))))
+  (when (cl-fad:file-exists-p filename)
+    (let ((*filename* filename))
+      (declare (special *filename*))
+      (parse-string (file-string filename)))))
 
 
 ;; (print (with-system tempered (parse-file "/home/top/programas/analise-harmonica/exemplos/001.ly")))

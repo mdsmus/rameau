@@ -64,8 +64,10 @@
                          ("-t <funções>" "mostra o trace de <funções>")
                          ("-m n" "o número de testes errados para imprimir")))
                        (análise
-                        (("-i" "ignora (não imprime) corais sem gabaritos")))
-                       (partitura)))
+                        (("-i" "ignora (não imprime) corais sem gabaritos")
+                         ("-v" "mostra notas dos segmentos")))
+                       (partitura)
+                       (comparatamanhos)))
 
 (defparameter *lily-dir-list*
   (aif (read-user-config)
@@ -86,7 +88,8 @@
 
 (defparameter *dados* '((teste ("unidade" "regressao" "lily"))
                         (analise ("corais" "kostka" "sonatas" "exemplos"))
-                        (partitura ("corais"))))
+                        (partitura ("corais"))
+                        (comparatamanhos ("corais" "exemplos"))))
 
 
 (defun percent (x total)
@@ -430,6 +433,25 @@ ponto nos corais de bach."
            (print-gabarito gabarito resultados
                            flags :dur duracoes :notas notas)))))))
 
+(defun run-compara-tamanhos (flags files item)
+  (format t "~a:~%" item)
+  (let ((errados 0))
+    (dolist (file files)
+      (let* ((musica (parse-file file))
+             (segmentos (segmentos-minimos musica))
+             (gabarito (processa-gabarito (tira-extensao file) item))
+             (file-name (pathname-name file)))
+        (unless (or (= (length gabarito) 0)
+                    (= (length gabarito) (length segmentos)))
+          (format t " ~a errado (gabarito: ~a, mas ~a segmentos)~%"
+                  (tira-extensao file)
+                  (length gabarito)
+                  (length segmentos))
+          (incf errados))))
+    (if (= 0 errados)
+      (format t "Todos corretos.~%")
+      (format t "~a errados.~%" errados))))
+
 (defun run-partitura (flags files item)
   (when (member 'v flags) (format t "gerando "))
   (with-system rameau:tempered
@@ -477,6 +499,9 @@ ponto nos corais de bach."
 
 (defcomando partitura dados flags files
   (run-partitura flags (processa-files item files) item))
+
+(defcomando comparatamanhos dados flags files
+  (run-compara-tamanhos flags (processa-files item files) item))
 
 (defun main ()
   (let* ((args (rameau-args))
