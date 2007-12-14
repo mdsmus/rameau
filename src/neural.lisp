@@ -82,10 +82,11 @@
   (mapcar #'aplica-simple-net segmentos))
 
 (defun compara-gabarito-simple-net-individual (resultado gabarito)
-  (if (and (chordp resultado) (chordp gabarito))
-      (equal (chord-fundamental resultado)
-             (chord-fundamental gabarito))
-      (equal (type-of resultado) (type-of gabarito))))
+  (with-system rameau:tempered
+    (if (and (chordp resultado) (chordp gabarito))
+        (equal (chord-fundamental resultado)
+               (chord-fundamental gabarito))
+        (equal (type-of resultado) (type-of gabarito)))))
 
 (defun compara-gabarito-simple-net (resultado gabarito)
   (if (listp gabarito)
