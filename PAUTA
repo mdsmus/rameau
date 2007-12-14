@@ -1,18 +1,1 @@
-* [OT] robo violinista: 
-  http://www.usatoday.com/tech/news/robotics/2007-12-06-toyota-violin-robot_N.htm
-* curiosidade: notas melodicas
-* ex acorde sem terça: 74.1.17
-* acorde->cifra (rameau)
-* gui: demonstração
-* casa 1 e 2 nos corais (para o gabarito)
-* estado dos corais
-* estado de redes neurais
-* gabaritos funcionais
-* opções padrão de rameau (interface usuario)
-  -a nao aceita pardo,tempeley,foo,bar
-  -a não aceita p ?
-* rameau 3.0
-* checar numero de segmentos dos gabaritos [fazer função auxiliar?]
-* dependencias de neural e rameau-tools
-* otimizaçao temperley
-* ter "api" simples (plug-and-pray) e documentada para definir novos algoritimos
+
