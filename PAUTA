@@ -3,6 +3,8 @@
 * estado de redes neurais
 * gabaritos funcionais
 * opções padrão de rameau (interface usuario)
+  -a nao aceita pardo,tempeley 
 * rameau 3.0
 * checar numero de segmentos dos gabaritos
 * dependencias de neural e rameau-tools
+* otimizaçao temperley
