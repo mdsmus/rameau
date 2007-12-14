@@ -299,7 +299,7 @@ ponto nos corais de bach."
           (loop for i in gabarito
              for s = notas then (rest s)
              unless s return it
-             do (format stream "\"~a\" " (acorde->cifra i))
+             do (format stream "\"~a\" " i)
              unless (= 0 (intervalo (first s) (second s)))
              do (format stream "\" \" "))))
       (loop for a in *algoritmos*
@@ -314,10 +314,10 @@ ponto nos corais de bach."
                 unless s return 0
                 unless alg-lista return 0
                 if (funcall (algoritmo-compara a) res gab) do
-                  (format stream "\"~a\" " (if res (acorde->cifra res) " "))
+                  (format stream "\"~a\" " (if res res " "))
                 else do
                   (format stream "\\markup{\\with-color #(x11-color 'red) \"~a\"}"
-                          (if res (acorde->cifra res) " "))
+                          (if res res " "))
                 unless (= 0 (intervalo (first s) (second s))) do
                   (format stream "\" \""))))
       (with-print-cifra (stream "particoes")
