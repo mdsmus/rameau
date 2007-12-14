@@ -299,7 +299,7 @@ ponto nos corais de bach."
           (loop for i in gabarito
              for s = notas then (rest s)
              unless s return it
-             do (format stream "\"~a\" " i)
+             do (format stream "\"~a\" ~%" i)
              unless (= 0 (intervalo (first s) (second s)))
              do (format stream "\" \" "))))
       (loop for a in *algoritmos*
