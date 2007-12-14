@@ -219,11 +219,11 @@ Exemplo: (split-word \"foo\") => (F O O)"
   "Converte de fração para duração em lilypond. É muito simples, não
 lida com quiáltera nem mais que 1 ponto, felizmente não tem mais de 1
 ponto nos corais de bach."
-  (let ((numer (numerator dur))
-        (denom (denominator dur)))
+  (let ((numer (numerator (abs dur)))
+        (denom (denominator (abs dur))))
     (cond ((= numer 1) (format nil "~a" denom))
           ((= numer 3) (format nil "~a." (/ denom 2)))
-          (t (split-dur numer denom)))))
+          (t (error "duracao invalida")))))
 
 (defun intervalo (s1 s2)
   "Retorna o intervalo entre dois segmentos."
