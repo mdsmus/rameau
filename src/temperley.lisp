@@ -171,25 +171,23 @@
     (if (> 0 (- pip j))
         (values (* base (sqrt (ms-to-sec (/ (+ tactus-min tactus-max) 2))))
                 -1)
-        (let ((melhor
-               (car
-                (max-predicado
-                 #'second
-                 (loop
-                    for k from min-pip to max-pip
-                    collect
-                      (list
-                       k
-                       (+ (aref (pip-score (aref pip-array (- pip j)))
-                                (- k min-pip))
-                          (if (< (- pip j k) 0)
-                              0
-                              (- (penalidade-desvio (* k pip-time)
-                                                    (* j pip-time))))
-                          (* base
-                             (sqrt
-                              (ms-to-sec (/ (* pip-time (* 2 j)) 2)))))))))))
-              (values (second melhor) (first melhor))))))
+        (let ((melhor -100000000)
+              (melhor-k 0))
+          (loop
+             for k from min-pip to max-pip
+             for atual = (+ (aref (pip-score (aref pip-array (- pip j)))
+                                  (- k min-pip))
+                            (if (< (- pip j k) 0)
+                                0
+                                (- (penalidade-desvio (* k pip-time)
+                                                      (* j pip-time))))
+                            (* base
+                               (sqrt
+                                (ms-to-sec (/ (* pip-time (* 2 j)) 2)))))
+             when (< melhor atual) do
+               (setf melhor atual)
+               (setf melhor-k k))
+          (values melhor melhor-k)))))
 
 (defun label-beats (j pip level min max pip-array)
   (let* ((k 0))
