@@ -151,7 +151,7 @@
           (setf (pip-notas (aref pip-array (1+ i))) nil))))
     pip-array))
 
-(defun base-score (notas higher-base)
+(defcached base-score (notas higher-base)
   "A pontuacao de uma beat colocada exatamente sobre essas notas"
   (if notas
     (let* ((dur (length notas))
