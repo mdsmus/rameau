@@ -402,7 +402,8 @@ ponto nos corais de bach."
 (defun processa-gabarito (file item)
   "Transforma um gabarito de texto em sexp."
   (let* ((*package* (find-package :rameau))
-         (nome-pop (concat (get-item item *gabarito-dir-list* #'equal)
+         (nome-pop (concat (rameau-path)
+                           (get-item item *gabarito-dir-list* #'equal)
                            (add-pop-ext (pathname-name file)))))
     (when (cl-fad:file-exists-p nome-pop)
       (read-chords (read-file-as-sexp nome-pop)))))

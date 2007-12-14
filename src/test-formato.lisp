@@ -39,3 +39,5 @@
                       (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 1)
                       (make-evento :PITCH 7 :OCTAVE 9 :DUR 1/4 :INICIO 5/4)
                       (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 3/2))))
+
+

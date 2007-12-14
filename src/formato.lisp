@@ -161,3 +161,11 @@
 (defun relativiza (nota expressao)
   (%relativiza (car (sequencia-de-notas-notas nota)) (sequencia-de-notas-notas expressao))
   expressao)
+
+(defun transpose-segmentos (segmentos valor)
+  (loop for notas in segmentos collect
+       (loop for n in notas collect
+            (make-evento :pitch (module (+ (evento-pitch n) valor))
+                         :octave (evento-octave n)
+                         :dur (evento-dur n)
+                         :inicio (evento-inicio n)))))
