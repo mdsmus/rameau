@@ -24,9 +24,17 @@
         (cons (cons primeiro grupo)
               (agrupa-inicio restante))))))
 
-(defun normaliza-notas (segmento)
-  (let ((sobras nil)
-        (tamanho (smallest segmento #'evento-dur)))
+(defun normaliza-notas (segmento proximo)
+  (let* ((sobras nil)
+         (proximo-evento (if proximo (evento-inicio (first proximo))))
+         (proximo-inicio (if proximo
+                             (min proximo-evento
+                                  (+ (smallest segmento #'evento-dur)
+                                     (evento-inicio (first segmento))))
+                             (+ (smallest segmento #'evento-dur)
+                                     (evento-inicio (first segmento)))))
+         (tamanho (- proximo-inicio (evento-inicio (first segmento)))))
+    (dbg 'segmento "Prox-ini: ~a, Tam: ~a ~%" proximo-inicio tamanho)
     (values (mapcar (lambda (nota)
                       (if (= (evento-dur nota) tamanho)
                           nota
@@ -54,12 +62,12 @@
   (if (cdr musica)
       (multiple-value-bind
             (segmento sobras)
-          (normaliza-notas (first musica))
+          (normaliza-notas (first musica) (second musica))
         (let* ((sobras-acumuladas (nconc sobras (second musica)))
                (segmentos (nconc (agrupa-inicio (sort sobras-acumuladas
-                                                      (lambda (x y)
-                                                        (< (evento-inicio x)
-                                                           (evento-inicio y)))))
+                                                       (lambda (x y)
+                                                         (< (evento-inicio x)
+                                                            (evento-inicio y)))))
                                  (cddr musica))))
           (cons segmento (redivide-segmentos segmentos))))
       musica))
