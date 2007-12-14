@@ -18,6 +18,7 @@
 
 (push (concatenate 'string (main-path) "src/") asdf:*central-registry*)
 (push (concatenate 'string (main-path) "src/lib/") asdf:*central-registry*)
+(push (concatenate 'string (main-path) "src/lib/nile/") asdf:*central-registry*)
 
 #+(or sbcl ecl) (require 'rameau)
 #+(or clisp cmu) (asdf:oos 'asdf:load-op :rameau :verbose nil)

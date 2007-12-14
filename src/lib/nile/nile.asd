@@ -6,8 +6,8 @@
   :author "Nils Goroll"
   :serial t
   :components (
-               (:file "nile/nile_run-net-lib")
-               (:file "nile/nile_c2ompile-net-lib")
-               (:file "nile/nile_compile-net-lib")
-               (:file "nile/nile_demos")
+               (:file "nile_run-net-lib")
+               (:file "nile_c2ompile-net-lib")
+               (:file "nile_compile-net-lib")
+               (:file "nile_demos")
                ))
