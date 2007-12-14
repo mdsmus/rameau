@@ -15,6 +15,7 @@ os seguintes corais não foram processados:
 
 252: corrigir repeticao
 253: corrigir repeticao
+     casa{1,2}
 261: repeticao
 
 272: repeticao, oitava e enarmonia, ultima nota
