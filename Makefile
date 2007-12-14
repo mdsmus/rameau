@@ -74,7 +74,8 @@ coral-%.png: %.ly
 
 clean:
 	rm -f rameau
-	find -name *.fasl -or -name *.x86f -exec rm {} \;
+	find -name *.fasl -exec rm {} \;
+	find -name *.x86f -exec rm {} \;
 
-cleanall:
+cleanall: clean
 	rm -rf rameau cmurameau eclrameau clisprameau $(corais-dir)
