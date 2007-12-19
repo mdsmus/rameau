@@ -20,6 +20,7 @@ os seguintes corais não foram processados:
      4º compasso faltando tempo ou não existe a anacruse
 
 272: repeticao, oitava e enarmonia, ultima nota
+     casa{1,2}
 280: mudanca de compasso, ultima nota
 
 302: repeticao
