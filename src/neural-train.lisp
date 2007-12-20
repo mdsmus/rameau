@@ -12,7 +12,7 @@
          do (format t "  no coral ~a~%" i)
          do (loop for i from 1 to 30 do
                  (treina-simple-net f g)
-                 #|(treina-context-net f g)|#)))
+                 (treina-context-net f g))))
     (format t "Treinada.~%"))
 
   (treina-nets))

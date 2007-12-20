@@ -128,7 +128,7 @@
 
 (defun gera-gabarito-context-net (segmentos)
   (maplist #'aplica-context-net (cons nil (cons nil segmentos)))) 
-#|
+
 (defun context-net-training-function (entrada saida)
   (trainer *context-netspec*
            *context-net*
@@ -136,7 +136,7 @@
            saida
            :method :cg
            :max-cycles 10))
-|#
+
 (defun treina-context-net (coral gabarito)
   (with-system rameau:tempered
     (let ((coral (segmentos-minimos (parse-file coral))))
