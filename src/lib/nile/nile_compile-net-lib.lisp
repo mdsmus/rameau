@@ -2604,11 +2604,12 @@ activates, backprops, etc"
              `((,loc-func-activate
                 ()
                 (activation-fn ',netspec ,net))))
-       ,@(if need-loc-func-backprop
-             `((,loc-func-backprop
-                (dest)
-                (backprop-fn ',netspec ,net dest)))))
+         ,@(if need-loc-func-backprop
+               `((,loc-func-backprop
+                  (dest)
+                  (backprop-fn ',netspec ,net dest)))))
      ;; declarations go here
+     `(declare)
      ;; body of flet
      (possibly-do-let
       `(,@(if (not var-input-layer)
@@ -2617,6 +2618,7 @@ activates, backprops, etc"
                 `((,output-layer-act (layer-act-vec (svref ,net ,(1- num-layers))))))
           ,@(if (and do-calc-error (not var-error))
                 `((,error ,(coerce 0.0d0 'type-act)))))
+      `(declare)
       ;; Using n-random-integers here is highly inefficient and
       ;; causes a lot consing... Online training is generally depreciated,
       ;; but this was the easiest way to do it.
@@ -3749,155 +3751,63 @@ activates, backprops, etc"
                                                                                           :eta ,sd-opt-eta
                                                                                           :momentum ,sd-opt-momentum
                                                                                           :clear-de-by-dws t))))
-                 #|
-                 ,@(if need-loc-func-improved-elman-backprop
-                 `((,loc-func-improved-elman-backprop
-                 (dest this-pattern-cs all-patterns step-num pattern-num)
-                 (declare
-			   ;; (:explain :variables :calls :types :boxing) ; ;
-                 (optimize (speed 3) (space 0) (safety 0) (debug 0)
-                 (compilation-speed 0))
-                 (type (simple-array type-act
-                 (,(layer-spec-size
-                 (svref layer-specs (1- num-layers)))))
-                 dest)
-                 (type (simple-array type-act ,(if (numberp num-steps)
-                 `(,num-steps)
-                 '(*)))
-                 this-pattern-cs)
-                 (type (simple-array
-				  ;; numpatterns input layer act ; ;
-                 (simple-array
-				   ;; innermost : input layer act ; ;
-                 (simple-array type-act
-                 (,(layer-spec-size
-                 (svref layer-specs 0))))
-                 ,(if (numberp numpatterns)
-                 `(,numpatterns)
-                 '(*)))
-                 ,(if (numberp num-steps)
-                 `(,num-steps)
-                 '(*)))
-                 all-patterns)
-                 (fixnum step-num pattern-num))
-                 (backprop-fn ,netspec-form ,net dest
-                 :improved-elman t
-                 :improved-elman-opts
-                 (:this-pattern-cs this-pattern-cs
-                 :all-patterns all-patterns
-                 :step-num step-num
-                 :pattern-num pattern-num)))))
-                 |#
-		 ,@(if need-loc-func-improved-elman-activate
-		       `((,loc-func-improved-elman-activate
-			  ()
-        (activation-fn ',netspec ,net
-                       :activate t
-                       :return-context-unit-stats t))))
-		 ,@(if need-loc-func-get-weight-mean
-		       `((,loc-func-get-weight-mean
-			  ()
-			    (get-weight-mean ,netspec-form ,net)))))
-	     `(let* ((,error ,(coerce 0.0d0 'type-act))
-		     (,iinput-patterns ,input-patterns)
-		     (,idest-patterns ,dest-patterns)
-		     ,@(if need-var-input-layer
-			   `((,var-input-layer (svref ,net 0))))
-		       ,@(if need-var-output-layer-act
-			     `((,var-output-layer-act
-				(layer-act-vec (svref ,net ,(1- num-layers))))))
-		     ,@(if need-var-cg-numweights
-			   (if cg-opt-max-cg-updates
-			       `((,var-cg-numweights (if (= ,cg-opt-max-cg-updates 0)
-							 ,(num-weights layer-specs)
-							 (min ,cg-opt-max-cg-updates
-							      ,(num-weights layer-specs)))))
-			     `((,var-cg-numweights ,(num-weights layer-specs)))))
-		     ,@(if need-var-cg-update-counter
-			   `((,var-cg-update-counter ,var-cg-numweights)))
-		     ;; do we have to get the array dimensions at runtime ?
-		     ,@(if (not (numberp numpatterns))
-			   `((,numpatterns
-			      ,(if elman-net
-				   `(array-dimension (svref ,iinput-patterns 0) 0)
-				 `(array-dimension ,iinput-patterns 0)))))
-		     ,@(if (and elman-net (not (numberp num-steps)))
-			     `((,num-steps (array-dimension ,iinput-patterns 0))))
-		     ;; The vector over patterns of arrays over steps
-		     ;; with the improved-elman-correction factor for that
-		     ;; pattern
-		     ,@(if var-improved-elman-c
-			   `((,var-improved-elman-c
-			      (vector-of-n ',numpatterns
-					   (make-array (list ,num-steps)
-						       :element-type 'type-act))))))
-          ,@step-code
-		,@(if write-final-error
-		      `((if ,write-final-error
-			    (format t "Final error is: ~A~%~%" ,error))))
-
-		,@(if write-final-net
-		      `((if ,write-final-net
-			    (progn
-			      (format t "Final net is:~%")
-			      (write-net ,net)))))
-
-		,(if return-final-error
-		     error)))))))))
-#|
-;; code for updating                    ; ;
-                 (update-code
-
-
-)
-
-;; VVV Improved elman vars              ; ;
-
-;; for each timestep, the mean activation ; ;
-                 (act-mean (if (and elman-net improved-elman)
-(gensym "tr-act-mean-")))
-;; and the weight mean                  ; ;
-                 (weight-mean (if (and elman-net improved-elman)
-(gensym "tr-weight-mean")))
-;; the c(t)s: for the current timestep s they are ; ;
-;; at timestep t (node a)               ; ;
-;;                                      ; ;
-;; c(t,s,a) = a                         ; ;
-;; c(t+1,s,a) = c(t,s,a)*<w>*nhid*g'(<a>*<w>*nhid) ; ;
-;;                                      ; ;
-;; improved elman is then \sum_s<=t c(t,s,a) ; ;
-                 (c-vec (if (and elman-net improved-elman)
-(gensym "tr-c-vec")))
-
-;; ^^^ Improved elman vars              ; ;
-
-
-;; copy-recurrent-code                  ; ;
-
-
-
-
-
-
-;; for each time-step and each pattern, ; ;
- ;; the code to activate and backprop   ; ;
-                 (act-and-bprop-code
-(if (and elman-net timebatch)
-     ;; Here do the following:          ; ;
-     ;; - with each pattern presented, copy activation ; ;
-     ;;   to next pattern               ; ;
-    `(pattern-iterator ',netspec ,net
-                       ,current-input-patterns
-                       ,dest-patterns
-                       ,numpatterns
-                       :batch ,batch
-                       :do-backprop t
-                       :do-activate t
-                       :do-calc-error
-                       :code-non-batch ,update-code
-                       :code-post ,copy-recurrent-code
-
-                       |#
+                 ,@(if need-loc-func-improved-elman-activate
+                       `((,loc-func-improved-elman-activate
+                          ()
+                          (activation-fn ',netspec ,net
+                                         :activate t
+                                         :return-context-unit-stats t))))
+                 ,@(if need-loc-func-get-weight-mean
+                       `((,loc-func-get-weight-mean
+                          ()
+                          (get-weight-mean ,netspec-form ,net)))))
+             `(declare)
+             `(let* ((,error ,(coerce 0.0d0 'type-act))
+                     (,iinput-patterns ,input-patterns)
+                     (,idest-patterns ,dest-patterns)
+                     ,@(if need-var-input-layer
+                           `((,var-input-layer (svref ,net 0))))
+                     ,@(if need-var-output-layer-act
+                           `((,var-output-layer-act
+                              (layer-act-vec (svref ,net ,(1- num-layers))))))
+                     ,@(if need-var-cg-numweights
+                           (if cg-opt-max-cg-updates
+                               `((,var-cg-numweights (if (= ,cg-opt-max-cg-updates 0)
+                                                         ,(num-weights layer-specs)
+                                                         (min ,cg-opt-max-cg-updates
+                                                              ,(num-weights layer-specs)))))
+                               `((,var-cg-numweights ,(num-weights layer-specs)))))
+                     ,@(if need-var-cg-update-counter
+                           `((,var-cg-update-counter ,var-cg-numweights)))
+                     ;; do we have to get the array dimensions at runtime ?
+                     ,@(if (not (numberp numpatterns))
+                           `((,numpatterns
+                              ,(if elman-net
+                                   `(array-dimension (svref ,iinput-patterns 0) 0)
+                                   `(array-dimension ,iinput-patterns 0)))))
+                     ,@(if (and elman-net (not (numberp num-steps)))
+                           `((,num-steps (array-dimension ,iinput-patterns 0))))
+                     ;; The vector over patterns of arrays over steps
+                     ;; with the improved-elman-correction factor for that
+                     ;; pattern
+                     ,@(if var-improved-elman-c
+                           `((,var-improved-elman-c
+                              (vector-of-n ',numpatterns
+                                           (make-array (list ,num-steps)
+                                                       :element-type 'type-act))))))
+                ,@step-code
+                ,@(if write-final-error
+                      `((if ,write-final-error
+                            (format t "Final error is: ~A~%~%" ,error))))
+                
+                ,@(if write-final-net
+                      `((if ,write-final-net
+                            (progn
+                              (format t "Final net is:~%")
+                              (write-net ,net)))))
+                
+                ,(if return-final-error
+                     error)))))))))
 
 
 (defmacro all-pattern-error (netspec-form net
@@ -3961,6 +3871,7 @@ input-patterns and dest-patterns."
                                                 ,net
                                                 :eta eta
                                                 :use-saved-weights ,use-saved-weights))))
+   `(declare)
    (if ext-func-adjust-weights
        `(,ext-func-adjust-weights ,eta)
        `(loc-adjust-weights-fn ,eta))
