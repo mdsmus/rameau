@@ -12,6 +12,7 @@ corais-dir = $(maindir)/corais
 lilypond = lilypond -I $(maindir)/literatura/bach-corais -I $(maindir)/lily
 
 vpath %.lyi literatura/bach-corais
+vpath %.pop gabaritos/bach-corais
 vpath %.ly $(corais-dir)
 vpath %.log $(corais-dir)
 vpath %.png $(corais-dir)
@@ -63,7 +64,7 @@ corais-partitura-fast: $(corais-ly)
 	@if [ ! -d $(corais-dir) ]; then mkdir -p $(corais-dir); fi;
 	@cat $< lily/score.lyi > $(corais-dir)/$(basename $(notdir $<)).ly
 
-coral-%.png: %.ly 
+coral-%.png: %.ly %.pop
 	./rameau partitura corais -f $(notdir $(basename $<)) -a pardo net $(algo)
 	cd $(corais-dir); \
 	$(lilypond) --png coral-$(notdir $<) 2> $(corais-dir)/coral-$(notdir $(basename $<)).log
