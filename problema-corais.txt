@@ -4,6 +4,7 @@ os seguintes corais não foram processados:
 327 333 359 361
 
 67: está em Bb no ly e sol no livro
+76: coral está em A no ly e sol no livro
 95: split errado
 141: tem varias notas erradas
 150: reverte
