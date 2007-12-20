@@ -163,9 +163,6 @@
                    `(let ((,array
                            (make-array '(,size ,(1+ prev-layer))
                                        :element-type 'type-weight)))
-                      (declare (type (simple-array type-weight
-                                                   (,size ,(1+ prev-layer)))
-                                     ,array))
                       (kick-weights ,array :dev ,weight-dev :fresh t
                                     :size ,(* size (1+ prev-layer)))
                       ,array))
@@ -289,13 +286,6 @@ of type-act icact and idest"
              (,diff ,(the type-act (coerce 0.0 'type-act)))
              (,act ,iact)
              (,dest ,idest))
-         (declare (type type-act ,error ,diff)
-                  (type (simple-array type-act
-                                      (,size))
-                        ,act)
-                  (type (simple-array type-act
-                                      (,size))
-                        ,dest))
          (simple-dotimes-unroll
              (,x ,size)
            ;;(dotimes (,x ,size)
@@ -520,53 +510,11 @@ units"
                (fromto 0 (1- num-layers))))
 ;;; part after let-statement: declarations
        (declare (ignorable ,theweight ,theact ,theprod ,sum)
-                (type type-weight ,theweight)
-                (type type-act ,theact)
-                (type type-act ,theprod)
-                (type type-sum ,sum)
+                
 
-                ,@(if return-context-unit-stats
-                      `((type type-act ,act-mean-sum)))
-                ,@(if (and activate *prefer-row-major-aref*)
-                      `((type fixnum ,row-major-index)))
+                )
                 ;;		    (:explain :variables :calls :types :boxing)
-                ,@(mapcan
-                   #'(lambda (layer-num)
-                       (let ((spec-current-layer-size
-                              (layer-spec-size (svref layer-specs layer-num))))
-                         (if (= 0 layer-num)
-                             ;; for 0th layer only activation
-                             `(
-                               (type
-                                (simple-array type-act
-                                              (,spec-current-layer-size))
-                                ,(svref acts layer-num)))
-                             (if activate
-                                 `(
-                                   (type
-                                    (simple-array type-act
-                                                  (,spec-current-layer-size))
-                                    ,(svref acts layer-num))
-                                   (type
-                                    (simple-array type-sum
-                                                  (,spec-current-layer-size))
-                                    ,(svref sums layer-num))
-                                   (ignorable ,(svref sums layer-num))
-                                   (type
-                                    (simple-array type-weight
-                                                  (,spec-current-layer-size
-                                                   ,(1+ (layer-spec-size
-                                                         (svref layer-specs (1- layer-num))))))
-                                    ,(svref weights layer-num))
-                                   (ignorable ,(svref weights layer-num)))
-                                 (if copy-recurrent
-                                     `(
-                                       (ignorable ,(svref acts layer-num))
-                                       (type
-                                        (simple-array type-act
-                                                      (,spec-current-layer-size))
-                                        ,(svref acts layer-num))))))))
-                   (fromto 0 (1- num-layers))))
+
 ;;; after declarations: the program
        ,@(if activate
              (mapcan
@@ -700,21 +648,7 @@ being the number of hidden layer units"
                          (layer-weight-vec (svref ,net ,layer-num)))))
                  '(1)))
 ;;; part after let-statement: declarations
-       (declare (type type-weight ,weight-mean-sum)
-
-                ,@(if *prefer-row-major-aref*
-                      `((type fixnum ,row-major-index)))
-                ,@(mapcan
-                   #'(lambda (layer-num)
-                       (let ((spec-current-layer-size
-                              (layer-spec-size (svref layer-specs layer-num))))
-                         `((type
-                            (simple-array type-weight
-                                          (,spec-current-layer-size
-                                           ,(1+ (layer-spec-size
-                                                 (svref layer-specs (1- layer-num))))))
-                            ,(svref weights layer-num)))))
-                   '(1)))
+       
 ;;; after declarations: the program
        ,@(mapcan
           #'(lambda (layer) ;; starting with layer=1
@@ -1015,62 +949,7 @@ being the number of hidden layer units"
                          ))
                    (fromto 1 (1- num-layers))))
            ;; DECLARATIONS
-           (declare
-            ,@(if *prefer-row-major-aref*
-                  `((type fixnum ,row-major-index)))
-
-            ,@(if eta
-                  `((type type-de-by-dw ,update)))
-            ;;	  (:explain :calls :types :boxing)
-            ,@(mapcan
-               #'(lambda (layer-num)
-                   (let ((spec-current-layer-size
-                          (layer-spec-size (svref layer-specs layer-num)))
-                         (spec-previous-layer-size
-                          (layer-spec-size (svref layer-specs (1- layer-num)))))
-                     `(
-                       ,@(if (and need-weights
-                                  (eq save-weights :set))
-                             `((type
-                                (simple-array type-weight
-                                              (,spec-current-layer-size
-                                               ,(1+ spec-previous-layer-size)))
-                                ,(svref weights layer-num))
-
-                               (type
-                                (simple-array type-weight
-                                              (,spec-current-layer-size
-                                               ,(1+ spec-previous-layer-size)))
-                                ,(svref saved-weights layer-num)))
-                             ;; else (save-weights was not :set)
-                             `(,@(if need-weights
-                                     `((type
-                                        (simple-array type-weight
-                                                      (,spec-current-layer-size
-                                                       ,(1+ spec-previous-layer-size)))
-                                        ,(svref weights layer-num))))
-                                 ,@(if need-saved-weights
-                                       `((type
-                                          (simple-array type-weight
-                                                        (,spec-current-layer-size
-                                                         ,(1+ spec-previous-layer-size)))
-                                          ,(svref saved-weights layer-num))))))
-                         ;; FINISHED WITH (SAVED)WEIGHTS
-                         ;; still to come: de-by-dw, prev-update
-                       ,@(if need-de-by-dws
-                             `((type
-                                (simple-array type-de-by-dw
-                                              (,spec-current-layer-size
-                                               ,(1+ spec-previous-layer-size)))
-                                ,(svref de-by-dws layer-num))))
-
-                       ,@(if need-prev-update
-                             `((type
-                                (simple-array type-de-by-dw
-                                              (,spec-current-layer-size
-                                               ,(1+ spec-previous-layer-size)))
-                                ,(svref previous-updates layer-num)))))))
-               (fromto 1 (1- num-layers))))
+           
            ,@(mapcan
               #'(lambda (layer) ;; 1..
                   (let ((spec-current-layer-size
@@ -1466,64 +1345,7 @@ given pattern dest. Other options are experimental."
                            )))
                  (fromto 0 (1- num-layers))))
          ;; part after let-statement: declarations
-         (declare
-          ,@(if *prefer-row-major-aref*
-                `((type fixnum ,row-major-index)))
-          ,@(if scale
-                `((type type-delta ,iscale ,scaled-delta)))
-          (type type-delta ,delta ,delta-sum)
-          (type type-act ,act)
-
-          ;; make it one bigger than input layer for bias-weight-c !
-          ,@(if improved-elman
-                `((type (simple-array type-act (,(1+ (layer-spec-size
-                                                      (svref layer-specs 0)))))
-                        ,ie-corrected-input-layer-act)))
-          ;;		  (:explain :calls :types :boxing)
-          ,@(mapcan
-             #'(lambda (layer-num)
-                 (let ((spec-current-layer-size
-                        (layer-spec-size (svref layer-specs layer-num))))
-                   (if (= 0 layer-num)
-                       ;; for 0th layer only activation
-                       `(
-                         (type
-                          (simple-array type-act
-                                        (,spec-current-layer-size))
-                          ,(svref acts layer-num)))
-                       (let ((spec-previous-layer-size
-                              (layer-spec-size (svref layer-specs (1- layer-num)))))
-                         `(
-                           (type
-                            (simple-array type-act
-                                          (,spec-current-layer-size))
-                            ,(svref acts layer-num))
-
-                           ,@(if (layer-spec-act-fn-dash-uses-sum
-                                  (svref layer-specs layer-num))
-                                 `((type
-                                    (simple-array type-sum
-                                                  (,spec-current-layer-size))
-                                    ,(svref sums layer-num))))
-
-                           (type
-                            (simple-array type-delta
-                                          (,spec-current-layer-size))
-                            ,(svref deltas layer-num))
-
-                           ,@(if (not (= layer-num 1))
-                                 `((type
-                                    (simple-array type-weight
-                                                  (,spec-current-layer-size
-                                                   ,(1+ spec-previous-layer-size)))
-                                    ,(svref weights layer-num))))
-
-                           (type
-                            (simple-array type-de-by-dw
-                                          (,spec-current-layer-size
-                                           ,(1+ spec-previous-layer-size)))
-                            ,(svref de-by-dws layer-num)))))))
-             (fromto 0 (1- num-layers))))
+         
 
          ;; make the ie-corrected-input-layer-act
          ,@(if improved-elman
@@ -1548,21 +1370,15 @@ given pattern dest. Other options are experimental."
                          `((format t "cs  : ")))
 
                    (dotimes (,step ,ie-step-num)
-                     (declare (fixnum ,step))
                      (let ((,prev-act (svref (svref ,ie-all-patterns ,step)
                                              ,ie-pattern-num))
                            (,c (aref ,ie-this-pattern-cs ,step)))
-                       (declare (type (simple-array type-act (,(layer-spec-size
-                                                                (svref layer-specs 0))))
-                                      ,prev-act)
-                                (type type-act ,c))
                        ,@(if *debug-improved-elman*
                              `((format t "[step ~a c ~a] " ,step ,c)))
                        (do ((,idx ,(- (layer-spec-size (svref layer-specs 0))
                                       (layer-spec-size (svref layer-specs 1)))
                                   (1+ ,idx)))
                            ((>= ,idx ,(layer-spec-size (svref layer-specs 0))))
-                         (declare (fixnum ,idx))
                                         ;, a := a+c(t)*a(t)
                          (incf (aref ,ie-corrected-input-layer-act ,idx)
                                (* ,c
@@ -2214,31 +2030,6 @@ previous-de-by-dw vector"
 		      (layer-previous-de-by-dw-vec ,(svref layers layer-num)))))
 	       (fromto 1 (1- num-layers))))
 	 ;; declarations
-	 (declare
-	  ,@(if *prefer-row-major-aref*
-		`((type fixnum ,row-major-index)))
-
-	  ,@(if (not zero-beta-save-derivs)
-		`((type type-de-by-dw ,divident ,divisor ,current ,previous)))
-	  ;;		(:explain :calls :types :boxing)
-	  ,@(mapcan
-	     #'(lambda (layer-num)
-		 (let ((spec-current-layer-size
-			(layer-spec-size (svref layer-specs layer-num)))
-		       (spec-previous-layer-size
-			(layer-spec-size (svref layer-specs (1- layer-num)))))
-		   `(
-		     (type
-		      (simple-array type-de-by-dw
-				    (,spec-current-layer-size
-				     ,(1+ spec-previous-layer-size)))
-		      ,(svref de-by-dws layer-num))
-		     (type
-		      (simple-array type-de-by-dw
-				    (,spec-current-layer-size
-				     ,(1+ spec-previous-layer-size)))
-		      ,(svref previous-de-by-dws layer-num)))))
-	     (fromto 1 (1- num-layers))))
 	 ;; NOW THE PROGRAMME
 	 ,@(mapcan
 	    #'(lambda (layer) ;; 1..
@@ -2548,8 +2339,6 @@ previous-de-by-dw vector"
 						    b b-err)))
 		      nil)
 	      `((values ,prev-a ,prev-a-err ,b ,b-err))))
-       (declare (type type-weight ,prev-a ,a ,b ,diff)
-		(type type-act ,a-err ,b-err ,prev-a-err))
        ,@(if *nile-debug-intloc*
 	     `((format t "a: ~A  b: ~A  a-err: ~A  b-err: ~A  diff: ~A~%"
 		       ,a ,b ,a-err ,b-err ,diff)))
@@ -2639,8 +2428,6 @@ Used for CG-linesearches. See source for more documentation"
                        (setq ,b-in ,a-in)
                        (setq ,a-in ,b-in)))
                nil))
-       (declare (type type-act ,a-err ,b-err ,c-err ,d-err)
-                (type type-weight ,a ,b ,c ,d ,upd ,tol))
        ,@(if *nile-debug-intloc*
              `((format t "a: ~A  b: ~A  c: ~A  d: ~A c-err: ~A  d-err: ~A~%"
                        ,a ,b ,c ,d ,c-err ,d-err)))
@@ -2805,12 +2592,9 @@ activates, backprops, etc"
                                                                ,(layer-spec-size
                                                                  (svref layer-specs
                                                                         (1- num-layers))))))
-                                         (declare (type type-act ,this-pat-error))
                                          ,(if batch
                                               `(setq ,error
-                                                     (the type-act
-                                                       (+ (the type-act ,error)
-                                                          (the type-act ,this-pat-error))))
+                                                     (+ ,error ,this-pat-error))
                                               `(setq ,error ,this-pat-error))
                                          nil)))))))
     (possibly-do-flet
@@ -2819,33 +2603,12 @@ activates, backprops, etc"
        ,@(if need-loc-func-activate
              `((,loc-func-activate
                 ()
-                (declare
-                 (optimize (speed 3) (space 0) (safety 0) (debug 0)
-                           (compilation-speed 0)))
                 (activation-fn ',netspec ,net))))
        ,@(if need-loc-func-backprop
              `((,loc-func-backprop
                 (dest)
-                (declare
-                 (optimize (speed 3) (space 0) (safety 0) (debug 0)
-                           (compilation-speed 0))
-                 (type (simple-array type-act
-                                     (,(layer-spec-size
-                                        (svref layer-specs (1- num-layers)))))
-                       dest))
                 (backprop-fn ',netspec ,net dest)))))
      ;; declarations go here
-     `(declare
-       ,@(if need-loc-func-activate
-             `((ftype (function () nil)
-                      ,loc-func-activate)))
-       ,@(if need-loc-func-backprop
-             `((ftype (function ((simple-array type-act
-                                               (,(layer-spec-size
-                                                  (svref layer-specs
-                                                         (1- num-layers))))))
-                                nil)
-                      ,loc-func-backprop))))
      ;; body of flet
      (possibly-do-let
       `(,@(if (not var-input-layer)
@@ -2854,42 +2617,18 @@ activates, backprops, etc"
                 `((,output-layer-act (layer-act-vec (svref ,net ,(1- num-layers))))))
           ,@(if (and do-calc-error (not var-error))
                 `((,error ,(coerce 0.0d0 'type-act)))))
-      `(declare ,@(if (not var-input-layer)
-                      `((type layer ,input-layer)))
-                ,@(if (and do-calc-error (not var-output-layer-act))
-                      `((type (simple-array type-act
-                                            (,(layer-spec-size
-                                               (svref layer-specs (1- num-layers)))))
-                              ,output-layer-act)))
-                ,@(if (and do-calc-error (not var-error))
-                      `((type type-act ,error))))
       ;; Using n-random-integers here is highly inefficient and
       ;; causes a lot consing... Online training is generally depreciated,
       ;; but this was the easiest way to do it.
       `(,@(if batch
               `(dotimes (,pattern-num ,numpatterns))
               `(dolist (,pattern-num (n-random-integers ,numpatterns ,numpatterns))))
-          (declare (fixnum ,pattern-num))
           ,@(if *debug-iters*
                 `((format t "PI pattern ~a~%" ,pattern-num)))
           (let ((,current-input-pattern
                  (svref ,input-patterns ,pattern-num))
                 (,current-dest-pattern
                  (svref ,dest-patterns ,pattern-num)))
-            (declare
-             ;;	    (:explain :variables :calls :types :boxing)
-             (type
-              (simple-array type-act
-                            (,(layer-spec-size
-                               (svref layer-specs 0))))
-              ,current-input-pattern)
-             (type
-              (simple-array type-act
-                            (,(layer-spec-size
-                               (svref layer-specs (1- num-layers)))))
-              ,current-dest-pattern)
-             (ignorable ,current-dest-pattern))
-
             ,@code-pre-inject
             ,@code-inject
             ,@code-pre-activate
@@ -3004,15 +2743,6 @@ activates, backprops, etc"
                     (if (= ,write-net-every 0)
                         -1
                         0)))))
-       (declare (type type-act ,ierror-lim)
-                ,@(if max-cycles
-                      `((fixnum ,imax-cycles)))
-                ,@(if (not var-error)
-                      `((type type-act ,error)))
-                ,@(if write-error-every
-                      `((fixnum ,write-error-every-next)))
-                ,@(if write-net-every
-                      `((fixnum ,write-net-every-next))))
        ,@(if var-error
              `((setq ,error ,(coerce 0.0d0 'type-act))))
        
@@ -3034,10 +2764,6 @@ activates, backprops, etc"
                                                             error))
                 '(nil))
          ;; BODY OF DO-LOOP
-         (declare (fixnum ,train-cycle-count)
-                  ,@(if proprietary-detect-locmin
-                        `((type type-act ,x-cycle-error ,x-diff ,x-error-lim)
-                          (type boolean ,just-kicked))))
          ,@(if *debug-iters*
                `((format t "CI cycle ~a~%" ,train-cycle-count)))
 
@@ -3210,32 +2936,15 @@ activates, backprops, etc"
                             (if (= ,write-notice-every 0)
                                 -1
                                 0)))))
-               (declare (fixnum ,inum-steps)
-                        ,@(if write-notice-every
-                              `((fixnum ,write-notice-every-next))))
                (dotimes (,step-count (the fixnum
                                        (- ,inum-steps
                                           (the fixnum ,(coerce 1 'fixnum)))))
-                 (declare (type fixnum ,step-count))
                  ,@(if *debug-iters*
                        `((format t "SI step ~a~%" ,step-count)))
                  (let ((,current-input-patterns
                         (svref ,input-patterns ,step-count))
                        (,next-input-patterns
                         (svref ,input-patterns (1+ ,step-count))))
-                   (declare (type (simple-array
-                                   (simple-array type-act
-                                                 (,(layer-spec-size
-                                                    (svref layer-specs 0))))
-                                   ;; only if numpatterns is a number
-                                   ;; at compile time can we make a
-                                   ;; precise declaration here
-                                   ,(if (numberp numpatterns)
-                                        `(,numpatterns)
-                                        '(*)))
-                                  ,current-input-patterns
-                                  ,next-input-patterns)
-                            (ignorable ,next-input-patterns))
                    ;; if necessary write
                    ,@writer-code
                    ;;
@@ -3247,18 +2956,6 @@ activates, backprops, etc"
                                           ,(coerce 1 'fixnum)))))
                       (,current-input-patterns
                        (svref ,input-patterns ,step-count)))
-                 (declare (fixnum ,step-count)
-                          (type (simple-array
-                                 (simple-array type-act
-                                               (,(layer-spec-size
-                                                  (svref layer-specs 0))))
-                                 ;; only if numpatterns is a number
-                                 ;; at compile time can we make a
-                                 ;; precise declaration here
-                                 ,(if (numberp numpatterns)
-                                      `(,numpatterns)
-                                      '(*)))
-                                ,current-input-patterns))
                  ,@(if *debug-iters*
                        `((format t "SI step ~a~%" ,step-count)))
                  ;; if necessary write
@@ -3269,29 +2966,9 @@ activates, backprops, etc"
             ;; IS AN ELMAN NET BUT NO STEPS - JUST AFFECTS DECLARATION OF
             ;; current-input-patterns
             `(let ((,current-input-patterns ,input-patterns))
-               (declare (type (simple-array
-                               (simple-array
-                                (simple-array type-act
-                                              (,(layer-spec-size
-                                                 (svref layer-specs 0))))
-                                ,(if (numberp numpatterns)
-                                     `(,numpatterns)
-                                     '(*)))
-                               ,(if (numberp num-steps)
-                                    `(,num-steps)
-                                    '(*)))
-                              ,current-input-patterns))
                ,@code))
         ;; CASE FOR NON ELMAN NET - DO NOTHING SPECIAL
         `(let ((,current-input-patterns ,input-patterns))
-           (declare (type (simple-array
-                           (simple-array type-act
-                                         (,(layer-spec-size
-                                            (svref layer-specs 0))))
-                           ,(if (numberp numpatterns)
-                                `(,numpatterns)
-                                '(*)))
-                          ,current-input-patterns))
            ,@code))))
 
 (defmacro trainer (netspec-form net
@@ -3619,7 +3296,6 @@ activates, backprops, etc"
                                  cg-linesearch-all-pattern-error-code-pi)))
                         `((the type-act
                             (let ((,cg-ls-error ,(coerce 0.0d0 'type-act)))
-                              (declare (type type-act ,cg-ls-error))
                               (step-iterator ',netspec ,net
                                              ,current-input-patterns
                                              ,idest-patterns
@@ -3674,10 +3350,6 @@ activates, backprops, etc"
                                (,cg-interval-right ,(the type-weight (coerce 0.0d0 'type-weight)))
                                (,cg-interval-left-err ,(the type-act (coerce 0.0d0 'type-act)))
                                (,cg-interval-right-err ,(the type-act (coerce 0.0d0 'type-act))))
-                           (declare (type type-de-by-dw ,cg-beta)
-                                    (type type-weight ,cg-interval-left ,cg-interval-right)
-                                    (type type-act ,cg-interval-left-err ,cg-interval-right-err))
-
                            ,@(if *nile-debug*
                                  `((format t "do-cg-update: cg-update-counter: ~a,~%     (= ,cg-update-counter ,numweights) : ~a~%"
                                            ,var-cg-update-counter (= ,var-cg-update-counter ,var-cg-numweights))))
@@ -3750,12 +3422,6 @@ activates, backprops, etc"
                                 `((let ((,this-pattern-cs (svref ,var-improved-elman-c
                                                                  ,pattern-num))
                                         (,current-gdash-mean ,(coerce 0.0d0 'type-act)))
-                                    (declare (type (simple-array type-act
-                                                                 ,(if (numberp num-steps)
-                                                                      `(,num-steps)
-                                                                      '(*)))
-                                                   ,this-pattern-cs)
-                                             (type type-act ,current-gdash-mean))
                                     ;; now multiply all previous cs
                                     ;; NOT QUITE SURE WHAT IS CORRECT HERE
                                     ;; (dotimes (idx (1- ,var-name-step-count))
@@ -3792,8 +3458,6 @@ activates, backprops, etc"
                                                             (svref layer-specs 1))
                                                            'type-weight)
                                                   (,func-get-weight-mean))))
-                              (declare (type type-act ,actmean)
-                                       (type type-weight ,nhid*wmean))
                               (pattern-iterator ',netspec ,net
                                                 ,current-input-patterns
                                                 ,idest-patterns
@@ -3853,12 +3517,6 @@ activates, backprops, etc"
                                 `((let ((,this-pattern-cs (svref ,var-improved-elman-c
                                                                  ,pattern-num))
                                         (,current-gdash-mean ,(coerce 0.0d0 'type-act)))
-                                    (declare (type (simple-array type-act
-                                                                 ,(if (numberp num-steps)
-                                                                      `(,num-steps)
-                                                                      '(*)))
-                                                   ,this-pattern-cs)
-                                             (type type-act ,current-gdash-mean))
                                     ;; now multiply all previous cs
                                     ;; NOT QUITE SURE WHAT IS CORRECT HERE
                                     ;; (dotimes (idx (1- ,var-name-step-count))
@@ -3895,8 +3553,6 @@ activates, backprops, etc"
                                                             (svref layer-specs 1))
                                                            'type-weight)
                                                   (,func-get-weight-mean))))
-                              (declare (type type-act ,actmean)
-                                       (type type-weight ,nhid*wmean))
                               (pattern-iterator ',netspec ,net
                                                 ,current-input-patterns
                                                 ,idest-patterns
@@ -4047,73 +3703,35 @@ activates, backprops, etc"
              `(,@(if need-loc-func-clear-de-by-dws
                      `((,loc-func-clear-de-by-dws
                         ()
-                        (declare
-                         ;; (:explain :variables :calls :types :boxing)
-                         (optimize (speed 3) (space 0) (safety 0) (debug 0)
-                                   (compilation-speed 0)))
                         (adjust-weights ',netspec ,net
                                         :clear-de-by-dws t))))
                  ,@(if need-loc-func-std-activate
                        `((,loc-func-std-activate
                           ()
-                          (declare
-                           ;; (:explain :variables :calls :types :boxing)
-                           (optimize (speed 3) (space 0) (safety 0) (debug 0)
-                                     (compilation-speed 0)))
                           (activation-fn ',netspec ,net))))
                  ,@(if need-loc-func-std-backprop
                        `((,loc-func-std-backprop
                           (dest)
-                          (declare
-                           ;; (:explain :variables :calls :types :boxing)
-                           (optimize (speed 3) (space 0) (safety 0) (debug 0)
-                                     (compilation-speed 0))
-                           (type (simple-array type-act
-                                               (,(layer-spec-size
-                                                  (svref layer-specs (1- num-layers)))))
-                                 dest))
                           (backprop-fn ',netspec ,net dest))))
                  ,@(if need-loc-func-copy-recurrent
                        `((,loc-func-copy-recurrent ()
-                                                   (declare
-                                                    ;; (:explain :variables :calls :types :boxing)
-                                                    (optimize (speed 3) (space 0) (safety 0) (debug 0)
-                                                              (compilation-speed 0)))
                                                    (activation-fn ',netspec ,net
                                                                   :activate nil
                                                                   :copy-recurrent t))))
                  ,@(if need-loc-func-cg-zero-beta
                        `((,loc-func-cg-zero-beta ()
-                                                 (declare
-                                                  ;; (:explain :variables :calls :types :boxing)
-                                                  (optimize (speed 3) (space 0) (safety 0) (debug 0)
-                                                            (compilation-speed 0)))
                                                  (beta ,layer-specs ,net
                                                        :zero-beta-save-derivs t))))
                  ,@(if need-loc-func-cg-beta
                        `((,loc-func-cg-beta ()
-                                            (declare
-                                             ;; (:explain :variables :calls :types :boxing)
-                                             (optimize (speed 3) (space 0) (safety 0) (debug 0)
-                                                       (compilation-speed 0)))
                                             (beta ,layer-specs ,net))))
                  ,@(if need-loc-func-cg-make-cg-updates-with-beta
                        `((,loc-func-cg-make-cg-updates-with-beta (beta)
-                                                                 (declare
-                                                                  (type type-de-by-dw beta)
-                                                                  ;; (:explain :variables :calls :types :boxing)
-                                                                  (optimize (speed 3) (space 0) (safety 0) (debug 0)
-                                                                            (compilation-speed 0)))
                                                                  (adjust-weights ',netspec ,net
                                                                                  :save-weights ,cg-opt-save-weights-method
                                                                                  :make-cg-updates-with-beta beta))))
                  ,@(if need-loc-func-cg-final-adjust-weights
                        `((,loc-func-cg-final-adjust-weights (eta)
-                                                            (declare
-                                                             (type type-weight eta)
-                                                             ;; (:explain :variables :calls :types :boxing)
-                                                             (optimize (speed 3) (space 0) (safety 0) (debug 0)
-                                                                       (compilation-speed 0)))
                                                             (adjust-weights ',netspec ,net
                                                                             :eta eta
                                                                             :use-saved-weights t
@@ -4122,20 +3740,11 @@ activates, backprops, etc"
                                                                             :clear-de-by-dws t))))
                  ,@(if need-loc-func-cg-adjust-weights
                        `((,loc-func-cg-adjust-weights (eta)
-                                                      (declare
-                                                       (type type-weight eta)
-                                                       ;; (:explain :variables :calls :types :boxing)
-                                                       (optimize (speed 3) (space 0) (safety 0) (debug 0)
-                                                                 (compilation-speed 0)))
                                                       (adjust-weights ',netspec ,net
                                                                       :eta eta
                                                                       :use-saved-weights t))))
                  ,@(if need-loc-func-sd-adjust-weights-and-clear-de-by-dws
                        `((,loc-func-sd-adjust-weights-and-clear-de-by-dws ()
-                                                                          (declare
-                                                                           ;; (:explain :variables :calls :types :boxing)
-                                                                           (optimize (speed 3) (space 0) (safety 0) (debug 0)
-                                                                                     (compilation-speed 0)))
                                                                           (adjust-weights ,netspec-form ,net
                                                                                           :eta ,sd-opt-eta
                                                                                           :momentum ,sd-opt-momentum
@@ -4182,89 +3791,13 @@ activates, backprops, etc"
 		 ,@(if need-loc-func-improved-elman-activate
 		       `((,loc-func-improved-elman-activate
 			  ()
-			  (declare
-			   ;; (:explain :variables :calls :types :boxing)
-			   (optimize (speed 3) (space 0) (safety 0) (debug 0)
-				     (compilation-speed 0)))
-			  (the type-act
-			    (activation-fn ',netspec ,net
-					   :activate t
-					   :return-context-unit-stats t)))))
+        (activation-fn ',netspec ,net
+                       :activate t
+                       :return-context-unit-stats t))))
 		 ,@(if need-loc-func-get-weight-mean
 		       `((,loc-func-get-weight-mean
 			  ()
-			  (declare
-			   ;; (:explain :variables :calls :types :boxing)
-			   (optimize (speed 3) (space 0) (safety 0) (debug 0)
-				     (compilation-speed 0)))
-			  (the type-weight
-			    (get-weight-mean ,netspec-form ,net))))))
-	     `(declare
-	       ,@(if need-loc-func-clear-de-by-dws
-		     `((ftype (function () nil)
-			      ,loc-func-clear-de-by-dws)))
-	       ,@(if need-loc-func-std-activate
-		     `((ftype (function () nil)
-			      ,loc-func-std-activate)))
-	       ,@(if need-loc-func-std-backprop
-		     `((ftype (function ((simple-array type-act
-						       (,(layer-spec-size
-							  (svref layer-specs
-								 (1- num-layers))))))
-					nil)
-			      ,loc-func-std-backprop)))
-	       ,@(if need-loc-func-copy-recurrent
-		     `((ftype (function () nil)
-			      ,loc-func-copy-recurrent)))
-	       ,@(if need-loc-func-cg-zero-beta
-		     `((ftype (function () type-de-by-dw)
-			      ,loc-func-cg-zero-beta)))
-	       ,@(if need-loc-func-cg-beta
-		     `((ftype (function () type-de-by-dw)
-			      ,loc-func-cg-beta)))
-	       ,@(if need-loc-func-cg-make-cg-updates-with-beta
-		     `((ftype (function (type-de-by-dw) nil)
-			      ,loc-func-cg-make-cg-updates-with-beta)))
-	       ,@(if need-loc-func-cg-final-adjust-weights
-		     `((ftype (function (type-weight) nil)
-			      ,loc-func-cg-final-adjust-weights)))
-	       ,@(if need-loc-func-cg-adjust-weights
-		     `((ftype (function (type-weight) nil)
-			      ,loc-func-cg-adjust-weights)))
-	       ,@(if need-loc-func-sd-adjust-weights-and-clear-de-by-dws
-		     `((ftype (function () nil)
-			      ,loc-func-sd-adjust-weights-and-clear-de-by-dws)))
-	       #|
-                 ,@(if need-func-improved-elman-backprop
-		     `((ftype (function ((simple-array type-act
-         (,(layer-spec-size
-         (svref layer-specs (1- num-layers)))))
-         (simple-array type-act ,(if (numberp num-steps)
-         `(,num-steps)
-         '(*)))
-         (simple-array
-					  ;; numpatterns input layer act ; ;
-         (simple-array
-					   ;; innermost : input layer act ; ;
-         (simple-array type-act
-         (,(layer-spec-size
-         (svref layer-specs 0))))
-         ,(if (numberp numpatterns)
-         `(,numpatterns)
-         '(*)))
-         ,(if (numberp num-steps)
-         `(,num-steps)
-         '(*)))
-         fixnum
-         fixnum) nil)
-         ,loc-func-improved-elman-backprop)))
-                 |#
-	       ,@(if need-func-improved-elman-activate
-		     `((ftype (function () type-act)
-			      ,loc-func-improved-elman-activate)))
-	       ,@(if need-func-get-weight-mean
-		     `((ftype (function () type-weight)
-			      ,loc-func-get-weight-mean))))
+			    (get-weight-mean ,netspec-form ,net)))))
 	     `(let* ((,error ,(coerce 0.0d0 'type-act))
 		     (,iinput-patterns ,input-patterns)
 		     (,idest-patterns ,dest-patterns)
@@ -4298,69 +3831,7 @@ activates, backprops, etc"
 			      (vector-of-n ',numpatterns
 					   (make-array (list ,num-steps)
 						       :element-type 'type-act))))))
-		(declare (type type-act ,error)
-			 ,(if elman-net
-			      ;; input-patterns are num-steps
-			      ;; set of numpatterns input-patterns
-			      `(type (simple-array
-				      ;; numpatterns input layer act
-				      (simple-array
-				       ;; innermost : input layer act
-				       (simple-array type-act
-						     (,(layer-spec-size
-							(svref layer-specs 0))))
-				       ,(if (numberp numpatterns)
-					    `(,numpatterns)
-					  '(*)))
-				      ,(if (numberp num-steps)
-					   `(,num-steps)
-					 '(*)))
-				     ,iinput-patterns)
-			    ;; input patterns as normal
-			    `(type (simple-array
-				    ;; numpatterns input layer act
-				    (simple-array type-act
-						  (,(layer-spec-size
-						     (svref layer-specs 0))))
-				    ,(if (numberp numpatterns)
-					 `(,numpatterns)
-				       '(*)))
-				   ,iinput-patterns))
-			 ;; output patterns are same for both
-			 (type (simple-array
-				(simple-array type-act
-					      (,(layer-spec-size
-						 (svref layer-specs (1- num-layers)))))
-				,(if (numberp numpatterns)
-				     `(,numpatterns)
-				   '(*)))
-			       ,idest-patterns)
-			 ,@(if need-var-input-layer
-			       `((type layer ,var-input-layer)))
-			 ,@(if need-var-output-layer-act
-			       `((type (simple-array type-act
-						     (,(layer-spec-size
-							(svref layer-specs (1- num-layers)))))
-				       ,var-output-layer-act)))
-			 ,@(if need-var-cg-update-counter
-			       `((fixnum ,var-cg-update-counter)))
-			 ,@(if need-var-cg-numweights
-			       `((fixnum ,var-cg-numweights)))
-			 ,@(if (not (numberp numpatterns))
-			       `((fixnum ,numpatterns)))
-			 ,@(if (and elman-net (not (numberp num-steps)))
-			       `((fixnum ,num-steps)))
-			 ,@(if var-improved-elman-c
-			       `((type (simple-array
-					(simple-array type-act
-						      ,(if (numberp num-steps)
-							   `(,num-steps)
-							 '(*)))
-					,(if (numberp numpatterns)
-					     `(,numpatterns)
-					   '(*)))
-				       ,var-improved-elman-c))))
-		,@step-code
+          ,@step-code
 		,@(if write-final-error
 		      `((if ,write-final-error
 			    (format t "Final error is: ~A~%~%" ,error))))
@@ -4456,11 +3927,6 @@ input-patterns and dest-patterns."
        (let ((,error ,(coerce 0.0d0 'type-act))
              (,output-layer-act (layer-act-vec
                                  (svref ,net ,(1- num-layers)))))
-         (declare (type type-act ,error)
-                  (type (simple-array type-act
-                                      (,(layer-spec-size
-                                         (svref layer-specs (1- num-layers)))))
-                        ,output-layer-act))
          (the type-act
            (progn
              (pattern-iterator ,netspec-form ,net
@@ -4491,18 +3957,10 @@ input-patterns and dest-patterns."
    #'possibly-do-flet
    (if (not ext-func-adjust-weights)
        `((loc-adjust-weights-fn (eta)
-                                (declare
-                                 ;; (:explain :variables :calls :types :boxing)
-                                 (optimize (speed 3) (space 0) (safety 0) (debug 0)
-                                           (compilation-speed 0))
-                                 (type type-weight eta))
                                 (adjust-weights ,netspec-form
                                                 ,net
                                                 :eta eta
                                                 :use-saved-weights ,use-saved-weights))))
-   (if (not ext-func-adjust-weights)
-       '(declare (ftype (function (type-weight) nil)
-                  loc-adjust-weights-fn)))
    (if ext-func-adjust-weights
        `(,ext-func-adjust-weights ,eta)
        `(loc-adjust-weights-fn ,eta))
@@ -4519,23 +3977,14 @@ input-patterns and dest-patterns."
   (let* ((layer-specs (net-spec-layer-specs netspec))
 	 (num-layers (car (array-dimensions layer-specs))))
     `(flet ((loc-adjust-weights-fn (eta)
-	      (declare
-;;;		 (:explain :variables :calls :types :boxing)
-	       (optimize (speed 3) (space 0) (safety 0) (debug 0)
-			 (compilation-speed 0))
-	       (type type-weight eta))
 	      (adjust-weights ',netspec ,net :eta eta
 			      :use-saved-weights ,use-saved-weights)))
-       (declare (ftype (function (type-weight) nil)
-		       loc-adjust-weights-fn))
-;;       (format t "linesearch-eval-net-one-pattern:~%  -> eta ~a~%" ,eta)
        (loc-adjust-weights-fn ,eta)
        ,loc-activation-fn
-       (the type-act
-	 (sum-squares-error ,output-layer-act
-			    ,dest
-			    ,(layer-spec-size
-			      (svref layer-specs (1- num-layers))))))))
+       (sum-squares-error ,output-layer-act
+                          ,dest
+                          ,(layer-spec-size
+                            (svref layer-specs (1- num-layers)))))))
 
 (defmacro improved-elman-gdash (netspec-form
 				nhid*wmean
@@ -4564,8 +4013,8 @@ input-patterns and dest-patterns."
 	   `((make-array ,nodes
 			 :element-type 'type-act
 			 :initial-contents ',(mapcar #'(lambda (da)
-							 (the type-act (coerce (eval da) 'type-act)))
-						     dat))))
+                                       (coerce (eval da) 'type-act))
+                                   dat))))
        data)))
 
 (defun make-patterns (nodes data)
