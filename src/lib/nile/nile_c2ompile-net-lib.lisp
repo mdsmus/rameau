@@ -205,43 +205,42 @@
 
 (defun analyse (tobereplaced tree)
   (declare (optimize (speed 3) (space 0) (safety 0) (debug 0)
-		     (compilation-speed 0))
-	   ;;	   (:explain :calls :types :boxing)
-	   (atom tobereplaced))
+                     (compilation-speed 0))
+           (atom tobereplaced))
   ;; if all subtrees can be taken literally, then this one as
   ;; well. Otherwise return list of those subtrees which can.
   (if (consp tree)
       ;; is consp
       (if (eq (car tree) 'quote)
-	  ;; can be taken literally, but do not record in
-	  ;; resultlist, because it's gonna be checked by
-	  ;; protected-eq-subst without lookup in the
-	  ;; literals-list
-	  (values nil t)
-	;; consp and not quoted
-	(let ((alltrue t)
-	      (resultlist nil))
-	  (declare (type boolean alltrue))
-	  ;; if all subtrees return true, return true
-	  ;; for this one and just return tree for literal
-	  (setq resultlist 
-	    (mapcan #'(lambda (subtree)
-			(multiple-value-bind (litlist literal)
-			    (analyse tobereplaced subtree)
-			  (declare (type boolean literal))
-			  (setq alltrue (and alltrue literal))
-			  litlist))
-		    tree))
-	  (if alltrue
-	      (values (list tree) t)
-	    ;; otherwise return list of all which can be
-	    ;; taken literally
-	    (values resultlist nil))))
-    ;; is atom
-    (if (eq tree tobereplaced)
-	(values nil nil)
-      ;; don't include atoms in literalslist- return nil as 2nd
-      (values nil t))))
+          ;; can be taken literally, but do not record in
+          ;; resultlist, because it's gonna be checked by
+          ;; protected-eq-subst without lookup in the
+          ;; literals-list
+          (values nil t)
+          ;; consp and not quoted
+          (let ((alltrue t)
+                (resultlist nil))
+            (declare (type boolean alltrue))
+            ;; if all subtrees return true, return true
+            ;; for this one and just return tree for literal
+            (setq resultlist 
+                  (mapcan #'(lambda (subtree)
+                              (multiple-value-bind (litlist literal)
+                                  (analyse tobereplaced subtree)
+                                (declare (type boolean literal))
+                                (setq alltrue (and alltrue literal))
+                                litlist))
+                          tree))
+            (if alltrue
+                (values (list tree) t)
+                ;; otherwise return list of all which can be
+                ;; taken literally
+                (values resultlist nil))))
+      ;; is atom
+      (if (eq tree tobereplaced)
+          (values nil nil)
+          ;; don't include atoms in literalslist- return nil as 2nd
+          (values nil t))))
 
 (declaim (ftype (function (atom atom t t t t) t)
 		protected-eq-subst-acc))
@@ -293,38 +292,39 @@
   (protected-eq-subst-acc new old tree literals nil nil))
 
 (defmacro simple-dotimes-unroll (varval &body body)
-  (declare (optimize (speed 1) (space 1) (safety 1) (debug 0)
-		     (compilation-speed 0)))
-  (let ((var (car varval))
-	(max (cadr varval)))
-    (if (numberp max)
-	(multiple-value-bind (literals justliteral)
-	    (analyse var body)
-	  (if justliteral
-	      (progn
-		;;		(format t "** nothing to subst - ~a times ~a~%" max body)
-		`(progn ,@(do ((val (1- max) (1- val))
-			       (result nil))
-			      ((< val 0) result)
-			    (setq result
-			      (append body result)))
-			nil))
-	    (progn
-	      ;;	      (format t "** doing subst with ~a times ~a~%" max body)
-	      `(progn ,@(do ((val (1- max) (1- val))
-			     (result nil))
-			    ((< val 0) result)
-			  (setq result
-			    (nconc 
-			     (protected-eq-subst-acc val var body literals 
-						     nil nil)
-			     result)))
-		      nil))))
-      (progn
-	(warn
-	 (format nil "Can't unroll: ~a is not a number at compile-time:~%         ~a~%"
-		 max body))
-	`(dotimes (,var ,max) ,@body)))))
+	(declare (optimize (speed 1) (space 1) (safety 1) (debug 0)
+										(compilation-speed 0)))
+	(let ((var (car varval))
+			 (max (cadr varval)))
+		(if (numberp max)
+			 (multiple-value-bind (literals justliteral)
+					 (analyse var body)
+				 (if justliteral
+						 (progn
+							 ;;							 (format t "** nothing to subst - ~a times ~a~%" max body)
+							 `(progn ,@(do ((val (1- max) (1- val))
+															(result nil))
+														 ((< val 0) result)
+													 (setq result
+														 (append body result)))
+											 nil))
+					 (progn
+						 ;;							 (format t "** doing subst with ~a times ~a~%" max body)
+						 `(progn ,@(do ((val (1- max) (1- val))
+														(result nil))
+													 ((< val 0) result)
+												 (setq result
+													 (nconc 
+														(protected-eq-subst-acc val var body literals 
+																										nil nil)
+														result)))
+										 nil))))
+			(progn
+			 (warn
+				(format nil "Can't unroll: ~a is not a number at compile-time:~%				 ~a~%"
+								max body))
+			 `(dotimes (,var ,max) ,@body)))))
+
 
 (defmacro geom-series (c s &optional fromzero)
   "The geometric series of c until step s"
@@ -366,15 +366,15 @@
 (defmacro vector-of-n (n what &key (type t))
   "Macro to create at runtime a vector of n entries of what"
   (let ((vec (gensym))
-	(x (gensym))
-	(en (eval n)))
+        (x (gensym))
+        (en (eval n)))
     `(let* ((,vec (make-array ,(if (numberp en)
-				   `'(,en)
-				 `(list ,en))
-			      :element-type ,type)))
+                                   `'(,en)
+                                   `(list ,en))
+                              :element-type ,type)))
        (dotimes (,x ,en)
-	 ,(if (eq type t)
-	      `(setf (svref ,vec ,x) ,what)
-	    `(setf (aref ,vec ,x) ,what)))
+         ,(if (eq type t)
+              `(setf (svref ,vec ,x) ,what)
+              `(setf (aref ,vec ,x) ,what)))
        ,vec)))
 
