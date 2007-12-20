@@ -63,8 +63,8 @@
                      (prepara-entrada-treinamento (transpose-segmentos coral i))
                      (prepara-saida-treinamento (transpose-chords gabarito i)))))))
 
-(defun extrai-resultado-simple-net ()
-  (let ((res (coerce (layer-act-vec (svref *simple-net* 2)) 'list)))
+(defun extrai-resultado-simple-net (simple-net)
+  (let ((res (coerce (layer-act-vec (svref simple-net 2)) 'list)))
     (loop for i from 0
        for r in res
        when (> r *correctness-treshold*)
@@ -76,7 +76,7 @@
   (setf (layer-act-vec (svref *simple-net* 0))
         (aref (make-patterns 12 (list (cria-pattern-segmento segmento))) 0))
   (activation-fn *simple-netspec* *simple-net*)
-  (extrai-resultado-simple-net))
+  (extrai-resultado-simple-net *simple-net*))
 
 (defun gera-gabarito-simple-net (segmentos)
   (mapcar #'aplica-simple-net segmentos))
@@ -94,3 +94,55 @@
       (compara-gabarito-simple-net-individual resultado gabarito)))
 
 (registra-algoritmo "Simplenet" #'gera-gabarito-simple-net #'compara-gabarito-simple-net)
+
+;; Rede neural com contexto, dois segmentos antes e um depois
+;;
+
+
+(defparameter *tamanho-contexto* 4)
+
+(eval-when (:compile-toplevel :load-toplevel)
+  (defparameter *context-netspec* (netspec 48 60 12))
+  (defvar *context-net* (mk-net *context-netspec*)))
+
+(defun cria-pattern-contexto (segmentos)
+  (reduce #'append segmentos :key #'cria-pattern-segmento))
+
+(defun prepara-entrada-treinamento-contexto (coral)
+  (let ((coral (cons nil (cons nil coral))))
+    (make-patterns
+     (* 12 *tamanho-contexto*)
+     (loop for c = coral then (cdr c)
+          collect (cria-pattern-contexto
+                   (safe-retorna-n-elementos c *tamanho-contexto*))))))
+
+
+(defun aplica-context-net (coral)
+  (setf (layer-act-vec (aref *context-net* 0))
+        (aref (make-patterns (* 4 *tamanho-contexto*)
+                             (list (cria-pattern-contexto
+                                    (safe-retorna-n-elementos coral *tamanho-contexto*))))
+              0))
+  (activation-fn *context-netspec* *context-net*)
+  (extrai-resultado-simple-net *context-net*))
+
+(defun gera-gabarito-context-net (segmentos)
+  (maplist #'aplica-context-net (cons nil (cons nil segmentos)))) 
+
+(defun context-net-training-function (entrada saida)
+  (trainer *context-netspec*
+           *context-net*
+           entrada
+           saida
+           :method :cg
+           :max-cycles 10))
+
+(defun treina-context-net (coral gabarito)
+  (with-system rameau:tempered
+    (let ((coral (segmentos-minimos (parse-file coral))))
+      (loop for i from 0 to 11
+         do (context-net-training-function
+                     (prepara-entrada-treinamento-contexto (transpose-segmentos coral i))
+                     (prepara-saida-treinamento (transpose-chords gabarito i)))))))
+
+(registra-algoritmo "Contextnet" #'gera-gabarito-context-net #'compara-gabarito-simple-net)
