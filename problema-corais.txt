@@ -14,6 +14,4 @@ os seguintes corais não foram processados:
 253: corrigir repeticao: casa{1,2}
 272: repeticao, oitava e enarmonia, ultima nota: casa{1,2}
 
-305: repeticao. nosso:                  || 4 | 1 | ... | 2. :| 4 | 1 | ...
-                riemenschneider:        || 4 | 1 | ... | 2. :| 1 | ...
 308: não compila
