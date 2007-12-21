@@ -74,8 +74,7 @@ book: book-stuff
 	latex book-corais.tex
 	dvips book-corais.dvi
 
-book-stuff: docs/corais.lytex
-	rm -rf out # limpa o diretorio antes de fazer alguma coisa
+book-stuff: docs/corais.lytex corais-ly
 	lilypond-book -o out --psfonts -I corais/ docs/corais.lytex
 
 %.png: %.ly
