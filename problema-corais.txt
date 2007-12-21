@@ -9,13 +9,11 @@ os seguintes corais não foram processados:
 150: reverte
 
 205: necessaria revisao. ha partes faltando
-
 252: corrigir repeticao [kroger: qual o problema?]
 
 253: corrigir repeticao: casa{1,2}
 272: repeticao, oitava e enarmonia, ultima nota: casa{1,2}
 
-302: repeticao
 305: repeticao. nosso:                  || 4 | 1 | ... | 2. :| 4 | 1 | ...
                 riemenschneider:        || 4 | 1 | ... | 2. :| 1 | ...
 308: não compila
