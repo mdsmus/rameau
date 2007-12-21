@@ -1,7 +1,7 @@
 \score {
   <<
-    \new StaffGroup <<
-      \override StaffGroup.SystemStartBracket #'style = #'line 
+    %\new StaffGroup <<
+      %\override StaffGroup.SystemStartBracket #'style = #'line 
       \new Staff {
         <<
           \global
@@ -17,7 +17,7 @@
           \new Voice = "baixo" { \voiceTwo \baixo \bar "|."}
         >>
       }
-    >>
+   % >>
   >>
   \layout {}
   \midi {}
