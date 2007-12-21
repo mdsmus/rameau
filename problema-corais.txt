@@ -1,6 +1,6 @@
 os seguintes corais não foram processados:
 
-121 130 150 205 215 218 222 236 252 253 272 308 323
+130 150 205 215 218 222 236 252 253 272 308 323
 327 333 359 361
 
 67: está em Bb no ly e sol no livro
