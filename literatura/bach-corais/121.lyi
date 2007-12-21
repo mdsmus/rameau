@@ -28,7 +28,6 @@ soprano = \relative c {
   cis4 b8 a a4 a4 
 }
 
-
 alto = \relative c {
   a''8[ gis]
   \repeat volta 2 {
