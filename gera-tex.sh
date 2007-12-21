@@ -376,24 +376,31 @@ coral[371]="Christ lag in Todesbanden"
 
 header="\\documentclass{article}\n
 \\usepackage{graphicx}\n
-\\usepackage[top=2cm,bottom=2cm,left=2cm,right=2cm]{geometry}\n
+\\usepackage[top=2cm,bottom=2cm,left=2cm,right=2cm]{geometry}\n\n
+\\\\title{371 harmonized Chorales}\n
+\\\\author{J. S. Bach}\n\n
 \\\\begin{document}\n
-\\graphicspath{{out/}}\n"
+\\maketitle\n
+\\graphicspath{{out/}}\n\n"
 
-echo "" > da.tex
-echo -e $header >> da.tex
+texfile=book-corais.tex
+
+echo "" > $texfile
+echo -e $header >> $texfile
 
 x=0
 for f in $foo
 do
-    if ! [ -z $(echo $f | grep -o "lily-[0-9a-z]\+-1") ]
+    if ! [ -z $(echo $f | grep -o "lily-[0-9a-z]\+-1}") ]
     then
         x=$(($x+1))
-        echo "\\section{${coral[$x]}}" >> da.tex
+        echo "\\section{${coral[$x]}}" >> $texfile
     else
-        echo $f >> da.tex
+        echo "$f \\\\" >> $texfile
     fi
 done
 
-echo "" >> da.tex
-echo "\\end{document}" >> da.tex
+echo $x
+
+echo "" >> $texfile
+echo "\\end{document}" >> $texfile

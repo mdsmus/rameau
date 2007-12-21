@@ -69,6 +69,15 @@ coral-%.png: %.ly %.pop
 	cd $(corais-dir); \
 	$(lilypond) --png coral-$(notdir $<) 2> $(corais-dir)/coral-$(notdir $(basename $<)).log
 
+book: book-stuff
+	sh gera-tex.sh
+	latex book-corais.tex
+	dvips book-corais.dvi
+
+book-stuff: docs/corais.lytex
+	rm -rf out # limpa o diretorio antes de fazer alguma coisa
+	lilypond-book -o out --psfonts -I corais/ docs/corais.lytex
+
 %.png: %.ly
 	cd $(corais-dir); \
 	$(lilypond) --png $< 2> $(corais-dir)/$(notdir $(basename $<)).log
