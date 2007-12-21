@@ -29,9 +29,12 @@ soprano = \relative c {
   \time 3/4
   \partial 4 e 
   e d c d2 e4 f2. e2 e4 
-  d2 d4 cis2 cis4 d4*5 e4 
-  e d c d2 e4 f2. e2 e4 
   d2 d4 cis2 cis4 d2.~
+  d2 e4 
+  e d c d2 e4 f2.
+  e2 e4 
+  d2 d4 cis2 cis4
+  d2.~
   \partial 2 d2
   \time 4/4
   \partial 4 e4 
