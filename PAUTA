@@ -1,7 +1,9 @@
 * Possível refatoração de rameau-tools
 * [teste] medir tempo compilação rameau em bohr
-* rever problemas-corais.txt
 * solução 261|305: compassos diferentes
+* problemas-corais.txt is gone
+* repetição nos gabaritos (casa 1 e 2)
+  ./rameau a e -f 021
 * corais que precisam edição (ver tickets)
 * conversao humdrum (mostrar hum2xml)
 * status rede neural
