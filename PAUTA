@@ -1,5 +1,9 @@
 * Possível refatoração de rameau-tools
 * [teste] medir tempo compilação rameau em bohr
+* rever problemas-corais.txt
+* solução 261|305: compassos diferentes
+* corais que precisam edição (ver tickets)
+* conversao humdrum (mostrar hum2xml)
 * status rede neural
 * status tickets
 * status gabaritos
