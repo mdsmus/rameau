@@ -43,7 +43,7 @@
   #+sbcl(quit))
 
 (defun read-user-config ()
-  (aif (cl-fad:file-exists-p (concat "/home/" #+sbcl(sb-ext:posix-getenv "USER") "/.rameaurc"))
+  (aif (cl-fad:file-exists-p (concat #+sbcl(sb-ext:posix-getenv "HOME") "/.rameaurc"))
        ;; TODO: checa se arquivo está vazio
        (with-open-file (s it)
          (read s))))
