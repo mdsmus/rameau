@@ -1,6 +1,6 @@
 os seguintes corais não foram processados:
 
-308 323 327 333 359 361
+ 327 333 359 361
 
 67: está em Bb no ly e sol no livro
 76: coral está em A no ly e sol no livro
