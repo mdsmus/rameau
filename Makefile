@@ -1,3 +1,4 @@
+hostname = $(shell hostname)
 maindir = $(shell pwd)
 sbcl = /usr/bin/sbcl --disable-debugger --eval
 lisp = /usr/bin/lisp -batch -quiet -eval
@@ -88,3 +89,11 @@ clean:
 
 cleanall: clean
 	rm -rf rameau cmurameau eclrameau clisprameau $(corais-dir)
+
+lispclean: cleanall
+	@if [ $(hostname) == "phoenix" ]; then \
+	rm -rf ~/lisp/fasl/* ;\
+	find ~/lisp -name *.fas -exec rm {} \; ;\
+	else \
+	rm -rf /var/cache/common-lisp-controller/$(id -u)/* ;\
+	fi 
