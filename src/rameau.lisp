@@ -472,7 +472,9 @@ ponto nos corais de bach."
                     f)))
     (if files
         (mapcar (lambda (file) (concat path file ext)) files)
-        (mapcar (lambda (file) (format nil "~a" file)) (directory (concat path "*" ext))))))
+        (remove-if #'(lambda (x) (search "coral" x))
+                   (mapcar (lambda (file) (format nil "~a" file))
+                           (directory (concat path "*" ext)))))))
 
 (defmacro defcomando (nome dados flags files &body body)
   `(defun ,nome (,dados ,flags ,files)
