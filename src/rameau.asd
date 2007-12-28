@@ -7,6 +7,7 @@
   :serial t
   :depends-on (:yacc :lexer :cl-fad :cl-ppcre :lisp-unit :arnesi :nile)
   :components (
+               #+sbcl(:file "sbcl")
                (:file "rameau-base")
                (:file "utils")
                (:file "musiclib")
@@ -18,7 +19,6 @@
                (:file "pardo")
                (:file "temperley")
                (:file "cifras")
-               #+sbcl(:file "sbcl")
                (:file "rameau")
                (:file "neural")
                (:file "neural-train")

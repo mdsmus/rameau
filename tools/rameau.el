@@ -50,6 +50,43 @@
 (define-key slime-mode-map [(alt control u)] 'rameau-cria-teste-defun)
 (define-key slime-mode-map [(control return)] 'rameau-new-test)
 
+(defvar *rameau-ultimo-tipo* "")
+
+(defun rameau-declare-value-snippet (type)
+  (setf *rameau-ultimo-tipo* type)
+  (snippet-insert (concat "(the " type " "))
+  (forward-sexp)
+  (snippet-insert ")"))
+
+(defun rameau-declare-value ()
+  (interactive)
+  (let ((type (read-from-minibuffer (concat "Tipo [" *rameau-ultimo-tipo* "]: "))))
+    (rameau-declare-value-snippet 
+     (if (string= "" type)
+         *rameau-ultimo-tipo*
+         type))))
+
+(define-key slime-mode-map [(control c) (control d) (control v)] 'rameau-declare-value)
+
+(defun rameau-declare-snippet (ignore type values)
+  (snippet-insert "(declare ")
+  (unless (string= ignore "")
+    (snippet-insert (concat "(ignore " ignore ")"))
+    (newline-and-indent))
+  (unless (string= type "")
+    (snippet-insert (concat "(" type " " values ")")))
+  (snippet-insert ")")
+  (newline-and-indent))
+
+(defun rameau-declare ()
+  (interactive)
+  (let* ((ignore (read-from-minibuffer "Ignore: "))
+         (type (read-from-minibuffer "Type: "))
+         (values (unless (string= type "") (read-from-minibuffer "Valores: "))))
+    (rameau-declare-snippet ignore type values)))
+
+(define-key slime-mode-map [(control c) (control d) (control e)] 'rameau-declare)
+
 (defun rameau-get-defun-name ()
   (beginning-of-defun)
   (forward-whitespace 1)

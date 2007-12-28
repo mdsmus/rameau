@@ -12,7 +12,7 @@ Lisp process."
           (compute-overhead)))
   (let ((time-info-list ())
         (no-call-name-list ()))
-    (dohash (name pinfo *profiled-fun-name->info*)
+    (dohash ((name pinfo) *profiled-fun-name->info* :locked t)
       (unless (eq (fdefinition name)
                   (profile-info-encapsulation-fun pinfo))
         (warn "Function ~S has been redefined, so times may be inaccurate.~@

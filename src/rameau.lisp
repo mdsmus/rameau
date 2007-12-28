@@ -43,7 +43,7 @@
   #+sbcl(quit))
 
 (defun read-user-config ()
-  (aif (cl-fad:file-exists-p (concat "/home/" #+sbcl(sb-ext:posix-getenv "USER") "/.rameaurc"))
+  (aif (cl-fad:file-exists-p (concat #+sbcl(sb-ext:posix-getenv "HOME") "/.rameaurc"))
        ;; TODO: checa se arquivo está vazio
        (with-open-file (s it)
          (read s))))
@@ -440,13 +440,14 @@ ponto nos corais de bach."
       (let* ((musica (parse-file file))
              (segmentos (segmentos-minimos musica))
              (gabarito (processa-gabarito (tira-extensao file) item))
-             (file-name (pathname-name file)))
-        (unless (or (= (length gabarito) 0)
-                    (= (length gabarito) (length segmentos)))
+             (file-name (pathname-name file))
+             (size-gab (length gabarito))
+             (size-seg (length segmentos)))
+        (unless (or (= size-gab 0) (= size-gab size-seg))
           (format t " ~a errado (gabarito: ~a, mas ~a segmentos)~%"
                   (tira-extensao file)
-                  (length gabarito)
-                  (length segmentos))
+                  size-gab
+                  size-seg)
           (incf errados))))
     (if (= 0 errados)
       (format t "Todos corretos.~%")
@@ -471,7 +472,9 @@ ponto nos corais de bach."
                     f)))
     (if files
         (mapcar (lambda (file) (concat path file ext)) files)
-        (mapcar (lambda (file) (format nil "~a" file)) (directory (concat path "*" ext))))))
+        (remove-if #'(lambda (x) (search "coral" x))
+                   (mapcar (lambda (file) (format nil "~a" file))
+                           (directory (concat path "*" ext)))))))
 
 (defmacro defcomando (nome dados flags files &body body)
   `(defun ,nome (,dados ,flags ,files)

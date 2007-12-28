@@ -1,5 +1,6 @@
+hostname = $(shell hostname)
 maindir = $(shell pwd)
-sbcl = /usr/bin/sbcl --noinform --noprint --disable-debugger --eval
+sbcl = /usr/bin/sbcl --disable-debugger --eval
 lisp = /usr/bin/lisp -batch -quiet -eval
 lisp-files = $(wildcard src/*.lisp src/lib/*.lisp tools/*.lisp)
 corais-lyi = $(wildcard literatura/bach-corais/*.lyi)
@@ -12,6 +13,7 @@ corais-dir = $(maindir)/corais
 lilypond = lilypond -I $(maindir)/literatura/bach-corais -I $(maindir)/lily
 
 vpath %.lyi literatura/bach-corais
+vpath %.pop gabaritos/bach-corais
 vpath %.ly $(corais-dir)
 vpath %.log $(corais-dir)
 vpath %.png $(corais-dir)
@@ -63,10 +65,18 @@ corais-partitura-fast: $(corais-ly)
 	@if [ ! -d $(corais-dir) ]; then mkdir -p $(corais-dir); fi;
 	@cat $< lily/score.lyi > $(corais-dir)/$(basename $(notdir $<)).ly
 
-coral-%.png: %.ly 
+coral-%.png: %.ly %.pop
 	./rameau partitura corais -f $(notdir $(basename $<)) -a pardo net $(algo)
 	cd $(corais-dir); \
 	$(lilypond) --png coral-$(notdir $<) 2> $(corais-dir)/coral-$(notdir $(basename $<)).log
+
+book: book-stuff
+	sh gera-tex.sh
+	latex book-corais.tex
+	dvips book-corais.dvi
+
+book-stuff: docs/corais.lytex corais-ly
+	lilypond-book -o out --psfonts -I corais/ docs/corais.lytex
 
 %.png: %.ly
 	cd $(corais-dir); \
@@ -79,3 +89,11 @@ clean:
 
 cleanall: clean
 	rm -rf rameau cmurameau eclrameau clisprameau $(corais-dir)
+
+lispclean: cleanall
+	@if [ $(hostname) == "phoenix" ]; then \
+	rm -rf ~/lisp/fasl/* ;\
+	find ~/lisp -name *.fas -exec rm {} \; ;\
+	else \
+	rm -rf /var/cache/common-lisp-controller/$(id -u)/* ;\
+	fi 

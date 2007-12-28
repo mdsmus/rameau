@@ -19,11 +19,12 @@ soprano = \relative c {
   b cis d a2 b4 cis d 
   d2 cis4 d2. a4 a 
   b c d e 
-  d2 c4 b2 a4 e'4. d8 
-  c4 d4. c8 b4 
-  c c b a2 g4 e'4. d8 
-  c4 d4. c8 b4 
-  c c b a2 g4 
+  d2 c4 b2 a4
+  \repeat volta 2 {
+    e'4. d8 
+    c4 d4. c8 b4 
+    c c b a2 g4
+  }
 }
 
 
@@ -36,13 +37,13 @@ alto = \relative c {
   a4 g8 fis g e fis2. fis4 fis 
   gis a4. gis8 a g 
   fis4 gis a a 
-  gis e e8 fis g4 
-  a a8 g fis4 g 
-  g a g g 
-  fis d e8 fis g4 
-  a a8 g fis4 g 
-  g a g g 
-  fis d 
+  gis e 
+  \repeat volta 2 {
+    e8 fis g4 
+    a a8 g fis4 g 
+    g a g g 
+    fis d 
+  }
 }
 
 
@@ -54,13 +55,13 @@ tenor = \relative c {
   d e a, d2 d4 a d4. c8 b4 a a2. d4 d 
   d e d c8 b 
   a4 b c8 e f4 
-  e8 d c4 g' c,8 d 
-  e4 d2 d4 
-  e d d e 
-  d8 c b4 g' c,8 d 
-  e4 d2 d4 
-  e d d e 
-  d8 c b4 
+  e8 d c4 
+  \repeat volta 2 {
+    g' c,8 d 
+    e4 d2 d4 
+    e d d e 
+    d8 c b4 
+  }
 }
 
 
@@ -73,13 +74,13 @@ baixo = \relative c {
   d4 g a b 
   fis g a d,2. d4 c 
   b a b c2 b4 a d 
-  e a, c'4. b8 
-  a g fis e d4 g8 fis 
-  e4 fis g c, 
-  d g, c'4. b8 
-  a g fis e d4 g8 fis 
-  e4 fis g c, 
-  d g, 
+  e a, 
+  \repeat volta 2 {
+    c'4. b8 
+    a g fis e d4 g8 fis 
+    e4 fis g c, 
+    d g, 
+  }
 }
 
 

@@ -1,11 +1,23 @@
 ; -*- org -*-
 
+* Rameau 3.0, 24 dezembro 2007
+
+Esse release tem as seguintes melhorias desde 2.0
+
+** algoritmo para análise usando redes neurais
+** gabaritos corrigidos
+** coleção de exemplos simples para analise harmonica
+** nova estrutura de dados para gabaritos
+** formato "pop" agora é o formato padrão para gabaritos
+** mais gabaritos de corais terminados (33%)
+** versão funcional de algoritimo de temperley
+
 * Rameau 2.1, 12 dezembro 2007
 
 Esse release tem as seguintes melhorias desde 2.0
 
 ** nova estrutura de dados para gabaritos
-** formato "pop* agora é o formato padrão para gabaritos
+** formato "pop" agora é o formato padrão para gabaritos
 ** mais gabaritos de corais terminados (14%)
 ** versão funcional de algoritimo de temperley
 
