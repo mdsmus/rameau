@@ -16,7 +16,7 @@
 
 
 (eval-when (:compile-toplevel :load-toplevel)
-  (defparameter *simple-netspec* (netspec 12 20 12))
+  (defparameter *simple-netspec* (netspec 12 12 12))
   (defvar *simple-net* (mk-net *simple-netspec*)))
 
 (defparameter *correctness-treshold* 0.9)
@@ -102,24 +102,29 @@
 (defparameter *tamanho-contexto* 4)
 
 (eval-when (:compile-toplevel :load-toplevel)
-  (defparameter *context-netspec* (netspec 48 60 12))
+  (defparameter *context-netspec* (netspec 48 20 12))
   (defvar *context-net* (mk-net *context-netspec*)))
 
 (defun cria-pattern-contexto (segmentos)
-  (reduce #'append segmentos :key #'cria-pattern-segmento))
+  (reduce #'nconc segmentos :key #'cria-pattern-segmento))
 
 (defun prepara-entrada-treinamento-contexto (coral)
-  (let ((coral (cons nil (cons nil coral))))
+  (let ((coral (cons nil (cons nil coral)))
+        (tamanho (length coral)))
     (make-patterns
      (* 12 *tamanho-contexto*)
-     (loop for c = coral then (cdr c)
-          collect (cria-pattern-contexto
-                   (safe-retorna-n-elementos c *tamanho-contexto*))))))
+     (loop for i from 0 to (1- tamanho)
+        for c = coral then (cdr c)
+        collect (cria-pattern-contexto
+                 (safe-retorna-n-elementos c *tamanho-contexto*))))))
+
+(defun activate-context-net ()
+  (activation-fn *context-netspec* *context-net*))
 
 
 (defun aplica-context-net (coral)
   (setf (layer-act-vec (aref *context-net* 0))
-        (aref (make-patterns (* 4 *tamanho-contexto*)
+        (aref (make-patterns (* 12 *tamanho-contexto*)
                              (list (cria-pattern-contexto
                                     (safe-retorna-n-elementos coral *tamanho-contexto*))))
               0))
@@ -135,7 +140,8 @@
            entrada
            saida
            :method :cg
-           :max-cycles 10))
+           :max-cycles 10
+           :ext-funcs (:std-activate activate-context-net)))
 
 (defun treina-context-net (coral gabarito)
   (with-system rameau:tempered
