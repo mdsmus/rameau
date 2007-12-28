@@ -2,6 +2,7 @@
 
 ;;; File: decision-tree.lisp
 ;;; Last edited by smishra on Sat May  8 16:14:40 1999
+;; Fonte: http://www-static.cc.gatech.edu/classes/cs3361_99_spring/projects/project3/decision-tree.lisp
 (defpackage :machine-learning
   (:use #:cl)
   (:export #:make-example #:classify #:id3 #:print-tree))
