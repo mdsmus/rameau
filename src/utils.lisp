@@ -38,6 +38,7 @@
                                tem-ext?
                                tira-extensao
                                troca-extensao
+                               unzip
                                ))
 
 ;;; Norvig's functions for debugging in PAIP, p. 124
@@ -223,3 +224,12 @@ quantos acidentes ou oitavas uma nota tem."
 
 (defun read-file-as-sexp (file)
   (read-from-string (format nil "(~a)" (file-string file))))
+
+(defun unzip (lista)
+  (let (lista1
+        lista2)
+    (loop for el in lista
+       nconc (list (first el)) into lista1
+       nconc (list (second el)) into lista2
+       finally (return (values lista1 lista2)))))
+       
