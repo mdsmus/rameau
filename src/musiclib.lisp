@@ -6,7 +6,10 @@
 
 (in-package #:genoslib)
 
-(register-and-export-symbols '( a b c d e f g maj min dim aug just
+(register-and-export-symbols '( a b c d e f g
+                               a# b# c# d# e# f# g#
+                               ab bb cb db eb fb gb
+                               maj min dim aug just
                                lily latin prime with-system
                                number-of-accidentals
                                match-note-representation

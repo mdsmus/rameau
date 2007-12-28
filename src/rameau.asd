@@ -5,9 +5,9 @@
   :version "0.2"
   :author "Alexandre Passos e Pedro Kroger"
   :serial t
-  :depends-on (:yacc :lexer :cl-fad :cl-ppcre :lisp-unit :arnesi :nile)
+  :depends-on (:yacc :lexer :cl-fad :cl-ppcre :lisp-unit :arnesi :nile :machine-learning)
   :components (
-               #+sbcl(:file "sbcl")
+				   #+sbcl(:file "sbcl")
                (:file "rameau-base")
                (:file "utils")
                (:file "musiclib")
@@ -20,8 +20,10 @@
                (:file "temperley")
                (:file "cifras")
                (:file "rameau")
-               (:file "neural")
-               (:file "neural-train")
+               ;(:file "neural")
+               ;(:file "neural-train")
+               (:file "tree")
+               (:file "tree-train")
                (:file "kern2lily")
                (:file "test-utils")
                (:file "test-musiclib")
