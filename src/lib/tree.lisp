@@ -4,7 +4,7 @@
 ;;; Last edited by smishra on Sat May  8 16:14:40 1999
 (defpackage :machine-learning
   (:use #:cl)
-  (:export #:make-example #:classify #:id3))
+  (:export #:make-example #:classify #:id3 #:print-tree))
 
 (in-package :machine-learning)
 
