@@ -1,6 +1,6 @@
 (defpackage :rameau-tools
   (:use #:cl #:rameau #:it.bese.arnesi)
-  (:export #:main)
+  (:export #:main #:rameau-path)
   #+sbcl(:import-from #:sb-ext #:*posix-argv*))
 (in-package :rameau-tools)
 

@@ -1,6 +1,6 @@
 hostname = $(shell hostname)
 maindir = $(shell pwd)
-sbcl = /usr/bin/sbcl --disable-debugger --eval
+sbcl = /usr/bin/sbcl  --disable-debugger --eval
 lisp = /usr/bin/lisp -batch -quiet -eval
 lisp-files = $(wildcard src/*.lisp src/lib/*.lisp tools/*.lisp)
 corais-lyi = $(wildcard literatura/bach-corais/*.lyi)
@@ -84,6 +84,7 @@ book-stuff: docs/corais.lytex corais-ly
 
 clean:
 	rm -f rameau
+	rm -f simple-net-train.data simple-net.fann context-net-train.data context-net.fann
 	find -name *.fasl -exec rm {} \;
 	find -name *.x86f -exec rm {} \;
 

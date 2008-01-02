@@ -27,6 +27,7 @@
                                read-file-as-sexp
                                repeat-list
                                retorna-n-segmentos
+                               safe-retorna-n-elementos
                                smallest
                                sort-set
                                stringify
@@ -199,6 +200,10 @@ quantos acidentes ou oitavas uma nota tem."
 
 (defun retorna-n-segmentos (musica n)
   (subseq musica 0 n))
+
+(defun safe-retorna-n-elementos (lista n)
+  (loop for i from 0 to (1- n) collect
+       (nth i lista)))
 
 (defun repeat-list (n list)
   (if (> n 0)
