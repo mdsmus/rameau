@@ -84,6 +84,7 @@ book-stuff: docs/corais.lytex corais-ly
 
 clean:
 	rm -f rameau
+	rm -f simple-net-train.data simple-net.fann context-net-train.data context-net.fann
 	find -name *.fasl -exec rm {} \;
 	find -name *.x86f -exec rm {} \;
 
