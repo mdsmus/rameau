@@ -12,6 +12,7 @@
                                add-pop-ext
                                assoc-item
                                avanca-todos
+                               char->symbol
                                concat
                                converte-strings
                                copy
@@ -20,6 +21,7 @@
                                destringify
                                exclude-repetition
                                file-string
+                               get-item
                                max-predicado
                                no-op
                                octave-from-string
@@ -29,6 +31,9 @@
                                retorna-n-segmentos
                                safe-retorna-n-elementos
                                smallest
+                               split-word
+                               split-opts
+                               split-dados
                                sort-set
                                stringify
                                string->symbol
@@ -232,4 +237,25 @@ quantos acidentes ou oitavas uma nota tem."
        nconc (list (first el)) into lista1
        nconc (list (second el)) into lista2
        finally (return (values lista1 lista2)))))
-       
+
+(defun get-item (item lista &optional (test #'eql))
+  "Pega um item em uma lista de associação."
+  (second (assoc item lista :test test)))
+
+(defun char->symbol (char)
+  "Retorna o símbolo representado pelo caractere char.
+Exemplo: (char->symbol #\a) => A"
+  (intern (string-upcase (string char)) :rameau))
+
+(defun split-word (word)
+  "Retorna uma lista de símbolos para cada letra da palavra 'word'.
+Exemplo: (split-word \"foo\") => (F O O)"
+  (loop for char across word collect (char->symbol char)))
+
+(defun split-opts (string)
+  (mapcan (lambda (s) (split-word (delete #\- s)))
+          (cl-ppcre:split #\Space string)))
+
+(defun split-dados (dados)
+  (cl-ppcre:split "," dados))
+

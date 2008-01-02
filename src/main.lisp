@@ -1,54 +1,8 @@
-(defpackage :rameau-tools
-  (:use #:cl #:rameau #:it.bese.arnesi)
-  (:export #:main #:rameau-path)
-  #+sbcl(:import-from #:sb-ext #:*posix-argv*))
-(in-package :rameau-tools)
+(defpackage :rameau-main
+  (:use :rameau :cl :arnesi)
+  (:export :main))
 
-;;; As funções dependentes de implementação devem ficar aqui
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defun rameau-args ()
-  (let ((sbcl-args #+sbcl *posix-argv*)
-        (cmu-args #+cmu extensions:*command-line-strings*)
-        (clisp-args #+clisp *args*))
-    (cond (sbcl-args (rest sbcl-args))
-          (cmu-args (subseq cmu-args (1+ (position "cmurameau" cmu-args :test #'string=))))
-          (clisp-args clisp-args)
-          (t (error "algum problema com argumentos")))))
-
-(defun rameau-path ()
-  (format nil "~a" (or #+sbcl *default-pathname-defaults*
-                       #+cmu (first (ext:search-list "default:"))
-                       #+clisp (ext:default-directory))))
-
-(defun rameau-profile ()
-  #+sbcl(progn
-         (setf sb-profile::*print-functions-not-called* nil)
-         (sb-profile:profile "RAMEAU")
-         (sb-profile:profile "RAMEAU-TEMPERLEY")
-         (sb-profile:profile "RAMEAU-PARDO")
-         (sb-profile:profile "GENOSLIB"))
-  #+cmu (progn
-          (profile:profile-all :package "RAMEAU")
-          (profile:profile-all :package "RAMEAU-TEMPERLEY")
-          (profile:profile-all :package "RAMEAU-PARDO")
-          (profile:profile-all :package "GENOSLIB")))
-
-(defun rameau-report ()
-  #+sbcl(sb-profile:report)
-  #+cmu(profile:report-time))
-
-(defun rameau-quit ()
-  #+clisp(ext:exit)
-  #+sbcl(quit))
-
-(defun read-user-config ()
-  (aif (cl-fad:file-exists-p (concat #+sbcl(sb-ext:posix-getenv "HOME") "/.rameaurc"))
-       ;; TODO: checa se arquivo está vazio
-       (with-open-file (s it)
-         (read s))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(in-package :rameau-main)
 
 (defparameter max-print-error 10
   "Quando o numero de arquivos que não são parseados é maior que essa
@@ -69,70 +23,6 @@
                        (partitura)
                        (comparatamanhos)))
 
-(defparameter *lily-dir-list*
-  (aif (read-user-config)
-       it
-       '(("corais" "corais/")
-         ("kostka" "literatura/kostka-payne/")
-         ("sonatas" "literatura/beethoven-sonatas/")
-         ("exemplos" "exemplos/")
-         ("regressao" "regressao/")
-         ("lily" "regressao-lily/")
-         ("corais-include" "literatura/bach-corais/"))))
-
-(defparameter *gabarito-dir-list*
-  (aif (read-user-config)
-       it
-       '(("corais" "gabaritos/bach-corais/")
-         ("exemplos" "gabaritos/exemplos/"))))
-
-(defparameter *dados* '((teste ("unidade" "regressao" "lily"))
-                        (analise ("corais" "kostka" "sonatas" "exemplos"))
-                        (partitura ("corais"))
-                        (comparatamanhos ("corais" "exemplos"))))
-
-
-(defun percent (x total)
-  (unless (= 0 total)
-    (/ (* x 100.0) total)))
-
-(defun get-item (item lista &optional (test #'eql))
-  "Pega um item em uma lista de associação."
-  (second (assoc item lista :test test)))
-
-(defun char->symbol (char)
-  "Retorna o símbolo representado pelo caractere char.
-Exemplo: (char->symbol #\a) => A"
-  (intern (string-upcase (string char)) :rameau-tools))
-
-(defun split-word (word)
-  "Retorna uma lista de símbolos para cada letra da palavra 'word'.
-Exemplo: (split-word \"foo\") => (F O O)"
-  (loop for char across word collect (char->symbol char)))
-
-(defun split-opts (string)
-  (mapcan (lambda (s) (split-word (delete #\- s)))
-          (cl-ppcre:split #\Space string)))
-
-(defun split-dados (dados)
-  (cl-ppcre:split "," dados))
-
-(defmacro with-profile (var &body body)
-  `(progn
-     (when (member 'p ,var)
-       (rameau-profile))
-     ,@body
-     (when (member 'p ,var)
-       (rameau-report))))
-
-(defun next-flag (list)
-  (loop for x in (rest list) do
-       (if (equal #\- (aref x 0))
-           (return x))))
-
-(defun pos (list)
-  (aif (position (next-flag list) list :test #'string=) it 0))
-
 (defun arg->list (list)
   (when list
     (if (next-flag list)
@@ -141,49 +31,13 @@ Exemplo: (split-word \"foo\") => (F O O)"
                 (arg->list (nthcdr p list))))
         (list list))))
 
-(defun get-lone-flags (list)
-  (exclude-repetition
-   (mapcan (lambda (item) (split-opts (first item)))
-           (remove-if-not (lambda (item) (= (length item) 1)) list))))
 
-(defun get-flag-list (flag list)
-  (rest (assoc flag list :test #'string=)))
-
-(defun maptrace (lista-string)
-  (eval (append '(trace) (mapcar (compose #'read-from-string #'string-upcase) lista-string))))
-
-(defun get-comandos ()
-  (mapcar #'(lambda (item) (format nil "~(~a~)" (first item))) *dados*))
-
-(defun parse-verbose (files)
-  (dolist (file files)
-    (handler-case (parse-file file)
-      (serious-condition (expr) (print-condition 'no file expr))
-      (:no-error (&rest rest) (print-condition 'ok file rest)))))
-
-(defun parse-summary (files)
-  (let (ok no)
-    (dolist (file files)
-      (handler-case (parse-file file)
-        (serious-condition (expr)
-          (declare (ignore expr))
-          (push (pathname-name file) no))
-        (:no-error (&rest rest)
-          (declare (ignore rest))
-          (push (pathname-name file) ok))))
-    (list (reverse ok) (reverse no))))
-
-(defun files-range (list)
-  (loop for x from (parse-integer (first list)) to (parse-integer (second list))
-     collect (cond ((< x 10)  (format nil "00~a" x))
-                   ((< x 100) (format nil "0~a" x))
-                   (t (format nil "~a" x)))))
-
-(defun first-string (string list)
-  (let ((tmp (loop for s in list do
-                  (if (string= (subseq s 0 1) string)
-                      (return s)))))
-    (if tmp tmp string)))
+(defun intervalo (s1 s2)
+  "Retorna o intervalo entre dois segmentos."
+  (if (null s2)
+      0
+      (- (evento-inicio (first s2))
+         (fim-evento (first s1)))))
 
 (defun print-condition (status file expr)
   (format t "[~a] ~a: ~a~%" status (pathname-name file) expr))
@@ -216,6 +70,46 @@ Exemplo: (split-word \"foo\") => (F O O)"
                     "~10a~:[*~; ~]|")))
     (format t string alg res)))
 
+(defun next-flag (list)
+  (loop for x in (rest list) do
+       (if (equal #\- (aref x 0))
+           (return x))))
+
+(defun pos (list)
+  (aif (position (next-flag list) list :test #'string=) it 0))
+
+(defun get-lone-flags (list)
+  (exclude-repetition
+   (mapcan (lambda (item) (split-opts (first item)))
+           (remove-if-not (lambda (item) (= (length item) 1)) list))))
+
+(defun get-flag-list (flag list)
+  (rest (assoc flag list :test #'string=)))
+
+(defun maptrace (lista-string)
+  (eval (append '(trace) (mapcar (compose #'read-from-string #'string-upcase) lista-string))))
+
+(defun get-comandos ()
+  (mapcar #'(lambda (item) (format nil "~(~a~)" (first item))) *dados*))
+
+(defun parse-verbose (files)
+  (dolist (file files)
+    (handler-case (parse-file file)
+      (serious-condition (expr) (print-condition 'no file expr))
+      (:no-error (&rest rest) (print-condition 'ok file rest)))))
+
+(defun percent (x total)
+  (unless (= 0 total)
+    (/ (* x 100.0) total)))
+
+(defmacro with-profile (var &body body)
+  `(progn
+     (when (member 'p ,var)
+       (rameau-profile))
+     ,@body
+     (when (member 'p ,var)
+       (rameau-report))))
+
 (defun frac->dur-lily (dur)
   "Converte de fração para duração em lilypond. É muito simples, não
 lida com quiáltera nem mais que 1 ponto, felizmente não tem mais de 1
@@ -226,12 +120,18 @@ ponto nos corais de bach."
           ((= numer 3) (format nil "~a." (/ denom 2)))
           (t (error "duracao invalida")))))
 
-(defun intervalo (s1 s2)
-  "Retorna o intervalo entre dois segmentos."
-  (if (null s2)
-      0
-      (- (evento-inicio (first s2))
-         (fim-evento (first s1)))))
+(defun parse-summary (files)
+  (let (ok no)
+    (dolist (file files)
+      (handler-case (parse-file file)
+        (serious-condition (expr)
+          (declare (ignore expr))
+          (push (pathname-name file) no))
+        (:no-error (&rest rest)
+          (declare (ignore rest))
+          (push (pathname-name file) ok))))
+    (list (reverse ok) (reverse no))))
+
 
 (defun print-duracoes (segmento)
   (loop for s = segmento then (rest s)
@@ -400,15 +300,6 @@ ponto nos corais de bach."
         (write-line string-result)
         (write-line (subseq (last1 (cl-ppcre:split "\\n" string-result)) 34)))))
 
-(defun processa-gabarito (file item)
-  "Transforma um gabarito de texto em sexp."
-  (let* ((*package* (find-package :rameau))
-         (nome-pop (concat (rameau-path)
-                           (get-item item *gabarito-dir-list* #'equal)
-                           (add-pop-ext (pathname-name file)))))
-    (when (cl-fad:file-exists-p nome-pop)
-      (read-chords (read-file-as-sexp nome-pop)))))
-
 (defun run-compara-gabarito (flags files item)
   (with-system rameau:tempered
     (dolist (file files)
@@ -462,18 +353,6 @@ ponto nos corais de bach."
                                (funcall (algoritmo-processa a) segmento))))
         (print-lily file gabarito resultados flags segmento)))))
   
-(defun processa-files (item f &optional (ext ".ly"))
-  (let* ((path (concat (rameau-path) (get-item item *lily-dir-list*  #'equal)))
-         (file-name (format nil "~a" (first f)))
-         (files (if (search ".." file-name)
-                    (files-range (cl-ppcre:split "\\.\\." file-name))
-                    f)))
-    (if files
-        (mapcar (lambda (file) (concat path file ext)) files)
-        (remove-if #'(lambda (x) (search "coral" x))
-                   (mapcar (lambda (file) (format nil "~a" file))
-                           (directory (concat path "*" ext)))))))
-
 (defmacro defcomando (nome dados flags files &body body)
   `(defun ,nome (,dados ,flags ,files)
      (let* ((dados-list (get-item ',nome *dados*))
@@ -490,6 +369,7 @@ ponto nos corais de bach."
                     (format t "~a não é um comando de ~(~a~).~%" item ',nome)
                     (format t "comandos possíveis são: all ~{~a ~}~%" dados-list))))))))
 
+
 (defcomando teste dados flags files
     (if (string= item "unidade")
         (run-unidade flags (processa-files item files))
@@ -503,6 +383,8 @@ ponto nos corais de bach."
 
 (defcomando comparatamanhos dados flags files
   (run-compara-tamanhos flags (processa-files item files) item))
+
+
 
 (defun main ()
   (let* ((args (rameau-args))
@@ -540,7 +422,7 @@ ponto nos corais de bach."
                  (format t "você deve entrar um dos comandos: ~{~(~a~)~^ ~}~%"
                          (get-comandos)))))
           ((member comando (get-comandos) :test #'string=)
-           (funcall (symbol-function (intern (string-upcase comando) :rameau-tools))
+           (funcall (symbol-function (intern (string-upcase comando) :rameau))
                     dados
                     flags
                     files))

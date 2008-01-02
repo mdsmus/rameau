@@ -8,7 +8,6 @@
   (:use #:cl
         #:fann
         #:arnesi
-        #:rameau-tools
         #:rameau))
 
 (in-package :rameau-neural)
@@ -66,9 +65,9 @@
 (defun gera-dados-treinamento-simple-net ()
   (with-system rameau:tempered
     (loop for i in '("001" "003" "004" "006" "012" "018" "136")
-       for nome = (first (rameau-tools::processa-files "corais" (list i)))
+       for nome = (first (processa-files "corais" (list i)))
        for f = (segmentos-minimos (parse-file nome))
-       for g = (rameau-tools::processa-gabarito nome "corais")
+       for g = (processa-gabarito nome "corais")
        nconc (prepara-exemplos-treinamento-simple-net f g))))
 
 (defun gera-arquivo-treinamento-simple-net ()
@@ -157,9 +156,9 @@
 (defun gera-dados-treinamento-context-net ()
   (with-system rameau:tempered
     (loop for i in '("001" "002" "003" "004" "005" "006" "007" "012" "018" "136")
-       for nome = (first (rameau-tools::processa-files "corais" (list i)))
+       for nome = (first (processa-files "corais" (list i)))
        for f = (segmentos-minimos (parse-file nome))
-       for g = (rameau-tools::processa-gabarito nome "corais")
+       for g = (processa-gabarito nome "corais")
        nconc (prepara-exemplos-treinamento-context-net f g))))
 
 (defun gera-arquivo-treinamento-context-net ()

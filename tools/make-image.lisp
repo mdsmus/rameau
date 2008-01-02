@@ -18,12 +18,11 @@
 
 (push (concatenate 'string (main-path) "src/") asdf:*central-registry*)
 (push (concatenate 'string (main-path) "src/lib/") asdf:*central-registry*)
-(push (concatenate 'string (main-path) "src/lib/nile/") asdf:*central-registry*)
 
 #+(or sbcl ecl) (require 'rameau)
 #+(or clisp cmu) (asdf:oos 'asdf:load-op :rameau :verbose nil)
 
-#+sbcl(sb-ext:save-lisp-and-die "rameau" :executable t :toplevel #'rameau-tools:main)
+#+sbcl(sb-ext:save-lisp-and-die "rameau" :executable t :toplevel #'rameau-main:main)
 
 #+cmu(extensions:save-lisp "cmurameau" :init-function #'rameau-tools:main)
 

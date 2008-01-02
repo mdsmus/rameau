@@ -3,6 +3,10 @@
 (defpackage #:rameau
   (:export
    #:*algoritmos*
+   #:*dados*
+   #:*lily-dir-list*
+   #:*gabarito-dir-list*
+   #:analise
    #:algoritmo-compara
    #:algoritmo-nome
    #:algoritmo-processa
@@ -11,15 +15,27 @@
    #:chord-mode
    #:chord-7th
    #:chordp
+   #:comparatamanhos
    #:compara-gabarito-fundamental
    #:compara-notas
    #:filtra-algoritmos
+   #:first-string
+   #:get-comandos
    #:lista-notas
    #:make-chord
    #:make-melodic-note
+   #:partitura
    #:parse-file
+   #:processa-files
+   #:processa-gabarito
    #:parse-chord
    #:pitches
+   #:rameau-path
+   #:rameau-args
+   #:rameau-profile
+   #:rameau-report
+   #:rameau-quit
+   #:read-user-config
    #:segmentos-minimos
    #:evento-pitch
    #:evento-dur
@@ -30,6 +46,7 @@
    #:processa-cifras
    #:registra-algoritmo
    #:read-chords
+   #:teste
    #:transpose-segmentos
    #:transpose-chords
    )
