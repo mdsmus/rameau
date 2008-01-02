@@ -7,7 +7,7 @@
 (in-package :rameau-tree)
 
 
-(defvar *decision-tree* nil)
+(defparameter *decision-tree* nil)
 
 (defparameter *classes* '(a  b  c  d  e  f  g  --
                           a# b# c# d# e# f# g#
@@ -53,8 +53,13 @@
         (make-melodic-note)
         (make-chord :fundamental (stringify res)))))
 
+(defun exibe-tree (&rest args)
+  (declare (ignore args))
+  (print-tree *decision-tree*))
+
 (defun gera-gabarito-decision-tree (coral)
-    (mapcar #'aplica-decision-tree coral))
+  (dbg 'rameau::mostra-arvore "Arvore: ~/rameau-tree::exibe-tree/ ~%" *decision-tree*)
+  (mapcar #'aplica-decision-tree coral))
 
 (defun compara-gabarito-tree-individual (resultado gabarito)
   (with-system rameau:tempered
