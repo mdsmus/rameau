@@ -991,13 +991,6 @@
                                            (tpc-string (bucket-root (aref bucket-choice i)))))
                                          'latin)))))
 
-(defun compara-gabarito-temperley (resultado gabarito)
-  (when (or (chordp gabarito) (listp gabarito))
-    (if (listp gabarito)
-        (some (lambda (x) (compara-gabarito-temperley resultado x)) gabarito)
-        (compara-notes-tempered (chord-fundamental resultado)
-                                (chord-fundamental gabarito)))))
-
 (defun temperley (segmentos)
   (let* ((musica (reduce #'append segmentos :from-end t))
          (musica (mapcar #'cria-evento-temperley musica))
@@ -1009,4 +1002,4 @@
      (calcula-tabela-harmonica (inicializa-tabela-harmonica m-clist) m-clist)
      m-clist)))
 
-(registra-algoritmo "Temperley" #'temperley #'compara-gabarito-temperley)
+(registra-algoritmo "Temperley" #'temperley #'compara-gabarito-fundamental)

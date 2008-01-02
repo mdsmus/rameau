@@ -140,6 +140,23 @@ position."
                               n)))
 
 
+(defun compara-gabarito-fundamental-individual (resultado gabarito)
+  (with-system rameau:tempered
+    (if (and (chordp resultado) (chordp gabarito))
+        (equal (note->code (chord-fundamental resultado))
+               (note->code (chord-fundamental gabarito)))
+        (equal (type-of resultado) (type-of gabarito)))))
+
+(defun compara-gabarito-fundamental (resultado gabarito)
+  "Compara um resultado com um gabarito levando em consideração apenas
+   a fundamental do acorde"
+  (if (listp gabarito)
+      (some (lambda (x) (compara-gabarito-fundamental-individual resultado x)) gabarito)
+      (compara-gabarito-fundamental-individual resultado gabarito)))
+
+
+
+
 #|
 testes
 

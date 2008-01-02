@@ -115,20 +115,7 @@
     (load-simple-net))
   (mapcar (lambda (x) (extrai-resultado-simple-net (run-net *simple-net* (cria-pattern-segmento x)))) inputs))
 
-(defun compara-gabarito-simple-net-individual (resultado gabarito)
-  (with-system rameau:tempered
-    (if (and (chordp resultado) (chordp gabarito))
-        (equal (note->code (chord-fundamental resultado))
-               (note->code (chord-fundamental gabarito)))
-        (equal (type-of resultado) (type-of gabarito)))))
-
-(defun compara-gabarito-simple-net (resultado gabarito)
-  (if (listp gabarito)
-      (some (lambda (x) (compara-gabarito-simple-net-individual resultado x)) gabarito)
-      (compara-gabarito-simple-net-individual resultado gabarito)))
-
-
-(registra-algoritmo "Simple-net" #'aplica-simple-net #'compara-gabarito-simple-net)
+(registra-algoritmo "Simple-net" #'aplica-simple-net #'compara-gabarito-fundamental)
 
 
 (defvar *context-net* nil)
@@ -169,7 +156,7 @@
 
 (defun gera-dados-treinamento-context-net ()
   (with-system rameau:tempered
-    (loop for i in '("001" "003" "004" "006" "012" "018" "136")
+    (loop for i in '("001" "002" "003" "004" "005" "006" "007" "012" "018" "136")
        for nome = (first (rameau-tools::processa-files "corais" (list i)))
        for f = (segmentos-minimos (parse-file nome))
        for g = (rameau-tools::processa-gabarito nome "corais")
@@ -191,12 +178,12 @@
 (defun treina-context-net ()
   (if (cl-fad:file-exists-p *context-net-train-data*)
       (progn
-        (setf *context-net* (make-net 48 12 12))
+        (setf *context-net* (make-net 48 24 12))
         (train-on-file *context-net*
                        *context-net-train-data*
                        5000
                        100
-                       0.08)
+                       0.04)
         (save-context-net)
         (setf *context-net* nil))
       (progn
@@ -215,5 +202,5 @@
                                  (cria-pattern-contexto (safe-retorna-n-elementos x 4)))))
            (cons nil (cons nil inputs))))
 
-(registra-algoritmo "Context-net" #'aplica-context-net #'compara-gabarito-simple-net)
+(registra-algoritmo "Context-net" #'aplica-context-net #'compara-gabarito-fundamental)
     

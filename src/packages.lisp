@@ -11,6 +11,7 @@
    #:chord-mode
    #:chord-7th
    #:chordp
+   #:compara-gabarito-fundamental
    #:compara-notas
    #:filtra-algoritmos
    #:lista-notas
