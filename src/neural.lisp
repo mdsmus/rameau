@@ -128,7 +128,7 @@
       (compara-gabarito-simple-net-individual resultado gabarito)))
 
 
-(registra-algoritmo "Simplenet" #'aplica-simple-net #'compara-gabarito-simple-net)
+(registra-algoritmo "Simple-net" #'aplica-simple-net #'compara-gabarito-simple-net)
 
 
 (defvar *context-net* nil)
@@ -215,5 +215,5 @@
                                  (cria-pattern-contexto (safe-retorna-n-elementos x 4)))))
            (cons nil (cons nil inputs))))
 
-(registra-algoritmo "Contextnet" #'aplica-context-net #'compara-gabarito-simple-net)
+(registra-algoritmo "Context-net" #'aplica-context-net #'compara-gabarito-simple-net)
     

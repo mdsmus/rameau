@@ -66,7 +66,7 @@ corais-partitura-fast: $(corais-ly)
 	@cat $< lily/score.lyi > $(corais-dir)/$(basename $(notdir $<)).ly
 
 coral-%.png: %.ly %.pop
-	./rameau partitura corais -f $(notdir $(basename $<)) -a pardo net $(algo)
+	./rameau partitura corais -f $(notdir $(basename $<)) -a pardo net tree $(algo)
 	cd $(corais-dir); \
 	$(lilypond) --png coral-$(notdir $<) 2> $(corais-dir)/coral-$(notdir $(basename $<)).log
 
