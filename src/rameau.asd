@@ -5,7 +5,7 @@
   :version "0.2"
   :author "Alexandre Passos e Pedro Kroger"
   :serial t
-  :depends-on (:yacc :lexer :cl-fad :cl-ppcre :lisp-unit :arnesi :nile :machine-learning)
+  :depends-on (:yacc :lexer :cl-fad :cl-ppcre :lisp-unit :arnesi :machine-learning :fann)
   :components (
 				   #+sbcl(:file "sbcl")
                (:file "rameau-base")
@@ -21,7 +21,7 @@
                (:file "cifras")
                (:file "rameau")
                (:file "neural")
-               (:file "neural-train")
+               ;(:file "neural-train")
                (:file "tree")
                (:file "tree-train")
                (:file "kern2lily")

@@ -6,29 +6,137 @@
 
 (defpackage :rameau-neural
   (:use #:cl
-        #:nile_compile-net-lib
-        #:nile_c2ompile-net-lib
-        #:nile_run-net-lib
+        #:fann
         #:arnesi
+        #:rameau-tools
         #:rameau))
 
 (in-package :rameau-neural)
 
+(defvar *simple-net* nil)
 
-(eval-when (:compile-toplevel :load-toplevel)
-  (defparameter *simple-netspec* (netspec 12 12 12))
-  (defvar *simple-net* (mk-net *simple-netspec*)))
+(defparameter *simple-net-file* (concat (rameau-path) "simple-net.fann"))
+(defparameter *simple-net-train-data* (concat (rameau-path) "simple-net-train.data"))
 
 (defparameter *correctness-treshold* 0.9)
 
+
+
+(defun load-simple-net ()
+  (if (cl-fad:file-exists-p *simple-net-file*)
+      (setf *simple-net* (load-from-file *simple-net-file*))
+      (progn
+        (treina-simple-net)
+        (load-simple-net))))
+
+(defun save-simple-net ()
+  (save-to-file *simple-net* *simple-net-file*))
+
 (defun lista-de-zeros (tam)
-  (repeat-list tam 0.0))
+  (repeat-list tam 0))
 
 (defun cria-pattern-segmento (seg)
   (let ((atual (lista-de-zeros 12)))
     (loop for nota in seg do
          (incf (nth (evento-pitch nota) atual)))
     atual))
+
+(defun cria-pattern-saida (gabarito)
+  (let ((atual (lista-de-zeros 12)))
+    (when (chordp gabarito)
+      (incf (nth (note->code (stringify (chord-fundamental gabarito))) atual)))
+    atual))
+     
+(defun prepara-exemplos-treinamento-simple-net-individual (coral gabarito)
+  (loop for segmento in coral
+     for gab in gabarito
+     if (listp gab)
+       nconc (prepara-exemplos-treinamento-simple-net (repeat-list segmento (length gab))
+                                                      gab)
+     else
+       nconc (list (list (cria-pattern-segmento segmento)
+                         (cria-pattern-saida gab)))))
+
+(defun prepara-exemplos-treinamento-simple-net (coral gabarito)
+  (loop for i from 0 to 11
+     for c = (transpose-segmentos coral i)
+     for g = (transpose-chords gabarito i)
+     nconc (prepara-exemplos-treinamento-simple-net-individual c g)))
+
+(defun gera-dados-treinamento-simple-net ()
+  (with-system rameau:tempered
+    (loop for i in '("001" "003" "004" "006" "012" "018" "136")
+       for nome = (first (rameau-tools::processa-files "corais" (list i)))
+       for f = (segmentos-minimos (parse-file nome))
+       for g = (rameau-tools::processa-gabarito nome "corais")
+       nconc (prepara-exemplos-treinamento-simple-net f g))))
+
+(defun gera-arquivo-treinamento-simple-net ()
+  (let* ((dados (gera-dados-treinamento-simple-net))
+         (tamanho (length dados)))
+    (with-open-file (f *simple-net-train-data* :direction :output)
+      (format f "~a ~a ~a~%" tamanho 12 12)
+      (loop for d in dados
+         do
+           (format f "~{~a ~}~%" (first d))
+           (format f "~{~a ~}~%" (second d))))))
+
+(unless (cl-fad:file-exists-p *simple-net-train-data*)
+  (gera-arquivo-treinamento-simple-net))
+
+(defun treina-simple-net ()
+  (if (cl-fad:file-exists-p *simple-net-train-data*)
+      (progn
+        (setf *simple-net* (make-net 12 12 12))
+        (train-on-file *simple-net*
+                       *simple-net-train-data*
+                       5000
+                       100
+                       0.1)
+        (save-simple-net)
+        (setf *simple-net* nil))
+      (progn
+        (gera-arquivo-treinamento-simple-net)
+        (treina-simple-net))))
+
+
+(unless (cl-fad:file-exists-p *simple-net-file*)
+  (treina-simple-net))
+
+(defun extrai-resultado-simple-net (output)
+  (loop for i from 0
+     for r in output
+     when (> r *correctness-treshold*)
+       return (make-chord :fundamental (print-note (code->note i) 'latin))
+     finally (return (make-melodic-note))))
+
+(defun aplica-simple-net (inputs)
+  (unless *simple-net*
+    (load-simple-net))
+  (mapcar (lambda (x) (extrai-resultado-simple-net (run-net *simple-net* (cria-pattern-segmento x)))) inputs))
+
+(defun compara-gabarito-simple-net-individual (resultado gabarito)
+  (with-system rameau:tempered
+    (if (and (chordp resultado) (chordp gabarito))
+        (equal (chord-fundamental resultado)
+               (chord-fundamental gabarito))
+        (equal (type-of resultado) (type-of gabarito)))))
+
+(defun compara-gabarito-simple-net (resultado gabarito)
+  (if (listp gabarito)
+      (some (lambda (x) (compara-gabarito-simple-net-individual resultado x)) gabarito)
+      (compara-gabarito-simple-net-individual resultado gabarito)))
+
+
+(registra-algoritmo "Simplenet" #'aplica-simple-net #'compara-gabarito-simple-net)
+
+    
+#|
+
+
+(eval-when (:compile-toplevel :load-toplevel)
+  (defparameter *simple-netspec* (netspec 12 12 12))
+  (defvar *simple-net* (mk-net *simple-netspec*)))
 
 (defun prepara-entrada-treinamento (coral)
   (make-patterns
@@ -81,17 +189,6 @@
 (defun gera-gabarito-simple-net (segmentos)
   (mapcar #'aplica-simple-net segmentos))
 
-(defun compara-gabarito-simple-net-individual (resultado gabarito)
-  (with-system rameau:tempered
-    (if (and (chordp resultado) (chordp gabarito))
-        (equal (chord-fundamental resultado)
-               (chord-fundamental gabarito))
-        (equal (type-of resultado) (type-of gabarito)))))
-
-(defun compara-gabarito-simple-net (resultado gabarito)
-  (if (listp gabarito)
-      (some (lambda (x) (compara-gabarito-simple-net-individual resultado x)) gabarito)
-      (compara-gabarito-simple-net-individual resultado gabarito)))
 
 (registra-algoritmo "Simplenet" #'gera-gabarito-simple-net #'compara-gabarito-simple-net)
 
@@ -152,3 +249,4 @@
                      (prepara-saida-treinamento (transpose-chords gabarito i)))))))
 
 (registra-algoritmo "Contextnet" #'gera-gabarito-context-net #'compara-gabarito-simple-net)
+|#

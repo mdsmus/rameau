@@ -6,5 +6,5 @@
     :name "Fast Artificial Neural Network Library."
     :author "Fann"
     :version ""
-    :depends-on (:uffi) 
+    :depends-on (:cffi) 
     :components ((:file "fann")))
