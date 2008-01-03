@@ -31,17 +31,14 @@
 (defun save-simple-net ()
   (save-to-file *simple-net* *simple-net-file*))
 
-(defun lista-de-zeros (tam)
-  (repeat-list tam 0))
-
 (defun cria-pattern-segmento (seg)
-  (let ((atual (lista-de-zeros 12)))
+  (let ((atual (make-list 12 :initial-element 0)))
     (loop for nota in seg do
          (incf (nth (evento-pitch nota) atual)))
     atual))
 
 (defun cria-pattern-saida (gabarito)
-  (let ((atual (lista-de-zeros 12)))
+  (let ((atual (make-list 12 :initial-element 0)))
     (when (chordp gabarito)
       (incf (nth (note->code (stringify (chord-fundamental gabarito))) atual)))
     atual))
