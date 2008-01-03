@@ -93,4 +93,4 @@
       (some (lambda (x) (compara-gabarito-simple-net-individual resultado x)) gabarito)
       (compara-gabarito-simple-net-individual resultado gabarito)))
 
-(registra-algoritmo "Simplenet" #'gera-gabarito-simple-net #'compara-gabarito-simple-net)
+(registra-algoritmo "simple-net" #'gera-gabarito-simple-net #'compara-gabarito-simple-net)

@@ -73,4 +73,4 @@
       (some (lambda (x) (compara-gabarito-tree-individual resultado x)) gabarito)
       (compara-gabarito-tree-individual resultado gabarito)))
 
-(registra-algoritmo "DecisionTree" #'gera-gabarito-decision-tree #'compara-gabarito-tree)
+(registra-algoritmo "decision-tree" #'gera-gabarito-decision-tree #'compara-gabarito-tree)

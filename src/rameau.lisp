@@ -214,9 +214,7 @@ Exemplo: (split-word \"foo\") => (F O O)"
   (let ((string (if (member 'l flags)
                     "~(~15a~)~:[*~; ~]|"
                     "~10a~:[*~; ~]|")))
-    (format t string
-            alg
-            res)))
+    (format t string alg res)))
 
 (defun frac->dur-lily (dur)
   "Converte de fração para duração em lilypond. É muito simples, não
@@ -277,13 +275,13 @@ ponto nos corais de bach."
 }~%~%" lyric))
 
 (defun print-lyric (name)
-  (format nil "\\new Lyrics \\lyricsto \"nowhere\" \\~a~%" name))
+  (format nil "\\new Lyrics \\lyricsto \"nowhere\" \\~a~%" (remove #\- name)))
 
 (defmacro with-print-cifra ((stream name) &body body)
   `(progn
-     (format ,stream "~a = \\lyricmode {
-  \\set stanza = \"~a:\"
-" ,name ,name)
+     (format ,stream "~a = \\lyricmode {~%  \\set stanza = \"~:(~a~):\"~%"
+             (remove #\- ,name)
+             (substitute #\Space #\- ,name))
      ,@body
      (format ,stream "~%}~%~%")))
 
