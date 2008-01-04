@@ -179,7 +179,7 @@
                        *context-net-train-data*
                        5000
                        100
-                       0.04)
+                       0.07)
         (save-context-net)
         (setf *context-net* nil))
       (progn

@@ -1,5 +1,3 @@
-;; Wrapper da biblioteca de redes neurais FANN para a FFI do sbcl
-
 (defpackage :fann
   (:use :cl :cffi)
   (:export :make-net :train-on-file :load-from-file :save-to-file :run-net))
