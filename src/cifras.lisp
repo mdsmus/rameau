@@ -155,6 +155,23 @@ position."
       (compara-gabarito-fundamental-individual resultado gabarito)))
 
 
+(defun compara-gabarito-modo-setima-individual (resultado gabarito)
+  (or (and (melodic-note-p resultado)
+           (melodic-note-p gabarito))
+      (and (chordp resultado)
+           (chordp gabarito)
+           (compara-notes-tempered (chord-fundamental resultado)
+                                   (chord-fundamental gabarito))
+           (equal (chord-mode resultado) (chord-mode gabarito))
+           (equal (chord-7th resultado) (chord-7th gabarito)))))
+
+(defun compara-gabarito-modo-setima (res gab)
+  (if (atom gab)
+      (compara-gabarito-modo-setima-individual res gab)
+      (some (lambda (x)
+              (compara-gabarito-modo-setima-individual res x))
+            gab)))
+
 
 
 #|

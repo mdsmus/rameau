@@ -902,7 +902,7 @@
                                             (side-effect-compatibility *side-effect*))
                                          (side-effect-orn-diss-penalty *side-effect*)
                                          har-variance
-                                         (* tpc-var-factor (side-effect-tpc-variance *side-effect*))
+                                         ;(* tpc-var-factor (side-effect-tpc-variance *side-effect*))
                                          local-voice-leading-penalty))
                                (new-cog
                                 (/

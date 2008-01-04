@@ -156,18 +156,4 @@
                   :from-end t :initial-value nil)))
      
 
-(defun compara-gabarito-pardo-individual (resultado gabarito)
-  (and (chordp gabarito)
-       (compara-notes-tempered (chord-fundamental resultado)
-                               (chord-fundamental gabarito))
-       (equal (chord-mode resultado) (chord-mode gabarito))
-       (equal (chord-7th resultado) (chord-7th gabarito))))
-
-(defun compara-gabarito-pardo (res gab)
-  (if (atom gab)
-      (compara-gabarito-pardo-individual res gab)
-      (some (lambda (x)
-              (compara-gabarito-pardo-individual res x))
-            gab)))
-
-(registra-algoritmo "Pardo" #'gera-gabarito-pardo #'compara-gabarito-pardo)
+(registra-algoritmo "Pardo" #'gera-gabarito-pardo #'compara-gabarito-modo-setima)

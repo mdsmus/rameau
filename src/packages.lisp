@@ -14,6 +14,7 @@
    #:chord-7th
    #:chordp
    #:compara-gabarito-fundamental
+   #:compara-gabarito-modo-setima
    #:compara-notas
    #:filtra-algoritmos
    #:first-string
