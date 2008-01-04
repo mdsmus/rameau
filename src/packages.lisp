@@ -5,7 +5,6 @@
    #:*algoritmos*
    #:*lily-dir-list*
    #:*gabarito-dir-list*
-   #:analise
    #:algoritmo-compara
    #:algoritmo-nome
    #:algoritmo-processa
@@ -14,17 +13,14 @@
    #:chord-mode
    #:chord-7th
    #:chordp
-   #:comparatamanhos
    #:compara-gabarito-fundamental
    #:compara-notas
-   #:dados
    #:filtra-algoritmos
    #:first-string
    #:get-comandos
    #:lista-notas
    #:make-chord
    #:make-melodic-note
-   #:partitura
    #:parse-file
    #:processa-files
    #:processa-gabarito

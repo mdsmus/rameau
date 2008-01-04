@@ -12,6 +12,7 @@
                         (analise ("corais" "kostka" "sonatas" "exemplos"))
                         (partitura ("corais"))
                         (comparatamanhos ("corais" "exemplos"))
+                        (erros ("corais" "exemplos"))
                         (dados ("corais" "exemplos"))))
 
 
@@ -303,6 +304,23 @@ ponto nos corais de bach."
            (format t "~a  ~a ~a ~a ~a%~%" item (algoritmo-nome a) i (- size-gab i) (percent i size-gab))))
     (values total corretos)))
 
+(defun gera-erros (item gabarito resultados flags)
+  (let ((*package* (find-package :rameau))
+        (size-gab (length gabarito)))
+    (loop
+       for numero-seg from 0 to size-gab
+       for gab-lista = gabarito then (cdr gab-lista)
+       for gab = (car gab-lista) then (car gab-lista)
+       for res = resultados then (avanca-todos res)
+       do
+         (loop
+            for a in *algoritmos*
+            for i from 0
+            for r in res
+            for alg = (first r) then (first r)
+            for certo? = (funcall (algoritmo-compara a) alg gab)
+            unless certo? do (format t "~a ~a ~a ~a ~a~%" item (algoritmo-nome a) numero-seg gab alg)))))
+
 (defun print-help-item (item)
   (format t "~%~(* [~a]~)~%" item)
   (dolist (line (get-item item *help*))
@@ -357,6 +375,7 @@ ponto nos corais de bach."
 
 (defun run-gera-dados (flags files item)
   (with-system rameau:tempered
+    (format t "Coral Algoritmo Corretos Incorretos Percentual~%")
     (let ((corretos (repeat-list (length *algoritmos*) 0))
           (total 0))
     (dolist (file files)
@@ -383,7 +402,24 @@ ponto nos corais de bach."
                   i
                   (- total i)
                   (percent i total))))))
-  
+
+(defun run-gera-erros (flags files item)
+  (with-system rameau:tempered
+    (format t "Coral Algoritmo Segmento Resultado_esperado Resultado_obtido~%")
+    (dolist (file files)
+      (let* ((musica (parse-file file))
+             (segmentos (segmentos-minimos musica))
+             (resultados (loop for a in *algoritmos* collect
+                              (funcall (algoritmo-processa a) segmentos)))
+             (gabarito (processa-gabarito (tira-extensao file) item))
+             (file-name (pathname-name file))
+             (notas (mapcar #'lista-notas segmentos))
+             (duracoes (calcula-duracoes segmentos)))
+        (cond
+          ((and (not gabarito) (not (member 'i flags))))
+          (t
+           (gera-erros file-name gabarito resultados flags)))))))
+
 (defun run-compara-tamanhos (flags files item)
   (format t "~a:~%" item)
   (let ((errados 0))
@@ -443,6 +479,9 @@ ponto nos corais de bach."
 (defcomando dados dados flags files
   (run-gera-dados flags (processa-files item files) item))            
 
+(defcomando erros dados flags files
+  (run-gera-erros flags (processa-files item files) item))            
+
 (defcomando partitura dados flags files
   (run-partitura flags (processa-files item files) item))
 
@@ -481,13 +520,13 @@ ponto nos corais de bach."
            (if (member comando (get-comandos) :test #'string=)
                (format t "as opções de ~a são: ~{~a ~}~%"
                        comando
-                       (get-item (intern (string-upcase comando)) *dados*))
+                       (get-item (intern (string-upcase comando) :rameau-main) *dados*))
                (progn
                  (format t "comando ~a não reconhecido~%" comando)
                  (format t "você deve entrar um dos comandos: ~{~(~a~)~^ ~}~%"
                          (get-comandos)))))
           ((member comando (get-comandos) :test #'string=)
-           (funcall (symbol-function (intern (string-upcase comando) :rameau))
+           (funcall (symbol-function (intern (string-upcase comando) :rameau-main))
                     dados
                     flags
                     files))
