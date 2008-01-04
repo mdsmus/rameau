@@ -8,6 +8,13 @@
   "Quando o numero de arquivos que não são parseados é maior que essa
   constante, rameau mostra apenas o inicio da lista.")
 
+(defparameter *dados* '((teste ("unidade" "regressao" "lily"))
+                        (analise ("corais" "kostka" "sonatas" "exemplos"))
+                        (partitura ("corais"))
+                        (comparatamanhos ("corais" "exemplos"))
+                        (dados ("corais" "exemplos"))))
+
+
 (defparameter *help* '((todos
                         (("-h" "ajuda")
                          ("-f" "arquivos")
@@ -270,6 +277,32 @@ ponto nos corais de bach."
          for a in *algoritmos* do
            (format t "  ~a: ~a%~%" (algoritmo-nome a) (percent i size-gab))))))
 
+(defun gera-dados (item gabarito resultados flags)
+  (let ((*package* (find-package :rameau))
+        (size-gab (length gabarito))
+        (corretos (repeat-list (length *algoritmos*) 0))
+        (total 0))
+    (let ((counts (repeat-list (length *algoritmos*) 0)))
+      (loop
+         for numero-seg from 0 to size-gab
+         for gab-lista = gabarito then (cdr gab-lista)
+         for gab = (car gab-lista) then (car gab-lista)
+         for res = resultados then (avanca-todos res)
+         do
+           (incf total)
+           (loop
+              for a in *algoritmos*
+              for i from 0
+              for r in res
+              for alg = (first r) then (first r)
+              for certo? = (funcall (algoritmo-compara a) alg gab)
+              then (funcall (algoritmo-compara a) alg gab)
+              when certo? do (incf (nth i counts)) (incf (nth i corretos))))
+      (loop for i in counts
+         for a in *algoritmos* do
+           (format t "~a  ~a ~a ~a ~a%~%" item (algoritmo-nome a) i (- size-gab i) (percent i size-gab))))
+    (values total corretos)))
+
 (defun print-help-item (item)
   (format t "~%~(* [~a]~)~%" item)
   (dolist (line (get-item item *help*))
@@ -316,12 +349,41 @@ ponto nos corais de bach."
            for a in *algoritmos*
            do (format t "  ~a: ~a~%" (algoritmo-nome a) (length i)))
         (cond
-          ((and (not gabarito) (not (member 'i flags)))
+          ((and (not gabarito) (not (member 'rameau::i flags)))
            (format t "~&[ERRO] o gabarito de ~a não existe~%" file-name))
           (t
            (print-gabarito gabarito resultados
                            flags :dur duracoes :notas notas)))))))
 
+(defun run-gera-dados (flags files item)
+  (with-system rameau:tempered
+    (let ((corretos (repeat-list (length *algoritmos*) 0))
+          (total 0))
+    (dolist (file files)
+      (let* ((musica (parse-file file))
+             (segmentos (segmentos-minimos musica))
+             (resultados (loop for a in *algoritmos* collect
+                              (funcall (algoritmo-processa a) segmentos)))
+             (gabarito (processa-gabarito (tira-extensao file) item))
+             (file-name (pathname-name file))
+             (notas (mapcar #'lista-notas segmentos))
+             (duracoes (calcula-duracoes segmentos)))
+        (cond
+          ((and (not gabarito) (not (member 'i flags))))
+          (t
+           (multiple-value-bind (total1 corretos1)
+               (gera-dados file-name gabarito resultados flags)
+             (incf total total1)
+             (loop for i from 0 to (1- (length corretos))
+                do (incf (nth i corretos) (nth i corretos1))))))))
+    (loop for i in corretos
+       for a in *algoritmos*
+       do (format t "Total ~a: ~a ~a ~a%~%"
+                  (algoritmo-nome a)
+                  i
+                  (- total i)
+                  (percent i total))))))
+  
 (defun run-compara-tamanhos (flags files item)
   (format t "~a:~%" item)
   (let ((errados 0))
@@ -377,6 +439,9 @@ ponto nos corais de bach."
 
 (defcomando analise dados flags files
   (run-compara-gabarito flags (processa-files item files) item))
+
+(defcomando dados dados flags files
+  (run-gera-dados flags (processa-files item files) item))            
 
 (defcomando partitura dados flags files
   (run-partitura flags (processa-files item files) item))

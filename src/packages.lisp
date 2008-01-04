@@ -3,7 +3,6 @@
 (defpackage #:rameau
   (:export
    #:*algoritmos*
-   #:*dados*
    #:*lily-dir-list*
    #:*gabarito-dir-list*
    #:analise
@@ -18,6 +17,7 @@
    #:comparatamanhos
    #:compara-gabarito-fundamental
    #:compara-notas
+   #:dados
    #:filtra-algoritmos
    #:first-string
    #:get-comandos

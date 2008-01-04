@@ -64,12 +64,6 @@
        '(("corais" "gabaritos/bach-corais/")
          ("exemplos" "gabaritos/exemplos/"))))
 
-(defparameter *dados* '((teste ("unidade" "regressao" "lily"))
-                        (analise ("corais" "kostka" "sonatas" "exemplos"))
-                        (partitura ("corais"))
-                        (comparatamanhos ("corais" "exemplos"))))
-
-
 
 (defun files-range (list)
   (loop for x from (parse-integer (first list)) to (parse-integer (second list))
