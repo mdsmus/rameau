@@ -88,6 +88,9 @@ clean:
 	find -name *.fasl -exec rm {} \;
 	find -name *.x86f -exec rm {} \;
 
+clean-lisp-cache:
+	rm -rf /var/cache/common-lisp-controller/$$UID/sbcl/local
+
 cleanall: clean
 	rm -rf rameau cmurameau eclrameau clisprameau $(corais-dir)
 
