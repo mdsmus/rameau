@@ -217,10 +217,11 @@ string. Essa função é inteligente o suficiente para saber que 'aes'
 usa a representação do lilypond e 'd#' usa a representação 'latin'."
   (when (note? note)
     (let ((note (string-downcase note)))
-      (cond ((eql (length note) 1) (%note->code (string->symbol note)))
-            ((match-note-representation note 'lily) (%parse-note note 'lily *system*))
-            ((match-note-representation note 'latin) (%parse-note note 'latin *system*))
-            (t (error "tipo de nota não conhecida"))))))
+      (module 
+       (cond ((eql (length note) 1) (%note->code (string->symbol note)))
+             ((match-note-representation note 'lily) (%parse-note note 'lily *system*))
+             ((match-note-representation note 'latin) (%parse-note note 'latin *system*))
+             (t (error "tipo de nota não conhecida")))))))
 
 (defun compara-notes-tempered (notea noteb)
   (with-system tempered
