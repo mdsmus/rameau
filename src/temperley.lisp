@@ -16,7 +16,7 @@
 (defparameter buckets-per-unit-of-cog 5.0)
 (defparameter pruning-cutoff   10.0)
 (defparameter compat-values   '(-5.0 -5.0 -10.0 1.0 -3.0 -10.0 5.0 3.0 -10.0 -10.0 2.0 -10.0))
-(defparameter tpc-var-factor   0.3)
+(defparameter tpc-var-factor   0.03)
 (defparameter har-var-factor   2.0)
 (defparameter odp-linear_factor   3.0)
 (defparameter odp-quadratic-factor   1.0)
@@ -584,6 +584,9 @@
   (har-cog)
   (root)
   (window)
+  (orn-diss-penalty)
+  (local-voice-leading-penalty)
+  (compatibility)
   (prev-bucket))
 
 (defstruct side-effect
@@ -836,6 +839,9 @@
                                       :tpc-cog (side-effect-tpc-cog *side-effect*)
                                       :har-cog cog
                                       :har-variance 0.0
+                                      :orn-diss-penalty 0.0
+                                      :compatibility (side-effect-compatibility *side-effect*)
+                                      :local-voice-leading-penalty 0.0
                                       :tpc-variance (side-effect-tpc-variance *side-effect*)
                                       :score (+ (side-effect-compatibility *side-effect*)
                                                 (- (side-effect-orn-diss-penalty *side-effect*))
@@ -945,6 +951,9 @@
                                 (bucket-tpc-variance bu1) (side-effect-tpc-variance *side-effect*)
                                 (bucket-har-cog bu1) new-cog
                                 (bucket-tpc-cog bu1) (side-effect-tpc-cog *side-effect*)
+                                (bucket-orn-diss-penalty bu1) (side-effect-orn-diss-penalty *side-effect*)
+                                (bucket-compatibility bu1) (side-effect-compatibility *side-effect*)
+                                (bucket-local-voice-leading-penalty bu1) local-voice-leading-penalty
                                 (bucket-prev-bucket bu1) bu)))))))
        (setf (column-table (aref column-table column))
              (prune-table (column-table (aref column-table column)))))
@@ -977,10 +986,10 @@
          (setf (aref bucket-choice i) (make-bucket)))
     (loop for h being the hash-keys in (column-table (aref column-table (1- n-chords)))
        using (hash-value bu)
-       do (let ((*bu* bu)) (dbg 'rameau::temperley
-                                "Scores: ~/rameau-temperley::exibe-score-roots/" bu))
        when (or (null best-b) (< (bucket-score best-b) (bucket-score bu))) do
          (setf best-b bu))
+    (let ((*bu* best-b)) (dbg 'rameau::temperley
+                          "Scores: ~/rameau-temperley::exibe-score-roots/" best-b))
     (loop for i from (1- n-chords) downto 0 do
          (setf (aref bucket-choice i) best-b
                best-b (bucket-prev-bucket best-b)))
