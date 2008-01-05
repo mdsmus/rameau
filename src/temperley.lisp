@@ -16,13 +16,13 @@
 
 (defparameter verbosity 2)
 (defparameter buckets-per-unit-of-cog 5.0)
-(defparameter pruning-cutoff   10.0)
+(defparameter pruning-cutoff   1.0)
 (defparameter compat-values   '(-5.0 -5.0 -10.0 1.0 -3.0 -10.0 5.0 3.0 -10.0 -10.0 2.0 -10.0))
 (defparameter tpc-var-factor   0.03)
 (defparameter har-var-factor   0.2)
-(defparameter odp-linear_factor   3.0)
-(defparameter odp-quadratic-factor   1.0)
-(defparameter odp-constant   2.0)
+(defparameter odp-linear_factor   1.0)
+(defparameter odp-quadratic-factor   0.1)
+(defparameter odp-constant   1.0)
 (defparameter compat_factor   1.0)
 (defparameter sbp-weight   2.0)
 (defparameter sbp-constant   1.5)
@@ -679,13 +679,20 @@
 
 (defun penaliza-dissonancia (clist)
   (loop for ch in clist do
-       (loop for note in ch do
+       (loop for note in ch
+          for old = (evento-temperley-penalidade-dissonancia note) do
             (setf (evento-temperley-penalidade-dissonancia note)
-                  (* (evento-temperley-penalidade-dissonancia note)
-                     (max 1.0
-                          (* 1.4 (sqrt (/ (* (evento-temperley-forca-metrica note)
-                                             (evento-temperley-dur note))
-                                          1000.0))))))))
+                  (min 10.0
+                       (* (evento-temperley-penalidade-dissonancia note)
+                          (min 1.0
+                               (* 1.4 (sqrt (/ (* (evento-temperley-forca-metrica note)
+                                                  (evento-temperley-dur note))
+                                               1000.0)))))))
+            (dbg 'rameau::temperley3 "penalidade: ~a ~a ~a ~a~%"
+                 (evento-temperley-penalidade-dissonancia note)
+                 old
+                 (evento-temperley-forca-metrica note)
+                 (evento-temperley-dur note))))
   clist)
 
 (defun inicializa-tabela-harmonica (clist)
@@ -771,7 +778,7 @@
   (declare (ignore decayed-prior-chord-mass)
            (float cog my-mass decayed-prior-chord-mass)
            (fixnum tpc))
-  (let ((delta-cog (- cog tpc)))
+  (let ((delta-cog (abs (- cog tpc))))
     (* delta-cog delta-cog my-mass)))
 
 (defun tpc-choice-score (root window same-roots ch my-mass decayed-prior-note-mass tpc-cog)
@@ -885,7 +892,7 @@
                     for my-root from (floor (- (bucket-har-cog bu) 12.0))
                     to (round (+ (bucket-har-cog bu) 12.0)) do
                       (let* ((current-cog (coerce my-root 'float))
-                             (delta-cog (- current-cog (bucket-har-cog bu)))
+                             (delta-cog (- current-cog (bucket-root bu)))
                              (har-variance (abs (* delta-cog
                                                    (column-my-mass (aref column-table column))
                                                    har-var-factor))))
@@ -902,9 +909,9 @@
                                                              window))
                                (score (- (+ (bucket-score bu)
                                             (side-effect-compatibility *side-effect*))
-                                         (side-effect-orn-diss-penalty *side-effect*)
+                                         ;(side-effect-orn-diss-penalty *side-effect*)
                                          har-variance
-                                         ;(* tpc-var-factor (side-effect-tpc-variance *side-effect*))
+                                         (* tpc-var-factor (side-effect-tpc-variance *side-effect*))
                                          local-voice-leading-penalty))
                                (new-cog
                                 (/

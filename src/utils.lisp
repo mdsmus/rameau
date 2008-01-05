@@ -56,7 +56,8 @@
   "Print debugging info if (DEBUG ID) has been specified."
   (when (member id *dbg-ids* :test #'string=)
     (fresh-line *debug-io*)
-    (apply #'format *debug-io* (concat " => DEBUG: " format-string) args)))
+    (apply #'format *debug-io* (concat " => DEBUG: " format-string) args)
+    (force-output *debug-io*)))
 
 (defun dbg-indent (id indent format-string &rest args)
   "Print indented debugging info if (DEBUG ID) has been specified."

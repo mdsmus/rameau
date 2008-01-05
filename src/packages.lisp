@@ -2,6 +2,12 @@
 
 (defpackage #:rameau
   (:export
+   #:i
+   #:f
+   #:d
+   #:p
+   #:v
+   #:m
    #:*algoritmos*
    #:*lily-dir-list*
    #:*gabarito-dir-list*
