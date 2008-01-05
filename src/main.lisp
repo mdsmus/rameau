@@ -245,9 +245,10 @@ ponto nos corais de bach."
                                     (when gabarito
                                       (print-lyric "gabarito")))))))))
 
-(defun print-gabarito (gabarito resultados flags &key notas dur)
+(defun print-gabarito (arquivo gabarito resultados flags &key notas dur)
   (let ((*package* (find-package :rameau))
         (size-gab (length gabarito)))
+    (format t "~a:~%" arquivo)
     (print-gab-columns "#" "notas" "gab" "dur" flags)
     (loop for a in *algoritmos*
        do (print-res-alg (algoritmo-nome a) "ok?" flags))
@@ -285,7 +286,7 @@ ponto nos corais de bach."
         (total 0))
     (let ((counts (repeat-list (length *algoritmos*) 0)))
       (loop
-         for numero-seg from 0 to size-gab
+         for numero-seg from 0 to (1- size-gab)
          for gab-lista = gabarito then (cdr gab-lista)
          for gab = (car gab-lista) then (car gab-lista)
          for res = resultados then (avanca-todos res)
@@ -308,7 +309,7 @@ ponto nos corais de bach."
   (let ((*package* (find-package :rameau))
         (size-gab (length gabarito)))
     (loop
-       for numero-seg from 0 to size-gab
+       for numero-seg from 0 to (1- size-gab)
        for gab-lista = gabarito then (cdr gab-lista)
        for gab = (car gab-lista) then (car gab-lista)
        for res = resultados then (avanca-todos res)
@@ -370,7 +371,7 @@ ponto nos corais de bach."
           ((and (not gabarito) (not (member 'rameau::i flags)))
            (format t "~&[ERRO] o gabarito de ~a não existe~%" file-name))
           (t
-           (print-gabarito gabarito resultados
+           (print-gabarito file-name gabarito resultados
                            flags :dur duracoes :notas notas)))))))
 
 (defun run-gera-dados (flags files item)

@@ -21,7 +21,7 @@
                (:file "pardo")
                (:file "temperley")
                (:file "neural")
-               ;(:file "tree")
+               (:file "tree")
                (:file "kern2lily")
                (:file "test-utils")
                (:file "test-musiclib")
