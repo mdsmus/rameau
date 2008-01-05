@@ -382,9 +382,10 @@ ponto nos corais de bach."
     (dolist (file files)
       (let* ((musica (parse-file file))
              (segmentos (segmentos-minimos musica))
-             (resultados (loop for a in *algoritmos* collect
-                              (funcall (algoritmo-processa a) segmentos)))
              (gabarito (processa-gabarito (tira-extensao file) item))
+             (resultados (when gabarito
+                           (loop for a in *algoritmos* collect
+                                (funcall (algoritmo-processa a) segmentos))))
              (file-name (pathname-name file))
              (notas (mapcar #'lista-notas segmentos))
              (duracoes (calcula-duracoes segmentos)))
@@ -410,9 +411,10 @@ ponto nos corais de bach."
     (dolist (file files)
       (let* ((musica (parse-file file))
              (segmentos (segmentos-minimos musica))
-             (resultados (loop for a in *algoritmos* collect
-                              (funcall (algoritmo-processa a) segmentos)))
              (gabarito (processa-gabarito (tira-extensao file) item))
+             (resultados (when gabarito
+                           (loop for a in *algoritmos* collect
+                                (funcall (algoritmo-processa a) segmentos))))
              (file-name (pathname-name file))
              (notas (mapcar #'lista-notas segmentos))
              (duracoes (calcula-duracoes segmentos)))
