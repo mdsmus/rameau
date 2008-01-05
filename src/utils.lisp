@@ -50,6 +50,7 @@
 
 
 (defvar *dbg-ids* nil "identifiers used by dbg")
+(setf *debug-io* *error-output*)
 
 (defun dbg (id format-string &rest args)
   "Print debugging info if (DEBUG ID) has been specified."
