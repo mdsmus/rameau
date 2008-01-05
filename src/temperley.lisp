@@ -10,6 +10,8 @@
 
 (in-package :rameau-temperley)
 
+(declaim (optimize speed 3))
+
 ;; Parametros do programa Harmony
 
 (defparameter verbosity 2)
@@ -17,7 +19,7 @@
 (defparameter pruning-cutoff   10.0)
 (defparameter compat-values   '(-5.0 -5.0 -10.0 1.0 -3.0 -10.0 5.0 3.0 -10.0 -10.0 2.0 -10.0))
 (defparameter tpc-var-factor   0.03)
-(defparameter har-var-factor   2.0)
+(defparameter har-var-factor   0.2)
 (defparameter odp-linear_factor   3.0)
 (defparameter odp-quadratic-factor   1.0)
 (defparameter odp-constant   2.0)
