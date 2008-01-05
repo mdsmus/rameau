@@ -191,10 +191,11 @@
 (defun aplica-context-net (inputs)
   (unless *context-net*
     (load-context-net))
-  (maplist (lambda (x) (extrai-resultado-simple-net
-                        (run-net *context-net*
-                                 (cria-pattern-contexto (safe-retorna-n-elementos x 4)))))
-           (cons nil (cons nil inputs))))
+  (butlast (maplist (lambda (x) (extrai-resultado-simple-net
+                                 (run-net *context-net*
+                                          (cria-pattern-contexto (safe-retorna-n-elementos x 4)))))
+                    (cons nil (cons nil inputs)))
+           2))
 
 (registra-algoritmo "Context-net" #'aplica-context-net #'compara-gabarito-fundamental)
     
