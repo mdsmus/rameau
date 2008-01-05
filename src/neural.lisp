@@ -17,7 +17,7 @@
 (defparameter *simple-net-file* (concat (rameau-path) "simple-net.fann"))
 (defparameter *simple-net-train-data* (concat (rameau-path) "simple-net-train.data"))
 
-(defparameter *correctness-treshold* 0.9)
+(defparameter *correctness-treshold* 0.5)
 
 
 
