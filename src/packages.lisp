@@ -72,9 +72,10 @@
 
 (defun filtra-algoritmos (algoritmos)
   (if algoritmos
-    (loop for alg in algoritmos
-         append (loop for i in *algoritmos*
-                   when (> (count-subseq alg (string-downcase (algoritmo-nome i))) 0)
-                   collect i))
+      (exclude-repetition
+       (loop for alg in algoritmos
+          append (loop for i in *algoritmos*
+                    when (> (count-subseq alg (string-downcase (algoritmo-nome i))) 0)
+                    collect i)))
     *algoritmos*))
 
