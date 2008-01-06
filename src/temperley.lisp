@@ -10,7 +10,7 @@
 
 (in-package :rameau-temperley)
 
-(declaim (optimize speed 3))
+(declaim (optimize (speed 3)))
 
 ;; Parametros do programa Harmony
 

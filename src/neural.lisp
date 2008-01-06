@@ -24,7 +24,9 @@
 (defun load-simple-net ()
   (if (cl-fad:file-exists-p *simple-net-file*)
       (setf *simple-net* (load-from-file *simple-net-file*))
-      (treina-simple-net)))
+      (progn
+        (treina-simple-net)
+        (load-simple-net))))
 
 (defun save-simple-net ()
   (save-to-file *simple-net* *simple-net-file*))
@@ -104,7 +106,8 @@
      finally (return (make-melodic-note))))
 
 (defun aplica-simple-net (inputs)
-  (load-simple-net)
+  (unless *simple-net*
+    (load-simple-net))
   (mapcar (lambda (x) (extrai-resultado-simple-net (run-net *simple-net* (cria-pattern-segmento x)))) inputs))
 
 (registra-algoritmo "Simple-net" #'aplica-simple-net #'compara-gabarito-fundamental)
@@ -119,7 +122,9 @@
 (defun load-context-net ()
   (if (cl-fad:file-exists-p *context-net-file*)
       (setf *context-net* (load-from-file *context-net-file*))
-      (treina-context-net)))
+      (progn
+        (treina-context-net)
+        (load-context-net))))
 
 (defun save-context-net ()
   (save-to-file *context-net* *context-net-file*))
@@ -184,7 +189,8 @@
   (treina-context-net))
 
 (defun aplica-context-net (inputs)
-  (load-context-net)
+  (unless *context-net*
+    (load-context-net))
   (butlast (maplist (lambda (x) (extrai-resultado-simple-net
                                  (run-net *context-net*
                                           (cria-pattern-contexto (safe-retorna-n-elementos x 4)))))
