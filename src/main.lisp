@@ -60,7 +60,6 @@
                   (t no))))
       (format t "  [OK]: ~a [NO]: ~a ~@[~a ~]~%" (length ok) s2 no-string))))
 
-
 ;; BUG: ok? não imprime por cause do (not f)
 (defun print-gab-columns (a b c d flags)
   (let ((string (if (member 'l flags)
@@ -73,10 +72,13 @@
             (when (member 'v flags) (if (listp d) (second d) d)))))
 
 (defun print-res-alg (alg res flags)
-  (let ((string (if (member 'l flags)
-                    "~(~15a~)~:[*~; ~]|"
-                    "~10a~:[*~; ~]|")))
-    (format t string alg res)))
+  (let ((color (if res 21 31))
+        (string (if (member 'l flags)
+                    "~A[0;~Dm~(~15a~)"
+                    "~A[0;~Dm~5a")))
+    (format t string (code-char #x1b) color alg)
+    (format t "~A[0m" (code-char #x1b))
+    (format t "|")))
 
 (defun next-flag (list)
   (loop for x in (rest list) do
@@ -250,8 +252,9 @@ ponto nos corais de bach."
         (size-gab (length gabarito)))
     (format t "~a:~%" arquivo)
     (print-gab-columns "#" "notas" "gab" "dur" flags)
-    (loop for a in *algoritmos*
-       do (print-res-alg (algoritmo-nome a) "ok?" flags))
+    (loop
+       for a in *algoritmos*
+       do (print-res-alg (subseq (algoritmo-nome a) 0 5) "ok?" flags))
     (format t "~%")
     (write-line (repeat-string 80 "-"))
     (let ((counts (repeat-list (length *algoritmos*) 0)))
