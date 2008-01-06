@@ -278,9 +278,12 @@ ponto nos corais de bach."
               when certo? do (incf (nth i counts)))
            (format t "~%"))
       (format t "~% correto:~%")
-      (loop  for i in counts
-         for a in *algoritmos* do
-           (format t "  ~a: ~a%~%" (algoritmo-nome a) (percent i size-gab))))))
+      (let ((l (loop
+                  for i in counts
+                  for a in *algoritmos*
+                  collect (list (algoritmo-nome a) (percent i size-gab)))))
+        (loop for r in (sort l #'> :key #'second) do
+             (format t "  ~(~15a~) ~,2f%~%" (first r) (second r)))))))
 
 (defun gera-dados (item gabarito resultados flags)
   (let ((*package* (find-package :rameau))
