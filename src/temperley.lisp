@@ -965,7 +965,10 @@
                                 (bucket-local-voice-leading-penalty bu1) local-voice-leading-penalty
                                 (bucket-prev-bucket bu1) bu)))))))
        (setf (column-table (aref column-table column))
-             (prune-table (column-table (aref column-table column)))))
+             (prune-table (column-table (aref column-table column))))
+       (when (>= column 0)
+         (setf (column-table (aref column-table (1- column))) nil)))
+                                        ;Isso deve diminuir o uso de memória
   column-table)
 
 (let ((letters '("f" "c" "g" "d" "a" "e" "b")))
