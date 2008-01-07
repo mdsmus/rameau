@@ -136,7 +136,7 @@
   (loop for c = (cons nil (cons nil coral)) then (cdr c)
      for gab in gabarito
      if (listp gab)
-       nconc (prepara-exemplos-treinamento-simple-net (repeat-list coral (length gab))
+       nconc (prepara-exemplos-treinamento-simple-net (repeat-list c (length gab))
                                                       gab)
      else
        nconc (list (list (cria-pattern-contexto (safe-retorna-n-elementos c 4))

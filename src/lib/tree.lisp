@@ -9,6 +9,7 @@
 
 (in-package :machine-learning)
 
+(declaim (optimize (safety 3) (debug 3)))
 
 ;;; Credits:
 
@@ -213,12 +214,12 @@ number-of-examples-with-this-value x sample-entropy-of-this-partition"
 (defun partition-on-attribute (attribute-data examples)
   "Returns a partion of EXAMPLES according to their values for ATTRIBUTE."
   (let* ((attribute (car attribute-data))
-	 (branches (mapcar #'(lambda (value)
-			       (make-branch :attribute attribute :value value :contents nil))
-			   (cdr attribute-data))))
+         (branches (mapcar #'(lambda (value)
+                               (make-branch :attribute attribute :value value :contents nil))
+                           (cdr attribute-data))))
     (loop for example in examples
-	  for value = (attribute-value attribute example)
-	  do (push example (branch-contents (find value branches :key #'branch-value))))
+       for value = (attribute-value attribute example)
+       do (push example (branch-contents (find value branches :key #'branch-value))))
     (make-partition :attribute attribute :branches branches :examples examples)))
 
 (defun best-partition (attributes examples classes)
