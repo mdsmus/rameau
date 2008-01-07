@@ -156,7 +156,7 @@
 (defun treina-context-tree ()
   (with-system rameau:tempered
     (multiple-value-bind (corais gabaritos)
-        (unzip(loop for i in '("001" "003" "004" "006" "012" "018" "136")
+        (unzip(loop for i in '("001" "002" "004" "005" "006" "007" "012" "018" "136")
                  for f = (first (processa-files "corais" (list i)))
                  for g = (processa-gabarito f "corais")
                  collect (list (segmentos-minimos (parse-file f)) g)))
