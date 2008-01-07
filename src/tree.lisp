@@ -162,3 +162,95 @@
 (treina-context-tree)
 
 (registra-algoritmo "Context-tree" #'gera-gabarito-context-tree #'compara-gabarito-fundamental)
+
+(defparameter *chord-classes* (mapcar #'string->symbol
+                                      (mapcar #'stringify
+                                              '(a  b  c  d  e  f  g  --
+                                                a# b# c# d# e# f# g#
+                                                ab bb cb db eb fb gb
+                                                a7  b7  c7  d7  e7  f7  g7
+                                                a#7 b#7 c#7 d#7 e#7 f#7 g#7
+                                                ab7 bb7 cb7 db7 eb7 fb7 gb7
+                                                a7+  b7+  c7+  d7+  e7+  f7+  g7+
+                                                a#7+ b#7+ c#7+ d#7+ e#7+ f#7+ g#7+
+                                                ab7+ bb7+ cb7+ db7+ eb7+ fb7+ gb7+
+                                                am  bm  cm  dm  em  fm  gm
+                                                a#m b#m c#m d#m e#m f#m g#m
+                                                abm bbm cbm dbm ebm fbm gbm
+                                                am7  bm7  cm7  dm7  em7  fm7  gm7
+                                                a#m7 b#m7 c#m7 d#m7 e#m7 f#m7 g#m7
+                                                abm7 bbm7 cbm7 dbm7 ebm7 fbm7 gbm7
+                                                a°  b°  c°  d°  e°  f°  g°
+                                                a#° b#° c#° d#° e#° f#° g#°
+                                                ab° bb° cb° db° eb° fb° gb°
+                                                a°7  b°7  c°7  d°7  e°7  f°7  g°7
+                                                a#°7 b#°7 c#°7 d#°7 e#°7 f#°7 g#°7
+                                                ab°7 bb°7 cb°7 db°7 eb°7 fb°7 gb°7
+                                                aø  bø  cø  dø  eø  fø  gø
+                                                a#ø b#ø c#ø d#ø e#ø f#ø g#ø
+                                                abø bbø cbø dbø ebø fbø gbø
+                                                ))))
+
+(defparameter *chord-tree* nil)
+
+(defun simplifica (acorde)
+  (if (or (equal nil (chord-mode acorde))
+          (equal "m" (chord-mode acorde))
+          (equal "°" (chord-mode acorde))
+          (equal "ø" (chord-mode acorde)))
+      (string->symbol
+       (stringify
+        (make-chord :fundamental (chord-fundamental acorde)
+                    :7th (if (equal (chord-mode acorde)
+                                    "ø")
+                             nil
+                             (chord-7th acorde))
+                    :mode (chord-mode acorde))))
+      (string->symbol "--")))
+
+(defun prepara-chord-exemplo-treinamento (coral gabarito)
+  (loop for s in coral
+     for g in gabarito
+     collect (make-example :name "foo"
+                           :class (if (chordp g) (simplifica g)
+                                      (string->symbol "--"))
+                           :values (prepara-segmento s))))
+
+(defun prepara-chord-entrada-treinamento (corais gabaritos)
+   (loop for c in corais
+      for g in gabaritos
+      nconc (loop for i from 0 to 11
+               nconc (prepara-chord-exemplo-treinamento (transpose-segmentos c i)
+                                                        (transpose-chords g i)))))
+
+(defun treina-chord-tree (corais gabaritos)
+  (setf *chord-tree* (id3 (prepara-chord-entrada-treinamento corais gabaritos)
+                          *atributos*
+                          *chord-classes*)))
+
+(defun aplica-chord-tree (segmento)
+  (let ((res (classify (make-example :values (prepara-segmento segmento)) *decision-tree*)))
+    (parse-chord res)))
+
+(defun exibe-chord-tree (&rest args)
+  (declare (ignore args))
+  (print-tree *chord-tree*))
+
+(defun gera-gabarito-chord-tree (coral)
+  (dbg 'rameau::mostra-arvore "Arvore: ~/rameau-tree::exibe-chord-tree/ ~%" *chord-tree*)
+  (mapcar #'aplica-chord-tree coral))
+
+(registra-algoritmo "Chord-tree" #'gera-gabarito-chord-tree #'compara-gabarito-modo-setima)
+
+(defun faz-treina-chord-tree ()
+  (with-system rameau:tempered
+    (multiple-value-bind (corais gabaritos)
+        (unzip(loop for i in '("001" "002" "003" "004" "005" "006" "007"
+                               "008" "010" "012" "014" "017" "018" "136")
+                 for f = (first (processa-files "corais" (list i)))
+                 for g = (processa-gabarito f "corais")
+                 collect (list (segmentos-minimos (parse-file f)) g)))
+      (treina-chord-tree corais gabaritos))))
+
+(faz-treina-chord-tree)
+

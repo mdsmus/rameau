@@ -122,6 +122,7 @@ KEY. Returns the argument and the value."
   "Return an association list of class counts"
   (let ((counts (mapcar #'(lambda (class) (cons class 0)) classes)))
     (dolist (example examples)
+      ;(format t "example ~s ~%" (example-class example))
       (incf (cdr (assoc (example-class example) counts))))
     counts))
 
@@ -130,7 +131,7 @@ KEY. Returns the argument and the value."
 
 (defun (setf attribute-value) (value attribute example)
   "Assign a value to an attribute of an example"
-  (let ((attribute-record (assoc attribute (example-values example))))
+  (let ((attribute-record (assoc attribute (example-values example) :test #'equal)))
     (if attribute-record
 	(setf (cdr attribute-record) value)
 	(push (cons attribute value) (example-values example)))))
