@@ -306,9 +306,13 @@ ponto nos corais de bach."
               for certo? = (funcall (algoritmo-compara a) alg gab)
               then (funcall (algoritmo-compara a) alg gab)
               when certo? do (incf (nth i counts)) (incf (nth i corretos))))
-      (loop for i in counts
-         for a in *algoritmos* do
-           (format t "~a  ~a ~a ~a ~a%~%" item (algoritmo-nome a) i (- size-gab i) (percent i size-gab))))
+      (let ((l (loop
+                  for i in counts
+                  for a in *algoritmos*
+                  collect (list (algoritmo-nome a) (percent i size-gab) i))))
+        (loop for r in (sort l #'> :key #'second)
+           for i = (third r) do
+             (format t "~a  ~(~15a~) ~5a ~5a ~,2f%~%" item (first r) i (- size-gab i) (second r)))))
     (values total corretos)))
 
 (defun gera-erros (item gabarito resultados flags)
@@ -403,13 +407,13 @@ ponto nos corais de bach."
              (incf total total1)
              (loop for i from 0 to (1- (length corretos))
                 do (incf (nth i corretos) (nth i corretos1))))))))
-    (loop for i in corretos
-       for a in *algoritmos*
-       do (format t "Total ~a: ~a ~a ~a%~%"
-                  (algoritmo-nome a)
-                  i
-                  (- total i)
-                  (percent i total))))))
+      (let ((l (loop
+                  for i in corretos
+                  for a in *algoritmos*
+                  collect (list (algoritmo-nome a) i (- total i) (percent i total)))))
+        (loop for r in (sort l #'> :key #'second)
+           do (format t "Total ~(~15a~):  ~5a ~5a ~,2f%~%"
+                      (first r) (second r) (third r) (fourth r) (fifth r)))))))
 
 (defun run-gera-erros (flags files item)
   (with-system rameau:tempered
