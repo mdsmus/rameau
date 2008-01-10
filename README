@@ -2,7 +2,7 @@
 
 Para instalar rameau voce precisa instalar os seguintes pacotes:
 
-  sbcl cl-lexer cl-regex cl-yacc cl-fad cl-ppcre cl-arnesi
+  sbcl cl-lexer cl-regex cl-yacc cl-fad cl-ppcre cl-arnesi cl-cffi
 
 Para compilar é só digitar 'make' no diretorio onde está o repositório
 da pequisa.
