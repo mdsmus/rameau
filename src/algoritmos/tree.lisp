@@ -1,3 +1,4 @@
+(asdf:oos 'asdf:load-op :machine-learning)
 (defpackage :rameau-tree
   (:use #:cl
         #:arnesi

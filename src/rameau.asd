@@ -5,7 +5,7 @@
   :version "0.2"
   :author "Alexandre Passos e Pedro Kroger"
   :serial t
-  :depends-on (:yacc :lexer :cl-fad :cl-ppcre :lisp-unit :arnesi :machine-learning :fann)
+  :depends-on (:yacc :lexer :cl-fad :cl-ppcre :lisp-unit :arnesi)
   :components (
 				   #+sbcl(:file "sbcl")
                (:file "rameau-base")
