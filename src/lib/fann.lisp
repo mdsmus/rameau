@@ -5,7 +5,7 @@
 (in-package :fann)
 
 (define-foreign-library libfann
-  (:unix "libfann.so.2")
+  (:unix (:or "libfann.so.2" "libfann.so" "/usr/local/lib/libfann.so.2" "/usr/local/lib/libfann.so"))
   (t "libfann.so"))
 
 (use-foreign-library libfann)
