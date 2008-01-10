@@ -315,7 +315,7 @@ ponto nos corais de bach."
              (format t "~a  ~(~15a~) ~5a ~5a ~,2f%~%" item (first r) i (- size-gab i) (second r)))))
     (values total corretos)))
 
-(defun gera-erros (item gabarito resultados flags)
+(defun gera-erros (item segmentos gabarito resultados flags)
   (let ((*package* (find-package :rameau))
         (size-gab (length gabarito)))
     (loop
@@ -323,6 +323,7 @@ ponto nos corais de bach."
        for gab-lista = gabarito then (cdr gab-lista)
        for gab = (car gab-lista) then (car gab-lista)
        for res = resultados then (avanca-todos res)
+       for s in segmentos
        do
          (loop
             for a in *algoritmos*
@@ -330,7 +331,13 @@ ponto nos corais de bach."
             for r in res
             for alg = (first r) then (first r)
             for certo? = (funcall (algoritmo-compara a) alg gab)
-            unless certo? do (format t "~a ~a ~a ~a ~a~%" item (algoritmo-nome a) numero-seg gab alg)))))
+            unless certo? do (format t "~a ~13a ~4a ~14a ~8a ~4a~%"
+                                     item
+                                     (algoritmo-nome a)
+                                     numero-seg
+                                     (lista-notas s)
+                                     gab
+                                     alg)))))
 
 (defun print-help-item (item)
   (format t "~%~(* [~a]~)~%" item)
@@ -431,7 +438,7 @@ ponto nos corais de bach."
         (cond
           ((and (not gabarito) (not (member 'i flags))))
           (t
-           (gera-erros file-name gabarito resultados flags)))))))
+           (gera-erros file-name segmentos gabarito resultados flags)))))))
 
 (defun run-compara-tamanhos (flags files item)
   (format t "~a:~%" item)
