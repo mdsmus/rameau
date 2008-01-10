@@ -230,7 +230,9 @@
 
 (defun aplica-chord-tree (segmento)
   (let ((res (classify (make-example :values (prepara-segmento segmento)) *decision-tree*)))
-    (parse-chord res)))
+    (aif (parse-chord res)
+         it
+         (make-melodic-note))))
 
 (defun exibe-chord-tree (&rest args)
   (declare (ignore args))
