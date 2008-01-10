@@ -1,0 +1,12 @@
+Não há a tônica do acorde identificado pelo algoritmo
+
+135 Pardo         35   (d)            Bm       G
+145 Pardo         9    (c)            Am       F   
+145 Pardo         14   (a a)          Am       F   
+145 Pardo         33   (b c)          --       F   
+
+
+Diminuto no lugar de acorde menor com supressão da 5a
+
+136 Pardo         36   (e d)          Em7      Eø7
+137 Pardo         8    (c)            Am7      Aø7
