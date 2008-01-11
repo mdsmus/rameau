@@ -10,3 +10,919 @@ Diminuto no lugar de acorde menor com supressão da 5a
 
 136 Pardo         36   (e d)          Em7      Eø7
 137 Pardo         8    (c)            Am7      Aø7
+
+
+Acorde menor identificado como maior (ainda sem revisão dos pop)
+
+001 Chord-tree    41   (c)            Am/C     A   
+003 Chord-tree    1    (c)            Am       A   
+003 Chord-tree    3    (a a)          Am       A   
+003 Chord-tree    5    (e)            Am       A   
+003 Chord-tree    8    (c)            Am       A   
+003 Chord-tree    12   (c)            Am/C     A   
+003 Chord-tree    22   (e a e c)      Am/E     A   
+003 Chord-tree    25   (a)            Am       A   
+003 Chord-tree    43   (c)            Am/C     A   
+003 Chord-tree    46   (c)            Am       A   
+003 Chord-tree    48   (a)            Am/C     A   
+003 Chord-tree    51   (a)            Am       A   
+003 Chord-tree    52   (a)            Am       A   
+003 Chord-tree    54   (c)            Am       A   
+005 Chord-tree    9    (c)            Am       A   
+005 Chord-tree    68   (c)            Am       A   
+005 Chord-tree    81   (e a e c)      Am/E     A   
+005 Chord-tree    84   (a)            Am       A   
+005 Chord-tree    85   (c)            Am       A   
+010 Chord-tree    1    (e e)          Am/C     A   
+010 Chord-tree    3    (c)            Am       A   
+010 Chord-tree    11   (c)            Am       A   
+010 Chord-tree    22   (a)            Am       A   
+010 Chord-tree    24   (c)            Am       A   
+010 Chord-tree    32   (a)            Am       A   
+010 Chord-tree    33   (c)            Am       A   
+010 Chord-tree    46   (c)            Am       A   
+010 Chord-tree    54   (e)            Am       A   
+012 Chord-tree    0    (a)            Am       A   
+012 Chord-tree    1    (a)            Am       A   
+012 Chord-tree    14   (c)            Am       A   
+012 Chord-tree    19   (c)            Am       A   
+012 Chord-tree    28   (a)            Am       A   
+012 Chord-tree    36   (c)            Am       A   
+014 Chord-tree    55   (a c e)        Am       A   
+018 Chord-tree    13   (e)            Am       A   
+028 Pardo         18   (e)            Am       A   
+028 Chord-tree    18   (e)            Am       A   
+029 Pardo         9    (e)            Am       A   
+029 Chord-tree    9    (e)            Am       A   
+029 Chord-tree    16   (c)            Am/E     A   
+029 Chord-tree    50   (c)            Am       A   
+048 Chord-tree    0    (a)            Am       A   
+048 Chord-tree    2    (c)            Am       A   
+048 Chord-tree    3    (c)            Am       A   
+048 Chord-tree    4    (c)            Am       A   
+048 Chord-tree    10   (e)            Am       A   
+048 Chord-tree    41   (e)            Am       A   
+048 Chord-tree    56   (a a e c)      Am       A   
+054 Chord-tree    29   (c)            Am/C     A   
+130 Chord-tree    18   (e e)          Am/C     A   
+131 Chord-tree    21   (a)            Am       A   
+131 Chord-tree    52   (a)            Am       A   
+132 Chord-tree    11   (c)            Am       A   
+132 Chord-tree    13   (c)            Am/C     A   
+132 Chord-tree    55   (c)            Am       A   
+132 Chord-tree    85   (e)            Am/C     A   
+132 Chord-tree    94   (e a c a)      Am/E     A   
+132 Pardo         96   (e a e a)      Am/E     A   
+132 Chord-tree    96   (e a e a)      Am/E     A   
+132 Chord-tree    110  (c)            Am       A   
+132 Chord-tree    154  (c)            Am       A   
+132 Chord-tree    188  (c a e a)      Am/C     A   
+132 Chord-tree    225  (e)            Am/C     A   
+132 Chord-tree    249  (e a c)        Am/C     A   
+132 Chord-tree    323  (e)            Am/C     A   
+133 Chord-tree    46   (c)            Am/C     A   
+133 Chord-tree    58   (a)            Am       A   
+133 Chord-tree    121  (e)            Am       A   
+133 Chord-tree    125  (c)            Am/E     A   
+133 Chord-tree    139  (a)            Am/C     A   
+133 Chord-tree    143  (a)            Am/C     A   
+133 Chord-tree    156  (a c e a)      Am       A   
+133 Chord-tree    158  (a c e a)      Am       A   
+133 Chord-tree    180  (e e)          Am       A   
+133 Chord-tree    188  (e)            Am       A   
+134 Chord-tree    9    (b e c)        Am       A   
+134 Chord-tree    10   (a a e c)      Am       A   
+136 Chord-tree    11   (e)            Am       A   
+138 Chord-tree    4    (a)            Am/C     A   
+138 Chord-tree    31   (c)            Am/C     A   
+139 Chord-tree    4    (a)            Am       A   
+139 Chord-tree    14   (c)            Am       A   
+139 Chord-tree    43   (c)            Am       A   
+140 Chord-tree    25   (c)            Am       A   
+142 Chord-tree    1    (a a)          Am/C     A   
+142 Pardo         19   (a)            Am       A   
+142 Chord-tree    19   (a)            Am       A   
+142 Chord-tree    31   (c)            Am       A   
+142 Chord-tree    48   (e)            Am       A   
+143 Chord-tree    4    (a)            Am       A   
+143 Chord-tree    6    (a)            Am       A   
+143 Chord-tree    91   (e)            Am       A   
+145 Chord-tree    0    (a)            Am       A   
+145 Chord-tree    1    (a)            Am       A   
+145 Chord-tree    3    (c)            Am       A   
+145 Chord-tree    6    (e e)          Am       A   
+145 Chord-tree    9    (c)            Am       A   
+145 Chord-tree    12   (c)            Am       A   
+145 Chord-tree    14   (a a)          Am       A   
+145 Chord-tree    26   (c)            Am       A   
+145 Chord-tree    29   (e)            Am/C     A   
+145 Chord-tree    36   (a)            Am       A   
+145 Chord-tree    38   (c)            Am       A   
+145 Chord-tree    56   (c)            Am       A   
+145 Chord-tree    62   (c)            Am/E     A   
+146 Chord-tree    0    (e)            Am       A   
+146 Chord-tree    2    (a)            Am/C     A   
+146 Chord-tree    6    (c)            Am       A   
+146 Chord-tree    9    (a a)          Am/C     A   
+146 Chord-tree    29   (a)            Am       A   
+146 Chord-tree    31   (c)            Am       A   
+146 Chord-tree    35   (e)            Am       A   
+146 Chord-tree    50   (a)            Am       A   
+158 Chord-tree    6    (e a)          Am       A   
+158 Chord-tree    20   (c a e e)      Am/C     A   
+158 Chord-tree    103  (e)            Am       A   
+160 Chord-tree    6    (c)            Am       A   
+160 Chord-tree    8    (c)            Am       A   
+160 Chord-tree    19   (c)            Am       A   
+160 Chord-tree    39   (c)            Am       A   
+162 Chord-tree    40   (c)            Am/E     A   
+162 Chord-tree    65   (a a c a)      Am       A   
+162 Chord-tree    80   (a)            Am/C     A   
+162 Chord-tree    82   (e e)          Am       A   
+165 Chord-tree    16   (c)            Am       A   
+166 Chord-tree    19   (c)            Am       A   
+228 Chord-tree    0    (a)            Am       A   
+228 Chord-tree    1    (c)            Am       A   
+228 Chord-tree    5    (e a c)        Am       A   
+228 Chord-tree    16   (a a e c)      Am       A   
+228 Chord-tree    23   (e)            Am/C     A   
+228 Chord-tree    26   (c)            Am       A   
+228 Chord-tree    30   (c)            Am       A   
+228 Chord-tree    34   (c)            Am/E     A   
+248 Chord-tree    56   (c)            Am       A   
+249 Chord-tree    8    (c)            Am       A   
+249 Chord-tree    36   (c)            Am       A   
+249 Chord-tree    42   (a a)          Am/C     A   
+249 Chord-tree    55   (c)            Am/C     A   
+249 Chord-tree    59   (a)            Am/C     A   
+254 Chord-tree    4    (c)            Am       A   
+258 Chord-tree    60   (a)            Am/C     A   
+258 Chord-tree    83   (a)            Am       A   
+261 Chord-tree    29   (e)            Am/C     A   
+262 Pardo         59   (e c# a)       Am       A   
+262 Chord-tree    59   (e c# a)       Am       A   
+263 Chord-tree    2    (a)            Am/C     A   
+263 Chord-tree    55   (a a)          Am/C     A   
+263 Chord-tree    56   (c a e a)      Am/C     A   
+268 Chord-tree    2    (c)            Am       A   
+268 Chord-tree    19   (e)            Am       A   
+268 Chord-tree    40   (a)            Am       A   
+268 Chord-tree    41   (a)            Am       A   
+268 Chord-tree    56   (c)            Am       A   
+268 Chord-tree    100  (c)            Am       A   
+268 Chord-tree    121  (c)            Am       A   
+001 Chord-tree    6    (d b)          Bm/D     B   
+001 Chord-tree    39   (b)            Bm/D     B   
+002 Chord-tree    38   (d)            Bm       B   
+002 Chord-tree    42   (b)            Bm/D     B   
+002 Chord-tree    45   (b)            Bm       B   
+002 Chord-tree    53   (d)            Bm       B   
+002 Chord-tree    60   (d)            Bm       B   
+003 Pardo         30   (f#)           Bm       B   
+003 Chord-tree    30   (f#)           Bm       B   
+005 Chord-tree    31   (d f# b)       Bm/D     B   
+005 Chord-tree    100  (d d)          Bm       B   
+005 Chord-tree    110  (d)            Bm       B   
+012 Chord-tree    34   (d b)          Bm/F#    B   
+014 Chord-tree    2    (f#)           Bm       B   
+014 Chord-tree    12   (d d)          Bm       B   
+014 Pardo         34   (b)            Bm/D#    B   
+014 Chord-tree    34   (b)            Bm/D#    B   
+014 Chord-tree    50   (d)            Bm       B   
+014 Chord-tree    63   (d)            Bm       B   
+020 Chord-tree    2    (d)            Bm       B   
+020 Chord-tree    14   (d)            Bm       B   
+020 Chord-tree    46   (d)            Bm       B   
+020 Chord-tree    62   (d)            Bm       B   
+028 Chord-tree    0    (b)            Bm       B   
+028 Chord-tree    6    (d)            Bm/D     B   
+028 Chord-tree    10   (b f# b)       Bm/D     B   
+028 Chord-tree    14   (b)            Bm       B   
+028 Chord-tree    16   (d)            Bm       B   
+028 Chord-tree    39   (b)            Bm       B   
+028 Chord-tree    40   (b)            Bm       B   
+028 Chord-tree    49   (b b)          Bm       B   
+036 Chord-tree    53   (b)            Bm       B   
+044 Chord-tree    15   (b)            Bm       B   
+046 Chord-tree    41   (d)            Bm       B   
+046 Chord-tree    45   (f# b)         Bm/D     B   
+054 Chord-tree    32   (d)            Bm       B   
+054 Chord-tree    44   (d)            Bm       B   
+055 Chord-tree    0    (b)            Bm       B   
+055 Chord-tree    2    (d)            Bm       B   
+055 Chord-tree    5    (b)            Bm/D     B   
+055 Chord-tree    9    (d)            Bm       B   
+055 Chord-tree    12   (d)            Bm       B   
+055 Chord-tree    14   (d)            Bm       B   
+055 Chord-tree    26   (d)            Bm       B   
+055 Chord-tree    31   (f#)           Bm       B   
+055 Chord-tree    34   (d)            Bm/D     B   
+055 Chord-tree    58   (d)            Bm       B   
+056 Chord-tree    46   (d)            Bm       B   
+056 Chord-tree    48   (d)            Bm/D     B   
+056 Chord-tree    62   (b)            Bm/D     B   
+056 Chord-tree    64   (d)            Bm       B   
+056 Chord-tree    80   (f#)           Bm       B   
+056 Chord-tree    82   (f# f#)        Bm/D     B   
+056 Chord-tree    88   (f# b)         Bm/D     B   
+056 Chord-tree    90   (f# b)         Bm       B   
+056 Chord-tree    92   (f# b)         Bm       B   
+056 Chord-tree    93   (d f# b)       Bm/D     B   
+056 Chord-tree    95   (d f# b)       Bm       B   
+056 Chord-tree    96   (f# b)         Bm/F#    B   
+060 Chord-tree    13   (d)            Bm       B   
+060 Chord-tree    20   (b)            Bm       B   
+060 Chord-tree    49   (f#)           Bm       B   
+062 Chord-tree    0    (f#)           Bm       B   
+062 Chord-tree    2    (b)            Bm       B   
+062 Chord-tree    4    (d)            Bm       B   
+062 Chord-tree    23   (b)            Bm       B   
+062 Chord-tree    25   (d)            Bm       B   
+062 Chord-tree    38   (d)            Bm       B   
+062 Chord-tree    43   (d)            Bm/F#    B   
+065 Chord-tree    34   (d)            Bm       B   
+080 Chord-tree    11   (d)            Bm       B   
+080 Chord-tree    13   (d)            Bm/D     B   
+080 Chord-tree    19   (b)            Bm       B   
+080 Chord-tree    20   (d)            Bm       B   
+132 Chord-tree    131  (d f# b)       Bm/D     B   
+133 Chord-tree    51   (f b d b)      Bm/F     B   
+134 Chord-tree    11   (b)            Bm/D     B   
+135 Chord-tree    11   (d)            Bm       B   
+135 Chord-tree    31   (d)            Bm       B   
+135 Chord-tree    35   (d)            Bm       B   
+135 Chord-tree    40   (d f# b d)     Bm/D     B   
+135 Chord-tree    98   (f#)           Bm       B   
+136 Chord-tree    34   (f# d)         Bm       B   
+138 Chord-tree    43   (b)            Bm/D     B   
+138 Chord-tree    45   (d)            Bm/D     B   
+139 Chord-tree    44   (d)            Bm       B   
+139 Chord-tree    50   (d)            Bm/D     B   
+142 Context-tree  13   (d f f a#)     Bb/D     B   
+144 Chord-tree    8    (d f# f# b)    (G#Ø/D Bm/D) B   
+144 Chord-tree    48   (d)            Bm       B   
+152 Chord-tree    26   (b)            Bm/D     B   
+152 Chord-tree    62   (d)            Bm       B   
+152 Chord-tree    64   (d)            Bm/D     B   
+152 Chord-tree    81   (f#)           Bm       B   
+153 Chord-tree    39   (d)            Bm       B   
+153 Chord-tree    41   (b f# d)       Bm/D     B   
+153 Chord-tree    46   (b)            Bm       B   
+156 Chord-tree    38   (d)            Bm       B   
+169 Chord-tree    2    (b)            Bm/D     B   
+169 Chord-tree    28   (d)            Bm/D     B   
+249 Chord-tree    11   (b)            Bm/D     B   
+249 Chord-tree    53   (d)            Bm/D     B   
+249 Chord-tree    58   (b)            Bm/D     B   
+250 Chord-tree    15   (d)            Bm       B   
+250 Chord-tree    41   (d d)          Bm       B   
+250 Chord-tree    48   (d)            Bm       B   
+250 Chord-tree    64   (d)            Bm       B   
+255 Chord-tree    38   (b)            Bm/D     B   
+259 Chord-tree    34   (d f# b)       Bm/F#    B   
+259 Chord-tree    62   (f#)           Bm       B   
+259 Chord-tree    143  (b b d f#)     Bm       B   
+259 Chord-tree    148  (f#)           Bm       B   
+261 Chord-tree    4    (b)            Bm/D     B   
+261 Chord-tree    6    (d)            Bm       B   
+261 Chord-tree    8    (d)            Bm       B   
+261 Chord-tree    38   (f#)           Bm/D     B   
+261 Chord-tree    40   (d)            Bm/F#    B   
+261 Chord-tree    43   (b)            Bm       B   
+263 Chord-tree    1    (b)            Bm/D     B   
+263 Chord-tree    46   (d)            Bm       B   
+265 Chord-tree    0    (f#)           Bm       B   
+265 Chord-tree    18   (b b f# d)     Bm       B   
+265 Chord-tree    21   (f# d)         Bm/D     B   
+265 Chord-tree    28   (b)            Bm       B   
+265 Chord-tree    51   (b b)          Bm/D     B   
+265 Chord-tree    62   (d)            Bm       B   
+008 Chord-tree    108  (d#)           Cm       C   
+008 Chord-tree    110  (d#)           Cm/Eb    C   
+008 Chord-tree    111  (g c d#)       Cm       C   
+019 Chord-tree    48   (d# g c g)     Cm/Eb    C   
+028 Chord-tree    3    (g b e b)      (E/G C#Ø/G) C   
+028 Simple-tree   3    (g b e b)      (E/G C#Ø/G) C   
+059 Chord-tree    4    (d# g c g)     Cm/Eb    C   
+090 Chord-tree    13   (c)            Cm       C   
+094 Chord-tree    1    (g)            Cm       C   
+094 Chord-tree    19   (g g c)        Cm/Eb    C   
+094 Chord-tree    23   (c)            Cm       C   
+094 Chord-tree    46   (c)            Cm       C   
+094 Chord-tree    51   (g g)          Cm/Eb    C   
+095 Chord-tree    29   (d#)           Cm/Eb    C   
+095 Chord-tree    30   (c g d#)       Cm       C   
+095 Chord-tree    35   (d#)           Cm       C   
+095 Chord-tree    65   (c)            Cm/Eb    C   
+133 Chord-tree    150  (e g# b)       C+       C   
+149 Chord-tree    0    (d#)           Cm       C   
+149 Chord-tree    3    (g)            Cm       C   
+149 Chord-tree    6    (c c g d#)     Cm       C   
+149 Chord-tree    11   (c)            Cm/Eb    C   
+149 Chord-tree    13   (d#)           Cm       C   
+149 Chord-tree    35   (g)            Cm/Eb    C   
+150 Chord-tree    8    (d#)           Cm/Eb    C   
+155 Chord-tree    40   (c)            Cm       C   
+163 Chord-tree    33   (c)            Cm       C   
+163 Chord-tree    56   (c d# g c)     Cm       C   
+163 Chord-tree    60   (g d#)         Cm       C   
+166 Chord-tree    44   (d# d# g c)    Cm/Eb    C   
+166 Chord-tree    68   (c d#)         Cm/Eb    C   
+168 Chord-tree    43   (c)            Cm       C   
+168 Chord-tree    50   (g g)          Cm/Eb    C   
+251 Chord-tree    49   (g)            Cm/Eb    C   
+251 Chord-tree    50   (d# c g d#)    Cm/Eb    C   
+251 Chord-tree    51   (g c)          Cm/Eb    C   
+252 Chord-tree    6    (c)            Cm/Eb    C   
+252 Chord-tree    15   (c)            Cm/Eb    C   
+252 Chord-tree    103  (c)            Cm/Eb    C   
+252 Chord-tree    116  (d#)           Cm/G     C   
+252 Chord-tree    131  (c)            Cm       C   
+252 Chord-tree    150  (c)            Cm/Eb    C   
+252 Pardo         151  (c g c)        Cm/G     C   
+252 Chord-tree    151  (c g c)        Cm/G     C   
+252 Chord-tree    153  (d g c)        Cm/Eb    C   
+252 Chord-tree    158  (d# d# g c)    Cm/Eb    C   
+256 Chord-tree    31   (d#)           Cm       C   
+256 Chord-tree    54   (c c g d#)     Cm       C   
+260 Chord-tree    10   (c)            Cm/Eb    C   
+262 Chord-tree    43   (g)            Cm       C   
+262 Chord-tree    50   (c)            Cm/Eb    C   
+264 Chord-tree    3    (g c g d#)     Cm/G     C   
+264 Chord-tree    53   (g c)          Cm/G     C   
+264 Chord-tree    63   (d#)           Cm       C   
+266 Chord-tree    32   (c)            Cm/Eb    C   
+266 Chord-tree    50   (g)            Cm/Eb    C   
+266 Chord-tree    61   (c)            Cm/Eb    C   
+269 Chord-tree    22   (d# g c g)     Cm/Eb    C   
+269 Chord-tree    53   (g c)          Cm       C   
+003 Chord-tree    20   (d d f d)      Dm       D   
+003 Chord-tree    56   (d)            Dm/F     D   
+005 Chord-tree    89   (a)            Dm       D   
+006 Chord-tree    26   (a f)          Dm/F     D   
+010 Chord-tree    19   (f)            Dm       D   
+012 Chord-tree    29   (a)            Dm/F     D   
+026 Chord-tree    13   (a)            Dm       D   
+026 Chord-tree    28   (a d f)        Dm       D   
+026 Chord-tree    31   (a)            Dm       D   
+026 Pardo         42   (a)            Dm       D   
+026 Chord-tree    51   (f)            Dm       D   
+048 Chord-tree    24   (f)            Dm       D   
+048 Chord-tree    52   (a f d)        Dm       D   
+050 Chord-tree    26   (f)            Dm       D   
+050 Chord-tree    35   (f)            Dm       D   
+050 Chord-tree    45   (a)            Dm       D   
+050 Chord-tree    68   (d f f a)      Dm       D   
+053 Chord-tree    19   (f)            Dm       D   
+053 Chord-tree    22   (d)            Dm/F     D   
+059 Chord-tree    39   (f)            Dm       D   
+059 Chord-tree    40   (d f a d)      Dm       D   
+059 Chord-tree    49   (f a d f)      Dm/F     D   
+093 Chord-tree    2    (a)            Dm       D   
+094 Pardo         49   (a)            Dm       D   
+094 Chord-tree    49   (a)            Dm       D   
+095 Chord-tree    61   (f)            Dm       D   
+132 Chord-tree    10   (a)            Dm       D   
+132 Chord-tree    24   (a)            Dm       D   
+132 Chord-tree    31   (f)            Dm/F     D   
+132 Chord-tree    39   (d)            Dm       D   
+132 Chord-tree    40   (d d)          Dm       D   
+132 Chord-tree    43   (a)            Dm       D   
+132 Chord-tree    45   (a)            Dm/F     D   
+132 Chord-tree    99   (b)            Dm       D   
+132 Chord-tree    120  (a)            Dm/F     D   
+132 Chord-tree    165  (a)            Dm       D   
+132 Chord-tree    180  (a)            Dm/F     D   
+132 Chord-tree    182  (a)            Dm       D   
+132 Chord-tree    266  (a)            Dm/F     D   
+132 Chord-tree    268  (a)            Dm/F     D   
+132 Chord-tree    308  (f)            Dm       D   
+132 Chord-tree    310  (a)            Dm       D   
+133 Chord-tree    1    (d)            Dm       D   
+133 Chord-tree    3    (a)            Dm/F     D   
+133 Chord-tree    4    (a f a)        Dm       D   
+133 Chord-tree    14   (f)            Dm       D   
+133 Chord-tree    16   (f)            Dm/F     D   
+133 Chord-tree    24   (a d f)        Dm/F     D   
+133 Chord-tree    36   (d f a d)      Dm       D   
+133 Chord-tree    38   (d f a d)      Dm       D   
+133 Chord-tree    39   (a)            Dm       D   
+133 Chord-tree    41   (a)            Dm/F     D   
+133 Pardo         42   (a d a)        Dm       D   
+133 Chord-tree    42   (a d a)        Dm       D   
+133 Chord-tree    69   (f)            Dm       D   
+133 Chord-tree    84   (f)            Dm       D   
+133 Chord-tree    96   (f)            Dm/F     D   
+133 Chord-tree    100  (d)            Dm       D   
+133 Chord-tree    129  (a)            Dm/F     D   
+133 Chord-tree    133  (f)            Dm/F     D   
+133 Chord-tree    135  (f)            Dm       D   
+133 Chord-tree    152  (f a d a)      Dm/F     D   
+133 Chord-tree    164  (d a f d)      Dm       D   
+133 Chord-tree    166  (d a f d)      Dm       D   
+133 Chord-tree    185  (f)            Dm       D   
+133 Chord-tree    193  (d d)          Dm/F     D   
+133 Chord-tree    195  (f)            Dm/F     D   
+133 Chord-tree    196  (a d f)        Dm       D   
+133 Chord-tree    202  (d f a d)      Dm       D   
+133 Chord-tree    204  (d f a d)      Dm       D   
+133 Chord-tree    241  (a d)          Dm       D   
+134 Chord-tree    15   (f)            Dm       D   
+134 Chord-tree    22   (d a d f)      Dm       D   
+134 Chord-tree    28   (f)            Dm       D   
+134 Chord-tree    45   (f)            Dm/F     D   
+134 Chord-tree    81   (a f d)        Dm/F     D   
+142 Chord-tree    0    (d)            Dm       D   
+142 Chord-tree    42   (f)            Dm       D   
+142 Chord-tree    58   (d)            Dm       D   
+143 Chord-tree    1    (f)            Dm       D   
+143 Chord-tree    16   (f f)          Dm       D   
+143 Chord-tree    36   (f)            Dm       D   
+143 Chord-tree    66   (f)            Dm       D   
+143 Chord-tree    95   (a d d f)      Dm       D   
+145 Chord-tree    18   (d)            Dm       D   
+154 Chord-tree    0    (a)            Dm       D   
+154 Chord-tree    6    (f)            Dm       D   
+154 Chord-tree    14   (a)            Dm       D   
+154 Chord-tree    20   (f)            Dm       D   
+154 Chord-tree    41   (d a d f)      Dm       D   
+154 Chord-tree    43   (f)            Dm       D   
+154 Chord-tree    50   (f)            Dm       D   
+161 Chord-tree    0    (d)            Dm       D   
+161 Chord-tree    6    (f)            Dm       D   
+161 Chord-tree    15   (d)            Dm       D   
+161 Chord-tree    18   (d)            Dm       D   
+161 Chord-tree    20   (d)            Dm/F     D   
+161 Chord-tree    24   (f)            Dm       D   
+161 Chord-tree    26   (f)            Dm       D   
+161 Chord-tree    28   (f)            Dm       D   
+162 Chord-tree    2    (a)            Dm/F     D   
+162 Chord-tree    8    (a)            Dm/F     D   
+162 Chord-tree    9    (d a)          Dm       D   
+162 Chord-tree    14   (f)            Dm       D   
+162 Chord-tree    15   (a)            Dm       D   
+162 Chord-tree    30   (f)            Dm       D   
+162 Chord-tree    31   (a)            Dm       D   
+164 Chord-tree    6    (a)            Dm       D   
+165 Chord-tree    18   (d a d f)      Dm       D   
+165 Chord-tree    36   (a)            Dm       D   
+165 Chord-tree    40   (f)            Dm       D   
+166 Chord-tree    41   (d f a d)      Dm       D   
+166 Chord-tree    52   (a# d)         Dm/F     D   
+168 Chord-tree    1    (f)            Dm       D   
+168 Chord-tree    26   (d d f a)      Dm       D   
+228 Chord-tree    32   (d)            Dm/F     D   
+249 Chord-tree    41   (f a d a)      Dm/F     D   
+251 Chord-tree    9    (d)            Dm/F     D   
+251 Chord-tree    33   (d)            Dm/F     D   
+254 Chord-tree    11   (d)            Dm       D   
+256 Chord-tree    9    (f a d a)      Dm/F     D   
+256 Chord-tree    30   (f d a f)      Dm/F     D   
+264 Chord-tree    4    (f)            Dm       D   
+266 Chord-tree    14   (a)            Dm       D   
+266 Pardo         25   (a)            Dm       D   
+266 Chord-tree    25   (a)            Dm       D   
+268 Chord-tree    30   (f a f d)      Dm/F     D   
+268 Chord-tree    68   (f)            Dm       D   
+268 Chord-tree    80   (f)            Dm       D   
+268 Chord-tree    104  (a)            Dm       D   
+269 Pardo         4    (a)            Dm       D   
+269 Chord-tree    4    (a)            Dm       D   
+001 Chord-tree    8    (g)            Em       E   
+001 Chord-tree    38   (b)            Em       E   
+002 Chord-tree    8    (g)            Em       E   
+002 Chord-tree    43   (b e b)        Em       E   
+003 Chord-tree    29   (g)            Em       E   
+003 Chord-tree    32   (e e)          Em       E   
+003 Chord-tree    34   (g)            Em       E   
+003 Chord-tree    39   (g)            Em       E   
+005 Chord-tree    5    (b)            Em       E   
+005 Chord-tree    51   (b)            Em       E   
+005 Chord-tree    102  (g)            Em       E   
+005 Chord-tree    108  (b)            Em       E   
+010 Chord-tree    34   (b)            Em       E   
+012 Chord-tree    23   (g b)          Em       E   
+014 Chord-tree    1    (g)            Em       E   
+014 Chord-tree    6    (g)            Em       E   
+014 Chord-tree    35   (g)            Em       E   
+014 Chord-tree    36   (e)            Em       E   
+014 Chord-tree    51   (g)            Em       E   
+018 Chord-tree    58   (e b e g)      Em       E   
+020 Chord-tree    52   (b)            Em       E   
+020 Chord-tree    60   (g)            Em       E   
+029 Chord-tree    12   (g)            Em       E   
+044 Chord-tree    9    (g)            Em       E   
+046 Chord-tree    46   (b)            Em/G     E   
+054 Chord-tree    14   (b)            Em       E   
+054 Chord-tree    40   (g g)          Em       E   
+054 Chord-tree    42   (g b)          Em/G     E   
+056 Chord-tree    0    (e)            Em       E   
+056 Chord-tree    2    (g)            Em       E   
+056 Chord-tree    3    (g)            Em       E   
+056 Chord-tree    9    (e e)          Em/G     E   
+056 Chord-tree    11   (g)            Em       E   
+056 Chord-tree    14   (b)            Em       E   
+056 Chord-tree    22   (b)            Em       E   
+056 Chord-tree    44   (b)            Em       E   
+056 Chord-tree    56   (e e)          Em/G     E   
+056 Chord-tree    58   (g)            Em       E   
+056 Chord-tree    60   (g g)          Em       E   
+065 Chord-tree    35   (g)            Em       E   
+065 Chord-tree    36   (b)            Em       E   
+080 Chord-tree    41   (g)            Em/G     E   
+129 Chord-tree    0    (b)            Em       E   
+129 Chord-tree    5    (b)            Em       E   
+129 Chord-tree    20   (g)            Em       E   
+129 Chord-tree    59   (b)            Em       E   
+129 Chord-tree    60   (b)            Em/G     E   
+130 Chord-tree    0    (b)            Em       E   
+130 Chord-tree    4    (b)            Em       E   
+130 Chord-tree    23   (e)            Em       E   
+131 Chord-tree    13   (g)            Em       E   
+131 Chord-tree    14   (b e g)        Em       E   
+131 Chord-tree    35   (e)            Em       E   
+132 Chord-tree    0    (g)            Em       E   
+132 Chord-tree    2    (g g)          Em       E   
+132 Chord-tree    15   (e g b)        Em       E   
+132 Chord-tree    16   (g b)          Em/D     E   
+132 Chord-tree    83   (e)            Em       E   
+132 Chord-tree    84   (g b e)        Em/D     E   
+132 Chord-tree    116  (b)            Em/G     E   
+132 Chord-tree    135  (b)            Em       E   
+132 Chord-tree    199  (b)            Em       E   
+132 Chord-tree    229  (b)            Em       E   
+132 Chord-tree    246  (b)            Em       E   
+132 Chord-tree    292  (b)            Em       E   
+133 Chord-tree    59   (b)            Em       E   
+133 Chord-tree    149  (b)            Em       E   
+133 Chord-tree    159  (b)            Em       E   
+133 Chord-tree    215  (g g b)        Em       E   
+135 Chord-tree    10   (b)            Em       E   
+135 Chord-tree    62   (e b e g)      Em       E   
+136 Chord-tree    19   (b e g)        Em       E   
+136 Chord-tree    48   (f# g)         Em       E   
+136 Chord-tree    49   (e b e g)      Em       E   
+138 Chord-tree    0    (b)            Em       E   
+138 Chord-tree    6    (g)            Em       E   
+138 Chord-tree    10   (e)            Em       E   
+138 Chord-tree    11   (b)            Em       E   
+138 Chord-tree    20   (e)            Em/G     E   
+138 Chord-tree    22   (g)            Em       E   
+138 Chord-tree    29   (b)            Em/G     E   
+138 Chord-tree    33   (b)            Em       E   
+138 Chord-tree    56   (g g)          Em       E   
+139 Chord-tree    15   (b)            Em       E   
+139 Chord-tree    32   (g)            Em       E   
+139 Chord-tree    48   (b)            Em       E   
+140 Chord-tree    30   (b)            Em       E   
+140 Chord-tree    58   (g)            Em       E   
+143 Chord-tree    96   (d e g)        Em       E   
+146 Chord-tree    16   (g)            Em       E   
+148 Chord-tree    14   (g)            Em       E   
+148 Chord-tree    33   (g)            Em       E   
+148 Chord-tree    42   (g)            Em       E   
+148 Chord-tree    48   (g)            Em/G     E   
+148 Chord-tree    50   (b)            Em       E   
+151 Chord-tree    2    (b)            Em       E   
+151 Chord-tree    4    (b)            Em       E   
+151 Chord-tree    41   (g)            Em/G     E   
+152 Chord-tree    6    (b)            Em/G     E   
+152 Chord-tree    36   (b)            Em       E   
+153 Chord-tree    15   (g)            Em       E   
+153 Chord-tree    18   (e)            Em/G     E   
+153 Chord-tree    61   (g)            Em       E   
+154 Chord-tree    8    (g)            Em       E   
+154 Chord-tree    22   (g)            Em       E   
+154 Chord-tree    45   (g)            Em       E   
+154 Chord-tree    52   (g)            Em       E   
+158 Chord-tree    2    (g)            Em       E   
+158 Chord-tree    24   (g)            Em       E   
+158 Chord-tree    34   (e)            Em       E   
+159 Chord-tree    1    (g)            Em       E   
+159 Chord-tree    2    (e b g g)      Em       E   
+159 Chord-tree    32   (e b e g)      Em       E   
+159 Chord-tree    40   (g g)          Em       E   
+160 Chord-tree    1    (g)            Em       E   
+160 Chord-tree    9    (b)            Em       E   
+160 Chord-tree    18   (g)            Em       E   
+160 Chord-tree    26   (g)            Em/G     E   
+160 Chord-tree    51   (e b e g)      Em       E   
+162 Chord-tree    83   (e e)          Em/G     E   
+248 Chord-tree    6    (g b g e)      Em/G     E   
+248 Chord-tree    20   (b)            Em/G     E   
+248 Chord-tree    52   (b)            Em       E   
+249 Chord-tree    14   (b)            Em/G     E   
+249 Chord-tree    31   (g b e g)      Em/G     E   
+249 Chord-tree    39   (g e e b)      Em/G     E   
+249 Chord-tree    61   (g)            Em       E   
+250 Chord-tree    19   (b)            Em       E   
+250 Chord-tree    44   (b)            Em       E   
+250 Pardo         52   (b)            Em       E   
+250 Chord-tree    52   (b)            Em       E   
+250 Chord-tree    54   (b)            Em       E   
+250 Chord-tree    68   (b)            Em       E   
+255 Chord-tree    24   (b)            Em       E   
+258 Chord-tree    33   (e b e g)      Em       E   
+258 Chord-tree    56   (g)            Em       E   
+258 Chord-tree    81   (g)            Em       E   
+258 Chord-tree    86   (g b)          Em       E   
+261 Chord-tree    0    (b)            Em       E   
+261 Chord-tree    13   (g)            Em       E   
+261 Chord-tree    18   (e b e g)      Em       E   
+261 Chord-tree    22   (e)            Em       E   
+261 Chord-tree    23   (e)            Em       E   
+261 Chord-tree    31   (g)            Em       E   
+261 Chord-tree    44   (b)            Em       E   
+261 Chord-tree    51   (g)            Em       E   
+261 Chord-tree    61   (g)            Em       E   
+263 Chord-tree    0    (b)            Em       E   
+263 Chord-tree    9    (e)            Em       E   
+263 Chord-tree    10   (b)            Em       E   
+263 Chord-tree    19   (e)            Em/G     E   
+263 Chord-tree    24   (g)            Em/B     E   
+263 Chord-tree    30   (b)            Em       E   
+263 Chord-tree    45   (e)            Em       E   
+263 Chord-tree    52   (b)            Em       E   
+265 Chord-tree    13   (b)            Em       E   
+265 Chord-tree    15   (e)            Em/G     E   
+268 Chord-tree    3    (b)            Em       E   
+008 Chord-tree    0    (c)            Fm       F   
+008 Chord-tree    4    (g#)           Fm/C     F   
+008 Chord-tree    9    (f f)          Fm       F   
+008 Chord-tree    10   (f)            Fm       F   
+008 Chord-tree    11   (g#)           Fm       F   
+008 Chord-tree    31   (f)            Fm       F   
+008 Chord-tree    60   (g#)           Fm/Ab    F   
+008 Chord-tree    63   (g#)           Fm       F   
+008 Chord-tree    112  (c)            Fm       F   
+008 Chord-tree    114  (c)            Fm       F   
+040 Pardo         39   (f)            Fm       F   
+040 Chord-tree    39   (f)            Fm       F   
+094 Chord-tree    39   (c)            Fm       F   
+139 Chord-tree    6    (c)            Fm/Ab    F   
+149 Chord-tree    9    (f)            Fm       F   
+149 Chord-tree    14   (g#)           Fm       F   
+149 Chord-tree    32   (g# c f f)     Fm/Ab    F   
+252 Chord-tree    96   (g# c f f)     Fm/Ab    F   
+252 Chord-tree    105  (c)            Fm       F   
+252 Chord-tree    122  (c)            Fm       F   
+005 Chord-tree    92   (a# d g)       Gm/D     G   
+010 Chord-tree    51   (g)            Gm/Bb    G   
+019 Chord-tree    0    (g)            Gm       G   
+019 Chord-tree    1    (g)            Gm       G   
+019 Chord-tree    29   (g)            Gm       G   
+019 Chord-tree    43   (a#)           Gm       G   
+019 Chord-tree    44   (a#)           Gm       G   
+019 Chord-tree    55   (g)            Gm       G   
+026 Chord-tree    15   (d g a#)       Gm/Bb    G   
+026 Chord-tree    29   (a#)           Gm       G   
+026 Chord-tree    45   (g)            Gm       G   
+050 Chord-tree    40   (a#)           Gm       G   
+050 Chord-tree    42   (a#)           Gm       G   
+053 Chord-tree    0    (g)            Gm       G   
+053 Chord-tree    2    (g g)          Gm/Bb    G   
+053 Chord-tree    5    (d g a#)       Gm       G   
+053 Chord-tree    8    (a#)           Gm       G   
+053 Chord-tree    10   (d)            Gm/Bb    G   
+053 Chord-tree    12   (a#)           Gm       G   
+053 Chord-tree    14   (d)            Gm/Bb    G   
+053 Chord-tree    30   (a#)           Gm       G   
+053 Chord-tree    44   (a#)           Gm       G   
+059 Chord-tree    0    (g)            Gm       G   
+059 Chord-tree    2    (a# d g)       Gm/D     G   
+059 Chord-tree    10   (a#)           Gm       G   
+059 Chord-tree    11   (a#)           Gm       G   
+059 Chord-tree    13   (a#)           Gm       G   
+059 Chord-tree    16   (a#)           Gm       G   
+059 Chord-tree    34   (a#)           Gm       G   
+090 Chord-tree    5    (a#)           Gm       G   
+090 Chord-tree    41   (a#)           Gm       G   
+093 Chord-tree    1    (a#)           Gm       G   
+093 Chord-tree    23   (a#)           Gm       G   
+093 Chord-tree    40   (a#)           Gm       G   
+094 Chord-tree    3    (a#)           Gm       G   
+094 Chord-tree    6    (d)            Gm       G   
+094 Chord-tree    9    (a#)           Gm       G   
+094 Chord-tree    11   (a#)           Gm       G   
+094 Chord-tree    13   (g g)          Gm       G   
+094 Chord-tree    24   (a#)           Gm       G   
+094 Chord-tree    29   (a#)           Gm       G   
+094 Chord-tree    31   (g)            Gm       G   
+094 Chord-tree    33   (a#)           Gm       G   
+094 Chord-tree    53   (a#)           Gm/D     G   
+095 Chord-tree    46   (d)            Gm       G   
+095 Chord-tree    51   (f)            Gm       G   
+133 Chord-tree    30   (d)            Gm       G   
+133 Chord-tree    116  (g a# g d)     Gm       G   
+133 Chord-tree    190  (d)            Gm/Bb    G   
+133 Chord-tree    238  (a# g)         Gm/D     G   
+134 Chord-tree    53   (g d g a#)     Gm       G   
+142 Chord-tree    23   (d)            Gm       G   
+142 Chord-tree    35   (a#)           Gm       G   
+143 Chord-tree    80   (g)            Gm/Bb    G   
+143 Chord-tree    86   (d)            Gm       G   
+150 Chord-tree    15   (g a# d a#)    Gm       G   
+150 Chord-tree    16   (d a#)         Gm       G   
+150 Chord-tree    19   (a#)           Gm       G   
+155 Chord-tree    0    (g)            Gm       G   
+155 Chord-tree    2    (g)            Gm/Bb    G   
+155 Chord-tree    3    (g)            Gm       G   
+155 Chord-tree    8    (d)            Gm       G   
+155 Chord-tree    12   (g d g a#)     Gm       G   
+155 Chord-tree    31   (a#)           Gm/Bb    G   
+155 Chord-tree    38   (d g a#)       Gm       G   
+155 Chord-tree    49   (d)            Gm       G   
+155 Chord-tree    52   (a#)           Gm       G   
+155 Chord-tree    59   (g)            Gm       G   
+155 Chord-tree    60   (a#)           Gm       G   
+155 Chord-tree    61   (d g a#)       Gm       G   
+162 Chord-tree    53   (g)            Gm       G   
+163 Chord-tree    0    (d)            Gm       G   
+163 Chord-tree    2    (d)            Gm/Bb    G   
+163 Chord-tree    8    (d)            Gm       G   
+163 Chord-tree    11   (a#)           Gm       G   
+163 Chord-tree    13   (a#)           Gm/Bb    G   
+163 Chord-tree    18   (d)            Gm       G   
+163 Chord-tree    46   (a#)           Gm       G   
+164 Chord-tree    2    (a#)           Gm       G   
+164 Chord-tree    4    (a#)           Gm/Bb    G   
+164 Chord-tree    14   (a#)           Gm       G   
+164 Chord-tree    22   (d)            Gm       G   
+164 Chord-tree    23   (a# g d)       Gm/D     G   
+164 Chord-tree    24   (d)            Gm       G   
+164 Chord-tree    41   (a#)           Gm       G   
+164 Chord-tree    49   (a# g c)       Gm/D     G   
+164 Chord-tree    52   (a#)           Gm       G   
+164 Chord-tree    55   (g g)          Gm/Bb    G   
+164 Chord-tree    60   (a#)           Gm       G   
+164 Chord-tree    66   (a#)           Gm       G   
+165 Chord-tree    62   (d)            Gm/Bb    G   
+166 Chord-tree    0    (g)            Gm       G   
+166 Chord-tree    1    (a#)           Gm       G   
+166 Chord-tree    3    (g)            Gm/Bb    G   
+166 Chord-tree    12   (a#)           Gm       G   
+166 Chord-tree    13   (a#)           Gm       G   
+166 Chord-tree    16   (a#)           Gm       G   
+166 Chord-tree    22   (a#)           Gm       G   
+166 Chord-tree    26   (a#)           Gm       G   
+166 Chord-tree    30   (a#)           Gm/D     G   
+166 Pardo         32   (g g)          Gm/D     G   
+166 Chord-tree    32   (g g)          Gm/D     G   
+166 Chord-tree    34   (g a#)         Gm       G   
+166 Chord-tree    35   (a# d)         Gm       G   
+166 Chord-tree    36   (a# d)         Gm       G   
+166 Chord-tree    38   (a# d)         Gm/Bb    G   
+166 Chord-tree    49   (a#)           Gm       G   
+166 Chord-tree    61   (d d g a#)     Gm/D     G   
+168 Chord-tree    6    (a#)           Gm       G   
+168 Chord-tree    24   (g d g a#)     Gm       G   
+168 Chord-tree    52   (a#)           Gm/Bb    G   
+251 Chord-tree    0    (g)            Gm       G   
+251 Chord-tree    6    (a#)           Gm       G   
+251 Pardo         8    (d d)          Gm       G   
+251 Chord-tree    8    (d d)          Gm       G   
+251 Chord-tree    11   (a# g c)       Gm/D     G   
+251 Chord-tree    25   (f)            Gm       G   
+251 Chord-tree    45   (a#)           Gm       G   
+251 Chord-tree    59   (d)            Gm/Bb    G   
+251 Chord-tree    64   (d)            Gm       G   
+251 Chord-tree    69   (g d g a#)     Gm       G   
+252 Chord-tree    2    (d)            Gm       G   
+252 Chord-tree    4    (a#)           Gm       G   
+252 Chord-tree    18   (a#)           Gm       G   
+252 Chord-tree    35   (a#)           Gm       G   
+252 Chord-tree    43   (a#)           Gm       G   
+252 Chord-tree    60   (a#)           Gm       G   
+252 Chord-tree    81   (a#)           Gm       G   
+252 Chord-tree    110  (d)            Gm       G   
+252 Chord-tree    119  (d)            Gm       G   
+252 Chord-tree    148  (d)            Gm       G   
+253 Chord-tree    2    (d d g a#)     Gm/D     G   
+253 Chord-tree    12   (g d g a#)     Gm       G   
+253 Chord-tree    15   (a#)           Gm/Bb    G   
+253 Chord-tree    39   (g d g a#)     Gm       G   
+253 Chord-tree    42   (a#)           Gm       G   
+256 Chord-tree    14   (a#)           Gm       G   
+256 Chord-tree    65   (a#)           Gm       G   
+256 Chord-tree    66   (d)            Gm       G   
+260 Chord-tree    8    (a#)           Gm       G   
+260 Chord-tree    33   (a#)           Gm       G   
+260 Chord-tree    44   (g d g a#)     Gm       G   
+260 Chord-tree    51   (a#)           Gm       G   
+260 Chord-tree    55   (a#)           Gm       G   
+262 Chord-tree    1    (a#)           Gm       G   
+262 Chord-tree    3    (g g)          Gm/Bb    G   
+262 Chord-tree    8    (a#)           Gm       G   
+262 Chord-tree    20   (g)            Gm       G   
+262 Chord-tree    21   (g)            Gm       G   
+262 Chord-tree    42   (g)            Gm/Bb    G   
+262 Chord-tree    45   (g)            Gm       G   
+262 Chord-tree    46   (g)            Gm       G   
+262 Chord-tree    48   (a#)           Gm       G   
+264 Chord-tree    2    (d)            Gm       G   
+264 Chord-tree    6    (d)            Gm       G   
+264 Chord-tree    45   (d)            Gm       G   
+264 Chord-tree    62   (a#)           Gm       G   
+264 Chord-tree    69   (d)            Gm       G   
+266 Chord-tree    0    (g)            Gm       G   
+266 Chord-tree    5    (a#)           Gm       G   
+266 Chord-tree    9    (g g)          Gm       G   
+266 Chord-tree    10   (g)            Gm       G   
+266 Chord-tree    23   (a#)           Gm       G   
+266 Chord-tree    33   (a#)           Gm/D     G   
+266 Chord-tree    59   (a# a#)        Gm       G   
+269 Chord-tree    0    (d)            Gm       G   
+269 Chord-tree    2    (d)            Gm/Bb    G   
+269 Chord-tree    6    (d g a#)       Gm/Bb    G   
+269 Chord-tree    9    (a#)           Gm       G   
+269 Chord-tree    14   (g)            Gm       G   
+269 Chord-tree    15   (a#)           Gm       G   
+269 Chord-tree    25   (g)            Gm       G   
+269 Pardo         26   (g g d g)      Gm       G   
+269 Chord-tree    26   (g g d g)      Gm       G   
+269 Chord-tree    29   (a#)           Gm       G   
+269 Chord-tree    50   (d)            Gm/Bb    G   
+269 Chord-tree    51   (g d)          Gm       G   
+269 Chord-tree    66   (a#)           Gm       G   
+269 Chord-tree    68   (g g)          Gm       G   
+
+Acorde diminuto identificado como maior
+
+019 Chord-tree    9    (a)            A°/C     A   
+020 Context-tree  16   (c#)           A#°/C#   A   
+028 Chord-tree    32   (d c# a# e)    A#°      A   
+028 Simple-tree   32   (d c# a# e)    A#°      A   
+053 Chord-tree    45   (a)            A°/C     A   
+090 Chord-tree    21   (d#)           A°/C     A   
+095 Chord-tree    8    (c d# a d#)    A°/C     A   
+095 Chord-tree    14   (d#)           A°/C     A   
+095 Chord-tree    59   (d#)           A°/C     A   
+163 Chord-tree    9    (g c)          A°       A   
+265 Chord-tree    48   (c#)           A#°/G    A   
+265 Context-tree  48   (c#)           A#°/G    A   
+265 Simple-tree   48   (c#)           A#°/G    A   
+265 Context-tree  50   (c#)           A#°/E    A   
+010 Chord-tree    29   (d)            B°/D     B   
+018 Chord-tree    53   (d b f d)      B°       B   
+040 Chord-tree    24   (b)            B°/D     B   
+094 Chord-tree    18   (d)            B°/D     B   
+129 Chord-tree    54   (b f d)        B°/D     B   
+132 Chord-tree    145  (b)            B°/D     B   
+133 Chord-tree    60   (b)            B°/D     B   
+133 Chord-tree    211  (b)            B°/D     B   
+134 Chord-tree    64   (b)            B°/D     B   
+140 Chord-tree    64   (b f d)        B°/D     B   
+146 Chord-tree    11   (b)            B°/D     B   
+154 Chord-tree    30   (b)            B°/D     B   
+249 Chord-tree    44   (a b)          B°/D     B   
+053 Context-tree  21   (e)            C#°/E    C   
+262 Chord-tree    14   (g)            C#°/E    C   
+262 Simple-tree   14   (g)            C#°/E    C   
+006 Chord-tree    13   (g a# e a#)    E°       E   
+006 Chord-tree    35   (g a# e a#)    E°/G     E   
+008 Chord-tree    62   (g a# e a#)    E°/G     E   
+026 Chord-tree    3    (a#)           E°/G     E   
+026 Chord-tree    20   (g a# e a#)    E°/G     E   
+026 Chord-tree    38   (g g)          E°       E   
+050 Chord-tree    64   (g a# e g)     E°/G     E   
+093 Chord-tree    20   (g a# e a#)    E°/G     E   
+132 Chord-tree    210  (g)            E°/G     E   
+133 Chord-tree    94   (a# e g)       E°/G     E   
+142 Chord-tree    3    (e)            E°/G     E   
+143 Chord-tree    30   (a#)           E°/G     E   
+143 Chord-tree    39   (g)            E°/G     E   
+143 Chord-tree    69   (g)            E°/G     E   
+144 Context-tree  28   (d)            E#°/G#   E   
+161 Chord-tree    61   (e)            E°/G     E   
+162 Chord-tree    4    (g)            E°/G     E   
+162 Chord-tree    11   (g)            E°/G     E   
+166 Chord-tree    51   (a# a#)        E°/G     E   
+003 Context-tree  36   (a)            F#°      F   
+151 Context-tree  9    (a c f# c)     F#°/A    F   
+008 Chord-tree    24   (c# g a#)      G°/Bb    G   
+
+Acorde semidiminuto identificado como maior
+
+142 Chord-tree    39   (g c)          Aø/Eb    A   
+155 Chord-tree    55   (a)            Aø       A   
+155 Chord-tree    82   (a)            Aø       A   
+252 Chord-tree    28   (c)            Aø/C     A   
+256 Chord-tree    32   (c d# a d#)    Aø/C     A   
+266 Chord-tree    54   (c a d# c)     Aø/C     A   
+266 Chord-tree    63   (g a)          Aø/C     A   
+269 Chord-tree    11   (a)            Aø/C     A   
+269 Chord-tree    19   (a)            Aø/C     A   
+269 Chord-tree    49   (g d#)         Aø       A   
+252 Chord-tree    102  (b)            Bø/D     B   
+268 Chord-tree    116  (a b f)        Bø       B   
+251 Chord-tree    53   (d)            Dø/F     D   
+251 Chord-tree    54   (c g# f)       Dø       D   
+252 Chord-tree    98   (c g# d)       Dø/F     D   
+252 Chord-tree    128  (f f g# d)     Dø/F     D   
+133 Chord-tree    198  (a# d e)       Eø       E   
+134 Chord-tree    83   (a# e d)       Eø       E   
+254 Pardo         61   (b e e)        Eø       E   
+254 Chord-tree    61   (b e e)        Eø       E   
+266 Chord-tree    11   (g a# e g)     Eø/G     E   
+266 Chord-tree    30   (g a# e a#)    Eø/G     E   
+266 Chord-tree    40   (g)            Eø/G     E   
