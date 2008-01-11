@@ -3,7 +3,10 @@
 ;  usa redes para reconhecer a tonica de um segmento
 ;  minimo, ignorando contexto.
 ; Só pra ter algo simples pra mostrar e testar
-(asdf:oos 'asdf:load-op :fann)
+
+(eval-when (:compile-toplevel :load-toplevel)
+  (asdf:oos 'asdf:load-op :fann))
+
 (defpackage :rameau-neural
   (:use #:cl
         #:fann

@@ -1,4 +1,7 @@
-(asdf:oos 'asdf:load-op :machine-learning)
+
+(eval-when (:compile-toplevel :load-toplevel)
+  (asdf:oos 'asdf:load-op :machine-learning))
+
 (defpackage :rameau-tree
   (:use #:cl
         #:arnesi
@@ -257,3 +260,118 @@
 
 (faz-treina-chord-tree)
 
+(defparameter *mode-tree* nil)
+
+(defparameter *mode-classes* '(maj min maj7 maj7+ min7 ° °7 ø7 --))
+
+(defun extrai-modo (acorde)
+  (if (chordp acorde)
+      (cond ((and (equal (chord-mode acorde) nil)
+                  (equal (chord-7th acorde) nil))
+             'maj)
+            ((and (equal (chord-mode acorde) nil)
+                  (equal (chord-7th acorde) "7"))
+             'maj7)
+            ((and (equal (chord-mode acorde) nil)
+                  (equal (chord-7th acorde) "7+"))
+             'maj7+)
+            ((and (equal (chord-mode acorde) "m")
+                  (equal (chord-7th acorde) nil))
+             'min)
+            ((and (equal (chord-mode acorde) "m")
+                  (equal (chord-7th acorde) "7"))
+             'min7)
+            ((and (equal (chord-mode acorde) "°")
+                  (equal (chord-7th acorde) nil))
+             '°)
+            ((and (equal (chord-mode acorde) "°")
+                  (equal (chord-7th acorde) "7-"))
+             '°7)
+            ((equal (chord-mode acorde) "ø") 'ø7)
+            (t '--))
+      '--))
+
+(defun prepara-transpoe-segmento (segmento)
+  (let ((pitch (evento-pitch (first segmento))))
+    (loop for s = segmento then (cdr s)
+       for n in *nomes*
+       for i = (if s (first s) i)
+       collect (cons n (module (- (evento-pitch i) pitch))))))
+
+(defun prepara-exemplo-treinamento-par (coral gabarito)
+  (loop for s in coral
+     for g in gabarito
+     collect (make-example :name "foo"
+                           :class (extrai-modo g)
+                           :values (prepara-transpoe-segmento s))))
+
+(defun prepara-entrada-treinamento-par (corais gabaritos)
+   (loop for c in corais
+      for g in gabaritos
+      nconc (prepara-exemplo-treinamento-par c g)))
+
+(defun treina-mode-tree (corais gabaritos)
+  (setf *mode-tree* (id3 (prepara-entrada-treinamento-par corais gabaritos)
+                         *atributos*
+                         *mode-classes*)))
+
+(defun extrai-modo-resultado (res)
+  (case res
+    (maj nil)
+    (maj7 nil)
+    (maj7+ nil)
+    (min "m")
+    (min7 "m")
+    (°  "°")
+    (°7 "°")
+    (ø7 "ø")))
+
+(defun extrai-setima-resultado (res)
+  (case res
+    (maj nil)
+    (maj7 "7")
+    (maj7+ "7+")
+    (min nil)
+    (min7 "7")
+    (°  nil)
+    (°7 "7-")
+    (ø7 "7")))
+
+(defun aplica-mode-tree (segmento)
+  (let ((fundamental (classify (make-example :values (prepara-segmento segmento)) *decision-tree*)))
+    (if (eq fundamental '--)
+        (make-melodic-note)
+        (let* ((tonica (stringify fundamental))
+               (res (classify (make-example :values (prepara-transpoe-segmento segmento))
+                              *mode-tree*))
+               (modo (extrai-modo-resultado res))
+               (setima (extrai-setima-resultado res)))
+          (if (eq '-- res)
+              (make-melodic-note)
+              (make-chord :fundamental tonica
+                          :mode modo
+                          :7th setima))))))
+                                             
+          
+          
+
+(defun exibe-mode-tree (&rest args)
+  (declare (ignore args))
+  (print-tree *mode-tree*))
+
+(defun gera-gabarito-mode-tree (coral)
+  (dbg 'rameau::mostra-arvore "Arvore: ~/rameau-tree::exibe-mode-tree/ ~%" *mode-tree*)
+  (mapcar #'aplica-mode-tree coral))
+
+(defun faz-treina-mode-tree ()
+  (with-system rameau:tempered
+    (multiple-value-bind (corais gabaritos)
+        (unzip(loop for i in '("001" "003" "004" "006" "012" "018" "136")
+                 for f = (first (processa-files "corais" (list i)))
+                 for g = (processa-gabarito f "corais")
+                 collect (list (segmentos-minimos (parse-file f)) g)))
+      (treina-mode-tree corais gabaritos))))
+
+(faz-treina-mode-tree)
+
+(registra-algoritmo "Mode-tree" #'gera-gabarito-mode-tree #'compara-gabarito-modo-setima)

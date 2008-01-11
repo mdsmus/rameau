@@ -4,7 +4,8 @@
 (defun carrega-algoritmos ()
   (let ((path (concat (rameau-path) "src/algoritmos/")))
     (loop for alg in (cl-fad:list-directory path)
-       do (load alg))))
+       when (count-subseq "lisp" (pathname-name alg))
+       do (load (compile-file alg)))))
 
 (carrega-algoritmos)
 

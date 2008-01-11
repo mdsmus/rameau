@@ -240,12 +240,12 @@ number-of-examples-with-this-value x sample-entropy-of-this-partition"
   "Classify EXAMPLES given a set of ATTRIBUTES and CLASSES. Returns a
 decision tree that predicts a class."
   (cond ((null attributes)
-	 (most-common-class examples classes))
-	((let ((first-class (example-class (car examples))))
-	   (every #'(lambda (example) (eql (example-class example) first-class)) (cdr examples)))
-	 (example-class (car examples)))
-	(t (make-subtree (best-partition attributes examples classes) attributes classes
-			 (most-common-class examples classes)))))
+         (most-common-class examples classes))
+        ((let ((first-class (example-class (car examples))))
+           (every #'(lambda (example) (eql (example-class example) first-class)) (cdr examples)))
+         (example-class (car examples)))
+        (t (make-subtree (best-partition attributes examples classes) attributes classes
+                         (most-common-class examples classes)))))
 
 (defun classify (example tree)
   "Classify an EXAMPLE into a CLASS based on the TREE."
