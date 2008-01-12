@@ -1,6 +1,6 @@
 (defpackage :fann
   (:use :cl :cffi)
-  (:export :make-net :train-on-file :load-from-file :save-to-file :run-net))
+  (:export :make-net :train-on-file :load-from-file :save-to-file :run-net :load-fann))
 
 (in-package :fann)
 
@@ -8,7 +8,10 @@
   (:unix (:or "libfann.so.2" "libfann.so" "/usr/local/lib/libfann.so.2" "/usr/local/lib/libfann.so"))
   (t "libfann.so"))
 
-(use-foreign-library libfann)
+(defun load-fann ()
+  (use-foreign-library libfann))
+
+(load-fann)
 
 (defcfun "fann_create_standard_array" :pointer (num_layers :int) (layers :pointer))
 

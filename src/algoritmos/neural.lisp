@@ -394,7 +394,9 @@
       (format f "~a ~a ~a~%" tamanho 24 19)
       (loop for d in dados
          do
-           (format f "~{~a ~}~%" (first d))
+           (if (= 0 (count-subseq "pt" (osicat:environment-variable "LANG")))
+               (format f "~{~a ~}~%" (first d))
+               (format f (substitute #\, #\. (format nil "~{~a ~}~%" (first d)))))
            (format f "~{~a ~}~%" (second d))))))
 
 (unless (cl-fad:file-exists-p *mode-net-train-data*)
@@ -403,7 +405,6 @@
 (defun treina-mode-net ()
   (if (cl-fad:file-exists-p *mode-net-train-data*)
       (progn
-        (format t "~a" (osicat:environment))
         (setf *mode-net* (make-net 24 50 19))
         (train-on-file *mode-net*
                        *mode-net-train-data*

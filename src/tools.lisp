@@ -98,9 +98,3 @@
                    (mapcar (lambda (file) (format nil "~a" file))
                            (directory (concat path "*" ext)))))))
 
-(defun set-lang()
-  (let ((lang (concat "en_US"
-                      (if (not (= 0 (count-subseq "UTF-8" (osicat:environment-variable "LANG"))))
-                          ".UTF-8"
-                          ""))))
-    (setf (osicat:environment-variable "LANG") lang)))
