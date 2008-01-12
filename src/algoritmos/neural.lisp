@@ -15,10 +15,12 @@
 
 (in-package :rameau-neural)
 
+(defparameter *neural-path* (concat (rameau-path) "neural-nets/"))
+
 (defvar *simple-net* nil)
 
-(defparameter *simple-net-file* (concat (rameau-path) "simple-net.fann"))
-(defparameter *simple-net-train-data* (concat (rameau-path) "simple-net-train.data"))
+(defparameter *simple-net-file* (concat *neural-path* "simple-net.fann"))
+(defparameter *simple-net-train-data* (concat *neural-path* "simple-net-train.data"))
 
 (defparameter *correctness-treshold* 0.5)
 
@@ -50,7 +52,7 @@
   (loop for segmento in coral
      for gab in gabarito
      if (listp gab)
-       nconc (prepara-exemplos-treinamento-simple-net (repeat-list segmento (length gab))
+       nconc (prepara-exemplos-treinamento-simple-net (repeat-list (length gab) segmento)
                                                       gab)
      else
        nconc (list (list (cria-pattern-segmento segmento)
@@ -109,8 +111,7 @@
      finally (return (make-melodic-note))))
 
 (defun aplica-simple-net (inputs)
-  (unless *simple-net*
-    (load-simple-net))
+  (load-simple-net)
   (mapcar (lambda (x) (extrai-resultado-simple-net (run-net *simple-net* (cria-pattern-segmento x)))) inputs))
 
 (registra-algoritmo "Simple-net" #'aplica-simple-net #'compara-gabarito-fundamental)
@@ -118,8 +119,8 @@
 
 (defvar *context-net* nil)
 
-(defparameter *context-net-file* (concat (rameau-path) "context-net.fann"))
-(defparameter *context-net-train-data* (concat (rameau-path) "context-net-train.data"))
+(defparameter *context-net-file* (concat *neural-path* "context-net.fann"))
+(defparameter *context-net-train-data* (concat *neural-path* "context-net-train.data"))
 
 
 (defun load-context-net ()
@@ -139,7 +140,7 @@
   (loop for c = (cons nil (cons nil coral)) then (cdr c)
      for gab in gabarito
      if (listp gab)
-       nconc (prepara-exemplos-treinamento-simple-net (repeat-list c (length gab))
+       nconc (prepara-exemplos-treinamento-simple-net (repeat-list (length gab) c)
                                                       gab)
      else
        nconc (list (list (cria-pattern-contexto (safe-retorna-n-elementos c 4))
@@ -191,23 +192,30 @@
 (unless (cl-fad:file-exists-p *context-net-file*)
   (treina-context-net))
 
+(defun roda-context-net (input)
+  (let ((res (run-net *context-net*
+                      (cria-pattern-contexto (safe-retorna-n-elementos input 4)))))
+    (values (extrai-resultado-simple-net res) res)))
+
 (defun aplica-context-net (inputs)
-  (unless *context-net*
-    (load-context-net))
-  (butlast (maplist (lambda (x) (extrai-resultado-simple-net
-                                 (run-net *context-net*
-                                          (cria-pattern-contexto (safe-retorna-n-elementos x 4)))))
+  (load-context-net)
+  (butlast (maplist #'roda-context-net
                     (cons nil (cons nil inputs)))
            2))
 
 (registra-algoritmo "Context-net" #'aplica-context-net #'compara-gabarito-fundamental)
     
-
+(defun extrai-res-context-net (coral)
+  (maplist (lambda (x)
+             (multiple-value-bind (acorde res)
+                 (roda-context-net x)
+               res))
+           (cons nil (cons nil coral))))
 
 (defvar *chord-net* nil)
 
-(defparameter *chord-net-file* (concat (rameau-path) "chord-net.fann"))
-(defparameter *chord-net-train-data* (concat (rameau-path) "chord-net-train.data"))
+(defparameter *chord-net-file* (concat *neural-path* "chord-net.fann"))
+(defparameter *chord-net-train-data* (concat *neural-path* "chord-net-train.data"))
 
 
 (defun load-chord-net ()
@@ -218,42 +226,45 @@
 (defun save-chord-net ()
   (save-to-file *chord-net* *chord-net-file*))
 
+(defun cria-pattern-saida-modo (gabarito)
+  (if (chordp gabarito)
+      (cond ((and (equal (chord-mode gabarito) nil)
+                  (equal (chord-7th gabarito) nil))
+             (list 1 0 0 0 0 0 0))
+            ((and (equal (chord-mode gabarito) nil)
+                  (equal (chord-7th gabarito) "7"))
+             (list 1 0 0 0 1 0 0))
+            ((and (equal (chord-mode gabarito) nil)
+                  (equal (chord-mode gabarito) "7+"))
+             (list 1 0 0 0 0 0 1))
+            ((and (equal (chord-mode gabarito) "m")
+                  (equal (chord-7th gabarito) nil))
+             (list 0 1 0 0 0 0 0))
+            ((and (equal (chord-mode gabarito) "m")
+                  (equal (chord-7th gabarito) "7"))
+             (list 0 1 0 0 1 0 0))
+            ((and (equal (chord-mode gabarito) "°")
+                  (equal (chord-7th gabarito) "7-"))
+             (list 0 0 1 0 0 0 1))
+            ((and (equal (chord-mode gabarito) "°")
+                  (equal (chord-7th gabarito) nil))
+             (list 0 0 1 0 0 0 0))
+            ((and (equal (chord-mode gabarito) "ø")
+                  (equal (chord-7th gabarito) "7"))
+             (list 0 0 0 1 1 0 0))
+            (t
+             (list 0 0 0 0 0 0 0)))
+      (list 0 0 0 0 0 0 0)))
+
 (defun cria-pattern-saida-acorde (gabarito)
   (append (cria-pattern-saida gabarito)
-          (if (chordp gabarito)
-              (cond ((and (equal (chord-mode gabarito) nil)
-                          (equal (chord-7th gabarito) nil))
-                     (list 1 0 0 0 0 0 0))
-                    ((and (equal (chord-mode gabarito) nil)
-                          (equal (chord-7th gabarito) "7"))
-                     (list 1 0 0 0 1 0 0))
-                    ((and (equal (chord-mode gabarito) nil)
-                          (equal (chord-mode gabarito) "7+"))
-                     (list 1 0 0 0 0 0 1))
-                    ((and (equal (chord-mode gabarito) "m")
-                          (equal (chord-7th gabarito) nil))
-                     (list 0 1 0 0 0 0 0))
-                    ((and (equal (chord-mode gabarito) "m")
-                          (equal (chord-7th gabarito) "7"))
-                     (list 0 1 0 0 1 0 0))
-                    ((and (equal (chord-mode gabarito) "°")
-                          (equal (chord-7th gabarito) "7-"))
-                     (list 0 0 1 0 0 0 1))
-                    ((and (equal (chord-mode gabarito) "°")
-                          (equal (chord-7th gabarito) nil))
-                     (list 0 0 1 0 0 0 0))
-                    ((and (equal (chord-mode gabarito) "ø")
-                          (equal (chord-7th gabarito) "7"))
-                     (list 0 0 0 1 1 0 0))
-                    (t
-                     (list 0 0 0 0 0 0 0)))
-              (list 0 0 0 0 0 0 0))))
+          (cria-pattern-saida-modo gabarito)))
 
 (defun prepara-exemplos-treinamento-chord-net-individual (coral gabarito)
   (loop for c in coral
      for gab in gabarito
      if (listp gab)
-       nconc (prepara-exemplos-treinamento-chord-net-individual (repeat-list c (length gab))
+       nconc (prepara-exemplos-treinamento-chord-net-individual (repeat-list (length gab) c)
                                                                 gab)
      else
        nconc (list (list (cria-pattern-segmento c)
@@ -334,3 +345,94 @@
 
 (registra-algoritmo "Chord-net" #'aplica-chord-net #'compara-gabarito-modo-setima)
     
+(defparameter *mode-net* nil)
+
+(defparameter *mode-net-file* (concat *neural-path* "mode-net.fann"))
+(defparameter *mode-net-train-data* (concat *neural-path* "mode-net-train.data"))
+
+
+(defun load-mode-net ()
+  (if (cl-fad:file-exists-p *mode-net-file*)
+      (setf *mode-net* (load-from-file *mode-net-file*))
+      (treina-mode-net)))
+
+(defun save-mode-net ()
+  (save-to-file *mode-net* *mode-net-file*))
+
+(defun prepara-exemplos-treinamento-mode-net-individual (coral gabarito)
+  (let ((contexto (extrai-res-context-net coral)))
+    (loop for c in coral
+       for gab in gabarito
+       for a in contexto
+       if (listp gab)
+         nconc (prepara-exemplos-treinamento-mode-net (repeat-list (length gab) c)
+                                                      gab)
+       else
+         nconc (list (list (append (cria-pattern-segmento c)
+                                   a)
+                           (cria-pattern-saida-acorde gab))))))
+
+(defun prepara-exemplos-treinamento-mode-net (coral gabarito)
+  (loop for i from 0 to 11
+     for c = (transpose-segmentos coral i)
+     for g = (transpose-chords gabarito i)
+     nconc (prepara-exemplos-treinamento-mode-net-individual c g)))
+
+(defun gera-dados-treinamento-mode-net ()
+  (with-system rameau:tempered
+    (loop for i in '("001" "002" "004" "005" "006" "007" "012" "018" "136")
+       for nome = (first (processa-files "corais" (list i)))
+       for f = (segmentos-minimos (parse-file nome))
+       for g = (processa-gabarito nome "corais")
+       nconc (prepara-exemplos-treinamento-mode-net f g))))
+
+(defun gera-arquivo-treinamento-mode-net ()
+  (load-context-net)
+  (let* ((dados (gera-dados-treinamento-mode-net))
+         (tamanho (length dados)))
+    (with-open-file (f *mode-net-train-data* :direction :output)
+      (format f "~a ~a ~a~%" tamanho 24 19)
+      (loop for d in dados
+         do
+           (format f "~{~a ~}~%" (first d))
+           (format f "~{~a ~}~%" (second d))))))
+
+(unless (cl-fad:file-exists-p *mode-net-train-data*)
+  (gera-arquivo-treinamento-mode-net))
+
+(defun treina-mode-net ()
+  (if (cl-fad:file-exists-p *mode-net-train-data*)
+      (progn
+        (format t "~a" (osicat:environment))
+        (setf *mode-net* (make-net 24 50 19))
+        (train-on-file *mode-net*
+                       *mode-net-train-data*
+                       5000
+                       100
+                       0.2)
+        (save-mode-net))
+      (progn
+        (gera-arquivo-treinamento-mode-net)
+        (treina-mode-net))))
+
+
+(unless (cl-fad:file-exists-p *mode-net-file*)
+  (treina-mode-net))
+
+
+(defun aplica-mode-net (inputs modos)
+  (mapcar (lambda (x y) (extrai-resultado-chord-net
+                        (run-net *mode-net*
+                                 (append (cria-pattern-segmento x)
+                                         y))))
+           inputs modos))
+
+(defun gera-gabarito-mode-net (segmentos)
+  (load-context-net)
+  (load-mode-net)
+  (let* ((fundamentais (extrai-res-context-net segmentos))
+         (modos (aplica-mode-net segmentos fundamentais)))
+    modos))
+
+
+(registra-algoritmo "Mode-net" #'gera-gabarito-mode-net #'compara-gabarito-modo-setima)

@@ -511,6 +511,7 @@ ponto nos corais de bach."
 
 
 (defun main ()
+  (set-lang)
   (let* ((args (rameau-args))
          (string (first args))
          (dados (second args))

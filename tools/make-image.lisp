@@ -21,6 +21,8 @@
 
 #+(or sbcl ecl) (require 'rameau)
 #+(or clisp cmu) (asdf:oos 'asdf:load-op :rameau :verbose nil)
+(trace rameau:set-lang osicat:environment-variable (setf osicat:environment-variable))
+(rameau:set-lang)
 
 #+sbcl(sb-ext:save-lisp-and-die "rameau" :executable t :toplevel #'rameau-main:main)
 

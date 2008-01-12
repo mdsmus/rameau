@@ -40,6 +40,7 @@
    #:rameau-quit
    #:read-user-config
    #:segmentos-minimos
+   #:set-lang
    #:evento-pitch
    #:evento-dur
    #:evento-octave

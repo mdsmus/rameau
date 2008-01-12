@@ -21,7 +21,7 @@
        do (setf (mem-aref layers :int j) i))
     (make-fann-net :fann-net (fann-create-standard-array (length camadas) layers)
                    :inputs (first camadas)
-                   :outputs (last camadas))))
+                   :outputs (first (last camadas)))))
 
 (defcfun "fann_create_from_file" :pointer (filename :string))
 (defcfun "fann_get_num_input" :int (net :pointer))

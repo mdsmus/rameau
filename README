@@ -4,6 +4,15 @@ Para instalar rameau voce precisa instalar os seguintes pacotes:
 
   sbcl cl-lexer cl-regex cl-yacc cl-fad cl-ppcre cl-arnesi cl-cffi
 
+Além disso, é necessário instalar osicat pelo asdf-install. Para isso,
+execute o sbcl e faça
+
+(require 'asdf)
+ (require 'asdf-install)
+ (asdf-install:install 'osicat)
+
+É recomendado fazer uma instalação local como usuário.
+
 Para compilar é só digitar 'make' no diretorio onde está o repositório
 da pequisa.
 
