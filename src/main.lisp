@@ -312,8 +312,8 @@ ponto nos corais de bach."
                   collect (list (algoritmo-nome a) (percent i size-gab) i))))
         (loop for r in (sort l #'> :key #'second)
            for i = (third r) do
-             (format t "~a  ~(~15a~) ~5a ~5a ~,2f%~%" item (first r) i (- size-gab i) (second r)))))
-    (values total corretos)))
+             (format t "~a  ~(~15a~) ~5a ~5a ~,2f%~%" item (first r) i (- size-gab i) (second r))))
+      (values total corretos (loop for i in counts collect (percent i size-gab))))))
 
 (defun gera-erros (item notas gabarito resultados flags)
   (let ((*package* (find-package :rameau))
@@ -395,7 +395,10 @@ ponto nos corais de bach."
   (with-system rameau:tempered
     (format t "Coral Algoritmo Corretos Incorretos Percentual~%")
     (let ((corretos (repeat-list (length *algoritmos*) 0))
-          (total 0))
+          (total 0)
+          (processados 0)
+          (media-x (repeat-list (length *algoritmos*) 0.0))
+          (media-x² (repeat-list (length *algoritmos*) 0.0)))
     (dolist (file files)
       (let* ((musica (parse-file file))
              (segmentos (segmentos-minimos musica))
@@ -409,18 +412,32 @@ ponto nos corais de bach."
         (cond
           ((and (not gabarito) (not (member 'i flags))))
           (t
-           (multiple-value-bind (total1 corretos1)
+           (multiple-value-bind (total1 corretos1 percentuais)
                (gera-dados file-name gabarito resultados flags)
              (incf total total1)
+             (incf processados)
+             (loop for i from 0 to (1- (length percentuais))
+                do
+                  (incf (nth i media-x) (nth i percentuais))
+                  (incf (nth i media-x²) (* (nth i percentuais) (nth i percentuais))))
              (loop for i from 0 to (1- (length corretos))
                 do (incf (nth i corretos) (nth i corretos1))))))))
       (let ((l (loop
                   for i in corretos
                   for a in *algoritmos*
-                  collect (list (algoritmo-nome a) i (- total i) (percent i total)))))
+                  for mx in media-x
+                  for mx² in media-x²
+                  collect (list (algoritmo-nome a)
+                                i
+                                (- total i)
+                                (percent i total)
+                                (/ mx processados)
+                                (sqrt (- (/ mx² processados)
+                                         (* (/ mx processados)
+                                            (/ mx processados))))))))
         (loop for r in (sort l #'> :key #'second)
-           do (format t "Total ~(~15a~):  ~5a ~5a ~,2f%~%"
-                      (first r) (second r) (third r) (fourth r) (fifth r)))))))
+           do (format t "Total ~(~15a~):  ~5a ~5a ~,2f% (~,2f +- ~,2f)~%"
+                      (first r) (second r) (third r) (fourth r) (fifth r) (sixth r) (seventh r)))))))
 
 (defun run-gera-erros (flags files item)
   (with-system rameau:tempered
