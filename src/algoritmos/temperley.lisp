@@ -1023,4 +1023,4 @@
      (calcula-tabela-harmonica (inicializa-tabela-harmonica m-clist) m-clist)
      m-clist)))
 
-(registra-algoritmo "Temperley" #'temperley #'compara-gabarito-fundamental)
+(registra-algoritmo "Temperley-Sleator" #'temperley #'compara-gabarito-fundamental)
