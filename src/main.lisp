@@ -28,7 +28,8 @@
                        (análise
                         (("-i" "ignora (não imprime) corais sem gabaritos")
                          ("-v" "mostra notas dos segmentos")))
-                       (partitura)
+                       (partitura
+                        (("-e <estilo>" "seleciona estilo de impressão dos acordes errados (bold ou red)")))
                        (comparatamanhos)))
 
 (defun arg->list (list)
@@ -195,7 +196,7 @@ ponto nos corais de bach."
      ,@body
      (format ,stream "~%}~%~%")))
 
-(defun print-lily (file gabarito resultados  flags notas)
+(defun print-lily (file gabarito resultados flags notas)
   (let* ((*package* (find-package :rameau))
          (path (concat (rameau-path)
                        (get-item "corais-include" *lily-dir-list*  #'equal)))
@@ -227,7 +228,8 @@ ponto nos corais de bach."
                 if (funcall (algoritmo-compara a) res gab) do
                   (format stream "\"~a\" " (if res res " "))
                 else do
-                  (format stream "\\markup{\\with-color #(x11-color 'red) \"~a\"}"
+                  (format stream "\\markup{\\italic \\bold \"~a\"}"
+                          ;"\\markup{\\bold \\with-color #(x11-color 'red) \"~a\"}"
                           (if res res " "))
                 unless (= 0 (intervalo (first s) (second s))) do
                   (format stream "\" \""))))
@@ -539,7 +541,6 @@ ponto nos corais de bach."
          (debug (get-flag-list "-d" flags-list))
          (max-error (first (get-flag-list "-m" flags-list)))
          (flags (if flags-list (get-lone-flags flags-list))))
-
     (when debug
       (loop for item in debug do
            (rameau-debug (intern (string-upcase item) :rameau))))
