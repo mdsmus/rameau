@@ -1,4 +1,20 @@
-* ismir.sty
-* autores
-* estado das coisas
-* brainstorm: estrutura do artigo
+; -*- org -*-
+
+* objetivo de hoje: definir tudo que precisa ser feito
+
+* 121 gabaritos no repositorio (139 tickets fechados):
+  quantos mais até quarta?
+* exemplos para artigo: corais 54 e 12?
+* o que falta de _conteudo_ no artigo?
+* analise inicial dos erros (marcos e givaldo)
+* o que precisa ser feito para analise resultados
+* nomenclatura: seg. minimos, etc
+* tarefas (colocar no trac):
+** parametros de treinamento da rede
+** pegar resultados originais de temperley
+** revisar gabaritos a partir das respostas
+* calendario:
+** draft2 até quarta/16 (re-escrita eu e passos)
+** draft3 até sexta/18 (revisão todos)
+** draft final até terça/22
+** versão final até quinta/24 (revisão geral)
