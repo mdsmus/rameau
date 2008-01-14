@@ -394,7 +394,7 @@
       (format f "~a ~a ~a~%" tamanho 24 19)
       (loop for d in dados
          do
-           (if (= 0 (count-subseq "pt" (osicat:environment-variable "LANG")))
+           (if (= 0 #+sbcl(count-subseq "pt" (sb-ext:posix-getenv "LANG")) #-sbcl 0)
                (format f "~{~a ~}~%" (first d))
                (format f (substitute #\, #\. (format nil "~{~a ~}~%" (first d)))))
            (format f "~{~a ~}~%" (second d))))))
