@@ -88,9 +88,9 @@
         (setf *simple-net* (make-net 12 12 12))
         (train-on-file *simple-net*
                        *simple-net-train-data*
-                       5000
+                       500
                        100
-                       0.1)
+                       0.07)
         (save-simple-net))
       (progn
         (gera-arquivo-treinamento-simple-net)
@@ -174,7 +174,7 @@
         (setf *context-net* (make-net 48 24 12))
         (train-on-file *context-net*
                        *context-net-train-data*
-                       5000
+                       500
                        100
                        0.07)
         (save-context-net))
@@ -292,12 +292,12 @@
 (defun treina-chord-net ()
   (if (cl-fad:file-exists-p *chord-net-train-data*)
       (progn
-        (setf *chord-net* (make-net 12 50 19))
+        (setf *chord-net* (make-net 12 55 19))
         (train-on-file *chord-net*
                                *chord-net-train-data*
-                               5000
+                               500
                                100
-                               0.3)
+                               0.1)
         (save-chord-net))
       (progn
         (gera-arquivo-treinamento-chord-net)
@@ -396,9 +396,9 @@
         (setf *mode-net* (make-net 24 50 19))
         (train-on-file *mode-net*
                        *mode-net-train-data*
-                       5000
+                       500
                        100
-                       0.2)
+                       0.1)
         (save-mode-net))
       (progn
         (gera-arquivo-treinamento-mode-net)
