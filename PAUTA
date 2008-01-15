@@ -1,20 +1,16 @@
-; -*- org -*-
-
-* objetivo de hoje: definir tudo que precisa ser feito
-
-* 121 gabaritos no repositorio (139 tickets fechados):
-  quantos mais até quarta?
+* 150 gabaritos no repositorio (139 tickets fechados):
 * exemplos para artigo: corais 54 e 12?
 * o que falta de _conteudo_ no artigo?
-* analise inicial dos erros (marcos e givaldo)
-* o que precisa ser feito para analise resultados
-* nomenclatura: seg. minimos, etc
+?* analise inicial dos erros (marcos e givaldo)
+?* o que precisa ser feito para analise resultados
 * tarefas (colocar no trac):
 ** marcos: colocar citações no artigo
 ** marcos: preparar exemplos musicais (em pdf ou png)
-** parametros de treinamento da rede
-** pegar resultados originais de temperley
-** revisar gabaritos a partir das respostas
+** kroger: hackear estilo icmc
+** marcos: refinar lista de erros
+** passos: parametros de treinamento da rede
+** givaldo: pegar resultados originais de temperley (exemplos)
+** todos: revisar gabaritos a partir das respostas
 * calendario:
 ** draft2 até quarta/16 (re-escrita eu e passos)
 ** draft3 até sexta/18 (revisão todos)
