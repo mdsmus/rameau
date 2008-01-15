@@ -82,7 +82,10 @@ book-stuff: docs/corais.lytex corais-ly
 	cd $(corais-dir); \
 	$(lilypond) --png $< 2> $(corais-dir)/$(notdir $(basename $<)).log
 
-clean:
+clean-nets:
+	rm -f neural-nets/*
+
+clean: clean-nets
 	rm -f rameau
 	rm -f *.data *.fann
 	find -name *.fasl -exec rm {} \;
