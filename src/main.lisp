@@ -233,7 +233,7 @@ ponto nos corais de bach."
                           (if res res " "))
                 unless (= 0 (intervalo (first s) (second s))) do
                   (format stream "\" \""))))
-      (with-print-cifra (stream "partitions")
+      (with-print-cifra (stream "sonority")
         (loop for x from 1
            for s = notas then (rest s)
            unless s return 0
@@ -242,7 +242,7 @@ ponto nos corais de bach."
            do (format stream "\" \" " x)))
       (print-score stream (reduce #'concat
                                   (append
-                                   (list (print-lyric "partitions"))
+                                   (list (print-lyric "sonority"))
                                    (loop for a in *algoritmos* collect
                                         (print-lyric (algoritmo-nome a)))
                                    (list
