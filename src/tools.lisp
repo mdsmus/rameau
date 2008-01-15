@@ -98,3 +98,9 @@
                    (mapcar (lambda (file) (format nil "~a" file))
                            (directory (concat path "*" ext)))))))
 
+
+(defparameter *exemplos-de-treinamento*
+  (loop for i in '("001" "002" "003" "004" "005" "006" "007" "008" "010" "014")
+                 for f = (first (processa-files "corais" (list i)))
+                 for g = (processa-gabarito f "corais")
+                 collect (list (segmentos-minimos (parse-file f)) g)))

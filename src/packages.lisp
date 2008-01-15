@@ -9,6 +9,7 @@
    #:v
    #:m
    #:*algoritmos*
+   #:*exemplos-de-treinamento*
    #:*lily-dir-list*
    #:*gabarito-dir-list*
    #:algoritmo-compara

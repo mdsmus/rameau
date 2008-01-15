@@ -70,10 +70,7 @@
 (defun treina-tree ()
   (with-system rameau:tempered
     (multiple-value-bind (corais gabaritos)
-        (unzip(loop for i in '("001" "003" "004" "006" "012" "018" "136")
-                 for f = (first (processa-files "corais" (list i)))
-                 for g = (processa-gabarito f "corais")
-                 collect (list (segmentos-minimos (parse-file f)) g)))
+        (unzip *exemplos-de-treinamento*)
       (treina-decision-tree corais gabaritos))))
 
 (treina-tree)
@@ -158,10 +155,7 @@
 (defun treina-context-tree ()
   (with-system rameau:tempered
     (multiple-value-bind (corais gabaritos)
-        (unzip(loop for i in '("001" "002" "004" "005" "006" "007" "012" "018" "136")
-                 for f = (first (processa-files "corais" (list i)))
-                 for g = (processa-gabarito f "corais")
-                 collect (list (segmentos-minimos (parse-file f)) g)))
+        (unzip *exemplos-de-treinamento*)
       (gera-treina-context-tree corais gabaritos))))
 (treina-context-tree)
 
@@ -251,11 +245,7 @@
 (defun faz-treina-chord-tree ()
   (with-system rameau:tempered
     (multiple-value-bind (corais gabaritos)
-        (unzip(loop for i in '("001" "002" "003" "004" "005" "006" "007"
-                               "008" "010" "012" "014" "017" "018" "136")
-                 for f = (first (processa-files "corais" (list i)))
-                 for g = (processa-gabarito f "corais")
-                 collect (list (segmentos-minimos (parse-file f)) g)))
+        (unzip *exemplos-de-treinamento*)
       (treina-chord-tree corais gabaritos))))
 
 (faz-treina-chord-tree)
@@ -366,10 +356,7 @@
 (defun faz-treina-mode-tree ()
   (with-system rameau:tempered
     (multiple-value-bind (corais gabaritos)
-        (unzip(loop for i in '("001" "003" "004" "006" "012" "018" "136")
-                 for f = (first (processa-files "corais" (list i)))
-                 for g = (processa-gabarito f "corais")
-                 collect (list (segmentos-minimos (parse-file f)) g)))
+        (unzip *exemplos-de-treinamento*)
       (treina-mode-tree corais gabaritos))))
 
 (faz-treina-mode-tree)
