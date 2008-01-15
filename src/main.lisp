@@ -207,7 +207,7 @@ ponto nos corais de bach."
       (format stream "~a~%" (file-string (concat path file-name ".lyi")))
       (format stream "texto = {~{c~a ~}}~%~%" (print-duracoes notas))
       (when gabarito
-        (with-print-cifra (stream "gabarito")
+        (with-print-cifra (stream "Answer")
           (loop for i in gabarito
              for s = notas then (rest s)
              unless s return it
@@ -233,7 +233,7 @@ ponto nos corais de bach."
                           (if res res " "))
                 unless (= 0 (intervalo (first s) (second s))) do
                   (format stream "\" \""))))
-      (with-print-cifra (stream "particoes")
+      (with-print-cifra (stream "partitions")
         (loop for x from 1
            for s = notas then (rest s)
            unless s return 0
@@ -242,12 +242,12 @@ ponto nos corais de bach."
            do (format stream "\" \" " x)))
       (print-score stream (reduce #'concat
                                   (append
-                                   (list (print-lyric "particoes"))
+                                   (list (print-lyric "partitions"))
                                    (loop for a in *algoritmos* collect
                                         (print-lyric (algoritmo-nome a)))
                                    (list
                                     (when gabarito
-                                      (print-lyric "gabarito")))))))))
+                                      (print-lyric "Answer")))))))))
 
 (defun print-gabarito (arquivo gabarito resultados flags &key notas dur)
   (let ((*package* (find-package :rameau))
