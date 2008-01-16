@@ -333,7 +333,7 @@ ponto nos corais de bach."
             for r in res
             for alg = (first r) then (first r)
             for certo? = (funcall (algoritmo-compara a) alg gab)
-            unless certo? do (format t "~a ~13a ~4a ~14a ~8a ~4a~%"
+            unless certo? do (format t "~a ~20a ~4a ~14a ~8a ~4a~%"
                                      item
                                      (algoritmo-nome a)
                                      numero-seg
