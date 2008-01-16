@@ -324,7 +324,9 @@
                              ((>= (nth 17 res) *correctness-treshold*)
                              "7-")
                              ((>= (nth 18 res) *correctness-treshold*)
-                             "7+")))
+                             "7+")
+                             ((>= (nth 15 res) *correctness-treshold*)
+                              "7")))
       (make-melodic-note)))
 
 (defun aplica-chord-net (inputs)
