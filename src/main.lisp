@@ -83,7 +83,7 @@
 
 (defun next-flag (list)
   (loop for x in (rest list) do
-       (if (equal #\- (aref x 0))
+       (if (and (< 0 (length x)) (equal #\- (aref x 0)))
            (return x))))
 
 (defun pos (list)
