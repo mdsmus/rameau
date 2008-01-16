@@ -317,7 +317,7 @@ ponto nos corais de bach."
              (format t "~a  ~(~15a~) ~5a ~5a ~,2f%~%" item (first r) i (- size-gab i) (second r))))
       (values total corretos (loop for i in counts collect (percent i size-gab))))))
 
-(defun gera-erros (item notas gabarito resultados flags)
+(defun gera-erros (item notas gabarito resultados flags regab reres)
   (let ((*package* (find-package :rameau))
         (size-gab (length gabarito)))
     (loop
@@ -333,13 +333,16 @@ ponto nos corais de bach."
             for r in res
             for alg = (first r) then (first r)
             for certo? = (funcall (algoritmo-compara a) alg gab)
-            unless certo? do (format t "~a ~20a ~4a ~14a ~8a ~4a~%"
-                                     item
-                                     (algoritmo-nome a)
-                                     numero-seg
-                                     s
-                                     gab
-                                     alg)))))
+            unless certo? do (when (and
+                                    (cl-ppcre:scan regab (format nil "~a" gab))
+                                    (cl-ppcre:scan reres (format nil "~a" alg)))
+                               (format t "~a ~20a ~4a ~14a ~8a ~4a~%"
+                                       item
+                                       (algoritmo-nome a)
+                                       numero-seg
+                                       s
+                                       gab
+                                       alg))))))
 
 (defun print-help-item (item)
   (format t "~%~(* [~a]~)~%" item)
@@ -441,7 +444,7 @@ ponto nos corais de bach."
            do (format t "Total ~(~15a~):  ~5a ~5a ~,2f% (~,2f +- ~,2f)~%"
                       (first r) (second r) (third r) (fourth r) (fifth r) (sixth r) (seventh r)))))))
 
-(defun run-gera-erros (flags files item)
+(defun run-gera-erros (flags files item regexps)
   (with-system rameau:tempered
     (format t "Coral Algoritmo Segmento Resultado_esperado Resultado_obtido~%")
     (dolist (file files)
@@ -455,9 +458,16 @@ ponto nos corais de bach."
              (notas (mapcar #'lista-notas segmentos))
              (duracoes (calcula-duracoes segmentos)))
         (cond
+          ((< 2 (length regexps)) (format t "São duas as expressoes regulares"))
           ((and (not gabarito) (not (member 'i flags))))
           (t
-           (gera-erros file-name notas gabarito resultados flags)))))))
+           (gera-erros file-name
+                       notas
+                       gabarito
+                       resultados
+                       flags
+                       (or (first regexps) "")
+                       (or (second regexps) ""))))))))
 
 (defun run-compara-tamanhos (flags files item)
   (format t "~a:~%" item)
@@ -490,8 +500,9 @@ ponto nos corais de bach."
                                (funcall (algoritmo-processa a) segmento))))
         (print-lily file gabarito resultados flags segmento)))))
   
-(defmacro defcomando (nome dados flags files &body body)
-  `(defun ,nome (,dados ,flags ,files)
+(defmacro defcomando (nome dados flags files regexps &body body)
+  `(defun ,nome (,dados ,flags ,files ,regexps)
+     (declare (ignorable ,regexps))
      (let* ((dados-list (get-item ',nome *dados*))
             (comandos-lista (if (string= ,dados "all") dados-list (split-dados ,dados))))
        (with-profile ,flags
@@ -507,24 +518,24 @@ ponto nos corais de bach."
                     (format t "comandos possíveis são: all ~{~a ~}~%" dados-list))))))))
 
 
-(defcomando teste dados flags files
+(defcomando teste dados flags files regexps
     (if (string= item "unidade")
         (run-unidade flags (processa-files item files))
         (run-regressao flags (processa-files item files))))
 
-(defcomando analise dados flags files
+(defcomando analise dados flags files regexps
   (run-compara-gabarito flags (processa-files item files) item))
 
-(defcomando dados dados flags files
-  (run-gera-dados flags (processa-files item files) item))            
+(defcomando dados dados flags files regexps
+  (run-gera-dados flags (processa-files item files) item))
 
-(defcomando erros dados flags files
-  (run-gera-erros flags (processa-files item files) item))            
+(defcomando erros dados flags files regexps
+  (run-gera-erros flags (processa-files item files) item regexps))
 
-(defcomando partitura dados flags files
+(defcomando partitura dados flags files regexps
   (run-partitura flags (processa-files item files) item))
 
-(defcomando comparatamanhos dados flags files
+(defcomando comparatamanhos dados flags files regexps
   (run-compara-tamanhos flags (processa-files item files) item))
 
 
@@ -538,6 +549,7 @@ ponto nos corais de bach."
          (files (get-flag-list "-f" flags-list))
          (trace (get-flag-list "-t" flags-list))
          (algoritmos (get-flag-list "-a" flags-list))
+         (regexps (get-flag-list "-r" flags-list))
          (debug (get-flag-list "-d" flags-list))
          (max-error (first (get-flag-list "-m" flags-list)))
          (flags (if flags-list (get-lone-flags flags-list))))
@@ -567,7 +579,8 @@ ponto nos corais de bach."
            (funcall (symbol-function (intern (string-upcase comando) :rameau-main))
                     dados
                     flags
-                    files))
+                    files
+                    regexps))
           (t (format t "comando ~a não reconhecido~%" comando)
              (format t "você deve entrar um dos comandos: ~{~(~a~)~^ ~}~%"
                      (get-comandos)))))
