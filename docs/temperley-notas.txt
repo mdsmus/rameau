@@ -176,3 +176,11 @@ o que, traduzindo pro formato original, ficaria
 ...
 
 
+
+
+O algoritmo aparenta ser bem frágil com notas melódicas: na nossa implementação uma
+nota melódica no meio do caminho abaixa profundamente o score de todas as análises
+possíveis para o segmento, e acaba fazendo o escore depender de outros fatores. O
+resultado disso é que o algoritmo nunca realmente se recupera de algumas notas 
+melódicas a não ser que os parâmetros estejam bem regulados. Quando acontece dele se 
+perder, fica óbvio por aparecer a mesma nota em quase todos os segmentos subsequentes.
