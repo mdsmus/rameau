@@ -336,7 +336,7 @@ ponto nos corais de bach."
             unless certo? do (when (and
                                     (cl-ppcre:scan regab (format nil "~a" gab))
                                     (cl-ppcre:scan reres (format nil "~a" alg)))
-                               (format t "~a ~20a ~4a ~14a ~8a ~4a~%"
+                               (format t "~a| ~20a| ~4a| ~14a| ~12a| ~4a~%"
                                        item
                                        (algoritmo-nome a)
                                        numero-seg
