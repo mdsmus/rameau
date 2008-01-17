@@ -1,4 +1,2 @@
-* analise resultados
-* marcos: preparar exemplos musicais (em pdf ou png)
-* kroger: hackear estilo icmc
-* passos: parametros de treinamento da rede (desnecessario?)
+* marcos: linhas mais grossas no gnuplot
+* passos: regexp para isolar erros
