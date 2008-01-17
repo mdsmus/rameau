@@ -156,4 +156,4 @@
                   :from-end t :initial-value nil)))
      
 
-(registra-algoritmo "Pardo-Birmingham" #'gera-gabarito-pardo #'compara-gabarito-modo-setima)
+(register-algorithm "Pardo-Birmingham" #'gera-gabarito-pardo #'compara-gabarito-modo-setima)

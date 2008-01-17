@@ -111,7 +111,7 @@
   (load-simple-net)
   (mapcar (lambda (x) (extrai-resultado-simple-net (run-net *simple-net* (cria-pattern-segmento x)))) inputs))
 
-(registra-algoritmo "Simple-net" #'aplica-simple-net #'compara-gabarito-fundamental)
+(register-algorithm "Simple-net" #'aplica-simple-net #'compara-gabarito-fundamental)
 
 
 (defvar *context-net* nil)
@@ -197,7 +197,7 @@
                     (cons nil (cons nil inputs)))
            2))
 
-(registra-algoritmo "Context-net" #'aplica-context-net #'compara-gabarito-fundamental)
+(register-algorithm "Context-net" #'aplica-context-net #'compara-gabarito-fundamental)
     
 (defun extrai-res-context-net (coral)
   (maplist (lambda (x)
@@ -336,7 +336,7 @@
                                  (cria-pattern-segmento x))))
            inputs))
 
-(registra-algoritmo "Chord-net" #'aplica-chord-net #'compara-gabarito-modo-setima)
+(register-algorithm "Chord-net" #'aplica-chord-net #'compara-gabarito-modo-setima)
     
 (defparameter *mode-net* nil)
 
@@ -426,4 +426,4 @@
     modos))
 
 
-(registra-algoritmo "Mode-net" #'gera-gabarito-mode-net #'compara-gabarito-modo-setima)
+(register-algorithm "Mode-net" #'gera-gabarito-mode-net #'compara-gabarito-modo-setima)

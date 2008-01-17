@@ -49,7 +49,7 @@
    #:make-evento
    #:fim-evento
    #:processa-cifras
-   #:registra-algoritmo
+   #:register-algorithm
    #:read-chords
    #:teste
    #:transpose-segmentos
@@ -68,7 +68,7 @@
 
 (defparameter *algoritmos* nil)
 
-(defun registra-algoritmo (nome processa compara)
+(defun register-algorithm (nome processa compara)
   (push (make-algoritmo :nome nome :processa processa :compara compara)
         *algoritmos*))
 

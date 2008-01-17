@@ -65,7 +65,7 @@
   (dbg 'rameau::mostra-arvore "Arvore: ~/rameau-tree::exibe-tree/ ~%" *decision-tree*)
   (mapcar #'aplica-decision-tree coral))
 
-(registra-algoritmo "Simple-tree" #'gera-gabarito-decision-tree #'compara-gabarito-fundamental)
+(register-algorithm "Simple-tree" #'gera-gabarito-decision-tree #'compara-gabarito-fundamental)
 
 (defun treina-tree ()
   (with-system rameau:tempered
@@ -159,7 +159,7 @@
       (gera-treina-context-tree corais gabaritos))))
 (treina-context-tree)
 
-(registra-algoritmo "Context-tree" #'gera-gabarito-context-tree #'compara-gabarito-fundamental)
+(register-algorithm "Context-tree" #'gera-gabarito-context-tree #'compara-gabarito-fundamental)
 
 (defparameter *chord-classes* (mapcar #'string->symbol
                                       (mapcar #'stringify
@@ -240,7 +240,7 @@
   (dbg 'rameau::mostra-arvore "Arvore: ~/rameau-tree::exibe-chord-tree/ ~%" *chord-tree*)
   (mapcar #'aplica-chord-tree coral))
 
-(registra-algoritmo "Chord-tree" #'gera-gabarito-chord-tree #'compara-gabarito-modo-setima)
+(register-algorithm "Chord-tree" #'gera-gabarito-chord-tree #'compara-gabarito-modo-setima)
 
 (defun faz-treina-chord-tree ()
   (with-system rameau:tempered
@@ -361,4 +361,4 @@
 
 (faz-treina-mode-tree)
 
-(registra-algoritmo "Mode-tree" #'gera-gabarito-mode-tree #'compara-gabarito-modo-setima)
+(register-algorithm "Mode-tree" #'gera-gabarito-mode-tree #'compara-gabarito-modo-setima)
