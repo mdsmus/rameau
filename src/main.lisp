@@ -13,6 +13,7 @@
                         (partitura ("corais"))
                         (comparatamanhos ("corais" "exemplos"))
                         (erros ("corais" "exemplos"))
+                        (tipos ("corais" "exemplos"))
                         (dados ("corais" "exemplos"))))
 
 
@@ -469,6 +470,70 @@ ponto nos corais de bach."
                        (or (first regexps) "")
                        (or (second regexps) ""))))))))
 
+(defun run-gera-tipos (flags files item regexps)
+  (with-system rameau:tempered
+    (let ((maior 0)
+          (maior7 0)
+          (maior7+ 0)
+          (menor 0)
+          (menor7 0)
+          (dim 0)
+          (dim7 0)
+          (half-dim 0)
+          (aug 0)
+          (inc 0)
+          (mel 0))
+    (dolist (file files)
+      (awhen (processa-gabarito (tira-extensao file) item)
+        (loop for c in it do
+             (cond ((not (chordp c)) (incf mel))
+                   ((and (equal nil (chord-mode c))
+                         (equal nil (chord-7th c)))
+                    (incf maior))
+                   ((and (equal nil (chord-mode c))
+                         (equal nil (chord-7th c)))
+                    (incf maior))
+                   ((and (equal nil (chord-mode c))
+                         (equal "7" (chord-7th c)))
+                    (incf maior7))
+                   ((and (equal nil (chord-mode c))
+                         (equal "7+" (chord-7th c)))
+                    (incf maior7+))
+                   ((and (equal "m" (chord-mode c))
+                         (equal nil (chord-7th c)))
+                    (incf menor))
+                   ((and (equal "m" (chord-mode c))
+                         (equal "7" (chord-7th c)))
+                    (incf menor7))
+                   ((and (equal "°" (chord-mode c))
+                         (equal nil (chord-7th c)))
+                    (incf dim))
+                   ((and (equal "°" (chord-mode c))
+                         (equal "7-" (chord-7th c)))
+                    (incf dim7))
+                   ((equal "!" (chord-mode c))
+                    (incf inc))
+                   ((equal "+" (chord-mode c))
+                    (incf aug))
+                   ((equal "ø" (chord-mode c))
+                    (incf half-dim))))))
+    (format t (concat "    Maior: ~a ~%  Maior 7: ~a ~% Maior 7+: ~a ~%"
+                      "    Menor: ~a ~%  Menor 7: ~a ~%      Dim: ~a ~%"
+                      "    Dim 7: ~a ~% Half-dim: ~a ~%      Aug: ~a ~%"
+                      "      Inc: ~a ~%      Mel: ~a ~%")
+            maior
+            maior7
+            maior7+
+            menor
+            menor7
+            dim
+            dim7
+            half-dim
+            aug
+            inc
+            mel))))
+              
+
 (defun run-compara-tamanhos (flags files item)
   (format t "~a:~%" item)
   (let ((errados 0))
@@ -531,6 +596,9 @@ ponto nos corais de bach."
 
 (defcomando erros dados flags files regexps
   (run-gera-erros flags (processa-files item files) item regexps))
+
+(defcomando tipos dados flags files regexps
+  (run-gera-tipos flags (processa-files item files) item regexps))
 
 (defcomando partitura dados flags files regexps
   (run-partitura flags (processa-files item files) item))
