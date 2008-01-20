@@ -13,7 +13,7 @@
 
 (defparameter *decision-tree* nil)
 
-(defparameter *classes* '(a  b  c  d  e  f  g  --
+(defparameter *classes* '(a  b  c  d  e  f  g  —
                           a# b# c# d# e# f# g#
                           ab bb cb db eb fb gb))
 
@@ -36,7 +36,7 @@
      for g in gabarito
      collect (make-example :name "foo"
                            :class (if (chordp g) (chord-fundamental g)
-                                      '--)
+                                      '—)
                            :values (prepara-segmento s))))
 
 (defun prepara-entrada-treinamento (corais gabaritos)
@@ -53,7 +53,7 @@
 
 (defun aplica-decision-tree (segmento)
   (let ((res (classify (make-example :values (prepara-segmento segmento)) *decision-tree*)))
-    (if (eq res '--)
+    (if (eq res '—)
         (make-melodic-note)
         (make-chord :fundamental (stringify res)))))
 
@@ -118,7 +118,7 @@
       else
         collect (make-example :name "foo"
                               :class (if (chordp g) (chord-fundamental g)
-                                         '--)
+                                         '—)
                               :values (prepara-context-segmento s)))
    2))
 
@@ -139,7 +139,7 @@
   (let ((res (classify (make-example :values (prepara-context-segmento
                                               (safe-retorna-n-elementos segmento 4)))
                        *context-tree*)))
-    (if (eq res '--)
+    (if (eq res '—)
         (make-melodic-note)
         (make-chord :fundamental (stringify res)))))
 
@@ -163,7 +163,7 @@
 
 (defparameter *chord-classes* (mapcar #'string->symbol
                                       (mapcar #'stringify
-                                              '(a  b  c  d  e  f  g  --
+                                              '(a  b  c  d  e  f  g  —
                                                 a# b# c# d# e# f# g#
                                                 ab bb cb db eb fb gb
                                                 a7  b7  c7  d7  e7  f7  g7
@@ -204,14 +204,14 @@
                              nil
                              (chord-7th acorde))
                     :mode (chord-mode acorde))))
-      (string->symbol "--")))
+      (string->symbol "—")))
 
 (defun prepara-chord-exemplo-treinamento (coral gabarito)
   (loop for s in coral
      for g in gabarito
      collect (make-example :name "foo"
                            :class (if (chordp g) (simplifica g)
-                                      (string->symbol "--"))
+                                      (string->symbol "—"))
                            :values (prepara-segmento s))))
 
 (defun prepara-chord-entrada-treinamento (corais gabaritos)
@@ -252,7 +252,7 @@
 
 (defparameter *mode-tree* nil)
 
-(defparameter *mode-classes* '(maj min maj7 maj7+ min7 ° °7 ø7 --))
+(defparameter *mode-classes* '(maj min maj7 maj7+ min7 ° °7 ø7 —))
 
 (defun extrai-modo (acorde)
   (if (chordp acorde)
@@ -278,8 +278,8 @@
                   (equal (chord-7th acorde) "7-"))
              '°7)
             ((equal (chord-mode acorde) "ø") 'ø7)
-            (t '--))
-      '--))
+            (t '—))
+      '—))
 
 (defun prepara-transpoe-segmento (segmento)
   (let ((pitch (evento-pitch (first segmento))))
@@ -329,14 +329,14 @@
 
 (defun aplica-mode-tree (segmento)
   (let ((fundamental (classify (make-example :values (prepara-segmento segmento)) *decision-tree*)))
-    (if (eq fundamental '--)
+    (if (eq fundamental '—)
         (make-melodic-note)
         (let* ((tonica (stringify fundamental))
                (res (classify (make-example :values (prepara-transpoe-segmento segmento))
                               *mode-tree*))
                (modo (extrai-modo-resultado res))
                (setima (extrai-setima-resultado res)))
-          (if (eq '-- res)
+          (if (eq '— res)
               (make-melodic-note)
               (make-chord :fundamental tonica
                           :mode modo

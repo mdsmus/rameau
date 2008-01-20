@@ -48,7 +48,7 @@
              (:print-function
               (lambda (struct stream depth)
                 (declare (ignore struct depth))
-                (format stream "--"))))
+                (format stream "—"))))
   notes)
 
 (defstruct
