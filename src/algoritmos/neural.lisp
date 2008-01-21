@@ -229,7 +229,7 @@
                   (equal (chord-7th gabarito) "7"))
              (list 1 0 0 0 1 0 0))
             ((and (equal (chord-mode gabarito) nil)
-                  (equal (chord-mode gabarito) "7+"))
+                  (equal (chord-7th gabarito) "7+"))
              (list 1 0 0 0 0 0 1))
             ((and (equal (chord-mode gabarito) "m")
                   (equal (chord-7th gabarito) nil))
