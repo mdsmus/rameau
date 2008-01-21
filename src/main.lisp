@@ -13,6 +13,7 @@
                         (partitura ("corais"))
                         (comparatamanhos ("corais" "exemplos"))
                         (erros ("corais" "exemplos"))
+                        (resultados ("corais" "exemplos"))
                         (tipos ("corais" "exemplos"))
                         (dados ("corais" "exemplos"))))
 
@@ -345,6 +346,32 @@ ponto nos corais de bach."
                                        gab
                                        alg))))))
 
+(defun gera-resultados (item notas gabarito resultados flags regab reres)
+  (let ((*package* (find-package :rameau))
+        (size-gab (length gabarito)))
+    (loop
+       for numero-seg from 0 to (1- size-gab)
+       for gab-lista = gabarito then (cdr gab-lista)
+       for gab = (car gab-lista) then (car gab-lista)
+       for res = resultados then (avanca-todos res)
+       for s in notas
+       do
+         (loop
+            for a in *algoritmos*
+            for i from 0
+            for r in res
+            for alg = (first r) then (first r)
+            do (when (and
+                      (cl-ppcre:scan regab (format nil "~a" gab))
+                      (cl-ppcre:scan reres (format nil "~a" alg)))
+                 (format t "~a| ~20a| ~4a| ~14a| ~12a| ~4a~%"
+                         item
+                         (algoritmo-nome a)
+                         numero-seg
+                         s
+                         gab
+                         alg))))))
+
 (defun print-help-item (item)
   (format t "~%~(* [~a]~)~%" item)
   (dolist (line (get-item item *help*))
@@ -469,6 +496,31 @@ ponto nos corais de bach."
                        flags
                        (or (first regexps) "")
                        (or (second regexps) ""))))))))
+
+(defun run-gera-resultados (flags files item regexps)
+  (with-system rameau:tempered
+    (format t "Coral Algoritmo Segmento Resultado_esperado Resultado_obtido~%")
+    (dolist (file files)
+      (let* ((musica (parse-file file))
+             (segmentos (segmentos-minimos musica))
+             (gabarito (processa-gabarito (tira-extensao file) item))
+             (resultados (when gabarito
+                           (loop for a in *algoritmos* collect
+                                (funcall (algoritmo-processa a) segmentos))))
+             (file-name (pathname-name file))
+             (notas (mapcar #'lista-notas segmentos))
+             (duracoes (calcula-duracoes segmentos)))
+        (cond
+          ((< 2 (length regexps)) (format t "São duas as expressoes regulares"))
+          ((and (not gabarito) (not (member 'i flags))))
+          (t
+           (gera-resultados file-name
+                            notas
+                            gabarito
+                            resultados
+                            flags
+                            (or (first regexps) "")
+                            (or (second regexps) ""))))))))
 
 (defun run-gera-tipos (flags files item regexps)
   (with-system rameau:tempered
@@ -596,6 +648,9 @@ ponto nos corais de bach."
 
 (defcomando erros dados flags files regexps
   (run-gera-erros flags (processa-files item files) item regexps))
+
+(defcomando resultados dados flags files regexps
+  (run-gera-resultados flags (processa-files item files) item regexps))
 
 (defcomando tipos dados flags files regexps
   (run-gera-tipos flags (processa-files item files) item regexps))
