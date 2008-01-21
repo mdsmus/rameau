@@ -42,27 +42,23 @@
   (aif (cl-fad:file-exists-p (concat #+sbcl(sb-ext:posix-getenv "HOME") "/.rameaurc"))
        ;; TODO: checa se arquivo está vazio
        (with-open-file (s it)
-         (read s))))
+         (eval (read s)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 (defparameter *lily-dir-list*
-  (aif (read-user-config)
-       it
-       '(("corais" "corais/")
-         ("kostka" "literatura/kostka-payne/")
-         ("sonatas" "literatura/beethoven-sonatas/")
-         ("exemplos" "exemplos/")
-         ("regressao" "regressao/")
-         ("lily" "regressao-lily/")
-         ("corais-include" "literatura/bach-corais/"))))
+  '(("corais" "corais/")
+    ("kostka" "literatura/kostka-payne/")
+    ("sonatas" "literatura/beethoven-sonatas/")
+    ("exemplos" "exemplos/")
+    ("regressao" "regressao/")
+    ("lily" "regressao-lily/")
+    ("corais-include" "literatura/bach-corais/")))
 
 (defparameter *gabarito-dir-list*
-  (aif (read-user-config)
-       it
-       '(("corais" "gabaritos/bach-corais/")
-         ("exemplos" "gabaritos/exemplos/"))))
+  '(("corais" "gabaritos/bach-corais/")
+    ("exemplos" "gabaritos/exemplos/")))
 
 
 (defun files-range (list)
@@ -98,6 +94,8 @@
                    (mapcar (lambda (file) (format nil "~a" file))
                            (directory (concat path "*" ext)))))))
 
+
+(read-user-config)
 
 (defparameter *exemplos-de-treinamento*
   (loop for i in '("001" "002" "003" "004" "005" "006" "007" "008" "010" "014")
