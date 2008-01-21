@@ -37,9 +37,10 @@
   (save-to-file *simple-net* *simple-net-file*))
 
 (defun cria-pattern-segmento (seg)
-  (let ((atual (make-list 12 :initial-element 0)))
+  (let ((atual (make-list 12 :initial-element 0))
+        (tam (length seg)))
     (loop for nota in seg do
-         (incf (nth (evento-pitch nota) atual)))
+         (incf (nth (evento-pitch nota) atual) (/ 1.0 tam)))
     atual))
 
 (defun cria-pattern-saida (gabarito)
