@@ -225,31 +225,35 @@
   (if (chordp gabarito)
       (cond ((and (equal (chord-mode gabarito) nil)
                   (equal (chord-7th gabarito) nil))
-             (list 1 0 0 0 0 0 0))
+             (list 1 0 0 0 0 0 0 0 0))
             ((and (equal (chord-mode gabarito) nil)
                   (equal (chord-7th gabarito) "7"))
-             (list 1 0 0 0 1 0 0))
+             (list 1 0 0 0 1 0 0 0 0))
             ((and (equal (chord-mode gabarito) nil)
                   (equal (chord-7th gabarito) "7+"))
-             (list 1 0 0 0 0 0 1))
+             (list 1 0 0 0 0 0 1 0 0))
             ((and (equal (chord-mode gabarito) "m")
                   (equal (chord-7th gabarito) nil))
-             (list 0 1 0 0 0 0 0))
+             (list 0 1 0 0 0 0 0 0 0))
             ((and (equal (chord-mode gabarito) "m")
                   (equal (chord-7th gabarito) "7"))
-             (list 0 1 0 0 1 0 0))
+             (list 0 1 0 0 1 0 0 0 0))
             ((and (equal (chord-mode gabarito) "°")
                   (equal (chord-7th gabarito) "7-"))
-             (list 0 0 1 0 0 0 1))
+             (list 0 0 1 0 0 0 1 0 0))
             ((and (equal (chord-mode gabarito) "°")
                   (equal (chord-7th gabarito) nil))
-             (list 0 0 1 0 0 0 0))
+             (list 0 0 1 0 0 0 0 0 0))
             ((and (equal (chord-mode gabarito) "ø")
                   (equal (chord-7th gabarito) "7"))
-             (list 0 0 0 1 1 0 0))
+             (list 0 0 0 1 1 0 0 0 0))
+            ((equal (chord-mode gabarito) "!")
+             (list 0 0 0 0 0 0 0 1 0))
+            ((equal (chord-mode gabarito) "+")
+             (list 0 0 0 0 0 0 0 0 1))
             (t
-             (list 0 0 0 0 0 0 0)))
-      (list 0 0 0 0 0 0 0)))
+             (list 0 0 0 0 0 0 0 0 0)))
+      (list 0 0 0 0 0 0 0 0 0)))
 
 (defun cria-pattern-saida-acorde (gabarito)
   (append (cria-pattern-saida gabarito)
@@ -281,7 +285,7 @@
   (let* ((dados (gera-dados-treinamento-chord-net))
          (tamanho (length dados)))
     (with-open-file (f *chord-net-train-data* :direction :output)
-      (format f "~a ~a ~a~%" tamanho 12 19)
+      (format f "~a ~a ~a~%" tamanho 12 21)
       (loop for d in dados
          do
            (format f "~{~a ~}~%" (first d))
@@ -293,7 +297,7 @@
 (defun treina-chord-net ()
   (if (cl-fad:file-exists-p *chord-net-train-data*)
       (progn
-        (setf *chord-net* (make-net 12 55 19))
+        (setf *chord-net* (make-net 12 55 21))
         (train-on-file *chord-net*
                                *chord-net-train-data*
                                500
@@ -319,7 +323,12 @@
                               ((>= (nth 14 res) *correctness-treshold*)
                                "°")
                               ((>= (nth 15 res) *correctness-treshold*)
-                               "ø"))
+                               "ø")
+                              ((>= (nth 19 res) *correctness-treshold*)
+                               "!")
+                              ((>= (nth 20 res) *correctness-treshold*)
+                               "+")
+                              )
                   :7th (cond ((>= (nth 16 res) *correctness-treshold*)
                               "7")
                              ((>= (nth 17 res) *correctness-treshold*)
@@ -382,7 +391,7 @@
   (let* ((dados (gera-dados-treinamento-mode-net))
          (tamanho (length dados)))
     (with-open-file (f *mode-net-train-data* :direction :output)
-      (format f "~a ~a ~a~%" tamanho 24 19)
+      (format f "~a ~a ~a~%" tamanho 24 21)
       (loop for d in dados
          do
            (if (= 0 #+sbcl(count-subseq "pt" (sb-ext:posix-getenv "LANG")) #-sbcl 0)
@@ -396,7 +405,7 @@
 (defun treina-mode-net ()
   (if (cl-fad:file-exists-p *mode-net-train-data*)
       (progn
-        (setf *mode-net* (make-net 24 50 19))
+        (setf *mode-net* (make-net 24 50 21))
         (train-on-file *mode-net*
                        *mode-net-train-data*
                        500
