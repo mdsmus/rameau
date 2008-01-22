@@ -25,7 +25,7 @@ default: corais-ly rameau
 
 all-rameau: rameau cmurameau clisprameau
 
-resultados: rameau resultados-clean
+resultados: rameau clean-resultados
 	./rameau r c -a net tree par > resultados-rameau
 	python tools/formata-tipos.py resultados-rameau
 	rm -f resultados-rameau
