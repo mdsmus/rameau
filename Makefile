@@ -85,6 +85,9 @@ book-stuff: docs/corais.lytex corais-ly
 clean-nets:
 	rm -f neural-nets/*
 
+clean-resultados:
+	rm -f resultados/*
+
 clean: clean-nets
 	rm -f rameau
 	rm -f *.data *.fann
@@ -94,7 +97,7 @@ clean: clean-nets
 clean-lisp-cache:
 	rm -rf /var/cache/common-lisp-controller/$$UID/sbcl/local
 
-cleanall: clean
+cleanall: clean clean-nets clean-resultados
 	rm -rf rameau cmurameau eclrameau clisprameau $(corais-dir)
 
 lispclean: cleanall
