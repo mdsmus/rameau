@@ -26,9 +26,9 @@ tipos = [['maior',   re.compile(r'^[A-Ga-g, 0, 0](b|#)?(/[A-Ga-g, 0, 0](#|b)?)?$
          ['dim',     re.compile(r'^[A-Ga-g, 0, 0](b|#)?°(/[A-Ga-g, 0, 0](#|b)?)?$'), 0, 0, 0],
          ['dim7',    re.compile(r'^[A-Ga-g, 0, 0](b|#)?°7(/[A-Ga-g, 0, 0](#|b)?)?$'), 0, 0, 0],
          ['hdim',    re.compile(r'^[A-Ga-g, 0, 0](b|#)?(Ø|ø)7(/[A-Ga-g, 0, 0](#|b)?)?$'), 0, 0, 0],
-         ['aug',     re.compile(r'^[A-Ga-g, 0, 0](b|#)?\+(/[A-Ga-g, 0, 0](#|b)?)?$'), 0, 0, 0],
+         ['aug',     re.compile(r'^[A-Ga-g, 0, 0](b|#)?\+(7\+)?(/[A-Ga-g, 0, 0](#|b)?)?$'), 0, 0, 0],
          ['mel',     re.compile(r'—'), 0, 0, 0],
-         ['inc',     re.compile(r'^[A-Ga-g, 0, 0](b|#)?!(/[A-Ga-g, 0, 0](#|b)?)?$'), 0, 0, 0]
+         ['inc',     re.compile(r'^[A-Ga-g, 0, 0](b|#)?!(7)?(/[A-Ga-g, 0, 0](#|b)?)?$'), 0, 0, 0]
          ]
 
 linhas = file(sys.argv[1]).readlines()[3:]
