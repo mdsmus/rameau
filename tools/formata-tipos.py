@@ -10,17 +10,17 @@ if len(sys.argv) != 2:
 
 pass
 
-tipos = [('maior',   re.compile(r'^[A-Ga-g](b|#)?(/[A-Ga-g](#|b)?)?$')),
-         ('maior7',  re.compile(r'^[A-Ga-g](b|#)?7(/[A-Ga-g](#|b)?)?$')),
-         ('maior7+', re.compile(r'^[A-Ga-g](b|#)?7\+(/[A-Ga-g](#|b)?)?$')),
-         ('menor',   re.compile(r'^[A-Ga-g](b|#)?[Mm](/[A-Ga-g](#|b)?)?$')),
-         ('menor7',  re.compile(r'^[A-Ga-g](b|#)?[Mm]7(/[A-Ga-g](#|b)?)?$')),
-         ('dim',     re.compile(r'^[A-Ga-g](b|#)?°(/[A-Ga-g](#|b)?)?$')),
-         ('dim7',    re.compile(r'^[A-Ga-g](b|#)?°7(/[A-Ga-g](#|b)?)?$')),
-         ('hdim',    re.compile(r'^[A-Ga-g](b|#)?(Ø|ø)7(/[A-Ga-g](#|b)?)?$')),
-         ('aug',     re.compile(r'^[A-Ga-g](b|#)?\+(/[A-Ga-g](#|b)?)?$')),
-         ('mel',     re.compile(r'—')),
-         ('inc',     re.compile(r'^[A-Ga-g](b|#)?!(/[A-Ga-g](#|b)?)?$'))
+tipos = [['maior',   re.compile(r'^[A-Ga-g, 0, 0](b|#)?(/[A-Ga-g, 0, 0](#|b)?)?$'), 0, 0, 0],
+         ['maior7',  re.compile(r'^[A-Ga-g, 0, 0](b|#)?7(/[A-Ga-g, 0, 0](#|b)?)?$'), 0, 0, 0],
+         ['maior7+', re.compile(r'^[A-Ga-g, 0, 0](b|#)?7\+(/[A-Ga-g, 0, 0](#|b)?)?$'), 0, 0, 0],
+         ['menor',   re.compile(r'^[A-Ga-g, 0, 0](b|#)?[Mm, 0, 0](/[A-Ga-g, 0, 0](#|b)?)?$'), 0, 0, 0],
+         ['menor7',  re.compile(r'^[A-Ga-g, 0, 0](b|#)?[Mm, 0, 0]7(/[A-Ga-g, 0, 0](#|b)?)?$'), 0, 0, 0],
+         ['dim',     re.compile(r'^[A-Ga-g, 0, 0](b|#)?°(/[A-Ga-g, 0, 0](#|b)?)?$'), 0, 0, 0],
+         ['dim7',    re.compile(r'^[A-Ga-g, 0, 0](b|#)?°7(/[A-Ga-g, 0, 0](#|b)?)?$'), 0, 0, 0],
+         ['hdim',    re.compile(r'^[A-Ga-g, 0, 0](b|#)?(Ø|ø)7(/[A-Ga-g, 0, 0](#|b)?)?$'), 0, 0, 0],
+         ['aug',     re.compile(r'^[A-Ga-g, 0, 0](b|#)?\+(/[A-Ga-g, 0, 0](#|b)?)?$'), 0, 0, 0],
+         ['mel',     re.compile(r'—'), 0, 0, 0],
+         ['inc',     re.compile(r'^[A-Ga-g, 0, 0](b|#)?!(/[A-Ga-g, 0, 0](#|b)?)?$'), 0, 0, 0]
          ]
 
 linhas = file(sys.argv[1]).readlines()[3:]
@@ -35,14 +35,20 @@ for l in linhas:
         if gab[1].match(t[4]) and not gab[1].match(t[5]):
             file("resultados/%s-%s-gab.txt" % (t[1], gab[0]), 'a').write(l)
             usados[i] += 1
+            gab[2] += 1
         if gab[1].match(t[5]) and not gab[1].match(t[4]):
             file("resultados/%s-%s-alg.txt" % (t[1], gab[0]), 'a').write(l)
             usados[i] += 1
+            gab[3] += 1
         if gab[1].match(t[5]) and gab[1].match(t[4]):
             usados[i] += 1
+            gab[4] += 1
     i += 1
 
 for i in xrange(len(usados)):
     if usados[i] == 0:
         print linhas[i]
 
+print     "Tipo        | Gabarito | Algoritmo | ambos   "
+for gab in tipos:
+    print "%12s|%10s|%11s|%5s" % (gab[0], gab[2], gab[3], gab[4])
