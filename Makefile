@@ -18,11 +18,16 @@ vpath %.ly $(corais-dir)
 vpath %.log $(corais-dir)
 vpath %.png $(corais-dir)
 
-.PHONY: update clean all doc update corais-ly corais corais-partitura
+.PHONY: update clean all doc update corais-ly corais corais-partitura resultados
 
 default: corais-ly rameau
 
+
 all-rameau: rameau cmurameau clisprameau
+
+resultados: rameau resultados-clean
+	./rameau r c -a net tree par > resultados-rameau
+	python tools/formata-tipos.py resultados-rameau
 
 rameau: $(lisp-files)
 	${sbcl} "(load \"tools/make-image.lisp\")"
