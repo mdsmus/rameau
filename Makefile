@@ -26,7 +26,7 @@ default: corais-ly rameau
 all-rameau: rameau cmurameau clisprameau
 
 resultados: rameau clean-resultados
-	./rameau r c -a net tree par > resultados/rameau
+	./rameau r c -a chord-net mode-net chord-tree mode-tree par > resultados/rameau
 	python tools/formata-tipos.py resultados/rameau
 
 
