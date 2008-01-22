@@ -184,9 +184,21 @@
                                                 a°7  b°7  c°7  d°7  e°7  f°7  g°7
                                                 a#°7 b#°7 c#°7 d#°7 e#°7 f#°7 g#°7
                                                 ab°7 bb°7 cb°7 db°7 eb°7 fb°7 gb°7
-                                                aø  bø  cø  dø  eø  fø  gø
-                                                a#ø b#ø c#ø d#ø e#ø f#ø g#ø
-                                                abø bbø cbø dbø ebø fbø gbø
+                                                aø7  bø7  cø7  dø7  eø7  fø7  gø7
+                                                a#ø7 b#ø7 c#ø7 d#ø7 e#ø7 f#ø7 g#ø7
+                                                abø7 bbø7 cbø7 dbø7 ebø7 fbø7 gbø7
+                                                a!  b!  c!  d!  e!  f!  g!
+                                                a#! b#! c#! d#! e#! f#! g#!
+                                                ab! bb! cb! db! eb! fb! gb!
+                                                a!7  b!7  c!7  d!7  e!7  f!7  g!7
+                                                a#!7 b#!7 c#!7 d#!7 e#!7 f#!7 g#!7
+                                                ab!7 bb!7 cb!7 db!7 eb!7 fb!7 gb!7
+                                                a+  b+  c+  d+  e+  f+  g+
+                                                a#+ b#+ c#+ d#+ e#+ f#+ g#+
+                                                ab+ bb+ cb+ db+ eb+ fb+ gb+
+                                                a+7+  b+7+  c+7+  d+7+  e+7+  f+7+  g+7+
+                                                a#+7+ b#+7+ c#+7+ d#+7+ e#+7+ f#+7+ g#+7+
+                                                ab+7+ bb+7+ cb+7+ db+7+ eb+7+ fb+7+ gb+7+
                                                 ))))
 
 (defparameter *chord-tree* nil)
@@ -195,14 +207,13 @@
   (if (or (equal nil (chord-mode acorde))
           (equal "m" (chord-mode acorde))
           (equal "°" (chord-mode acorde))
+          (equal "!" (chord-mode acorde))
+          (equal "+" (chord-mode acorde))
           (equal "ø" (chord-mode acorde)))
       (string->symbol
        (stringify
         (make-chord :fundamental (chord-fundamental acorde)
-                    :7th (if (equal (chord-mode acorde)
-                                    "ø")
-                             nil
-                             (chord-7th acorde))
+                    :7th (chord-7th acorde)
                     :mode (chord-mode acorde))))
       (string->symbol "—")))
 
@@ -227,7 +238,7 @@
                           *chord-classes*)))
 
 (defun aplica-chord-tree (segmento)
-  (let ((res (classify (make-example :values (prepara-segmento segmento)) *decision-tree*)))
+  (let ((res (classify (make-example :values (prepara-segmento segmento)) *chord-tree*)))
     (aif (parse-chord res)
          it
          (make-melodic-note))))
@@ -252,7 +263,7 @@
 
 (defparameter *mode-tree* nil)
 
-(defparameter *mode-classes* '(maj min maj7 maj7+ min7 ° °7 ø7 —))
+(defparameter *mode-classes* '(maj min maj7 maj7+ min7 ° °7 ø7 — ! +))
 
 (defun extrai-modo (acorde)
   (if (chordp acorde)
@@ -278,6 +289,8 @@
                   (equal (chord-7th acorde) "7-"))
              '°7)
             ((equal (chord-mode acorde) "ø") 'ø7)
+            ((equal (chord-mode acorde) "!") '!)
+            ((equal (chord-mode acorde) "+") '+)
             (t '—))
       '—))
 
@@ -314,7 +327,9 @@
     (min7 "m")
     (°  "°")
     (°7 "°")
-    (ø7 "ø")))
+    (ø7 "ø")
+    (! "!")
+    (+ "+")))
 
 (defun extrai-setima-resultado (res)
   (case res
