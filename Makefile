@@ -28,6 +28,7 @@ all-rameau: rameau cmurameau clisprameau
 resultados: rameau resultados-clean
 	./rameau r c -a net tree par > resultados-rameau
 	python tools/formata-tipos.py resultados-rameau
+	rm -f resultados-rameau
 
 rameau: $(lisp-files)
 	${sbcl} "(load \"tools/make-image.lisp\")"
