@@ -36,6 +36,14 @@ erros: rameau clean-erros
 	./rameau e c -a chord-net mode-net chord-tree mode-tree par > erros/rameau
 	python tools/formata-tipos.py erros/rameau erros/
 
+clean-acertos:
+	rm -f acertos/*
+
+acertos: rameau clean-acertos
+	./rameau acertos c -a chord-net mode-net chord-tree mode-tree par > acertos/rameau
+	python tools/formata-tipos.py acertos/rameau acertos/
+
+
 rameau: $(lisp-files)
 	${sbcl} "(load \"tools/make-image.lisp\")"
 
