@@ -18,7 +18,7 @@ vpath %.ly $(corais-dir)
 vpath %.log $(corais-dir)
 vpath %.png $(corais-dir)
 
-.PHONY: update clean all doc update corais-ly corais corais-partitura resultados
+.PHONY: update clean all doc update corais-ly corais corais-partitura resultados erros
 
 default: corais-ly rameau
 
@@ -27,8 +27,14 @@ all-rameau: rameau cmurameau clisprameau
 
 resultados: rameau clean-resultados
 	./rameau r c -a chord-net mode-net chord-tree mode-tree par > resultados/rameau
-	python tools/formata-tipos.py resultados/rameau
+	python tools/formata-tipos.py resultados/rameau resultados/
 
+clean-erros:
+	rm -f erros/*
+
+erros: rameau clean-erros
+	./rameau e c -a chord-net mode-net chord-tree mode-tree par > erros/rameau
+	python tools/formata-tipos.py erros/rameau erros/
 
 rameau: $(lisp-files)
 	${sbcl} "(load \"tools/make-image.lisp\")"
