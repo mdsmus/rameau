@@ -13,6 +13,7 @@
                         (partitura ("corais"))
                         (comparatamanhos ("corais" "exemplos"))
                         (erros ("corais" "exemplos"))
+                        (acertos ("corais" "exemplos"))
                         (resultados ("corais" "exemplos"))
                         (tipos ("corais" "exemplos"))
                         (dados ("corais" "exemplos"))))
@@ -319,7 +320,7 @@ ponto nos corais de bach."
              (format t "~a  ~(~15a~) ~5a ~5a ~,2f%~%" item (first r) i (- size-gab i) (second r))))
       (values total corretos (loop for i in counts collect (percent i size-gab))))))
 
-(defun gera-erros (item notas gabarito resultados flags regab reres)
+(defun gera-erros (item notas gabarito resultados flags regab reres erros?)
   (let ((*package* (find-package :rameau))
         (size-gab (length gabarito)))
     (loop
@@ -335,16 +336,18 @@ ponto nos corais de bach."
             for r in res
             for alg = (first r) then (first r)
             for certo? = (funcall (algoritmo-compara a) alg gab)
-            unless certo? do (when (and
-                                    (cl-ppcre:scan regab (format nil "~a" gab))
-                                    (cl-ppcre:scan reres (format nil "~a" alg)))
-                               (format t "~a| ~20a| ~4a| ~14a| ~12a| ~4a~%"
-                                       item
-                                       (algoritmo-nome a)
-                                       numero-seg
-                                       s
-                                       gab
-                                       alg))))))
+            do (if (or (and certo? (not erros?))
+                       (and erros? (not certo?)))
+                   (when (and
+                          (cl-ppcre:scan regab (format nil "~a" gab))
+                          (cl-ppcre:scan reres (format nil "~a" alg)))
+                     (format t "~a| ~20a| ~4a| ~14a| ~12a| ~4a~%"
+                             item
+                             (algoritmo-nome a)
+                             numero-seg
+                             s
+                             gab
+                             alg)))))))
 
 (defun gera-resultados (item notas gabarito resultados flags regab reres)
   (let ((*package* (find-package :rameau))
@@ -472,7 +475,7 @@ ponto nos corais de bach."
            do (format t "Total ~(~15a~):  ~5a ~5a ~,2f% (~,2f +- ~,2f)~%"
                       (first r) (second r) (third r) (fourth r) (fifth r) (sixth r) (seventh r)))))))
 
-(defun run-gera-erros (flags files item regexps)
+(defun run-gera-erros (erros? flags files item regexps)
   (with-system rameau:tempered
     (format t "Coral Algoritmo Segmento Resultado_esperado Resultado_obtido~%")
     (dolist (file files)
@@ -495,7 +498,8 @@ ponto nos corais de bach."
                        resultados
                        flags
                        (or (first regexps) "")
-                       (or (second regexps) ""))))))))
+                       (or (second regexps) "")
+                       erros?)))))))
 
 (defun run-gera-resultados (flags files item regexps)
   (with-system rameau:tempered
@@ -647,7 +651,10 @@ ponto nos corais de bach."
   (run-gera-dados flags (processa-files item files) item))
 
 (defcomando erros dados flags files regexps
-  (run-gera-erros flags (processa-files item files) item regexps))
+  (run-gera-erros t flags (processa-files item files) item regexps))
+
+(defcomando acertos dados flags files regexps
+  (run-gera-erros nil flags (processa-files item files) item regexps))
 
 (defcomando resultados dados flags files regexps
   (run-gera-resultados flags (processa-files item files) item regexps))
