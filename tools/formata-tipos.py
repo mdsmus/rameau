@@ -8,6 +8,13 @@ if len(sys.argv) != 2:
     print "Erro. Passe o arquivo com os dados como parâmetro"
     sys.exit()
 
+if sys.version < '2.5':
+    def any(iter):
+        for i in iter:
+            if i:
+                return True
+        return False
+
 def preenche_contagem(algoritmo, algs, tipo, modo):
     if not algoritmo in algs:
         algs[algoritmo] = {}
@@ -15,6 +22,11 @@ def preenche_contagem(algoritmo, algs, tipo, modo):
     if not tipo in algoritmo:
         algoritmo[tipo] = [0, 0, 0]
     algoritmo[tipo][modo] += 1
+
+def quebra(linha):
+    linha = map(str.strip, linha.split('|'))
+    linha[4] = linha[4].replace('(','').replace(')','').split()
+    return linha
 
 
 
@@ -39,18 +51,18 @@ algoritmos = {}
 i = 0
 for l in linhas:
     for gab in tipos:
-        t = map(str.strip, l.split('|'))
-        if gab[1].match(t[4]) and not gab[1].match(t[5]):
+        t = quebra(l)
+        if any(gab[1].match(x) for x in t[4]) and not gab[1].match(t[5]):
             file("resultados/%s-%s-gab.txt" % (t[1], gab[0]), 'a').write(l)
             usados[i] += 1
             gab[2] += 1
             preenche_contagem(t[1], algoritmos, gab[0], 0)
-        if gab[1].match(t[5]) and not gab[1].match(t[4]):
+        if gab[1].match(t[5]) and not any(gab[1].match(x) for x in t[4]):
             file("resultados/%s-%s-alg.txt" % (t[1], gab[0]), 'a').write(l)
             usados[i] += 1
             gab[3] += 1
             preenche_contagem(t[1], algoritmos, gab[0], 1)
-        if gab[1].match(t[5]) and gab[1].match(t[4]):
+        if gab[1].match(t[5]) and any(gab[1].match(x) for x in t[4]):
             usados[i] += 1
             gab[4] += 1
             preenche_contagem(t[1], algoritmos, gab[0], 2)
