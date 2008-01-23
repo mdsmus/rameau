@@ -50,17 +50,17 @@ def preenche_contagem(algoritmo, algs, gab, modo):
 
 
 tipos = map(lambda x: Tipo(*x), 
-            [('maior',   r'^[A-Ga-g, 0, 0](b|#)?(/[A-Ga-g, 0, 0](#|b)?)?$'),
-             ('maior7',  r'^[A-Ga-g, 0, 0](b|#)?7(/[A-Ga-g, 0, 0](#|b)?)?$'),
-             ('maior7+', r'^[A-Ga-g, 0, 0](b|#)?7\+(/[A-Ga-g, 0, 0](#|b)?)?$'),
-             ('menor',   r'^[A-Ga-g, 0, 0](b|#)?[Mm, 0, 0](/[A-Ga-g, 0, 0](#|b)?)?$'),
-             ('menor7',  r'^[A-Ga-g, 0, 0](b|#)?[Mm, 0, 0]7(/[A-Ga-g, 0, 0](#|b)?)?$'),
-             ('dim',     r'^[A-Ga-g, 0, 0](b|#)?°(/[A-Ga-g, 0, 0](#|b)?)?$'),
-             ('dim7',    r'^[A-Ga-g, 0, 0](b|#)?°7(/[A-Ga-g, 0, 0](#|b)?)?$'),
-             ('hdim',    r'^[A-Ga-g, 0, 0](b|#)?(Ø|ø)7(/[A-Ga-g, 0, 0](#|b)?)?$'),
-             ('aug',     r'^[A-Ga-g, 0, 0](b|#)?\+(7\+)?(/[A-Ga-g, 0, 0](#|b)?)?$'),
+            [('maior',   r'^[A-Ga-g](b|#)?(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('maior7',  r'^[A-Ga-g](b|#)?7(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('maior7+', r'^[A-Ga-g](b|#)?7\+(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('menor',   r'^[A-Ga-g](b|#)?[Mm](9)?(/[A-Ga-g](#|b)?)?$'),
+             ('menor7',  r'^[A-Ga-g](b|#)?[Mm]7(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('dim',     r'^[A-Ga-g](b|#)?°(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('dim7',    r'^[A-Ga-g](b|#)?°7(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('hdim',    r'^[A-Ga-g](b|#)?(Ø|ø)7(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('aug',     r'^[A-Ga-g](b|#)?\+(7\+)?(9)?(/[A-Ga-g](#|b)?)?$'),
              ('mel',     r'—'),
-             ('inc',     r'^[A-Ga-g, 0, 0](b|#)?!(7)?(/[A-Ga-g, 0, 0](#|b)?)?$')
+             ('inc',     r'^[A-Ga-g, 0, 0](b|#)?!(7)?(9)?(/[A-Ga-g](#|b)?)?$')
              ])
 
 linhas = file(sys.argv[1]).readlines()[3:]
@@ -74,17 +74,18 @@ for l in linhas:
             preenche_contagem(t.algoritmo, algoritmos, gab, 'amb')
             break
     else:
+        usado = False
         for gab in tipos:
             if gab.re.match(t.resultado) and not any(gab.re.match(x) for x in t.gabarito):
                 preenche_contagem(t.algoritmo, algoritmos, gab, 'alg')
+                usado = True
                 break
-        else:
-            for gab in tipos:
-                if any(gab.re.match(x) for x in t.gabarito) and not gab.re.match(t.resultado):
-                    preenche_contagem(t.algoritmo, algoritmos, gab, 'gab')
-                    break
-            else:
-                print l
+        for gab in tipos:
+            if any(gab.re.match(x) for x in t.gabarito) and not gab.re.match(t.resultado):
+                preenche_contagem(t.algoritmo, algoritmos, gab, 'gab')
+                usado = True
+        if not usado:
+            print l
 
 print "Total:\n"
 print "Tipo        | Gabarito | Algoritmo | ambos   "
