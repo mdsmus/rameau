@@ -68,20 +68,23 @@ algoritmos = {}
 
 
 for l in linhas:
-    usado = False
     t = Linha(l)
     for gab in tipos:
-        if any(gab.re.match(x) for x in t.gabarito) and not gab.re.match(t.resultado):
-            usado = True
-            preenche_contagem(t.algoritmo, algoritmos, gab, 'gab')
-        elif gab.re.match(t.resultado) and not any(gab.re.match(x) for x in t.gabarito):
-            usado = True
-            preenche_contagem(t.algoritmo, algoritmos, gab, 'alg')
-        elif gab.re.match(t.resultado) and any(gab.re.match(x) for x in t.gabarito):
-            usado = True
+        if gab.re.match(t.resultado) and any(gab.re.match(x) for x in t.gabarito):
             preenche_contagem(t.algoritmo, algoritmos, gab, 'amb')
-    if not usado:
-        print l
+            break
+    else:
+        for gab in tipos:
+            if gab.re.match(t.resultado) and not any(gab.re.match(x) for x in t.gabarito):
+                preenche_contagem(t.algoritmo, algoritmos, gab, 'alg')
+                break
+        else:
+            for gab in tipos:
+                if any(gab.re.match(x) for x in t.gabarito) and not gab.re.match(t.resultado):
+                    preenche_contagem(t.algoritmo, algoritmos, gab, 'gab')
+                    break
+            else:
+                print l
 
 print "Total:\n"
 print "Tipo        | Gabarito | Algoritmo | ambos   "
