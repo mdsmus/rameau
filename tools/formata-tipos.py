@@ -74,10 +74,10 @@ for l in linhas:
         if any(gab.re.match(x) for x in t.gabarito) and not gab.re.match(t.resultado):
             usado = True
             preenche_contagem(t.algoritmo, algoritmos, gab, 'gab')
-        if gab.re.match(t.resultado) and not any(gab.re.match(x) for x in t.gabarito):
+        elif gab.re.match(t.resultado) and not any(gab.re.match(x) for x in t.gabarito):
             usado = True
             preenche_contagem(t.algoritmo, algoritmos, gab, 'alg')
-        if gab.re.match(t.resultado) and any(gab.re.match(x) for x in t.gabarito):
+        elif gab.re.match(t.resultado) and any(gab.re.match(x) for x in t.gabarito):
             usado = True
             preenche_contagem(t.algoritmo, algoritmos, gab, 'amb')
     if not usado:
