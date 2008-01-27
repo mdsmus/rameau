@@ -48,6 +48,15 @@ def preenche_contagem(algoritmo, algs, gab, modo):
     algoritmo[gab.nome][modo] += 1
     gab[modo] += 1
 
+def precisao(gab, alg, amb):
+    if alg + amb == 0:
+        return 0.0
+    return 100.0 * amb / float(alg + amb)
+
+def recall(gab, alg, amb):
+    if gab + amb == 0:
+        return 0.0
+    return 100.0 * amb / float(gab + amb)
 
 tipos = map(lambda x: Tipo(*x), 
             [('maior',   r'^[A-Ga-g](b|#)?(9)?(/[A-Ga-g](#|b)?)?$'),
@@ -88,16 +97,20 @@ for l in linhas:
             print l
 
 print "Total:\n"
-print "Tipo        | Gabarito | Algoritmo | ambos   "
+print "Tipo        | Gabarito | Algoritmo | ambos   | Precisão | Recall"
 for gab in sorted(tipos):
-    print "%12s|%10s|%11s|%5s" % (gab.nome, gab['gab'], gab['alg'], gab['amb'])
+    print "%12s|%10s|%11s|%9s|     %2.1f%%|   %2.1f%%" % (gab.nome, gab['gab'], gab['alg'], gab['amb'], 
+                                                          precisao(gab['gab'], gab['alg'], gab['amb']),
+                                                          recall(gab['gab'], gab['alg'], gab['amb']))
 print
 
 for alg in algoritmos:
     print alg
-    print "Tipo        | Gabarito | Algoritmo | ambos   "
+    print "Tipo        | Gabarito | Algoritmo | ambos   | Precisão | Recall"
     for tipo in sorted(algoritmos[alg].keys()):
         a = algoritmos[alg][tipo]
-        print "%12s|%10s|%11s|%5s" % (tipo, a['gab'], a['alg'], a['amb'])
+        print "%12s|%10s|%11s|%9s|     %2.1f%%|   %2.1f%%" % (tipo, a['gab'], a['alg'], a['amb'],
+                                                              precisao(a['gab'], a['alg'], a['amb']),
+                                                              recall(a['gab'], a['alg'], a['amb']))
     print
         
