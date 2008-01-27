@@ -38,8 +38,13 @@
   #+clisp(ext:exit)
   #+sbcl(quit))
 
+(defun getenv (string)
+  #+sbcl(sb-ext:posix-getenv string)
+  #+cmu(cdr (assoc (intern string :keyword) ext:*environment-list*))
+  #+clisp(ext:getenv string))
+
 (defun read-user-config ()
-  (aif (cl-fad:file-exists-p (concat #+sbcl(sb-ext:posix-getenv "HOME") "/.rameaurc"))
+  (aif (cl-fad:file-exists-p (concat (getenv "HOME") "/.rameaurc"))
        ;; TODO: checa se arquivo está vazio
        (with-open-file (s it)
          (eval (read s)))))

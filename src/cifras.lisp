@@ -48,10 +48,9 @@
              (:print-function
               (lambda (struct stream depth)
                 (declare (ignore struct depth))
-                (format stream (if (= 0 #+sbcl(count-subseq  "UTF" (sb-ext:posix-getenv "LANG")) #-sbcl 0)
+                (format stream (if (= 0 (count-subseq  "utf" (getenv "LANG")))
                                    "--"
-                                   "—"
-                                   )))))
+                                   "—")))))
   notes)
 
 (defstruct
