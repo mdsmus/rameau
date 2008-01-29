@@ -112,7 +112,10 @@
 
 (defun aplica-simple-net (inputs)
   (load-simple-net)
-  (mapcar (lambda (x) (extrai-resultado-simple-net (run-net *simple-net* (cria-pattern-segmento x)))) inputs))
+  (mapcar (lambda (x)
+            (extrai-resultado-simple-net
+             (run-net *simple-net* (cria-pattern-segmento x))))
+          inputs))
 
 (register-algorithm "Simple-net" #'aplica-simple-net #'compara-gabarito-fundamental)
 
@@ -347,10 +350,12 @@
 
 (defun aplica-chord-net (inputs)
   (load-chord-net)
-  (mapcar (lambda (x) (extrai-resultado-chord-net
+  (coloca-inversoes
+   inputs
+   (mapcar (lambda (x) (extrai-resultado-chord-net
                         (run-net *chord-net*
                                  (cria-pattern-segmento x))))
-           inputs))
+           inputs)))
 
 (register-algorithm "Chord-net" #'aplica-chord-net #'compara-gabarito-modo-setima)
     
@@ -439,7 +444,7 @@
   (load-mode-net)
   (let* ((fundamentais (extrai-res-context-net segmentos))
          (modos (aplica-mode-net segmentos fundamentais)))
-    modos))
+    (coloca-inversoes segmentos modos)))
 
 
 (register-algorithm "Mode-net" #'gera-gabarito-mode-net #'compara-gabarito-modo-setima)

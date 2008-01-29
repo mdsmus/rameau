@@ -249,7 +249,7 @@
 
 (defun gera-gabarito-chord-tree (coral)
   (dbg 'rameau::mostra-arvore "Arvore: ~/rameau-tree::exibe-chord-tree/ ~%" *chord-tree*)
-  (mapcar #'aplica-chord-tree coral))
+  (coloca-inversoes coral (mapcar #'aplica-chord-tree coral)))
 
 (register-algorithm "Chord-tree" #'gera-gabarito-chord-tree #'compara-gabarito-modo-setima)
 
@@ -366,7 +366,7 @@
 
 (defun gera-gabarito-mode-tree (coral)
   (dbg 'rameau::mostra-arvore "Arvore: ~/rameau-tree::exibe-mode-tree/ ~%" *mode-tree*)
-  (mapcar #'aplica-mode-tree coral))
+  (coloca-inversoes coral (mapcar #'aplica-mode-tree coral)))
 
 (defun faz-treina-mode-tree ()
   (with-system rameau:tempered

@@ -34,6 +34,7 @@
                                split-word
                                split-opts
                                split-dados
+                               sorted
                                sort-set
                                stringify
                                string->symbol
@@ -261,3 +262,5 @@ Exemplo: (split-word \"foo\") => (F O O)"
 (defun split-dados (dados)
   (cl-ppcre:split "," dados))
 
+(defun sorted (lista key)
+  (sort (copy-list lista) key))

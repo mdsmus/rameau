@@ -39,7 +39,7 @@
 (defun lista-notas (segmento)
   (mapcar (lambda (x)
             (print-note (code->note (evento-pitch x)) 'latin))
-          (sort segmento #'compara-notas)))
+          (sorted segmento #'compara-notas)))
 
 (defun pitches (segmento)
   (mapcar #'evento-pitch segmento))

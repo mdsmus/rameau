@@ -20,6 +20,7 @@
    #:chord-mode
    #:chord-7th
    #:chordp
+   #:coloca-inversoes
    #:compara-gabarito-fundamental
    #:compara-gabarito-modo-setima
    #:compara-notas

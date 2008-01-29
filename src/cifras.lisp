@@ -174,7 +174,15 @@ position."
               (compara-gabarito-modo-setima-individual res x))
             gab)))
 
+(defun coloca-inversao (segmento acorde)
+  (if (chordp acorde)
+      (make-chord :fundamental (chord-fundamental acorde)
+                  :7th (chord-7th acorde)
+                  :bass (string-upcase (first (lista-notas segmento))))
+      acorde))
 
+(defun coloca-inversoes (segmentos acordes)
+  (mapcar #'coloca-inversao segmentos acordes))
 
 #|
 testes
