@@ -538,10 +538,12 @@ ponto nos corais de bach."
           (half-dim 0)
           (aug 0)
           (inc 0)
-          (mel 0))
+          (mel 0)
+          (total 0))
     (dolist (file files)
       (awhen (processa-gabarito (tira-extensao file) item)
         (loop for c in it do
+             (incf total)
              (cond ((not (chordp c)) (incf mel))
                    ((and (equal nil (chord-mode c))
                          (equal nil (chord-7th c)))
@@ -573,21 +575,21 @@ ponto nos corais de bach."
                     (incf aug))
                    ((equal "ø" (chord-mode c))
                     (incf half-dim))))))
-    (format t (concat "    Maior: ~a ~%  Maior 7: ~a ~% Maior 7+: ~a ~%"
-                      "    Menor: ~a ~%  Menor 7: ~a ~%      Dim: ~a ~%"
-                      "    Dim 7: ~a ~% Half-dim: ~a ~%      Aug: ~a ~%"
-                      "      Inc: ~a ~%      Mel: ~a ~%")
-            maior
-            maior7
-            maior7+
-            menor
-            menor7
-            dim
-            dim7
-            half-dim
-            aug
-            inc
-            mel))))
+    (format t (concat "    Maior: ~10a ~10a% ~%  Maior 7: ~10a ~10a% ~% Maior 7+: ~10a ~10a% ~%"
+                      "    Menor: ~10a ~10a% ~%  Menor 7: ~10a ~10a% ~%      Dim: ~10a ~10a% ~%"
+                      "    Dim 7: ~10a ~10a% ~% Half-dim: ~10a ~10a% ~%      Aug: ~10a ~10a% ~%"
+                      "      Inc: ~10a ~10a% ~%      Mel: ~10a ~10a% ~%")
+            maior (percent maior total)
+            maior7 (percent maior7 total)
+            maior7+ (percent maior7+ total)
+            menor (percent menor total)
+            menor7 (percent menor7 total)
+            dim (percent dim total)
+            dim7 (percent dim7 total)
+            half-dim (percent half-dim total)
+            aug (percent aug total)
+            inc (percent inc total)
+            mel (percent mel total)))))
               
 
 (defun run-compara-tamanhos (flags files item)
