@@ -178,7 +178,9 @@ position."
   (if (chordp acorde)
       (make-chord :fundamental (chord-fundamental acorde)
                   :7th (chord-7th acorde)
-                  :bass (string-upcase (first (lista-notas segmento))))
+                  :bass (let ((inv (first (lista-notas segmento))))
+                          (when (not (equal inv (chord-fundamental acorde)))
+                            inv)))
       acorde))
 
 (defun coloca-inversoes (segmentos acordes)
