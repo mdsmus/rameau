@@ -58,7 +58,7 @@
       (:print-function
        (lambda (struct stream depth)
            (declare (ignore depth))
-           (format stream "~:(~a~@[~a~]~)~@[~:(~a~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[/~:(~a~)~]"
+           (format stream "~:(~a~)~@[~a~]~@[~:(~a~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[/~:(~a~)~]"
                    (chord-fundamental struct)
                    (chord-mode struct)
                  ;;; possível bug em acordes que tenham a sétima diminuta mas não sejam X°7

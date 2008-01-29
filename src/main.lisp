@@ -79,7 +79,7 @@
   (let ((color (if res 21 31))
         (string (if (member 'l flags)
                     "~A[0;~Dm~(~15a~)"
-                    "~A[0;~Dm~5a")))
+                    "~A[0;~Dm~6a")))
     (format t string (code-char #x1b) color alg)
     (format t "~A[0m" (code-char #x1b))
     (format t "|")))
