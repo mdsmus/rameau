@@ -107,10 +107,17 @@ print
 for alg in algoritmos:
     print alg
     print "Tipo        | Gabarito | Algoritmo | ambos   | Precisão | Recall"
+    n = 0
+    prec = 0.0
+    rec = 0.0
     for tipo in sorted(algoritmos[alg].keys()):
         a = algoritmos[alg][tipo]
         print "%12s|%10s|%11s|%9s|     %2.1f%%|   %2.1f%%" % (tipo, a['gab'], a['alg'], a['amb'],
                                                               precisao(a['gab'], a['alg'], a['amb']),
                                                               recall(a['gab'], a['alg'], a['amb']))
+        n += 1
+        prec += precisao(a['gab'], a['alg'], a['amb'])
+        rec += recall(a['gab'], a['alg'], a['amb'])
+    print "%12s|%10s|%11s|%9s|     %2.1f%%|   %2.1f%%" % ('avg', '', '', '', prec/n, rec/n)
     print
         
