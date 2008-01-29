@@ -178,6 +178,7 @@ position."
   (if (chordp acorde)
       (make-chord :fundamental (chord-fundamental acorde)
                   :7th (chord-7th acorde)
+                  :mode (chord-mode acorde)
                   :bass (let ((inv (first (lista-notas segmento))))
                           (when (not (equal inv (chord-fundamental acorde)))
                             inv)))
