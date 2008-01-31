@@ -43,6 +43,9 @@
   #+cmu(cdr (assoc (intern string :keyword) ext:*environment-list*))
   #+clisp(ext:getenv string))
 
+(defun unicode-term ()
+  (= 1 (count-subseq "utf" (string-downcase (getenv "LANG")))))
+
 (defun read-user-config ()
   (aif (cl-fad:file-exists-p (concat (getenv "HOME") "/.rameaurc"))
        ;; TODO: checa se arquivo está vazio

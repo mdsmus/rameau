@@ -48,9 +48,9 @@
              (:print-function
               (lambda (struct stream depth)
                 (declare (ignore struct depth))
-                (format stream (if (= 0 (count-subseq  "utf" (getenv "LANG")))
-                                   "--"
-                                   "—")))))
+                (format stream (if (unicode-term)
+                                   "—"
+                                   "--")))))
   notes)
 
 (defstruct
@@ -60,7 +60,13 @@
            (declare (ignore depth))
            (format stream "~:(~a~)~@[~a~]~@[~:(~a~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[/~:(~a~)~]"
                    (chord-fundamental struct)
-                   (chord-mode struct)
+                   (if (unicode-term)
+                       (chord-mode struct)
+                       (cond ((equal "ø" (chord-mode struct))
+                              "hdim")
+                             ((equal "°" (chord-mode struct))
+                              "dim")
+                             (t (chord-mode struct))))
                  ;;; possível bug em acordes que tenham a sétima diminuta mas não sejam X°7
                    (if (string= (chord-7th struct) "7-") "7" (chord-7th struct))
                    (chord-9th struct)
