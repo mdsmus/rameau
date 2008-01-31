@@ -49,7 +49,9 @@
       text))
   
 (defun unicode-term (f)
-  (eq (stream-external-format f) #+sbcl :utf-8 #-sbcl :default))
+  (or (null f)
+      (eq (stream-external-format f) nil)
+      (eq (stream-external-format f) #+sbcl :utf-8 #-sbcl :default)))
 
 (defun read-user-config ()
   (aif (cl-fad:file-exists-p (concat (getenv "HOME") "/.rameaurc"))
