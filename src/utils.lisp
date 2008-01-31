@@ -197,7 +197,7 @@ quantos acidentes ou oitavas uma nota tem."
 (defun file-string (path)
   "Sucks up an entire file from PATH into a freshly-allocated string,
       returning two values: the string and the number of bytes read."
-  (with-open-file (s path)
+  (with-open-file (s path #+sbcl :external-format #+sbcl :utf-8 )
     (let* ((len (file-length s))
            (data (make-string len :initial-element #\Space))
            (*package* (find-package :rameau)))
@@ -264,3 +264,4 @@ Exemplo: (split-word \"foo\") => (F O O)"
 
 (defun sorted (lista key)
   (sort (copy-list lista) key))
+

@@ -43,8 +43,13 @@
   #+cmu(cdr (assoc (intern string :keyword) ext:*environment-list*))
   #+clisp(ext:getenv string))
 
-(defun unicode-term ()
-  (= 1 (count-subseq "utf" (string-downcase (getenv "LANG")))))
+(defun remove-comma-if-needed (text)
+  (if (= 1 (count-subseq "pt" (getenv "LANG")))
+      (substitute #\, #\. text)
+      text))
+  
+(defun unicode-term (f)
+  (eq (stream-external-format f) #+sbcl :utf-8 #-sbcl :default))
 
 (defun read-user-config ()
   (aif (cl-fad:file-exists-p (concat (getenv "HOME") "/.rameaurc"))

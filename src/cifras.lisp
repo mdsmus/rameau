@@ -48,7 +48,7 @@
              (:print-function
               (lambda (struct stream depth)
                 (declare (ignore struct depth))
-                (format stream (if (unicode-term)
+                (format stream (if (unicode-term stream)
                                    "—"
                                    "--")))))
   notes)
@@ -60,7 +60,7 @@
            (declare (ignore depth))
            (format stream "~:(~a~)~@[~a~]~@[~:(~a~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[/~:(~a~)~]"
                    (chord-fundamental struct)
-                   (if (unicode-term)
+                   (if (unicode-term stream)
                        (chord-mode struct)
                        (cond ((equal "ø" (chord-mode struct))
                               "hdim")

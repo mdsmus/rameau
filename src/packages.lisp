@@ -40,6 +40,7 @@
    #:rameau-profile
    #:rameau-report
    #:rameau-quit
+   #:remove-comma-if-needed
    #:read-user-config
    #:segmentos-minimos
    #:set-lang
