@@ -77,9 +77,7 @@
       (format f "~a ~a ~a~%" tamanho 12 12)
       (loop for d in dados
          do
-           (if (= 0 #+sbcl(count-subseq "pt" (sb-ext:posix-getenv "LANG")) #-sbcl 0)
-               (format f "~{~a ~}~%" (first d))
-               (format f (substitute #\, #\. (format nil "~{~a ~}~%" (first d)))))
+           (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
            (format f "~{~a ~}~%" (second d))))))
 
 (unless (cl-fad:file-exists-p *simple-net-train-data*)
@@ -168,9 +166,7 @@
       (format f "~a ~a ~a~%" tamanho 48 12)
       (loop for d in dados
          do
-           (if (= 0 #+sbcl(count-subseq "pt" (sb-ext:posix-getenv "LANG")) #-sbcl 0)
-               (format f "~{~a ~}~%" (first d))
-               (format f (substitute #\, #\. (format nil "~{~a ~}~%" (first d)))))
+           (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
            (format f "~{~a ~}~%" (second d))))))
 
 (unless (cl-fad:file-exists-p *context-net-train-data*)
@@ -295,9 +291,7 @@
       (format f "~a ~a ~a~%" tamanho 12 21)
       (loop for d in dados
          do
-           (if (= 0 #+sbcl(count-subseq "pt" (sb-ext:posix-getenv "LANG")) #-sbcl 0)
-               (format f "~{~a ~}~%" (first d))
-               (format f (substitute #\, #\. (format nil "~{~a ~}~%" (first d)))))
+           (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
            (format f "~{~a ~}~%" (second d))))))
 
 (unless (cl-fad:file-exists-p *chord-net-train-data*)
@@ -405,9 +399,7 @@
       (format f "~a ~a ~a~%" tamanho 24 21)
       (loop for d in dados
          do
-           (if (= 0 #+sbcl(count-subseq "pt" (sb-ext:posix-getenv "LANG")) #-sbcl 0)
-               (format f "~{~a ~}~%" (first d))
-               (format f (substitute #\, #\. (format nil "~{~a ~}~%" (first d)))))
+           (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
            (format f "~{~a ~}~%" (second d))))))
 
 (unless (cl-fad:file-exists-p *mode-net-train-data*)
