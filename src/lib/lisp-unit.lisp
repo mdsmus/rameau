@@ -104,6 +104,7 @@ For more information, see lisp-unit.html.
            #:assert-eq #:assert-eql #:assert-equal #:assert-equalp
            #:assert-error #:assert-expands #:assert-false 
            #:assert-equality #:assert-prints #:assert-true
+           #:assert-< #:assert->
            #:get-test-code #:get-tests
            #:remove-all-tests #:remove-tests
            #:logically-equal #:set-equal
@@ -158,6 +159,12 @@ For more information, see lisp-unit.html.
 
 (defmacro assert-equalp (expected form &rest extras)
  (expand-assert :equal form form expected extras :test #'equalp))
+
+(defmacro assert-< (expected form &rest extras)
+ (expand-assert :equal form form expected extras :test #'<))
+
+(defmacro assert-> (expected form &rest extras)
+ (expand-assert :equal form form expected extras :test #'>))
 
 (defmacro assert-error (condition form &rest extras)
  (expand-assert :error form (expand-error-form form)
