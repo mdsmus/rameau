@@ -113,6 +113,7 @@
 (read-user-config)
 
 (defparameter *exemplos-de-treinamento*
-  (loop for f in (processa-files "corais" '("1..10"))
+  (loop for f in (processa-files "corais" '("1..6"))
      for g = (processa-gabarito f "corais")
      collect (list (segmentos-minimos (parse-file f)) g)))
+
