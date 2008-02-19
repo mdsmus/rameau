@@ -12,6 +12,7 @@
                         (analise ("corais" "kostka" "sonatas" "exemplos"))
                         (partitura ("corais"))
                         (comparatamanhos ("corais" "exemplos"))
+                        (enarmonia ("corais"))
                         (erros ("corais" "exemplos"))
                         (acertos ("corais" "exemplos"))
                         (resultados ("corais" "exemplos"))
@@ -32,8 +33,7 @@
                         (("-i" "ignora (não imprime) corais sem gabaritos")
                          ("-v" "mostra notas dos segmentos")))
                        (partitura
-                        (("-e <estilo>" "seleciona estilo de impressão dos acordes errados (bold ou red)")))
-                       (comparatamanhos)))
+                        (("-e <estilo>" "seleciona estilo de impressão dos acordes errados (bold ou red)")))))
 
 (defun arg->list (list)
   (when list
@@ -93,7 +93,7 @@
   (aif (position (next-flag list) list :test #'string=) it 0))
 
 (defun get-lone-flags (list)
-  (exclude-repetition
+  (remove-duplicates
    (mapcan (lambda (item) (split-opts (first item)))
            (remove-if-not (lambda (item) (= (length item) 1)) list))))
 
@@ -610,6 +610,36 @@ ponto nos corais de bach."
       (format t "Todos corretos.~%")
       (format t "~a errados.~%" errados))))
 
+(defun pitch-list (list)
+  (sort (remove-duplicates (mapcar #'evento-pitch list)) #'<))
+
+(defun run-enarmonia (flags files item)
+  (format t "~a:~%" item)
+  (dolist (file files)
+    (let ((segmento (segmentos-minimos (parse-file file)))
+	  (gabarito (processa-gabarito (tira-extensao file) item))
+	  (*package* (find-package :rameau)))
+      (format t " * ~a~%" file)
+      (format t "~% #: interv. notas        gab~%")
+      (format t "-----------------------------------~%")
+      (loop
+	 for x in (mapcar2 #'set-intervals #'pitch-list segmento)
+	 for nota in (mapcar #'pitch-list segmento)
+	 for n from 1
+	 for gab in gabarito
+	 for list = (mapcar #'interval->code x)
+	 for aug = (find 'aug list :key #'second)
+	 for dim = (find 'dim list :key #'second) do
+	   (when aug
+	     (if (/= (first aug) 4)
+		 (format t "~a: ~{~(~a ~)~} ~13a ~a~%"
+			 n aug (mapcar2 #'print-note #'code->note nota) gab)))
+	   (when dim
+	     (if (/= (first dim) 5)
+		 (format t "~a: ~{~(~a ~)~} ~13a ~a~%"
+			 n dim (mapcar2 #'print-note #'code->note nota) gab)))
+	   ))))
+
 (defun run-partitura (flags files item)
   (when (member 'v flags) (format t "gerando "))
   (with-system rameau:tempered
@@ -668,6 +698,8 @@ ponto nos corais de bach."
 (defcomando comparatamanhos dados flags files regexps
   (run-compara-tamanhos flags (processa-files item files) item))
 
+(defcomando enarmonia dados flags files regexps
+  (run-enarmonia flags (processa-files item files) item))
 
 
 (defun main ()
