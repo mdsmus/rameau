@@ -233,7 +233,7 @@ accidental and a representation. EXAMPLE: (print-accidentals 3 'lily)
 returns isisis."
   (repeat-string acc (funcall (if (>= acc 0) #'get-sharp #'get-flat) repr)))
 
-(defcached print-note (note-code representation)
+(defun print-note (note-code &optional (representation 'latin))
   "Retuns a string of a note according to a note-code and representation.
 Example: (print-note '(c 1) 'lily) return cis."
   (format nil "~(~a~)~a" (first note-code) (print-accidentals (second note-code) representation)))
