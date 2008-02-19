@@ -23,6 +23,7 @@
                                get-item
                                max-predicado
                                no-op
+			       mapcar2
                                octave-from-string
                                pula
                                read-file-as-sexp
@@ -257,3 +258,6 @@ Exemplo: (split-word \"foo\") => (F O O)"
 (defun sorted (lista key)
   (sort (copy-list lista) key))
 
+(defun mapcar2 (fn1 fn2 list)
+  "Faz a mapcar do mapcar de uma lista"
+  (mapcar fn1 (mapcar fn2 list)))
