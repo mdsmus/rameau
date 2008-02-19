@@ -287,8 +287,8 @@ ponto nos corais de bach."
                   for i in counts
                   for a in *algoritmos*
                   collect (list (algoritmo-nome a) (percent i size-gab)))))
-        (loop for r in (sort l #'> :key #'second) do
-             (format t "  ~(~15a~) ~,2f%~%" (first r) (second r)))))))
+        (loop for (name value) in (sort l #'> :key #'second) do
+             (format t "  ~(~15a~) ~,2f%~%" name value))))))
 
 (defun gera-dados (item gabarito resultados flags)
   (let ((*package* (find-package :rameau))
@@ -315,9 +315,8 @@ ponto nos corais de bach."
                   for i in counts
                   for a in *algoritmos*
                   collect (list (algoritmo-nome a) (percent i size-gab) i))))
-        (loop for r in (sort l #'> :key #'second)
-           for i = (third r) do
-             (format t "~a  ~(~15a~) ~5a ~5a ~,2f%~%" item (first r) i (- size-gab i) (second r))))
+        (loop for (name perc correct) in (sort l #'> :key #'second) do
+             (format t "~a  ~(~15a~) ~5a ~5a ~,2f%~%" item name correct (- size-gab correct) perc)))
       (values total corretos (loop for i in counts collect (percent i size-gab))))))
 
 (defun gera-erros (item notas gabarito resultados flags regab reres erros?)
@@ -472,8 +471,7 @@ ponto nos corais de bach."
                                          (* (/ mx processados)
                                             (/ mx processados))))))))
         (loop for r in (sort l #'> :key #'second)
-           do (format t "Total ~(~15a~):  ~5a ~5a ~,2f% (~,2f +- ~,2f)~%"
-                      (first r) (second r) (third r) (fourth r) (fifth r) (sixth r) (seventh r)))))))
+           do (apply #'format t "Total ~(~15a~):  ~5a ~5a ~,2f% (~,2f +- ~,2f)~%" r))))))
 
 (defun run-gera-erros (erros? flags files item regexps)
   (with-system rameau:tempered
@@ -545,26 +543,26 @@ ponto nos corais de bach."
         (loop for c in it do
              (incf total)
              (cond ((not (chordp c)) (incf mel))
-                   ((and (equal nil (chord-mode c))
-                         (equal nil (chord-7th c)))
+                   ((and (null (chord-mode c))
+                         (null (chord-7th c)))
                     (incf maior))
-                   ((and (equal nil (chord-mode c))
-                         (equal nil (chord-7th c)))
+                   ((and (null (chord-mode c))
+                         (null (chord-7th c)))
                     (incf maior))
-                   ((and (equal nil (chord-mode c))
+                   ((and (null (chord-mode c))
                          (equal "7" (chord-7th c)))
                     (incf maior7))
-                   ((and (equal nil (chord-mode c))
+                   ((and (null (chord-mode c))
                          (equal "7+" (chord-7th c)))
                     (incf maior7+))
                    ((and (equal "m" (chord-mode c))
-                         (equal nil (chord-7th c)))
+                         (null (chord-7th c)))
                     (incf menor))
                    ((and (equal "m" (chord-mode c))
                          (equal "7" (chord-7th c)))
                     (incf menor7))
                    ((and (equal "°" (chord-mode c))
-                         (equal nil (chord-7th c)))
+                         (null (chord-7th c)))
                     (incf dim))
                    ((and (equal "°" (chord-mode c))
                          (equal "7-" (chord-7th c)))
