@@ -91,5 +91,5 @@
 (define-test repeat-string
   (assert-equal "foofoofoo" (repeat-string 3 "foo")))
 
-(define-test exclude-repetition
-  (assert-equal '(1 2 3) (exclude-repetition '(1 2 1 3))))
+(define-test remove-duplicates
+  (assert-equal '(1 2 3) (remove-duplicates '(1 2 1 3))))

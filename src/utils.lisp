@@ -19,7 +19,6 @@
                                count-subseq
                                defcached
                                destringify
-                               exclude-repetition
                                file-string
                                get-item
                                max-predicado
@@ -108,13 +107,6 @@
 (defun sort-set (set)
   "Sort a set in crescent order. "
   (sort set #'<))
-
-(defun exclude-repetition (set)
-  "Exclude all repetitions from a set."
-  (let ((novo-set ()))
-    (loop for x in set unless (member x novo-set)
-       do (push x novo-set))
-    (nreverse novo-set)))
 
 (defun pula (elemento lista)
   "Pula as ocorrências iniciais de elemento na lista"

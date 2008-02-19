@@ -315,13 +315,12 @@ rotation, and so on. This function is cyclic."
   "Retuns a list with the intervals between the consecutive notes of a set.
 EXAMPLE: (set-intervals '(0 3 7)) returns (3 4 5). In this list 5 is
 the interval between the last and first note."
-  (assert (eq *system* 'tempered))
   (mapcar (lambda (a b) (module (- b a))) set (rotate set)))
 
 (defun set-symmetric? (set)
   "Test if a set is symmetric, i.e. if all its intervals are equal. (0
 3 6 9) is an example of a symmetric set."
-  (if (= (length (exclude-repetition (set-intervals set))) 1) t))
+  (if (= (length (remove-duplicates (set-intervals set))) 1) t))
 
 (defun set-form-list (set)
   "Generate a form-list of an set. A form-list is a list with each
@@ -330,7 +329,7 @@ the inverval between the second and first note. This format is used to
 determine the normal and prime form. EXAMPLE: (set-form-list '(0 3 7))
 returns (((0 3 7) 7 3) ((3 7 0) 9 4) ((7 0 3) 8 5))."
   (loop
-     for rotation in (set-rotate (sort-set (exclude-repetition set)))
+     for rotation in (set-rotate (sort-set (remove-duplicates set)))
      for set-size = (interval (last1 rotation) (first rotation))
      for set-beg-size = (interval (second rotation) (first rotation))
      collect (list rotation (module set-size) (module set-beg-size))))

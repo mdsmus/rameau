@@ -76,7 +76,7 @@
 
 (defun filtra-algoritmos (algoritmos)
   (if algoritmos
-      (exclude-repetition
+      (remove-duplicates
        (loop for alg in algoritmos
           append (loop for i in *algoritmos*
                     when (> (count-subseq alg (string-downcase (algoritmo-nome i))) 0)
