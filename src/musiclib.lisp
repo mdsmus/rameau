@@ -118,9 +118,7 @@
   "Returns a table defining notes in the system."
   (if (eq 'tempered *system*)
     (get-system-notes 'tempered)
-    (if (eq 'tonal *system*)
-        (get-system-notes 'tonal)
-        (error (format nil "sistema  ~a" *system*)))))
+    (get-system-notes 'tonal)))
 
 (defun get-system-module (system)
   "Returns the numeric value to be used as a module in the defined
