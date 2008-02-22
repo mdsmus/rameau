@@ -115,7 +115,7 @@
              (run-net *simple-net* (cria-pattern-segmento x))))
           inputs))
 
-(register-algorithm "Simple-net" #'aplica-simple-net #'compara-gabarito-fundamental)
+;(register-algorithm "Simple-net" #'aplica-simple-net #'compara-gabarito-fundamental)
 
 
 (defvar *context-net* nil)
@@ -201,7 +201,7 @@
                     (cons nil (cons nil inputs)))
            2))
 
-(register-algorithm "Context-net" #'aplica-context-net #'compara-gabarito-fundamental)
+;(register-algorithm "Context-net" #'aplica-context-net #'compara-gabarito-fundamental)
     
 (defun extrai-res-context-net (coral)
   (maplist (lambda (x)

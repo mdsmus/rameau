@@ -65,7 +65,7 @@
   (dbg 'rameau::mostra-arvore "Arvore: ~/rameau-tree::exibe-tree/ ~%" *decision-tree*)
   (mapcar #'aplica-decision-tree coral))
 
-(register-algorithm "Simple-tree" #'gera-gabarito-decision-tree #'compara-gabarito-fundamental)
+;(register-algorithm "Simple-tree" #'gera-gabarito-decision-tree #'compara-gabarito-fundamental)
 
 (defun treina-tree ()
   (with-system rameau:tempered
@@ -159,7 +159,7 @@
       (gera-treina-context-tree corais gabaritos))))
 (treina-context-tree)
 
-(register-algorithm "Context-tree" #'gera-gabarito-context-tree #'compara-gabarito-fundamental)
+;(register-algorithm "Context-tree" #'gera-gabarito-context-tree #'compara-gabarito-fundamental)
 
 (defparameter *chord-classes* (mapcar #'string->symbol
                                       (mapcar #'stringify
