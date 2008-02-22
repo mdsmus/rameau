@@ -19,6 +19,8 @@ computational musicology
 harmony, chords and tonality
 
 ** regras
+1-3 artigos com o mesmo autor
+
 4-6 paginas
 
 Submission must consist of original contributions (not previously
@@ -32,6 +34,7 @@ authors are strongly encouraged to present evaluations of their work
 that use benchmark data.
 
 ** ideias:
+codificacao tonal
 neural: so 2 artigos em todos ismir (2000 e 2003) (svm 2, hmm 11) (dt 0)
 
 ~/dados/genos-docs/ismir/2003/papers/Harford.PDF
