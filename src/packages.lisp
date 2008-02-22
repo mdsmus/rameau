@@ -53,6 +53,7 @@
    #:processa-cifras
    #:register-algorithm
    #:read-chords
+   #:temperado
    #:teste
    #:transpose-segmentos
    #:transpose-chords

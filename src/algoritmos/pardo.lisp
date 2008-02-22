@@ -152,7 +152,7 @@
 
 (defun gera-gabarito-pardo (segmentos)
   (mapcar #'pardo->chord
-          (reduce #'desempata-pardo (mapcar #'pardo segmentos)
+          (reduce #'desempata-pardo (mapcar #'pardo (temperado segmentos))
                   :from-end t :initial-value nil)))
      
 

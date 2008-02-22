@@ -63,7 +63,7 @@
 
 (defun gera-gabarito-decision-tree (coral)
   (dbg 'rameau::mostra-arvore "Arvore: ~/rameau-tree::exibe-tree/ ~%" *decision-tree*)
-  (mapcar #'aplica-decision-tree coral))
+  (mapcar #'aplica-decision-tree (temperado coral)))
 
 ;(register-algorithm "Simple-tree" #'gera-gabarito-decision-tree #'compara-gabarito-fundamental)
 
@@ -149,7 +149,7 @@
 
 (defun gera-gabarito-context-tree (coral)
   (dbg 'rameau::mostra-arvore "Arvore: ~/rameau-tree::exibe-tree/ ~%" *decision-tree*)
-  (butlast (maplist #'aplica-context-tree (cons nil (cons nil coral))) 2))
+  (butlast (maplist #'aplica-context-tree (cons nil (cons nil (temperado coral))) 2)))
 
 
 (defun treina-context-tree ()
@@ -249,7 +249,7 @@
 
 (defun gera-gabarito-chord-tree (coral)
   (dbg 'rameau::mostra-arvore "Arvore: ~/rameau-tree::exibe-chord-tree/ ~%" *chord-tree*)
-  (coloca-inversoes coral (mapcar #'aplica-chord-tree coral)))
+  (coloca-inversoes coral (mapcar #'aplica-chord-tree (temperado coral))))
 
 (register-algorithm "Chord-tree" #'gera-gabarito-chord-tree #'compara-gabarito-modo-setima)
 
@@ -366,7 +366,7 @@
 
 (defun gera-gabarito-mode-tree (coral)
   (dbg 'rameau::mostra-arvore "Arvore: ~/rameau-tree::exibe-mode-tree/ ~%" *mode-tree*)
-  (coloca-inversoes coral (mapcar #'aplica-mode-tree coral)))
+  (coloca-inversoes coral (mapcar #'aplica-mode-tree (temperado coral))))
 
 (defun faz-treina-mode-tree ()
   (with-system rameau:tempered

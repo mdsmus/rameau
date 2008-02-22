@@ -169,3 +169,13 @@
                          :octave (evento-octave n)
                          :dur (evento-dur n)
                          :inicio (evento-inicio n)))))
+
+(defun tempera (nota)
+  (with-system tempered
+    (make-evento :pitch (module (evento-pitch nota))
+                 :octave (evento-octave nota)
+                 :dur (evento-dur nota)
+                 :inicio (evento-inicio nota))))
+
+(defun temperado (segmentos)
+  (mapcar (lambda (x) (mapcar #'tempera x)) segmentos))

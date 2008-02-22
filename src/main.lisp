@@ -405,35 +405,33 @@ ponto nos corais de bach."
         (write-line (subseq (last1 (cl-ppcre:split "\\n" string-result)) 34)))))
 
 (defun run-compara-gabarito (flags files item)
-  (with-system rameau:tempered
-    (dolist (file files)
-      (let* ((musica (parse-file file))
-             (segmentos (segmentos-minimos musica))
-             (resultados (loop for a in *algoritmos* collect
-                              (funcall (algoritmo-processa a) segmentos)))
-             (gabarito (processa-gabarito (tira-extensao file) item))
-             (file-name (pathname-name file))
-             (notas (mapcar #'lista-notas segmentos))
-             (duracoes (calcula-duracoes segmentos)))
-        (format t "tamanhos:~%  gabarito: ~a~%" (length gabarito))
-        (loop for i in resultados
-           for a in *algoritmos*
-           do (format t "  ~a: ~a~%" (algoritmo-nome a) (length i)))
-        (cond
-          ((and (not gabarito) (not (member 'rameau::i flags)))
-           (format t "~&[ERRO] o gabarito de ~a não existe~%" file-name))
-          (t
-           (print-gabarito file-name gabarito resultados
-                           flags :dur duracoes :notas notas)))))))
+  (dolist (file files)
+    (let* ((musica (parse-file file))
+           (segmentos (segmentos-minimos musica))
+           (resultados (loop for a in *algoritmos* collect
+                            (funcall (algoritmo-processa a) segmentos)))
+           (gabarito (processa-gabarito (tira-extensao file) item))
+           (file-name (pathname-name file))
+           (notas (mapcar #'lista-notas segmentos))
+           (duracoes (calcula-duracoes segmentos)))
+      (format t "tamanhos:~%  gabarito: ~a~%" (length gabarito))
+      (loop for i in resultados
+         for a in *algoritmos*
+         do (format t "  ~a: ~a~%" (algoritmo-nome a) (length i)))
+      (cond
+        ((and (not gabarito) (not (member 'rameau::i flags)))
+         (format t "~&[ERRO] o gabarito de ~a não existe~%" file-name))
+        (t
+         (print-gabarito file-name gabarito resultados
+                         flags :dur duracoes :notas notas))))))
 
 (defun run-gera-dados (flags files item)
-  (with-system rameau:tempered
-    (format t "Coral Algoritmo Corretos Incorretos Percentual~%")
-    (let ((corretos (repeat-list (length *algoritmos*) 0))
-          (total 0)
-          (processados 0)
-          (media-x (repeat-list (length *algoritmos*) 0.0))
-          (media-x² (repeat-list (length *algoritmos*) 0.0)))
+  (format t "Coral Algoritmo Corretos Incorretos Percentual~%")
+  (let ((corretos (repeat-list (length *algoritmos*) 0))
+        (total 0)
+        (processados 0)
+        (media-x (repeat-list (length *algoritmos*) 0.0))
+        (media-x² (repeat-list (length *algoritmos*) 0.0)))
     (dolist (file files)
       (let* ((musica (parse-file file))
              (segmentos (segmentos-minimos musica))
@@ -471,49 +469,47 @@ ponto nos corais de bach."
                                          (* (/ mx processados)
                                             (/ mx processados))))))))
         (loop for r in (sort l #'> :key #'second)
-           do (apply #'format t "Total ~(~15a~):  ~5a ~5a ~,2f% (~,2f +- ~,2f)~%" r))))))
+           do (apply #'format t "Total ~(~15a~):  ~5a ~5a ~,2f% (~,2f +- ~,2f)~%" r)))))
 
 (defun run-gera-erros (erros? flags files item regexps)
-  (with-system rameau:tempered
-    (format t "Coral Algoritmo Segmento Resultado_esperado Resultado_obtido~%")
-    (dolist (file files)
-      (let* ((musica (parse-file file))
-             (segmentos (segmentos-minimos musica))
-             (gabarito (processa-gabarito (tira-extensao file) item))
-             (resultados (when gabarito
-                           (loop for a in *algoritmos* collect
-                                (funcall (algoritmo-processa a) segmentos))))
-             (file-name (pathname-name file))
-             (notas (mapcar #'lista-notas segmentos))
-             (duracoes (calcula-duracoes segmentos)))
-        (cond
-          ((< 2 (length regexps)) (format t "São duas as expressoes regulares"))
-          ((and (not gabarito) (not (member 'i flags))))
-          (t
-           (gera-erros file-name
-                       notas
-                       gabarito
-                       resultados
-                       flags
-                       (or (first regexps) "")
-                       (or (second regexps) "")
-                       erros?)))))))
+  (format t "Coral Algoritmo Segmento Resultado_esperado Resultado_obtido~%")
+  (dolist (file files)
+    (let* ((musica (parse-file file))
+           (segmentos (segmentos-minimos musica))
+           (gabarito (processa-gabarito (tira-extensao file) item))
+           (resultados (when gabarito
+                         (loop for a in *algoritmos* collect
+                              (funcall (algoritmo-processa a) segmentos))))
+           (file-name (pathname-name file))
+           (notas (mapcar #'lista-notas segmentos))
+           (duracoes (calcula-duracoes segmentos)))
+      (cond
+        ((< 2 (length regexps)) (format t "São duas as expressoes regulares"))
+        ((and (not gabarito) (not (member 'i flags))))
+        (t
+         (gera-erros file-name
+                     notas
+                     gabarito
+                     resultados
+                     flags
+                     (or (first regexps) "")
+                     (or (second regexps) "")
+                     erros?))))))
 
 (defun run-gera-resultados (flags files item regexps)
-  (with-system rameau:tempered
-    (format t "Coral Algoritmo Segmento Resultado_esperado Resultado_obtido~%")
-    (dolist (file files)
-      (let* ((musica (parse-file file))
-             (segmentos (segmentos-minimos musica))
-             (gabarito (processa-gabarito (tira-extensao file) item))
-             (resultados (when gabarito
-                           (loop for a in *algoritmos* collect
-                                (funcall (algoritmo-processa a) segmentos))))
-             (file-name (pathname-name file))
-             (notas (mapcar #'lista-notas segmentos))
-             (duracoes (calcula-duracoes segmentos)))
-        (cond
-          ((< 2 (length regexps)) (format t "São duas as expressoes regulares"))
+  (format t "Coral Algoritmo Segmento Resultado_esperado Resultado_obtido~%")
+  (dolist (file files)
+    (let* ((musica (parse-file file))
+           (segmentos (segmentos-minimos musica))
+           (gabarito (processa-gabarito (tira-extensao file) item))
+           (resultados (when gabarito
+                         (loop for a in *algoritmos* collect
+                              (funcall (algoritmo-processa a) segmentos))))
+           (file-name (pathname-name file))
+           (notas (mapcar #'lista-notas segmentos))
+           (duracoes (calcula-duracoes segmentos)))
+      (cond
+        ((< 2 (length regexps)) (format t "São duas as expressoes regulares"))
           ((and (not gabarito) (not (member 'i flags))))
           (t
            (gera-resultados file-name
@@ -522,57 +518,57 @@ ponto nos corais de bach."
                             resultados
                             flags
                             (or (first regexps) "")
-                            (or (second regexps) ""))))))))
+                            (or (second regexps) "")))))))
 
 (defun run-gera-tipos (flags files item regexps)
-  (with-system rameau:tempered
-    (let ((maior 0)
-          (maior7 0)
-          (maior7+ 0)
-          (menor 0)
-          (menor7 0)
-          (dim 0)
-          (dim7 0)
-          (half-dim 0)
-          (aug 0)
-          (inc 0)
-          (mel 0)
-          (total 0))
+  (let ((maior 0)
+        (maior7 0)
+        (maior7+ 0)
+        (menor 0)
+        (menor7 0)
+        (dim 0)
+        (dim7 0)
+        (half-dim 0)
+        (aug 0)
+        (inc 0)
+        (mel 0)
+        (total 0))
     (dolist (file files)
-      (awhen (processa-gabarito (tira-extensao file) item)
-        (loop for c in it do
-             (incf total)
-             (cond ((not (chordp c)) (incf mel))
-                   ((and (null (chord-mode c))
-                         (null (chord-7th c)))
-                    (incf maior))
-                   ((and (null (chord-mode c))
-                         (null (chord-7th c)))
-                    (incf maior))
-                   ((and (null (chord-mode c))
-                         (equal "7" (chord-7th c)))
-                    (incf maior7))
-                   ((and (null (chord-mode c))
-                         (equal "7+" (chord-7th c)))
-                    (incf maior7+))
-                   ((and (equal "m" (chord-mode c))
-                         (null (chord-7th c)))
-                    (incf menor))
-                   ((and (equal "m" (chord-mode c))
-                         (equal "7" (chord-7th c)))
-                    (incf menor7))
-                   ((and (equal "°" (chord-mode c))
-                         (null (chord-7th c)))
-                    (incf dim))
-                   ((and (equal "°" (chord-mode c))
-                         (equal "7-" (chord-7th c)))
-                    (incf dim7))
-                   ((equal "!" (chord-mode c))
-                    (incf inc))
-                   ((equal "+" (chord-mode c))
-                    (incf aug))
-                   ((equal "ø" (chord-mode c))
-                    (incf half-dim))))))
+      (awhen
+       (processa-gabarito (tira-extensao file) item)
+       (loop for c in it do
+            (incf total)
+            (cond ((not (chordp c)) (incf mel))
+                  ((and (null (chord-mode c))
+                        (null (chord-7th c)))
+                   (incf maior))
+                  ((and (null (chord-mode c))
+                        (null (chord-7th c)))
+                   (incf maior))
+                  ((and (null (chord-mode c))
+                        (equal "7" (chord-7th c)))
+                   (incf maior7))
+                  ((and (null (chord-mode c))
+                        (equal "7+" (chord-7th c)))
+                   (incf maior7+))
+                  ((and (equal "m" (chord-mode c))
+                        (null (chord-7th c)))
+                   (incf menor))
+                  ((and (equal "m" (chord-mode c))
+                        (equal "7" (chord-7th c)))
+                   (incf menor7))
+                  ((and (equal "°" (chord-mode c))
+                        (null (chord-7th c)))
+                   (incf dim))
+                  ((and (equal "°" (chord-mode c))
+                        (equal "7-" (chord-7th c)))
+                   (incf dim7))
+                  ((equal "!" (chord-mode c))
+                   (incf inc))
+                  ((equal "+" (chord-mode c))
+                   (incf aug))
+                  ((equal "ø" (chord-mode c))
+                   (incf half-dim))))))
     (format t (concat "    Maior: ~10a ~10a% ~%  Maior 7: ~10a ~10a% ~% Maior 7+: ~10a ~10a% ~%"
                       "    Menor: ~10a ~10a% ~%  Menor 7: ~10a ~10a% ~%      Dim: ~10a ~10a% ~%"
                       "    Dim 7: ~10a ~10a% ~% Half-dim: ~10a ~10a% ~%      Aug: ~10a ~10a% ~%"
@@ -587,7 +583,7 @@ ponto nos corais de bach."
             half-dim (percent half-dim total)
             aug (percent aug total)
             inc (percent inc total)
-            mel (percent mel total)))))
+            mel (percent mel total))))
               
 
 (defun run-compara-tamanhos (flags files item)
@@ -642,14 +638,13 @@ ponto nos corais de bach."
 
 (defun run-partitura (flags files item)
   (when (member 'v flags) (format t "gerando "))
-  (with-system rameau:tempered
-    (dolist (file files)
-      (when (member 'v flags) (format t "~a " (pathname-name file)))
-      (let* ((gabarito (processa-gabarito (tira-extensao file) item))
-             (segmento (segmentos-minimos (parse-file file)))
-             (resultados (loop for a in *algoritmos* collect
-                               (funcall (algoritmo-processa a) segmento))))
-        (print-lily file gabarito resultados flags segmento)))))
+  (dolist (file files)
+    (when (member 'v flags) (format t "~a " (pathname-name file)))
+    (let* ((gabarito (processa-gabarito (tira-extensao file) item))
+           (segmento (segmentos-minimos (parse-file file)))
+           (resultados (loop for a in *algoritmos* collect
+                            (funcall (algoritmo-processa a) segmento))))
+      (print-lily file gabarito resultados flags segmento))))
   
 (defmacro defcomando (nome dados flags files regexps &body body)
   `(defun ,nome (,dados ,flags ,files ,regexps)

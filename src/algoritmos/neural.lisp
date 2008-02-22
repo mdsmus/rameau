@@ -113,7 +113,7 @@
   (mapcar (lambda (x)
             (extrai-resultado-simple-net
              (run-net *simple-net* (cria-pattern-segmento x))))
-          inputs))
+          (temperado inputs)))
 
 ;(register-algorithm "Simple-net" #'aplica-simple-net #'compara-gabarito-fundamental)
 
@@ -198,7 +198,7 @@
 (defun aplica-context-net (inputs)
   (load-context-net)
   (butlast (maplist #'roda-context-net
-                    (cons nil (cons nil inputs)))
+                    (cons nil (cons nil (temoperado inputs))))
            2))
 
 ;(register-algorithm "Context-net" #'aplica-context-net #'compara-gabarito-fundamental)
@@ -316,31 +316,32 @@
   (treina-chord-net))
 
 (defun extrai-resultado-chord-net (res)
-  (if (chordp (extrai-resultado-simple-net (safe-retorna-n-elementos res 12)))
-      (make-chord :fundamental (chord-fundamental (extrai-resultado-simple-net
-                                                   (safe-retorna-n-elementos res 12)))
-                  :mode (cond ((>= (nth 12 res) *correctness-treshold*)
-                               nil)
-                              ((>= (nth 13 res) *correctness-treshold*)
-                               "m")
-                              ((>= (nth 14 res) *correctness-treshold*)
-                               "°")
-                              ((>= (nth 15 res) *correctness-treshold*)
-                               "ø")
-                              ((>= (nth 19 res) *correctness-treshold*)
-                               "!")
-                              ((>= (nth 20 res) *correctness-treshold*)
-                               "+")
-                              )
-                  :7th (cond ((>= (nth 16 res) *correctness-treshold*)
-                              "7")
-                             ((>= (nth 17 res) *correctness-treshold*)
-                             "7-")
-                             ((>= (nth 18 res) *correctness-treshold*)
-                             "7+")
-                             ((>= (nth 15 res) *correctness-treshold*)
-                              "7")))
-      (make-melodic-note)))
+  (with-system tempered
+    (if (chordp (extrai-resultado-simple-net (safe-retorna-n-elementos res 12)))
+        (make-chord :fundamental (chord-fundamental (extrai-resultado-simple-net
+                                                     (safe-retorna-n-elementos res 12)))
+                    :mode (cond ((>= (nth 12 res) *correctness-treshold*)
+                                 nil)
+                                ((>= (nth 13 res) *correctness-treshold*)
+                                 "m")
+                                ((>= (nth 14 res) *correctness-treshold*)
+                                 "°")
+                                ((>= (nth 15 res) *correctness-treshold*)
+                                 "ø")
+                                ((>= (nth 19 res) *correctness-treshold*)
+                                 "!")
+                                ((>= (nth 20 res) *correctness-treshold*)
+                                 "+")
+                                )
+                    :7th (cond ((>= (nth 16 res) *correctness-treshold*)
+                                "7")
+                               ((>= (nth 17 res) *correctness-treshold*)
+                                "7-")
+                               ((>= (nth 18 res) *correctness-treshold*)
+                                "7+")
+                               ((>= (nth 15 res) *correctness-treshold*)
+                                "7")))
+        (make-melodic-note))))
 
 (defun aplica-chord-net (inputs)
   (load-chord-net)
@@ -349,7 +350,7 @@
    (mapcar (lambda (x) (extrai-resultado-chord-net
                         (run-net *chord-net*
                                  (cria-pattern-segmento x))))
-           inputs)))
+           (temperado inputs))))
 
 (register-algorithm "Chord-net" #'aplica-chord-net #'compara-gabarito-modo-setima)
     
@@ -425,18 +426,21 @@
 
 
 (defun aplica-mode-net (inputs modos)
-  (mapcar (lambda (x y) (extrai-resultado-chord-net
-                        (run-net *mode-net*
-                                 (append (cria-pattern-segmento x)
-                                         y))))
-           inputs modos))
+  (with-system tempered
+    (mapcar (lambda (x y) (extrai-resultado-chord-net
+                           (run-net *mode-net*
+                                    (append (cria-pattern-segmento x)
+                                            y))))
+            inputs modos)))
 
 (defun gera-gabarito-mode-net (segmentos)
   (load-context-net)
   (load-mode-net)
-  (let* ((fundamentais (extrai-res-context-net segmentos))
-         (modos (aplica-mode-net segmentos fundamentais)))
-    (coloca-inversoes segmentos modos)))
+  (with-system tempered
+    (let* ((segmentos (temperado segmentos))
+           (fundamentais (extrai-res-context-net segmentos))
+           (modos (aplica-mode-net segmentos fundamentais)))
+      (coloca-inversoes segmentos modos))))
 
 
 (register-algorithm "Mode-net" #'gera-gabarito-mode-net #'compara-gabarito-modo-setima)
