@@ -1,10 +1,8 @@
-;;; -*- Mode: Lisp; Syntax: Ansi-Common-Lisp; Package: COMMON-LISP-USER; Base: 10 -*-
-
 ;;; File: decision-tree.lisp
 ;;; Last edited by smishra on Sat May  8 16:14:40 1999
 ;; Fonte: http://www-static.cc.gatech.edu/classes/cs3361_99_spring/projects/project3/decision-tree.lisp
 (defpackage :machine-learning
-  (:use #:cl)
+  (:use #:cl #:arnesi)
   (:export #:make-example #:classify #:id3 #:print-tree))
 
 (in-package :machine-learning)
@@ -122,8 +120,9 @@ KEY. Returns the argument and the value."
   "Return an association list of class counts"
   (let ((counts (mapcar #'(lambda (class) (cons class 0)) classes)))
     (dolist (example examples)
-      ;(format t "example ~s ~%" (example-class example))
-      (incf (cdr (assoc (example-class example) counts))))
+      (aif (assoc (example-class example) counts)
+           (incf (cdr it))
+           (format t "example ~s ~%" (example-class example))))
     counts))
 
 (defun most-common-class (examples classes)

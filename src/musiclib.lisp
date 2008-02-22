@@ -11,6 +11,7 @@
                                ab bb cb db eb fb gb
                                maj min dim aug just
                                lily latin prime with-system
+                               *notas-interessantes-tonal*
                                number-of-accidentals
                                match-note-representation
                                sort-form-list tempered tonal
@@ -68,6 +69,7 @@
   21). The format is (inverval kind quantity). For instance, (3 min)
   represents a minor third; (3 dim 2) represents double-diminished
   third. Quantity is optional when equal to 1.")
+
 
 (defvar *tempered-intervals*
   '((1 just) (2 min) (2 maj) (3 min) (3 maj) (4 just)
@@ -396,3 +398,8 @@ EXAMPLE: (equal-sets? '(0 3 7) '(8 1 4)) returns T."
   `(defparameter ,name ',templates))
 
 
+(defparameter *notas-puras-tonal* '(0 14 28 41 55 69  83))
+
+(defparameter *notas-interessantes-tonal*
+  (loop for i in *notas-puras-tonal*
+     append (mapcar #'module (list (- i 2) (- i 1) i (+ i 1) (+ i 2)))))
