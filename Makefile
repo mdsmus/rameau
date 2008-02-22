@@ -26,14 +26,14 @@ default: corais-ly rameau
 all-rameau: rameau cmurameau clisprameau
 
 resultados: rameau clean-resultados
-	./rameau r c -a chord-net mode-net chord-tree mode-tree par > resultados/rameau
+	./rameau resultados c -a chord-net mode-net chord-tree mode-tree par > resultados/rameau
 	python tools/formata-tipos.py resultados/rameau resultados/
 
 clean-erros:
 	rm -f erros/*
 
 erros: rameau clean-erros
-	./rameau e c -a chord-net mode-net chord-tree mode-tree par > erros/rameau
+	./rameau erros c -a chord-net mode-net chord-tree mode-tree par > erros/rameau
 	python tools/formata-tipos.py erros/rameau erros/
 
 clean-acertos:
