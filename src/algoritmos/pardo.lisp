@@ -14,6 +14,7 @@
   (("°" nil) (0 3 6))
   )
 
+
 (defstruct nota-pardo
   (root)
   (resultado)
@@ -63,7 +64,7 @@
                      :resultado (avalia-template
                                  (set-transpose
                                   template
-                                  (position nota (get-system-notes 'tempered)))
+                                  (position nota (get-notes)))
                                  segmento)
                      :segmento segmento)))
 
@@ -129,20 +130,20 @@
                           (nota-pardo-resultado x))
                         (avalia-segmento-notas (second template)
                                                segmento
-                                               (get-system-notes 'tempered)))))
+                                               (get-notes)))))
     (dolist (r resultados)
       (setf (nota-pardo-gabarito r) (cons (stringify (nota-pardo-root r))
                                           (first template))))
     resultados))
 
-(defun pardo (segmento)
+(defun pardo (segmento &optional (templates *pardo-templates*))
   (max-predicado (lambda (x) (nota-pardo-resultado x))
                  (reduce #'append
                          (mapcar
                           (lambda (x) (avalia-segmento
                                        x
                                        (segment-to-template segmento)))
-                          *pardo-templates*))))
+                          templates))))
 
 (defun pardo->chord (pardo)
   (let ((pardo (nota-pardo-gabarito pardo)))
@@ -151,9 +152,33 @@
                 :7th (third pardo))))
 
 (defun gera-gabarito-pardo (segmentos)
-  (mapcar #'pardo->chord
-          (reduce #'desempata-pardo (mapcar #'pardo (temperado segmentos))
-                  :from-end t :initial-value nil)))
+  (with-system tempered
+    (mapcar #'pardo->chord
+            (reduce #'desempata-pardo (mapcar #'pardo (temperado segmentos))
+                    :from-end t :initial-value nil))))
      
 
 (register-algorithm "Pardo-Birmingham" #'gera-gabarito-pardo #'compara-gabarito-modo-setima)
+
+(deftemplates *incf-pardo-templates* 
+  ((nil nil) (0 28 55))
+  ((nil "7") (0 28 55 82))
+  (("m" nil) (0 27 55))
+  (("m" "7") (0 27 55 82))
+  (("°" "7-") (0 27 54 81))
+  (("ø" "7") (0 27 54 82))
+  (("°" nil) (0 27 54))
+  ((nil "7+") (0 28 55 83))
+  (("+" nil) (0 28 56))
+  ;(("!" nil) (0 55)) ;; Descomentar essa linha faz pardo sempre escolher o incompleto
+  )
+
+(defun incf-pardo (segmento)
+  (pardo segmento *incf-pardo-templates*))
+
+(defun gera-gabarito-incf-pardo (segmentos)
+  (mapcar #'pardo->chord
+          (reduce #'desempata-pardo (mapcar #'incf-pardo segmentos)
+                  :from-end t :initial-value nil)))
+
+(register-algorithm "incf-PB" #'gera-gabarito-incf-pardo #'compara-gabarito-modo-setima)

@@ -14,7 +14,7 @@
                                number-of-accidentals
                                match-note-representation
                                sort-form-list tempered tonal
-                               get-system-notes code->note note->code
+                               get-system-notes get-notes code->note note->code
                                compara-notes-tempered
                                note? rest? latin->lily
                                print-accidentals print-note module
@@ -26,7 +26,7 @@
                                set-symmetric? set-form-list
                                smaller-sets smaller-sets-comparisson
                                smallest-set normal-form prime-form
-                               set-equal? deftemplates ))
+                               set-equal? deftemplates tempered tonal))
 
 (defvar *notes* '(#\c #\d #\e #\f #\g #\a #\b #\C #\D #\E #\F #\G #\A #\B))
 
@@ -113,6 +113,14 @@
 (defun get-system-notes (system)
   "Returns a table defining notes in the system."
   (symbol-value (first (get-system-item system))))
+
+(defun get-notes ()
+  "Returns a table defining notes in the system."
+  (if (eq 'tempered *system*)
+    (get-system-notes 'tempered)
+    (if (eq 'tonal *system*)
+        (get-system-notes 'tonal)
+        (error (format nil "sistema  ~a" *system*)))))
 
 (defun get-system-module (system)
   "Returns the numeric value to be used as a module in the defined
