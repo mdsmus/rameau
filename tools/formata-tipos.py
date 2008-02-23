@@ -50,13 +50,13 @@ def preenche_contagem(algoritmo, algs, gab, modo):
 
 def precisao(gab, alg, amb):
     if alg + amb == 0:
-        return 0.0
-    return 100.0 * amb / float(alg + amb)
+        return "0.0"
+    return "%2.1f" % (100.0 * amb / float(alg + amb))
 
 def recall(gab, alg, amb):
     if gab + amb == 0:
-        return 0.0
-    return 100.0 * amb / float(gab + amb)
+        return "0.0"
+    return "%2.1f" % (100.0 * amb / float(gab + amb))
 
 tipos = map(lambda x: Tipo(*x), 
             [('maior',   r'^[A-Ga-g](b|#)?(9)?(/[A-Ga-g](#|b)?)?$'),
@@ -99,7 +99,7 @@ for l in linhas:
 print "Total:\n"
 print "Tipo        | Gabarito | Algoritmo | ambos   | Precisão | Recall"
 for gab in sorted(tipos):
-    print "%12s|%10s|%11s|%9s|     %2.1f%%|   %2.1f%%" % (gab.nome, gab['gab'], gab['alg'], gab['amb'], 
+    print "%12s|%10s|%11s|%9s|%9s%%|%9s%%" % (gab.nome, gab['gab'], gab['alg'], gab['amb'], 
                                                           precisao(gab['gab'], gab['alg'], gab['amb']),
                                                           recall(gab['gab'], gab['alg'], gab['amb']))
 print
@@ -112,12 +112,12 @@ for alg in algoritmos:
     rec = 0.0
     for tipo in sorted(algoritmos[alg].keys()):
         a = algoritmos[alg][tipo]
-        print "%12s|%10s|%11s|%9s|     %2.1f%%|   %2.1f%%" % (tipo, a['gab'], a['alg'], a['amb'],
+        print "%12s|%10s|%11s|%9s|%9s%%|%9s%%" % (tipo, a['gab'], a['alg'], a['amb'],
                                                               precisao(a['gab'], a['alg'], a['amb']),
                                                               recall(a['gab'], a['alg'], a['amb']))
         n += 1
-        prec += precisao(a['gab'], a['alg'], a['amb'])
-        rec += recall(a['gab'], a['alg'], a['amb'])
-    print "%12s|%10s|%11s|%9s|     %2.1f%%|   %2.1f%%" % ('avg', '', '', '', prec/n, rec/n)
+        prec += float(precisao(a['gab'], a['alg'], a['amb']))
+        rec += float(recall(a['gab'], a['alg'], a['amb']))
+    print "%12s|%10s|%11s|%9s|%9s%%|%9s%%" % ('avg', '', '', '',"%2.1f" % (prec/n),"%2.1f" %(rec/n))
     print
         

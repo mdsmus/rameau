@@ -21,12 +21,10 @@
   #+sbcl(progn
          (setf sb-profile::*print-functions-not-called* nil)
          (sb-profile:profile "RAMEAU")
-         (sb-profile:profile "RAMEAU-TEMPERLEY")
          (sb-profile:profile "RAMEAU-PARDO")
          (sb-profile:profile "GENOSLIB"))
   #+cmu (progn
           (profile:profile-all :package "RAMEAU")
-          (profile:profile-all :package "RAMEAU-TEMPERLEY")
           (profile:profile-all :package "RAMEAU-PARDO")
           (profile:profile-all :package "GENOSLIB")))
 

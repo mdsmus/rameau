@@ -47,6 +47,12 @@
                                unzip
                                ))
 
+
+(defun stringify (symb)
+  (let ((*package* (find-package :rameau)))
+    (format nil "~(~a~)" symb)))
+
+
 ;;; Norvig's functions for debugging in PAIP, p. 124
 
 
@@ -92,14 +98,19 @@
 
 (defun troca-extensao (file ext)
   (if (tem-ext? file) (concat (tira-extensao file) ext) file))
- 
+
 (defmacro defcached (funcname args &body body)
-  (let ((cache (gensym)))
-    `(let ((,cache (make-hash-table :test #'equal)))
-       (defun ,funcname ,args
-         (aif (gethash ,(cons 'list args) ,cache)
-              it
-              (setf (gethash ,(cons 'list args) ,cache) (progn ,@body)))))))
+  (labels ((varnames (symbols)
+             (cons 'list
+                   (loop for s in symbols unless (and (symbolp s)
+                                                      (eql #\&  (aref (symbol-name s) 0)))
+                      collect (if (atom s) s (first s))))))
+    (let ((cache (gensym)))
+      `(let ((,cache (make-hash-table :test #'equal)))
+         (defun ,funcname ,args
+           (aif (gethash ,(varnames args) ,cache)
+                it
+                (setf (gethash ,(varnames args) ,cache) (progn ,@body))))))))
 
 (defun concat (&rest strings)
   "Concatenate a bunch of strings."
@@ -149,9 +160,6 @@ quantos acidentes ou oitavas uma nota tem."
   (let ((*package* (find-package :rameau)))
     (intern (string-upcase string) :rameau)))
 
-(defcached stringify (symb)
-  (let ((*package* (find-package :rameau)))
-    (format nil "~(~a~)" symb)))
 
 (defun destringify (coisa)
   (let ((*package* (find-package :rameau)))

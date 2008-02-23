@@ -18,6 +18,7 @@
                                get-system-notes get-notes code->note note->code
                                compara-notes-tempered
                                note? rest? latin->lily
+                               inverse-code->note
                                print-accidentals print-note module
                                lily->latin transpose inversion
                                interval interval->code code->interval
@@ -231,6 +232,11 @@ usa a representação do lilypond e 'd#' usa a representação 'latin'."
              ((match-note-representation note 'latin) (%parse-note note 'latin *system*))
              (t (error "tipo de nota não conhecida")))))))
 
+(defun inverse-code->note (note)
+  "Essa função é o inverso de code->note. Isso é necessário por note->code *não*
+ser esse inverso. Musiclib precisa urgentemente de um rename."
+  (position note (get-notes)))
+
 (defun compara-notes-tempered (notea noteb)
   (with-system tempered
     (equal (note->code notea) (note->code noteb))))
@@ -241,7 +247,7 @@ accidental and a representation. EXAMPLE: (print-accidentals 3 'lily)
 returns isisis."
   (repeat-string acc (funcall (if (>= acc 0) #'get-sharp #'get-flat) repr)))
 
-(defun print-note (note-code &optional (representation 'latin))
+(defcached print-note (note-code &optional (representation 'latin))
   "Retuns a string of a note according to a note-code and representation.
 Example: (print-note '(c 1) 'lily) return cis."
   (format nil "~(~a~)~a" (first note-code) (print-accidentals (second note-code) representation)))

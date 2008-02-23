@@ -64,18 +64,12 @@
                      :resultado (avalia-template
                                  (set-transpose
                                   template
-                                  (position nota (get-notes)))
+                                  (inverse-code->note nota))
                                  segmento)
                      :segmento segmento)))
 
-(defun avalia-segmento-notas (template segmento notas &optional resultado)
-  (if notas
-      (let* ((nota (first notas))
-             (acumula (cons
-                       (da-nota-modificada template segmento nota)
-                       resultado)))
-        (avalia-segmento-notas template segmento (rest notas) acumula))
-      resultado))
+(defun avalia-segmento-notas (template segmento notas)
+  (loop for nota in notas collect (da-nota-modificada template segmento nota)))
 
 (defun root-weight (res)
   (let* ((root-note (stringify (nota-pardo-root res)))
@@ -130,7 +124,7 @@
                           (nota-pardo-resultado x))
                         (avalia-segmento-notas (second template)
                                                segmento
-                                               (get-notes)))))
+                                               (mapcar #'code->note *notas-interessantes-tonal*)))))
     (dolist (r resultados)
       (setf (nota-pardo-gabarito r) (cons (stringify (nota-pardo-root r))
                                           (first template))))
