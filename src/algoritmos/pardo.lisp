@@ -166,7 +166,7 @@
   (("°" nil) (0 27 54))
   ((nil "7+") (0 28 55 83))
   (("+" nil) (0 28 56))
-  ;(("!" nil) (0 55)) ;; Descomentar essa linha faz pardo sempre escolher o incompleto
+  (("!" nil) (0 55)) 
   )
 
 (defun incf-pardo (segmento)
