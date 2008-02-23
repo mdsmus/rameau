@@ -92,7 +92,9 @@
 
 (defun dim7-res (segmento proximo)
   (let* ((proxima-tonica (nota-pardo-root proximo))
-         (cod (- (note->code (stringify proxima-tonica)) 1))
+         (cod (module
+               (+ (note->code (stringify proxima-tonica))
+                  (code->interval '(7 maj)))))
          (nota (print-note (code->note cod) 'latin)))
     (or (find-if
          (lambda (x)
@@ -102,16 +104,16 @@
 
 (defun desempata-pardo (segmento resto)
   (let* ((proximo (first resto))
-         (max-root (max-predicado #'root-weight segmento))
-         (temp-prob (max-predicado #'template-prob segmento)))
+         (max-root (max-predicado #'root-weight segmento)))
     (cons 
-     (cond ((= (length max-root) 1)
-            (car max-root))
-           ((= (length temp-prob) 1)
-            (car temp-prob))
-           ((dim7? segmento)
-            (dim7-res segmento proximo))
-           (t (car max-root)))
+     (if (= (length max-root) 1)
+         (car max-root)
+         (let ((temp-prob (max-predicado #'template-prob max-root)))
+           (if (= (length temp-prob) 1)
+               (car temp-prob)
+               (if (dim7? segmento)
+                   (dim7-res segmento proximo)
+                   (car max-root)))))
      resto)))
 
 

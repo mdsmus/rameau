@@ -120,4 +120,34 @@ for alg in algoritmos:
         rec += float(recall(a['gab'], a['alg'], a['amb']))
     print "%12s|%10s|%11s|%9s|%9s%%|%9s%%" % ('avg', '', '', '',"%2.1f" % (prec/n),"%2.1f" %(rec/n))
     print
+
         
+print "Tabela de precisão:"
+print "     ",
+for alg in algoritmos:
+    print "%9s" % alg[:8], 
+print
+i = 0
+for tipo in tipos:
+    print "#", tipo.nome
+    print "%4s" % i,
+    for alg in algoritmos:
+        a = algoritmos[alg][tipo.nome]
+        print "%9s" % precisao(a['gab'], a['alg'], a['amb']),
+    print
+    i += 10
+
+print "Tabela de recall:"
+print "     ",
+for alg in algoritmos:
+    print "%9s" % alg[:8], 
+print
+i = 0
+for tipo in tipos:
+    print "#", tipo.nome
+    print "%4s" % i,
+    for alg in algoritmos:
+        a = algoritmos[alg][tipo.nome]
+        print "%9s" % recall(a['gab'], a['alg'], a['amb']),
+    print
+    i += 10
