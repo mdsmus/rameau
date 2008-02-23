@@ -1,7 +1,7 @@
 set terminal png
 set output "rec-tree.png"
 
-set xrange [5:110]
+set xrange [-5:110]
 set yrange [0:100]
 
 set grid
