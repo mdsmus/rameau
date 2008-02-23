@@ -15,7 +15,7 @@ global = {
     \new Staff <<
       \global
       \relative c'' {
-        g a g g
+        g aes g g
       }
     >>
     \new Staff <<
