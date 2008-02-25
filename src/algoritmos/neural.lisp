@@ -68,7 +68,7 @@
 (defun gera-dados-treinamento-simple-net ()
   (with-system rameau:tempered
     (loop for i in *exemplos-de-treinamento*
-       nconc (prepara-exemplos-treinamento-simple-net (first i) (second i)))))
+       nconc (prepara-exemplos-treinamento-simple-net (temperado (first i)) (second i)))))
 
 (defun gera-arquivo-treinamento-simple-net ()
   (let* ((dados (gera-dados-treinamento-simple-net))
@@ -157,7 +157,7 @@
 (defun gera-dados-treinamento-context-net ()
   (with-system rameau:tempered
     (loop for i in *exemplos-de-treinamento*
-       nconc (prepara-exemplos-treinamento-context-net (first i) (second i)))))
+       nconc (prepara-exemplos-treinamento-context-net (temperado (first i)) (second i)))))
 
 (defun gera-arquivo-treinamento-context-net ()
   (let* ((dados (gera-dados-treinamento-context-net))
@@ -282,7 +282,7 @@
 (defun gera-dados-treinamento-chord-net ()
   (with-system rameau:tempered
     (loop for i in *exemplos-de-treinamento*
-       nconc (prepara-exemplos-treinamento-chord-net (first i) (second i)))))
+       nconc (prepara-exemplos-treinamento-chord-net (temperado (first i)) (second i)))))
 
 (defun gera-arquivo-treinamento-chord-net ()
   (let* ((dados (gera-dados-treinamento-chord-net))
@@ -390,7 +390,7 @@
 (defun gera-dados-treinamento-mode-net ()
   (with-system rameau:tempered
     (loop for i in *exemplos-de-treinamento*
-       nconc (prepara-exemplos-treinamento-mode-net (first i) (second i)))))
+       nconc (prepara-exemplos-treinamento-mode-net (temperado (first i)) (second i)))))
 
 (defun gera-arquivo-treinamento-mode-net ()
   (load-context-net)
