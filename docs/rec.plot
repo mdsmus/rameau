@@ -4,6 +4,8 @@ set output "rec-tree.png"
 set xrange [-5:110]
 set yrange [0:100]
 
+set xtics 0
+
 set grid
 
 set xlabel "Chord type"
