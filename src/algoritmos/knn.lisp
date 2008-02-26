@@ -60,8 +60,7 @@
 (defun treina-1nn (coral gabarito)
   (loop for segmento in coral
      for acorde in gabarito
-     for s = (sorted segmento #'compara-notas)
-     for pitches = (mapcar #'evento-pitch segmento)
+     for pitches = (sorted (mapcar #'evento-pitch segmento) #'<)
      for diff = (first pitches)
      for chave = (mapcar (lambda (x) (- x diff)) pitches)
      do (if (listp acorde)
@@ -88,7 +87,7 @@
        finally (return (extrai-acorde maxk diff)))))
 
 (defun classifica-k1 (segmento)
-  (let* ((pitches (mapcar #'evento-pitch segmento))
+  (let* ((pitches (sorted (mapcar #'evento-pitch segmento) #'<))
          (diff (first pitches)))
     (loop for key being the hash-keys in *1-neighbours* 
        with maxv = nil
