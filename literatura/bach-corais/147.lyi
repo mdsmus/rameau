@@ -52,7 +52,7 @@ alto = \relative c' {
 
 tenor = \relative c' {
   \partial 4 g8  aes8 
-    bes8 c8 cis4 c8 bes8 aes4 
+    bes8 c8 des4 c8 bes8 aes4 
   bes2 r4 bes4~ 
   bes8 a8 bes2 a4 
   f2 r4 bes4~ 
