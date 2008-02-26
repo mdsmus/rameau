@@ -34,7 +34,7 @@ alto = \relative c'' {
   e4 e4 e4. d8 
   cis2. a'4   %5
   gis4 gis4 fis8 e8 dis4 
-  e4. dis8 e4 f4 
+  e4. dis8 e4 eis4 
   cis4 fis4 e4 fis8 gis8 
   a4 e4 e4. d8 
   cis2. 
@@ -61,7 +61,7 @@ baixo = \relative c {
   e'4 fis8 e8 d8 e8 fis8 gis8 
   a4 cis,8 d8 e4 e4 
   a,2. a4   %5
-  e'4 f4 fis4 b8 a8 
+  e'4 eis4 fis4 b8 a8 
   gis4 fis4 e4 cis4 
   fis8 e8 fis8 gis8 a8 b8 a8 gis8 
   fis4 cis8 d8 e4 e4 
