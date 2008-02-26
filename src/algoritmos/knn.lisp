@@ -4,7 +4,7 @@
 (in-package :rameau-knn)
 
 (defparameter *1-neighbours* (make-hash-table :test #'equal))
-(defparameter *k* 3)
+(defparameter *k* 1)
 
 ;; Os vizinhos são guardados, a principio, em uma hash table
 ;; a chave é o vetor de notas, o valor é uma estrutura com contagens
@@ -60,7 +60,8 @@
 (defun treina-1nn (coral gabarito)
   (loop for segmento in coral
      for acorde in gabarito
-     for pitches = (sorted (mapcar #'evento-pitch segmento) #'<)
+     for s = (sorted segmento #'compara-notas)
+     for pitches = (mapcar #'evento-pitch s)
      for diff = (first pitches)
      for chave = (mapcar (lambda (x) (- x diff)) pitches)
      do (if (listp acorde)
@@ -87,7 +88,7 @@
        finally (return (extrai-acorde maxk diff)))))
 
 (defun classifica-k1 (segmento)
-  (let* ((pitches (sorted (mapcar #'evento-pitch segmento) #'<))
+  (let* ((pitches (mapcar #'evento-pitch (sorted segmento #'compara-notas)))
          (diff (first pitches)))
     (loop for key being the hash-keys in *1-neighbours* 
        with maxv = nil
