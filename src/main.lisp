@@ -621,6 +621,7 @@ ponto nos corais de bach."
       (loop
 	 for x in (mapcar2 #'set-intervals #'pitch-list segmento)
 	 for nota in (mapcar #'pitch-list segmento)
+	 for s in segmento
 	 for n from 1
 	 for gab in gabarito
 	 for list = (mapcar #'interval->code x)
@@ -629,11 +630,11 @@ ponto nos corais de bach."
 	   (when aug
 	     (if (/= (first aug) 4)
 		 (format t "~a: ~{~(~a ~)~} ~13a ~a~%"
-			 n aug (mapcar2 #'print-note #'code->note nota) gab)))
+			 n aug (lista-notas s) gab)))
 	   (when dim
 	     (if (/= (first dim) 5)
 		 (format t "~a: ~{~(~a ~)~} ~13a ~a~%"
-			 n dim (mapcar2 #'print-note #'code->note nota) gab)))
+			 n dim (lista-notas s) gab)))
 	   ))))
 
 (defun run-partitura (flags files item)
