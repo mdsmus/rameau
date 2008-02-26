@@ -259,7 +259,7 @@ ponto nos corais de bach."
     (print-gab-columns "#" "notas" "gab" "dur" flags)
     (loop
        for a in *algoritmos*
-       do (print-res-alg (subseq (algoritmo-nome a) 0 5) "ok?" flags))
+       do (print-res-alg (subseq (algoritmo-nome a) 0 (min 5 (length (algoritmo-nome a)))) "ok?" flags))
     (format t "~%")
     (write-line (repeat-string 80 "-"))
     (let ((counts (repeat-list (length *algoritmos*) 0)))
