@@ -1,19 +1,13 @@
-; ----------------
-; Algoritmo de redes neurais proof-of-concept
-;  usa redes para reconhecer a tonica de um segmento
-;  minimo, ignorando contexto.
-; Só pra ter algo simples pra mostrar e testar
-
 (eval-when (:compile-toplevel :load-toplevel)
   (asdf:oos 'asdf:load-op :fann))
 
-(defpackage :rameau-neural
+(defpackage :rameau-c-neural
   (:use #:cl
         #:fann
         #:arnesi
         #:rameau))
 
-(in-package :rameau-neural)
+(in-package :rameau-c-neural)
 
 (defparameter *neural-path* (concat (rameau-path) "neural-nets/"))
 
@@ -21,9 +15,6 @@
 
 (defparameter *simple-net-file* (concat *neural-path* "simple-net.fann"))
 (defparameter *simple-net-train-data* (concat *neural-path* "simple-net-train.data"))
-
-(defparameter *correctness-treshold* 0.5)
-
 
 
 (defun load-simple-net ()
@@ -44,9 +35,10 @@
     atual))
 
 (defun cria-pattern-saida (gabarito)
-  (let ((atual (make-list 12 :initial-element 0)))
-    (when (chordp gabarito)
-      (incf (nth (note->code (stringify (chord-fundamental gabarito))) atual)))
+  (let ((atual (make-list 13 :initial-element 0)))
+    (if (chordp gabarito)
+      (incf (nth (note->code (stringify (chord-fundamental gabarito))) atual))
+      (incf (nth 12 atual)))
     atual))
      
 (defun prepara-exemplos-treinamento-simple-net-individual (coral gabarito)
@@ -74,22 +66,22 @@
   (let* ((dados (gera-dados-treinamento-simple-net))
          (tamanho (length dados)))
     (with-open-file (f *simple-net-train-data* :direction :output)
-      (format f "~a ~a ~a~%" tamanho 12 12)
+      (format f "~a ~a ~a~%" tamanho 12 13)
       (loop for d in dados
          do
            (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
            (format f "~{~a ~}~%" (second d))))))
 
-(unless (cl-fad:file-exists-p *simple-net-train-data*)
-  (gera-arquivo-treinamento-simple-net))
+;(unless (cl-fad:file-exists-p *simple-net-train-data*)
+;  (gera-arquivo-treinamento-simple-net))
 
 (defun treina-simple-net ()
   (if (cl-fad:file-exists-p *simple-net-train-data*)
       (progn
-        (setf *simple-net* (make-net 12 12 12))
+        (setf *simple-net* (make-net 12 12 13))
         (train-on-file *simple-net*
                        *simple-net-train-data*
-                       500
+                       1000
                        100
                        0.07)
         (save-simple-net))
@@ -98,15 +90,19 @@
         (treina-simple-net))))
 
 
-(unless (cl-fad:file-exists-p *simple-net-file*)
-  (treina-simple-net))
+;(unless (cl-fad:file-exists-p *simple-net-file*)
+;  (treina-simple-net))
 
 (defun extrai-resultado-simple-net (output)
-  (loop for i from 0
-     for r in output
-     when (> r *correctness-treshold*)
-       return (make-chord :fundamental (print-note (code->note i) 'latin))
-     finally (return (make-melodic-note))))
+  (with-system tempered
+    (loop for i from 0
+       for r in output
+       with maxi = 0
+       with maxr = 0
+       when (< maxr r) do (setf maxi i maxr r)
+       finally (return (if (= 12 maxi)
+                           (make-melodic-note)
+                           (make-chord :fundamental (print-note (code->note maxi) 'latin)))))))
 
 (defun aplica-simple-net (inputs)
   (load-simple-net)
@@ -163,7 +159,7 @@
   (let* ((dados (gera-dados-treinamento-context-net))
          (tamanho (length dados)))
     (with-open-file (f *context-net-train-data* :direction :output)
-      (format f "~a ~a ~a~%" tamanho 48 12)
+      (format f "~a ~a ~a~%" tamanho 48 13)
       (loop for d in dados
          do
            (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
@@ -175,10 +171,10 @@
 (defun treina-context-net ()
   (if (cl-fad:file-exists-p *context-net-train-data*)
       (progn
-        (setf *context-net* (make-net 48 24 12))
+        (setf *context-net* (make-net 48 24 13))
         (train-on-file *context-net*
                        *context-net-train-data*
-                       500
+                       1000
                        100
                        0.07)
         (save-context-net))
@@ -198,7 +194,7 @@
 (defun aplica-context-net (inputs)
   (load-context-net)
   (butlast (maplist #'roda-context-net
-                    (cons nil (cons nil (temoperado inputs))))
+                    (cons nil (cons nil (temperado inputs))))
            2))
 
 ;(register-algorithm "Context-net" #'aplica-context-net #'compara-gabarito-fundamental)
@@ -228,35 +224,35 @@
   (if (chordp gabarito)
       (cond ((and (equal (chord-mode gabarito) nil)
                   (equal (chord-7th gabarito) nil))
-             (list 1 0 0 0 0 0 0 0 0))
+             (list 1 0 0 0 0 0 0 0 0 1))
             ((and (equal (chord-mode gabarito) nil)
                   (equal (chord-7th gabarito) "7"))
-             (list 1 0 0 0 1 0 0 0 0))
+             (list 1 0 0 0 1 0 0 0 0 0))
             ((and (equal (chord-mode gabarito) nil)
                   (equal (chord-7th gabarito) "7+"))
-             (list 1 0 0 0 0 0 1 0 0))
+             (list 1 0 0 0 0 0 1 0 0 0))
             ((and (equal (chord-mode gabarito) "m")
                   (equal (chord-7th gabarito) nil))
-             (list 0 1 0 0 0 0 0 0 0))
+             (list 0 1 0 0 0 0 0 0 0 1))
             ((and (equal (chord-mode gabarito) "m")
                   (equal (chord-7th gabarito) "7"))
-             (list 0 1 0 0 1 0 0 0 0))
+             (list 0 1 0 0 1 0 0 0 0 0))
             ((and (equal (chord-mode gabarito) "°")
                   (equal (chord-7th gabarito) "7-"))
-             (list 0 0 1 0 0 0 1 0 0))
+             (list 0 0 1 0 0 0 1 0 0 0))
             ((and (equal (chord-mode gabarito) "°")
                   (equal (chord-7th gabarito) nil))
-             (list 0 0 1 0 0 0 0 0 0))
+             (list 0 0 1 0 0 0 0 0 0 1))
             ((and (equal (chord-mode gabarito) "ø")
                   (equal (chord-7th gabarito) "7"))
-             (list 0 0 0 1 1 0 0 0 0))
+             (list 0 0 0 1 1 0 0 0 0 0))
             ((equal (chord-mode gabarito) "!")
-             (list 0 0 0 0 0 0 0 1 0))
+             (list 0 0 0 0 0 0 0 1 0 1))
             ((equal (chord-mode gabarito) "+")
-             (list 0 0 0 0 0 0 0 0 1))
+             (list 0 0 0 0 0 0 0 0 1 1))
             (t
-             (list 0 0 0 0 0 0 0 0 0)))
-      (list 0 0 0 0 0 0 0 0 0)))
+             (list 0 0 0 0 0 0 0 0 0 1)))
+      (list 0 0 0 0 0 0 0 0 0 0)))
 
 (defun cria-pattern-saida-acorde (gabarito)
   (append (cria-pattern-saida gabarito)
@@ -288,7 +284,7 @@
   (let* ((dados (gera-dados-treinamento-chord-net))
          (tamanho (length dados)))
     (with-open-file (f *chord-net-train-data* :direction :output)
-      (format f "~a ~a ~a~%" tamanho 12 21)
+      (format f "~a ~a ~a~%" tamanho 12 23)
       (loop for d in dados
          do
            (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
@@ -300,10 +296,10 @@
 (defun treina-chord-net ()
   (if (cl-fad:file-exists-p *chord-net-train-data*)
       (progn
-        (setf *chord-net* (make-net 12 55 21))
+        (setf *chord-net* (make-net 12 55 23))
         (train-on-file *chord-net*
                                *chord-net-train-data*
-                               500
+                               1000
                                100
                                0.1)
         (save-chord-net))
@@ -317,29 +313,68 @@
 
 (defun extrai-resultado-chord-net (res)
   (with-system tempered
-    (if (chordp (extrai-resultado-simple-net (safe-retorna-n-elementos res 12)))
+    (if (chordp (extrai-resultado-simple-net (safe-retorna-n-elementos res 13)))
         (make-chord :fundamental (chord-fundamental (extrai-resultado-simple-net
-                                                     (safe-retorna-n-elementos res 12)))
-                    :mode (cond ((>= (nth 12 res) *correctness-treshold*)
+                                                     (safe-retorna-n-elementos res 13)))
+                    :mode (cond ((and (> (nth 13 res) (nth 14 res))
+                                      (> (nth 13 res) (nth 15 res))
+                                      (> (nth 13 res) (nth 16 res))
+                                      (> (nth 13 res) (nth 20 res))
+                                      (> (nth 13 res) (nth 21 res)))
                                  nil)
-                                ((>= (nth 13 res) *correctness-treshold*)
+                                ((and (> (nth 14 res) (nth 13 res))
+                                      (> (nth 14 res) (nth 15 res))
+                                      (> (nth 14 res) (nth 16 res))
+                                      (> (nth 14 res) (nth 20 res))
+                                      (> (nth 14 res) (nth 21 res)))
                                  "m")
-                                ((>= (nth 14 res) *correctness-treshold*)
+                                ((and (> (nth 15 res) (nth 13 res))
+                                      (> (nth 15 res) (nth 14 res))
+                                      (> (nth 15 res) (nth 16 res))
+                                      (> (nth 15 res) (nth 20 res))
+                                      (> (nth 15 res) (nth 21 res)))
                                  "°")
-                                ((>= (nth 15 res) *correctness-treshold*)
+                                ((and (> (nth 16 res) (nth 13 res))
+                                      (> (nth 16 res) (nth 14 res))
+                                      (> (nth 16 res) (nth 15 res))
+                                      (> (nth 16 res) (nth 20 res))
+                                      (> (nth 16 res) (nth 21 res)))
                                  "ø")
-                                ((>= (nth 19 res) *correctness-treshold*)
+                                ((and (> (nth 20 res) (nth 13 res))
+                                      (> (nth 20 res) (nth 14 res))
+                                      (> (nth 20 res) (nth 15 res))
+                                      (> (nth 20 res) (nth 16 res))
+                                      (> (nth 20 res) (nth 21 res)))
                                  "!")
-                                ((>= (nth 20 res) *correctness-treshold*)
+                                ((and (> (nth 21 res) (nth 13 res))
+                                      (> (nth 21 res) (nth 14 res))
+                                      (> (nth 21 res) (nth 15 res))
+                                      (> (nth 21 res) (nth 16 res))
+                                      (> (nth 21 res) (nth 20 res)))
                                  "+")
                                 )
-                    :7th (cond ((>= (nth 16 res) *correctness-treshold*)
-                                "7")
-                               ((>= (nth 17 res) *correctness-treshold*)
+                    :7th (cond ((and (> (nth 22 res) (nth 18 res))
+                                     (> (nth 22 res) (nth 16 res))
+                                     (> (nth 22 res) (nth 19 res))
+                                     (> (nth 22 res) (nth 17 res)))
+                                nil)
+                               ((and (> (nth 17 res) (nth 18 res))
+                                     (> (nth 17 res) (nth 19 res))
+                                     (> (nth 17 res) (nth 22 res)))
+                                 "7")
+                               ((and (> (nth 18 res) (nth 17 res))
+                                     (> (nth 18 res) (nth 22 res))
+                                     (> (nth 18 res) (nth 19 res)))
                                 "7-")
-                               ((>= (nth 18 res) *correctness-treshold*)
+                               ((and (> (nth 19 res) (nth 17 res))
+                                     (> (nth 19 res) (nth 22 res))
+                                     (> (nth 19 res) (nth 18 res)))
                                 "7+")
-                               ((>= (nth 15 res) *correctness-treshold*)
+                                ((and (> (nth 16 res) (nth 13 res))
+                                      (> (nth 16 res) (nth 14 res))
+                                      (> (nth 16 res) (nth 15 res))
+                                      (> (nth 16 res) (nth 20 res))
+                                      (> (nth 16 res) (nth 21 res)))
                                 "7")))
         (make-melodic-note))))
 
@@ -397,7 +432,7 @@
   (let* ((dados (gera-dados-treinamento-mode-net))
          (tamanho (length dados)))
     (with-open-file (f *mode-net-train-data* :direction :output)
-      (format f "~a ~a ~a~%" tamanho 24 21)
+      (format f "~a ~a ~a~%" tamanho 25 23)
       (loop for d in dados
          do
            (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
@@ -409,10 +444,10 @@
 (defun treina-mode-net ()
   (if (cl-fad:file-exists-p *mode-net-train-data*)
       (progn
-        (setf *mode-net* (make-net 24 50 21))
+        (setf *mode-net* (make-net 25 50 23))
         (train-on-file *mode-net*
                        *mode-net-train-data*
-                       500
+                       1000
                        100
                        0.1)
         (save-mode-net))
