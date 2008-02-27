@@ -13,8 +13,7 @@
 
 
 (defun cria-pattern-segmento (seg)
-  (with-system tempered
-    (mapcar (lambda (x) (coerce x 'float)) (extrai-feature-list seg 0))))
+  (mapcar (lambda (x) (coerce x 'float)) (extrai-feature-list seg 0)))
 
 (defun cria-pattern-saida (gabarito)
   (let ((atual (make-list 13 :initial-element 0)))
