@@ -22,10 +22,12 @@
          (setf sb-profile::*print-functions-not-called* nil)
          (sb-profile:profile "RAMEAU")
          (sb-profile:profile "RAMEAU-PARDO")
+         (sb-profile:profile "RAMEAU-KNN")
          (sb-profile:profile "GENOSLIB"))
   #+cmu (progn
           (profile:profile-all :package "RAMEAU")
           (profile:profile-all :package "RAMEAU-PARDO")
+          (profile:profile-all :package "RAMEAU-KNN")
           (profile:profile-all :package "GENOSLIB")))
 
 (defun rameau-report ()
