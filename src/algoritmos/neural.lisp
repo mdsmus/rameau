@@ -12,17 +12,18 @@
 (defparameter *neural-path* (concat (rameau-path) "neural-nets/"))
 
 
-(defun cria-pattern-segmento (seg)
-  (mapcar (lambda (x) (coerce x 'float)) (extrai-feature-list seg 0)))
+(defun cria-pattern-segmento (seg &optional diff)
+  (let ((diff (or diff (extrai-diff seg))))
+    (mapcar (lambda (x) (coerce x 'float)) (extrai-feature-list seg diff))))
 
-(defun cria-pattern-saida (gabarito)
+(defun cria-pattern-saida (gabarito diff)
   (let ((atual (make-list (1+ (get-module)) :initial-element 0)))
     (if (chordp gabarito)
-      (incf (nth (note->code (stringify (chord-fundamental gabarito))) atual))
+      (incf (nth (module (- (note->code (stringify (chord-fundamental gabarito))) diff)) atual))
       (incf (nth (get-module) atual)))
     atual))
 
-(defun extrai-resultado-fundamental (output)
+(defun extrai-resultado-fundamental (diff output)
   (loop for i from 0
      for r in output
      with maxi = 0
@@ -30,7 +31,8 @@
      when (< maxr r) do (setf maxi i maxr r)
      finally (return (if (= (get-module) maxi)
                          (make-melodic-note)
-                         (make-chord :fundamental (print-note (code->note maxi) 'latin))))))
+                         (make-chord :fundamental (print-note (code->note (module (+ diff maxi)))
+                                                              'latin))))))
 
 
 
@@ -82,26 +84,21 @@
              (list 0 0 0 0 0 0 0 0 0 1)))
       (list 0 0 0 0 0 0 0 0 0 0)))
 
-(defun cria-pattern-saida-acorde (gabarito)
-  (append (cria-pattern-saida gabarito)
+(defun cria-pattern-saida-acorde (gabarito diff)
+  (append (cria-pattern-saida gabarito diff)
           (cria-pattern-saida-modo gabarito)))
 
-(defun prepara-exemplos-treinamento-chord-net-individual (coral gabarito)
+(defun prepara-exemplos-treinamento-chord-net (coral gabarito)
   (loop for c in coral
      for gab in gabarito
+     for d = (extrai-diff c)
      if (listp gab)
-       nconc (prepara-exemplos-treinamento-chord-net-individual (repeat-list (length gab) c)
-                                                                gab)
+       nconc (prepara-exemplos-treinamento-chord-net (repeat-list (length gab) c)
+                                                     gab)
      else
-       nconc (list (list (cria-pattern-segmento c)
-                         (cria-pattern-saida-acorde gab)))))
+       nconc (list (list (cria-pattern-segmento c d)
+                         (cria-pattern-saida-acorde gab d)))))
 
-
-(defun prepara-exemplos-treinamento-chord-net (coral gabarito)
-  (loop for i from 0 to 11
-     for c = (transpose-segmentos coral i)
-     for g = (transpose-chords gabarito i)
-     nconc (prepara-exemplos-treinamento-chord-net-individual c g)))
 
 (defun gera-dados-treinamento-chord-net ()
   (with-system rameau:tempered
@@ -124,12 +121,12 @@
 (defun treina-chord-net ()
   (if (cl-fad:file-exists-p *chord-net-train-data*)
       (progn
-        (setf *chord-net* (make-net 12 55 23))
+        (setf *chord-net* (make-net 12 25 23))
         (train-on-file *chord-net*
-                               *chord-net-train-data*
-                               1000
-                               100
-                               0.1)
+                       *chord-net-train-data*
+                       1000
+                       100
+                       0.1)
         (save-chord-net))
       (progn
         (gera-arquivo-treinamento-chord-net)
@@ -139,70 +136,70 @@
 (unless (cl-fad:file-exists-p *chord-net-file*)
   (treina-chord-net))
 
-(defun extrai-resultado-chord-net (res)
-  (with-system tempered
-    (if (chordp (extrai-resultado-fundamental (safe-retorna-n-elementos res 13)))
-        (make-chord :fundamental (chord-fundamental (extrai-resultado-fundamental
-                                                     (safe-retorna-n-elementos res 13)))
-                    :mode (cond ((and (> (nth 13 res) (nth 14 res))
-                                      (> (nth 13 res) (nth 15 res))
-                                      (> (nth 13 res) (nth 16 res))
-                                      (> (nth 13 res) (nth 20 res))
-                                      (> (nth 13 res) (nth 21 res)))
+(defun extrai-resultado-chord-net (diff res)
+  (let ((fundamental (extrai-resultado-fundamental diff (safe-retorna-n-elementos res (1+ (get-module)))))
+        (resto (nthcdr (1+ (get-module)) res)))
+    (if (chordp fundamental)
+        (make-chord :fundamental (chord-fundamental fundamental)
+                    :mode (cond ((and (> (nth 0 resto) (nth 1 resto))
+                                      (> (nth 0 resto) (nth 2 resto))
+                                      (> (nth 0 resto) (nth 3 resto))
+                                      (> (nth 0 resto) (nth 7 resto))
+                                      (> (nth 0 resto) (nth 8 resto)))
                                  nil)
-                                ((and (> (nth 14 res) (nth 13 res))
-                                      (> (nth 14 res) (nth 15 res))
-                                      (> (nth 14 res) (nth 16 res))
-                                      (> (nth 14 res) (nth 20 res))
-                                      (> (nth 14 res) (nth 21 res)))
+                                ((and (> (nth 1 resto) (nth 0 resto))
+                                      (> (nth 1 resto) (nth 2 resto))
+                                      (> (nth 1 resto) (nth 3 resto))
+                                      (> (nth 1 resto) (nth 7 resto))
+                                      (> (nth 1 resto) (nth 8 resto)))
                                  "m")
-                                ((and (> (nth 15 res) (nth 13 res))
-                                      (> (nth 15 res) (nth 14 res))
-                                      (> (nth 15 res) (nth 16 res))
-                                      (> (nth 15 res) (nth 20 res))
-                                      (> (nth 15 res) (nth 21 res)))
+                                ((and (> (nth 2 resto) (nth 0 resto))
+                                      (> (nth 2 resto) (nth 1 resto))
+                                      (> (nth 2 resto) (nth 3 resto))
+                                      (> (nth 2 resto) (nth 7 resto))
+                                      (> (nth 2 resto) (nth 8 resto)))
                                  "°")
-                                ((and (> (nth 16 res) (nth 13 res))
-                                      (> (nth 16 res) (nth 14 res))
-                                      (> (nth 16 res) (nth 15 res))
-                                      (> (nth 16 res) (nth 20 res))
-                                      (> (nth 16 res) (nth 21 res)))
+                                ((and (> (nth 3 resto) (nth 0 resto))
+                                      (> (nth 3 resto) (nth 1 resto))
+                                      (> (nth 3 resto) (nth 2 resto))
+                                      (> (nth 3 resto) (nth 7 resto))
+                                      (> (nth 3 resto) (nth 8 resto)))
                                  "ø")
-                                ((and (> (nth 20 res) (nth 13 res))
-                                      (> (nth 20 res) (nth 14 res))
-                                      (> (nth 20 res) (nth 15 res))
-                                      (> (nth 20 res) (nth 16 res))
-                                      (> (nth 20 res) (nth 21 res)))
+                                ((and (> (nth 7 resto) (nth 0 resto))
+                                      (> (nth 7 resto) (nth 1 resto))
+                                      (> (nth 7 resto) (nth 2 resto))
+                                      (> (nth 7 resto) (nth 3 resto))
+                                      (> (nth 7 resto) (nth 8 resto)))
                                  "!")
-                                ((and (> (nth 21 res) (nth 13 res))
-                                      (> (nth 21 res) (nth 14 res))
-                                      (> (nth 21 res) (nth 15 res))
-                                      (> (nth 21 res) (nth 16 res))
-                                      (> (nth 21 res) (nth 20 res)))
+                                ((and (> (nth 8 resto) (nth 0 resto))
+                                      (> (nth 8 resto) (nth 1 resto))
+                                      (> (nth 8 resto) (nth 2 resto))
+                                      (> (nth 8 resto) (nth 3 resto))
+                                      (> (nth 8 resto) (nth 7 resto)))
                                  "+")
                                 )
-                    :7th (cond ((and (> (nth 22 res) (nth 18 res))
-                                     (> (nth 22 res) (nth 16 res))
-                                     (> (nth 22 res) (nth 19 res))
-                                     (> (nth 22 res) (nth 17 res)))
+                    :7th (cond ((and (> (nth 9 resto) (nth 5 resto))
+                                     (> (nth 9 resto) (nth 3 resto))
+                                     (> (nth 9 resto) (nth 6 resto))
+                                     (> (nth 9 resto) (nth 4 resto)))
                                 nil)
-                               ((and (> (nth 17 res) (nth 18 res))
-                                     (> (nth 17 res) (nth 19 res))
-                                     (> (nth 17 res) (nth 22 res)))
+                               ((and (> (nth 4 resto) (nth 5 resto))
+                                     (> (nth 4 resto) (nth 6 resto))
+                                     (> (nth 4 resto) (nth 9 resto)))
                                  "7")
-                               ((and (> (nth 18 res) (nth 17 res))
-                                     (> (nth 18 res) (nth 22 res))
-                                     (> (nth 18 res) (nth 19 res)))
+                               ((and (> (nth 5 resto) (nth 4 resto))
+                                     (> (nth 5 resto) (nth 9 resto))
+                                     (> (nth 5 resto) (nth 6 resto)))
                                 "7-")
-                               ((and (> (nth 19 res) (nth 17 res))
-                                     (> (nth 19 res) (nth 22 res))
-                                     (> (nth 19 res) (nth 18 res)))
+                               ((and (> (nth 6 resto) (nth 4 resto))
+                                     (> (nth 6 resto) (nth 9 resto))
+                                     (> (nth 6 resto) (nth 5 resto)))
                                 "7+")
-                                ((and (> (nth 16 res) (nth 13 res))
-                                      (> (nth 16 res) (nth 14 res))
-                                      (> (nth 16 res) (nth 15 res))
-                                      (> (nth 16 res) (nth 20 res))
-                                      (> (nth 16 res) (nth 21 res)))
+                                ((and (> (nth 3 resto) (nth 0 resto))
+                                      (> (nth 3 resto) (nth 1 resto))
+                                      (> (nth 3 resto) (nth 2 resto))
+                                      (> (nth 3 resto) (nth 7 resto))
+                                      (> (nth 3 resto) (nth 8 resto)))
                                 "7")))
         (make-melodic-note))))
 
@@ -211,9 +208,11 @@
   (coloca-inversoes
    inputs
    (with-system tempered
-     (mapcar (lambda (x) (extrai-resultado-chord-net
-                          (run-net *chord-net*
-                                   (cria-pattern-segmento x))))
+     (mapcar (lambda (x) (let ((d (extrai-diff x)))
+                           (extrai-resultado-chord-net
+                            d
+                            (run-net *chord-net*
+                                     (cria-pattern-segmento x)))))
              (temperado inputs)))))
 
 (register-algorithm "Simple-net" #'aplica-chord-net #'compara-gabarito-tonal)

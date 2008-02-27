@@ -122,7 +122,7 @@
         (n (length segmento))
         (feature-list (repeat-list (get-module) 0)))
     (loop for nota in segmento
-       do (incf (nth nota feature-list) (/ 1 3)))
+       do (incf (nth nota feature-list) (/ 1 n)))
     feature-list))
 
 (defun extrai-diff (segmento)
