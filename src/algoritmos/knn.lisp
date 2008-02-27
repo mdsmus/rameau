@@ -98,20 +98,31 @@
        when (> (gethash k resultado) maxv) do (setf maxk k maxv (gethash k resultado))
        finally (return (extrai-acorde maxk diff)))))
 
+(defun insere (elemento lista)
+  "Insere elemento em lista, na posição correta. O primeiro elemento de elemento, assim
+como do resto da lista, é a posição, quanto menor, mais na frente"
+  (if lista
+      (let ((fe (first elemento))
+            (fl (first (first lista))))
+        (if (< fe fl)
+            (cons elemento lista)
+            (cons (first lista) (insere elemento (rest lista)))))
+      (list elemento)))
+
+(defun clip (tamanho lista)
+  "Corta lista para ter um tamanho maximo tamanho"
+  (remove-if #'null (safe-retorna-n-elementos lista tamanho)))
+
 (defun classifica-k1 (segmento)
   (let* ((diff (extrai-diff segmento))
          (pitches (extrai-feature-list segmento diff)))
     (loop for key being the hash-keys in *1-neighbours* 
-       with maxv = nil
        with mind = most-positive-fixnum
-       with maxkey = nil
-       do ;(print 'foo) (print maxv) (print mind) (print maxkey) (print key) (print (gethash key *1-neighbours*))
+       with nn = nil
+       do 
          (let ((d (distance pitches key)))
-           (when (<= d mind)
-             (setf mind d)
-             (setf maxv (remove-if #'null (safe-retorna-n-elementos (push (gethash key *1-neighbours*) maxv) *k*))
-                   maxkey (remove-if #'null (safe-retorna-n-elementos (push key maxkey) *k*)))))
-       finally (return (retorna-classificacao diff maxkey maxv)))))
+           (setf nn (clip *k* (insere (list d key (gethash key *1-neighbours*)) nn))))
+       finally (return (retorna-classificacao diff (mapcar #'second nn) (mapcar #'third nn))))))
 
 (defun gera-gabarito-k1 (coral)
   (mapcar #'classifica-k1 coral))
