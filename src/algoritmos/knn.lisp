@@ -26,11 +26,9 @@
        (* ,n ,n))))
 
 (defun distance (a b)
-  ;; A é o vetor, b é o candidato a neighbor
-  (let ((diff (- (first a) (first b))))
-    (loop for i in a
-       for j in b
-       sum (square (- i (+ j diff))))))
+  (loop for i in a
+     for j in b
+     sum (square (- i j))))
 
 (defun processa-acorde (acorde diff)
   (if (chordp acorde)
@@ -63,10 +61,10 @@
        it
        (setf (gethash key table) default)))
 
-(defun insere-contagem-k1 (chave acorde diff)
+(defun insere-contagem (chave acorde diff hash)
   (let ((acorde (processa-acorde acorde diff)))
     (incf (gethash acorde
-                   (hash-default chave *1-neighbours* (make-hash-table :test #'equal))
+                   (hash-default chave hash (make-hash-table :test #'equal))
                    0))))
 
 (defun treina-1nn (coral gabarito)
@@ -74,16 +72,16 @@
      for acorde in gabarito
      for diff = (extrai-diff segmento)
      for pitches = (extrai-feature-list segmento diff)
-     for chave = (mapcar (lambda (x) (- x diff)) pitches)
      do (if (listp acorde)
-            (mapcar (lambda (x) (insere-contagem-k1 chave x diff)) acorde)
-            (insere-contagem-k1 chave acorde diff))))
+            (mapcar (lambda (x) (insere-contagem pitches x diff *1-neighbours*)) acorde)
+            (insere-contagem pitches acorde diff *1-neighbours*))))
 
 (defun treina-k1 (exemplos)
   (loop for exemplo in exemplos
        for coral = (first exemplo)
        for gabarito = (second exemplo)
        do (treina-1nn coral gabarito)))
+
 
 (treina-k1 *exemplos-de-treinamento*)
 
@@ -128,3 +126,64 @@ como do resto da lista, é a posição, quanto menor, mais na frente"
   (mapcar #'classifica-k1 coral))
 
 (register-algorithm "Knn" #'gera-gabarito-k1 #'compara-gabarito-modo-setima)
+;; Algoritmo context-knn. 
+
+(defun agrupa (lista n)
+  "Agrupa os elementos da lista em grupos de n em n, repetindo"
+  (when lista
+    (cons (safe-retorna-n-elementos lista n) (agrupa (rest lista) n))))
+
+(defun coloca-n-contexto (segmentos antes depois)
+  (butlast (agrupa (nconc (repeat-list antes nil) segmentos) (+ 1 antes depois)) (1- depois)))
+
+
+(defparameter *contexto-antes* 2)
+(defparameter *contexto-depois* 1)
+
+(defparameter *variance* 1/2)
+
+(defparameter *context-neighbors* (make-hash-table :test #'equal))
+(defparameter *k-neighbors* 1)
+
+(defun context-extrai-diff (segmentos)
+  (extrai-diff (nth *contexto-antes* segmentos)))
+
+(defun context-extrai-features (segmentos diff)
+  (loop for seg in segmentos
+     for peso from (-  *contexto-antes*)
+     nconc (loop for x in (extrai-feature-list seg diff)
+              collect (* x (if (= peso 0) 1 (/ *variance* (- (abs peso))))))))
+
+(defun treina-context-nn (coral gabarito )
+  (loop for segmento in coral
+     for acorde in gabarito
+     for diff = (context-extrai-diff segmento)
+     for pitches = (context-extrai-features segmento diff)
+     do (if (listp acorde)
+            (mapcar (lambda (x) (insere-contagem pitches x diff *context-neighbors*)) acorde)
+            (insere-contagem pitches acorde diff *context-neighbors*))))
+
+(defun treina-context (exemplos)
+  (loop for exemplo in exemplos
+     for coral = (first exemplo)
+     for gabarito = (second exemplo)
+     do (treina-context-nn (coloca-n-contexto coral *contexto-antes* *contexto-depois*) gabarito)))
+
+(treina-context *exemplos-de-treinamento*)
+
+(defun classifica-context (segmento)
+  (let* ((diff (context-extrai-diff segmento))
+         (pitches (context-extrai-features segmento diff)))
+    (loop for key being the hash-keys in *context-neighbors* 
+       with mind = most-positive-fixnum
+       with nn = nil
+       do 
+         (let ((d (distance pitches key)))
+           (setf nn (clip *k-neighbors* (insere (list d key (gethash key *context-neighbors*)) nn))))
+       finally (return (retorna-classificacao diff (mapcar #'second nn) (mapcar #'third nn))))))
+
+(defun gera-gabarito-context (coral)
+  (let ((c (coloca-n-contexto coral *contexto-antes* *contexto-depois*)))
+    (mapcar #'classifica-context (butlast c 2))))
+
+(register-algorithm "Knn-contexto" #'gera-gabarito-context #'compara-gabarito-modo-setima)
