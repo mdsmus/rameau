@@ -39,6 +39,18 @@
             (chord-7th acorde))
       (list '-)))
 
+(defun extrai-feature-list (segmento diff)
+  (let ((segmento (mapcar2 (lambda (x) (module (- x diff))) #'evento-pitch segmento))
+        (n (length segmento))
+        (feature-list (repeat-list 96 0)))
+    (loop for nota in segmento
+       do (incf (nth nota feature-list) (/ 1 3)))
+    feature-list))
+
+(defun extrai-diff (segmento)
+  (let ((segmento (sorted segmento #'compara-notas)))
+    (evento-pitch (first segmento))))
+
 (defun extrai-acorde (lista diff)
   (if (eq (first lista) '-)
       (make-melodic-note)
@@ -60,9 +72,8 @@
 (defun treina-1nn (coral gabarito)
   (loop for segmento in coral
      for acorde in gabarito
-     for s = (sorted segmento #'compara-notas)
-     for pitches = (mapcar #'evento-pitch s)
-     for diff = (first pitches)
+     for diff = (extrai-diff segmento)
+     for pitches = (extrai-feature-list segmento diff)
      for chave = (mapcar (lambda (x) (- x diff)) pitches)
      do (if (listp acorde)
             (mapcar (lambda (x) (insere-contagem-k1 chave x diff)) acorde)
@@ -88,8 +99,8 @@
        finally (return (extrai-acorde maxk diff)))))
 
 (defun classifica-k1 (segmento)
-  (let* ((pitches (mapcar #'evento-pitch (sorted segmento #'compara-notas)))
-         (diff (first pitches)))
+  (let* ((diff (extrai-diff segmento))
+         (pitches (extrai-feature-list segmento diff)))
     (loop for key being the hash-keys in *1-neighbours* 
        with maxv = nil
        with mind = most-positive-fixnum
