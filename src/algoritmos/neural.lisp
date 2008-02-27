@@ -16,23 +16,22 @@
   (mapcar (lambda (x) (coerce x 'float)) (extrai-feature-list seg 0)))
 
 (defun cria-pattern-saida (gabarito)
-  (let ((atual (make-list 13 :initial-element 0)))
+  (let ((atual (make-list (1+ (get-module)) :initial-element 0)))
     (if (chordp gabarito)
       (incf (nth (note->code (stringify (chord-fundamental gabarito))) atual))
-      (incf (nth 12 atual)))
+      (incf (nth (get-module) atual)))
     atual))
 
-
 (defun extrai-resultado-fundamental (output)
-  (with-system tempered
-    (loop for i from 0
-       for r in output
-       with maxi = 0
-       with maxr = 0
-       when (< maxr r) do (setf maxi i maxr r)
-       finally (return (if (= 12 maxi)
-                           (make-melodic-note)
-                           (make-chord :fundamental (print-note (code->note maxi) 'latin)))))))
+  (loop for i from 0
+     for r in output
+     with maxi = 0
+     with maxr = 0
+     when (< maxr r) do (setf maxi i maxr r)
+     finally (return (if (= (get-module) maxi)
+                         (make-melodic-note)
+                         (make-chord :fundamental (print-note (code->note maxi) 'latin))))))
+
 
 
 (defvar *chord-net* nil)
@@ -218,3 +217,4 @@
              (temperado inputs)))))
 
 (register-algorithm "Simple-net" #'aplica-chord-net #'compara-gabarito-tonal)
+
