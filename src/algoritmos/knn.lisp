@@ -125,7 +125,7 @@ como do resto da lista, é a posição, quanto menor, mais na frente"
 (defun gera-gabarito-k1 (coral)
   (mapcar #'classifica-k1 coral))
 
-(register-algorithm "Knn" #'gera-gabarito-k1 #'compara-gabarito-modo-setima)
+(register-algorithm "Knn-simple" #'gera-gabarito-k1 #'compara-gabarito-modo-setima)
 ;; Algoritmo context-knn. 
 
 (defun agrupa (lista n)
