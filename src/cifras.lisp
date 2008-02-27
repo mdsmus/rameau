@@ -180,6 +180,23 @@ position."
               (compara-gabarito-modo-setima-individual res x))
             gab)))
 
+(defun compara-gabarito-tonal-individual (resultado gabarito)
+  (or (and (melodic-note-p resultado)
+           (melodic-note-p gabarito))
+      (and (chordp resultado)
+           (chordp gabarito)
+           (equal (chord-fundamental resultado)
+                  (chord-fundamental gabarito))
+           (equal (chord-mode resultado) (chord-mode gabarito))
+           (equal (chord-7th resultado) (chord-7th gabarito)))))
+
+(defun compara-gabarito-tonal (res gab)
+  (if (atom gab)
+      (compara-gabarito-tonal-individual res gab)
+      (some (lambda (x)
+              (compara-gabarito-tonal-individual res x))
+            gab)))
+
 (defun coloca-inversao (segmento acorde)
   (if (chordp acorde)
       (make-chord :fundamental (chord-fundamental acorde)

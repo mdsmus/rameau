@@ -218,5 +218,4 @@
                                    (cria-pattern-segmento x))))
              (temperado inputs)))))
 
-(register-algorithm "Simple-net" #'aplica-chord-net #'compara-gabarito-modo-setima)
-    
+(register-algorithm "Simple-net" #'aplica-chord-net #'compara-gabarito-tonal)

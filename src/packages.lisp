@@ -23,6 +23,7 @@
    #:coloca-inversoes
    #:compara-gabarito-fundamental
    #:compara-gabarito-modo-setima
+   #:compara-gabarito-tonal
    #:compara-notas
    #:extrai-diff
    #:extrai-feature-list
