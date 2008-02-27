@@ -117,3 +117,15 @@
      for g = (processa-gabarito f "corais")
      collect (list (segmentos-minimos (parse-file f)) g)))
 
+(defun extrai-feature-list (segmento diff)
+  (let ((segmento (mapcar2 (lambda (x) (module (- x diff))) #'evento-pitch segmento))
+        (n (length segmento))
+        (feature-list (repeat-list (get-module) 0)))
+    (loop for nota in segmento
+       do (incf (nth nota feature-list) (/ 1 3)))
+    feature-list))
+
+(defun extrai-diff (segmento)
+  (let ((segmento (sorted segmento #'compara-notas)))
+    (evento-pitch (first segmento))))
+

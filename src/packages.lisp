@@ -24,6 +24,8 @@
    #:compara-gabarito-fundamental
    #:compara-gabarito-modo-setima
    #:compara-notas
+   #:extrai-diff
+   #:extrai-feature-list
    #:filtra-algoritmos
    #:first-string
    #:get-comandos

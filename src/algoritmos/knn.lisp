@@ -37,18 +37,6 @@
             (chord-7th acorde))
       (list '-)))
 
-(defun extrai-feature-list (segmento diff)
-  (let ((segmento (mapcar2 (lambda (x) (module (- x diff))) #'evento-pitch segmento))
-        (n (length segmento))
-        (feature-list (repeat-list 96 0)))
-    (loop for nota in segmento
-       do (incf (nth nota feature-list) (/ 1 3)))
-    feature-list))
-
-(defun extrai-diff (segmento)
-  (let ((segmento (sorted segmento #'compara-notas)))
-    (evento-pitch (first segmento))))
-
 (defun extrai-acorde (lista diff)
   (if (eq (first lista) '-)
       (make-melodic-note)
@@ -108,7 +96,7 @@
        finally (return (retorna-classificacao diff (mapcar #'second nn) (mapcar #'third nn))))))
 
 (defun gera-gabarito-k1 (coral)
-  (mapcar #'classifica-k1 coral))
+  (coloca-inversoes (mapcar #'classifica-k1 coral)))
 
 (register-algorithm "Knn-simple" #'gera-gabarito-k1 #'compara-gabarito-modo-setima)
 ;; Algoritmo context-knn. 
@@ -161,6 +149,6 @@
 
 (defun gera-gabarito-context (coral)
   (let ((c (coloca-contexto coral *contexto-antes* *contexto-depois*)))
-    (mapcar #'classifica-context (butlast c 2))))
+    (coloca-inversoes (mapcar #'classifica-context (butlast c 2)))))
 
 (register-algorithm "Knn-contexto" #'gera-gabarito-context #'compara-gabarito-modo-setima)

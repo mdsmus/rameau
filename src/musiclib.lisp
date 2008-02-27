@@ -17,6 +17,7 @@
                                sort-form-list tempered tonal
                                get-system-notes get-notes code->note note->code
                                compara-notes-tempered
+                               get-module
                                note? rest? latin->lily
                                inverse-code->note
                                print-accidentals print-note module
@@ -127,6 +128,11 @@
   "Returns the numeric value to be used as a module in the defined
 system."
   (second (get-system-item system)))
+
+(defun get-module ()
+  "Returns the numeric value to be used as a module in the current
+system."
+  (second (get-system-item *system*)))
 
 (defun get-system-intervals (system)
   "Returns a table defining intervals in the system."
