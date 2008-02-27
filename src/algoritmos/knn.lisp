@@ -96,21 +96,6 @@
        when (> (gethash k resultado) maxv) do (setf maxk k maxv (gethash k resultado))
        finally (return (extrai-acorde maxk diff)))))
 
-(defun insere (elemento lista)
-  "Insere elemento em lista, na posição correta. O primeiro elemento de elemento, assim
-como do resto da lista, é a posição, quanto menor, mais na frente"
-  (if lista
-      (let ((fe (first elemento))
-            (fl (first (first lista))))
-        (if (< fe fl)
-            (cons elemento lista)
-            (cons (first lista) (insere elemento (rest lista)))))
-      (list elemento)))
-
-(defun clip (tamanho lista)
-  "Corta lista para ter um tamanho maximo tamanho"
-  (remove-if #'null (safe-retorna-n-elementos lista tamanho)))
-
 (defun classifica-k1 (segmento)
   (let* ((diff (extrai-diff segmento))
          (pitches (extrai-feature-list segmento diff)))
@@ -127,14 +112,6 @@ como do resto da lista, é a posição, quanto menor, mais na frente"
 
 (register-algorithm "Knn-simple" #'gera-gabarito-k1 #'compara-gabarito-modo-setima)
 ;; Algoritmo context-knn. 
-
-(defun agrupa (lista n)
-  "Agrupa os elementos da lista em grupos de n em n, repetindo"
-  (when lista
-    (cons (safe-retorna-n-elementos lista n) (agrupa (rest lista) n))))
-
-(defun coloca-n-contexto (segmentos antes depois)
-  (butlast (agrupa (nconc (repeat-list antes nil) segmentos) (+ 1 antes depois)) (1- depois)))
 
 
 (defparameter *contexto-antes* 2)
@@ -167,7 +144,7 @@ como do resto da lista, é a posição, quanto menor, mais na frente"
   (loop for exemplo in exemplos
      for coral = (first exemplo)
      for gabarito = (second exemplo)
-     do (treina-context-nn (coloca-n-contexto coral *contexto-antes* *contexto-depois*) gabarito)))
+     do (treina-context-nn (coloca-contexto coral *contexto-antes* *contexto-depois*) gabarito)))
 
 (treina-context *exemplos-de-treinamento*)
 
@@ -183,7 +160,7 @@ como do resto da lista, é a posição, quanto menor, mais na frente"
        finally (return (retorna-classificacao diff (mapcar #'second nn) (mapcar #'third nn))))))
 
 (defun gera-gabarito-context (coral)
-  (let ((c (coloca-n-contexto coral *contexto-antes* *contexto-depois*)))
+  (let ((c (coloca-contexto coral *contexto-antes* *contexto-depois*)))
     (mapcar #'classifica-context (butlast c 2))))
 
 (register-algorithm "Knn-contexto" #'gera-gabarito-context #'compara-gabarito-modo-setima)

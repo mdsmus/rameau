@@ -4,29 +4,35 @@
 (in-package :genoslib)
 
 (register-and-export-symbols '(
-                               dbg
-                               dbg-indent
-                               rameau-debug
-                               rameau-undebug
                                add-lily-ext
                                add-pop-ext
+                               agrupa
                                assoc-item
                                avanca-todos
+                               clip
                                char->symbol
+                               coloca-contexto
                                concat
                                converte-strings
                                copy
                                count-subseq
                                defcached
                                destringify
+                               dbg
+                               dbg-indent
                                file-string
                                get-item
+                               insere
+                               mapcar2
                                max-predicado
                                no-op
-			       mapcar2
                                octave-from-string
                                pula
+                               rameau-debug
+                               rameau-undebug
                                read-file-as-sexp
+                               repeat-copy
+                               repeat-string
                                repeat-list
                                retorna-n-segmentos
                                safe-retorna-n-elementos
@@ -39,8 +45,6 @@
                                stringify
                                string->symbol
                                symbol->number
-                               repeat-copy
-                               repeat-string
                                tem-ext?
                                tira-extensao
                                troca-extensao
@@ -51,6 +55,21 @@
 (defun stringify (symb)
   (let ((*package* (find-package :rameau)))
     (format nil "~(~a~)" symb)))
+
+(defun clip (tamanho lista)
+  "Corta lista para ter um tamanho maximo tamanho"
+  (remove-if #'null (safe-retorna-n-elementos lista tamanho)))
+
+(defun insere (elemento lista)
+  "Insere elemento em lista, na posição correta. O primeiro elemento de elemento, assim
+como do resto da lista, é a posição, quanto menor, mais na frente"
+  (if lista
+      (let ((fe (first elemento))
+            (fl (first (first lista))))
+        (if (< fe fl)
+            (cons elemento lista)
+            (cons (first lista) (insere elemento (rest lista)))))
+      (list elemento)))
 
 
 ;;; Norvig's functions for debugging in PAIP, p. 124
@@ -269,3 +288,23 @@ Exemplo: (split-word \"foo\") => (F O O)"
 (defun mapcar2 (fn1 fn2 list)
   "Faz a mapcar do mapcar de uma lista"
   (mapcar fn1 (mapcar fn2 list)))
+
+(defun insere (elemento lista)
+  "Insere elemento em lista, na posição correta. O primeiro elemento de elemento, assim
+como do resto da lista, é a posição, quanto menor, mais na frente"
+  (if lista
+      (let ((fe (first elemento))
+            (fl (first (first lista))))
+        (if (< fe fl)
+            (cons elemento lista)
+            (cons (first lista) (insere elemento (rest lista)))))
+      (list elemento)))
+
+(defun agrupa (lista n)
+  "Agrupa os elementos da lista em grupos de n em n, repetindo"
+  (when lista
+    (cons (safe-retorna-n-elementos lista n) (agrupa (rest lista) n))))
+
+(defun coloca-contexto (segmentos antes depois)
+  (butlast (agrupa (nconc (repeat-list antes nil) segmentos) (+ 1 antes depois)) (1- depois)))
+
