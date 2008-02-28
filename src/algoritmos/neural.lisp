@@ -214,7 +214,7 @@
                                      (cria-pattern-segmento x)))))
              (temperado inputs)))))
 
-(register-algorithm "Simple-net" #'aplica-chord-net #'compara-gabarito-tonal)
+(register-algorithm "S-net" #'aplica-chord-net #'compara-gabarito-tonal)
 
 (defvar *e-chord-net* nil)
 
@@ -276,15 +276,15 @@
 (unless (cl-fad:file-exists-p *e-chord-net-file*)
   (treina-e-chord-net))
 
-(register-algorithm "E-Simple-net" #'aplica-e-chord-net #'compara-gabarito-tonal)
+(register-algorithm "ES-net" #'aplica-e-chord-net #'compara-gabarito-tonal)
 
 (defparameter *context-net* nil)
 
-(defparameter *context-net-file* "context-net.fann")
-(defparameter *context-net-train-data* "context-net-train.data")
+(defparameter *context-net-file* (concat *neural-path* "context-net.fann"))
+(defparameter *context-net-train-data* (concat *neural-path* "context-net-train.data"))
 
 (defparameter *contexto-antes* 2)
-(defparameter *contexto-depois* 2)
+(defparameter *contexto-depois* 1)
 
 (defun context-extrai-diff (segmentos)
   (extrai-diff (nth *contexto-antes* segmentos)))
@@ -311,7 +311,7 @@
 (defun aplica-context-net (inputs)
   (load-context-net)
   (let ((contexto (butlast (coloca-contexto inputs *contexto-antes* *contexto-depois*)
-                           *contexto-depois*)))
+                           *contexto-antes*)))
     (coloca-inversoes inputs (mapcar #'run-context-net contexto))))
 
 (defun gera-dados-treinamento-context-net ()
@@ -339,7 +339,7 @@
 (defun treina-context-net ()
   (if (cl-fad:file-exists-p *context-net-train-data*)
       (progn
-        (setf *context-net* (make-net (* (+ 1 *contexto-depois* *contexto-antes*) 96) 25 107))
+        (setf *context-net* (make-net (* (+ 1 *contexto-depois* *contexto-antes*) 96) 15 107))
         (train-on-file *context-net*
                        *context-net-train-data*
                        500
@@ -353,4 +353,4 @@
 (unless (cl-fad:file-exists-p *context-net-file*)
   (treina-context-net))
 
-(register-algorithm "E-context-net" #'aplica-context-net #'compara-gabarito-tonal)
+(register-algorithm "EC-net" #'aplica-context-net #'compara-gabarito-tonal)

@@ -117,7 +117,7 @@
   (dbg 'rameau::mostra-arvore "Arvore: ~/rameau-tree::exibe-chord-tree/ ~%" *chord-tree*)
   (coloca-inversoes coral (mapcar #'aplica-chord-tree (temperado coral))))
 
-(register-algorithm "Simple-tree" #'gera-gabarito-chord-tree #'compara-gabarito-tonal)
+(register-algorithm "S-tree" #'gera-gabarito-chord-tree #'compara-gabarito-tonal)
 
 (defun faz-treina-chord-tree ()
   (with-system rameau:tempered

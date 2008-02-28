@@ -122,7 +122,7 @@ for alg in algoritmos:
     print
 
 algs = sorted(algoritmos.keys())
-        
+
 print "Tabela de precisão:"
 print "     ",
 for alg in algs:

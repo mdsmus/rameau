@@ -88,7 +88,7 @@
   (dbg 'rameau::mostra-arvore "Arvore: ~/rameau-tree-enarm::exibe-chord-tree/ ~%" *chord-tree*)
   (coloca-inversoes coral (mapcar #'aplica-chord-tree coral)))
 
-(register-algorithm "E-Simple-tree" #'gera-gabarito-chord-tree #'compara-gabarito-tonal)
+(register-algorithm "ES-tree" #'gera-gabarito-chord-tree #'compara-gabarito-tonal)
 
 (defun faz-treina-chord-tree ()
   (multiple-value-bind (corais gabaritos)
