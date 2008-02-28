@@ -5,6 +5,6 @@ USE_PDFLATEX=1
 
 
 
-graphs: prec.plot rec.plot prec.data rec.data
-	gnuplot *plot
+graphs:  graphs.plot prec.data rec.data
+	gnuplot graphs.plot
 
