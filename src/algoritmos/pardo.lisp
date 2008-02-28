@@ -173,8 +173,10 @@
   (pardo segmento *incf-pardo-templates*))
 
 (defun gera-gabarito-incf-pardo (segmentos)
-  (mapcar #'pardo->chord
-          (reduce #'desempata-pardo (mapcar #'incf-pardo segmentos)
-                  :from-end t :initial-value nil)))
+  (coloca-inversoes
+   segmentos
+   (mapcar #'pardo->chord
+           (reduce #'desempata-pardo (mapcar #'incf-pardo segmentos)
+                   :from-end t :initial-value nil))))
 
 (register-algorithm "e-Pardo-Birmingham" #'gera-gabarito-incf-pardo #'compara-gabarito-tonal)
