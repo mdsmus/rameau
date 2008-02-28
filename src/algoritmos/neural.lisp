@@ -86,15 +86,17 @@
   (append (cria-pattern-saida gabarito diff)
           (cria-pattern-saida-modo gabarito)))
 
-(defun prepara-exemplos-treinamento-chord-net (coral gabarito)
+(defun prepara-exemplos-treinamento-chord-net (coral gabarito &optional
+                                               (diff-func #'extrai-diff)
+                                               (feature #'cria-pattern-segmento))
   (loop for c in coral
      for gab in gabarito
-     for d = (extrai-diff c)
+     for d = (funcall diff-func c)
      if (listp gab)
        nconc (prepara-exemplos-treinamento-chord-net (repeat-list (length gab) c)
-                                                     gab)
+                                                     gab diff-func feature)
      else
-       nconc (list (list (cria-pattern-segmento c d)
+       nconc (list (list (funcall feature c d)
                          (cria-pattern-saida-acorde gab d)))))
 
 
@@ -275,3 +277,80 @@
   (treina-e-chord-net))
 
 (register-algorithm "E-Simple-net" #'aplica-e-chord-net #'compara-gabarito-tonal)
+
+(defparameter *context-net* nil)
+
+(defparameter *context-net-file* "context-net.fann")
+(defparameter *context-net-train-data* "context-net-train.data")
+
+(defparameter *contexto-antes* 2)
+(defparameter *contexto-depois* 2)
+
+(defun context-extrai-diff (segmentos)
+  (extrai-diff (nth *contexto-antes* segmentos)))
+
+(defun context-extrai-features (segmento &optional diff)
+  (let ((diff (or diff (context-extrai-diff segmentos))))
+    (loop for s in segmento nconc (cria-pattern-segmento s diff))))
+
+(defun load-context-net ()
+  (if (cl-fad:file-exists-p *context-net-file*)
+      (setf *context-net* (load-from-file *context-net-file*))
+      (treina-context-net)))
+
+(defun save-context-net ()
+  (save-to-file *context-net* *context-net-file*))
+
+(defun run-context-net (x)
+  (let ((d (context-extrai-diff x)))
+    (extrai-resultado-chord-net
+     d
+     (run-net *context-net*
+              (context-extrai-features x d)))))
+
+(defun aplica-context-net (inputs)
+  (load-context-net)
+  (let ((contexto (butlast (coloca-contexto inputs *contexto-antes* *contexto-depois*)
+                           *contexto-depois*)))
+    (coloca-inversoes inputs (mapcar #'run-context-net contexto))))
+
+(defun gera-dados-treinamento-context-net ()
+  (loop for i in *exemplos-de-treinamento*
+     nconc (prepara-exemplos-treinamento-chord-net (coloca-contexto (first i)
+                                                                    *contexto-antes*
+                                                                    *contexto-depois*)
+                                                   (second i)
+                                                   #'context-extrai-diff
+                                                   #'context-extrai-features)))
+
+(defun gera-arquivo-treinamento-context-net ()
+  (let* ((dados (gera-dados-treinamento-context-net))
+         (tamanho (length dados)))
+    (with-open-file (f *context-net-train-data* :direction :output)
+      (format f "~a ~a ~a~%" tamanho (* (+ 1 *contexto-depois* *contexto-antes*) 96) 107)
+      (loop for d in dados
+         do
+           (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
+           (format f "~{~a ~}~%" (second d))))))
+
+(unless (cl-fad:file-exists-p *context-net-train-data*)
+  (gera-arquivo-treinamento-context-net))
+
+(defun treina-context-net ()
+  (if (cl-fad:file-exists-p *context-net-train-data*)
+      (progn
+        (setf *context-net* (make-net (* (+ 1 *contexto-depois* *contexto-antes*) 96) 25 107))
+        (train-on-file *context-net*
+                       *context-net-train-data*
+                       500
+                       100
+                       0.1)
+        (save-context-net))
+      (progn
+        (gera-arquivo-treinamento-context-net)
+        (treina-context-net))))
+
+(unless (cl-fad:file-exists-p *context-net-file*)
+  (treina-context-net))
+
+(register-algorithm "E-context-net" #'aplica-context-net #'compara-gabarito-tonal)
