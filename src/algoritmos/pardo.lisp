@@ -154,7 +154,7 @@
                     :from-end t :initial-value nil))))
      
 
-(register-algorithm "Pardo-Birmingham" #'gera-gabarito-pardo #'compara-gabarito-tonal)
+(register-algorithm "Simple-Pardo-Birmingham" #'gera-gabarito-pardo #'compara-gabarito-tonal)
 
 (deftemplates *incf-pardo-templates* 
   ((nil nil) (0 28 55))
@@ -177,4 +177,4 @@
           (reduce #'desempata-pardo (mapcar #'incf-pardo segmentos)
                   :from-end t :initial-value nil)))
 
-(register-algorithm "incf-PB" #'gera-gabarito-incf-pardo #'compara-gabarito-tonal)
+(register-algorithm "e-Pardo-Birmingham" #'gera-gabarito-incf-pardo #'compara-gabarito-tonal)
