@@ -98,7 +98,7 @@
 (defun gera-gabarito-k1 (coral)
   (coloca-inversoes coral (mapcar #'classifica-k1 coral)))
 
-(register-algorithm "Knn-simple" #'gera-gabarito-k1 #'compara-gabarito-tonal)
+(register-algorithm "E-Simple-Knn" #'gera-gabarito-k1 #'compara-gabarito-tonal)
 ;; Algoritmo context-knn. 
 
 
@@ -151,4 +151,4 @@
   (let ((c (coloca-contexto coral *contexto-antes* *contexto-depois*)))
     (coloca-inversoes coral (mapcar #'classifica-context (butlast c 2)))))
 
-(register-algorithm "Knn-contexto" #'gera-gabarito-context #'compara-gabarito-tonal)
+(register-algorithm "E-Context-Knn" #'gera-gabarito-context #'compara-gabarito-tonal)
