@@ -65,8 +65,8 @@ baixo = \relative c' {
     c,8 d8 ees4 d4 c4 
   bes4 a4 g4 g'4 
   fis4 g4 d4 d4 
-  g4 c4 bes4 gis4 
-  g4 fis4 f4 e4   %5
+  g4 c4 bes4 aes4 
+  g4 ges4 f4 e4   %5
   f2 bes,4 g4 
   c4 cis4 d4. c8 
   bes8 c8 d8 bes8 ees4 f4 

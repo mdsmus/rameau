@@ -40,7 +40,7 @@ alto = \relative c'' {
 
 tenor = \relative c' {
   \partial 4 e4 
-    d4. c8 b4 c8 ais8 
+    d4. c8 b4 c8 bes8 
   a8 g8 f4 g4 b4 
   c4 d4 d4 d4 
   e4 d8 c8 b4 c4 
