@@ -34,8 +34,6 @@
                          (make-chord :fundamental (print-note (code->note (module (+ diff maxi)))
                                                               'latin))))))
 
-
-
 (defvar *chord-net* nil)
 
 (defparameter *chord-net-file* (concat *neural-path* "chord-net.fann"))
@@ -124,7 +122,7 @@
         (setf *chord-net* (make-net 12 25 23))
         (train-on-file *chord-net*
                        *chord-net-train-data*
-                       1000
+                       500
                        100
                        0.1)
         (save-chord-net))
@@ -179,7 +177,6 @@
                                  "+")
                                 )
                     :7th (cond ((and (> (nth 9 resto) (nth 5 resto))
-                                     (> (nth 9 resto) (nth 3 resto))
                                      (> (nth 9 resto) (nth 6 resto))
                                      (> (nth 9 resto) (nth 4 resto)))
                                 nil)
@@ -217,3 +214,64 @@
 
 (register-algorithm "Simple-net" #'aplica-chord-net #'compara-gabarito-tonal)
 
+(defvar *e-chord-net* nil)
+
+(defparameter *e-chord-net-file* (concat *neural-path* "e-chord-net.fann"))
+(defparameter *e-chord-net-train-data* (concat *neural-path* "e-chord-net-train.data"))
+
+(defun load-e-chord-net ()
+  (if (cl-fad:file-exists-p *e-chord-net-file*)
+      (setf *e-chord-net* (load-from-file *e-chord-net-file*))
+      (treina-e-chord-net)))
+
+(defun save-e-chord-net ()
+  (save-to-file *e-chord-net* *e-chord-net-file*))
+
+(defun run-e-chord-net (x)
+  (let ((d (extrai-diff x)))
+    (extrai-resultado-chord-net
+     d
+     (run-net *e-chord-net*
+              (cria-pattern-segmento x d)))))
+
+(defun aplica-e-chord-net (inputs)
+  (load-e-chord-net)
+  (coloca-inversoes inputs (mapcar #'run-e-chord-net inputs)))
+
+(defun gera-dados-treinamento-e-chord-net ()
+  (loop for i in *exemplos-de-treinamento*
+     nconc (prepara-exemplos-treinamento-chord-net (first i) (second i))))
+
+
+
+(defun gera-arquivo-treinamento-e-chord-net ()
+  (let* ((dados (gera-dados-treinamento-e-chord-net))
+         (tamanho (length dados)))
+    (with-open-file (f *e-chord-net-train-data* :direction :output)
+      (format f "~a ~a ~a~%" tamanho 96 107)
+      (loop for d in dados
+         do
+           (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
+           (format f "~{~a ~}~%" (second d))))))
+
+(unless (cl-fad:file-exists-p *e-chord-net-train-data*)
+  (gera-arquivo-treinamento-e-chord-net))
+
+(defun treina-e-chord-net ()
+  (if (cl-fad:file-exists-p *e-chord-net-train-data*)
+      (progn
+        (setf *e-chord-net* (make-net 96 25 107))
+        (train-on-file *e-chord-net*
+                       *e-chord-net-train-data*
+                       500
+                       100
+                       0.1)
+        (save-e-chord-net))
+      (progn
+        (gera-arquivo-treinamento-e-chord-net)
+        (treina-e-chord-net))))
+
+(unless (cl-fad:file-exists-p *e-chord-net-file*)
+  (treina-e-chord-net))
+
+(register-algorithm "E-Simple-net" #'aplica-e-chord-net #'compara-gabarito-tonal)

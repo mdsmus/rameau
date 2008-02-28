@@ -1,6 +1,7 @@
 (defpackage :fann
   (:use :cl :cffi)
-  (:export :make-net :train-on-file :load-from-file :save-to-file :run-net :load-fann))
+  (:export :make-net :make-shortcut-net :cascade-train-on-file
+           :train-on-file :load-from-file :save-to-file :run-net :load-fann))
 
 (in-package :fann)
 
@@ -15,6 +16,9 @@
 
 (defcfun "fann_create_standard_array" :pointer (num_layers :int) (layers :pointer))
 
+(defcfun "fann_create_shortcut_array" :pointer (num_layers :int) (layers :pointer))
+
+
 (defstruct fann-net fann-net inputs outputs)
 
 (defun make-net (&rest camadas)
@@ -23,6 +27,15 @@
        for j from 0
        do (setf (mem-aref layers :int j) i))
     (make-fann-net :fann-net (fann-create-standard-array (length camadas) layers)
+                   :inputs (first camadas)
+                   :outputs (first (last camadas)))))
+
+(defun make-shortcut-net (&rest camadas)
+  (with-foreign-object (layers :int (length camadas))
+    (loop for i in camadas
+       for j from 0
+       do (setf (mem-aref layers :int j) i))
+    (make-fann-net :fann-net (fann-create-shortcut-array (length camadas) layers)
                    :inputs (first camadas)
                    :outputs (first (last camadas)))))
 
@@ -52,6 +65,17 @@
 
 (defun train-on-file (net file max-e ebr de)
   (fann-train-on-file (fann-net-fann-net net) file max-e ebr de))
+
+(defcfun "fann_cascadetrain_on_file" :void
+  (net :pointer)
+  (file :string)
+  (max-neurons :int)
+  (neurons-between-reports :int)
+  (desired-error :float))
+
+(defun cascade-train-on-file (net file max-e ebr de)
+  (fann-cascadetrain-on-file (fann-net-fann-net net) file max-e ebr de))
+
 
 (defcfun "fann_run" :pointer (net :pointer) (inputs :pointer))
 
