@@ -11,6 +11,8 @@
 
 (defparameter *neural-path* (concat (rameau-path) "neural-nets/"))
 
+(defun extrai-diffs (segmento)
+  (mapcar #'evento-pitch segmento))
 
 (defun cria-pattern-segmento (seg &optional diff)
   (let ((diff (or diff (extrai-diff seg))))
@@ -87,17 +89,18 @@
           (cria-pattern-saida-modo gabarito)))
 
 (defun prepara-exemplos-treinamento-chord-net (coral gabarito &optional
-                                               (diff-func #'extrai-diff)
+                                               (diff-func #'extrai-diffs)
                                                (feature #'cria-pattern-segmento))
   (loop for c in coral
      for gab in gabarito
-     for d = (funcall diff-func c)
+     for ds = (funcall diff-func c)
      if (listp gab)
        nconc (prepara-exemplos-treinamento-chord-net (repeat-list (length gab) c)
                                                      gab diff-func feature)
      else
-       nconc (list (list (funcall feature c d)
-                         (cria-pattern-saida-acorde gab d)))))
+       nconc (loop for d in ds
+                nconc (list (list (funcall feature c d)
+                                  (cria-pattern-saida-acorde gab d))))))
 
 
 (defun gera-dados-treinamento-chord-net ()
@@ -286,6 +289,9 @@
 (defparameter *contexto-antes* 2)
 (defparameter *contexto-depois* 1)
 
+(defun context-extrai-diffs (segmento)
+  (extrai-diffs (nth *contexto-antes* segmento)))
+
 (defun context-extrai-diff (segmentos)
   (extrai-diff (nth *contexto-antes* segmentos)))
 
@@ -320,7 +326,7 @@
                                                                     *contexto-antes*
                                                                     *contexto-depois*)
                                                    (second i)
-                                                   #'context-extrai-diff
+                                                   #'context-extrai-diffs
                                                    #'context-extrai-features)))
 
 (defun gera-arquivo-treinamento-context-net ()
@@ -339,7 +345,7 @@
 (defun treina-context-net ()
   (if (cl-fad:file-exists-p *context-net-train-data*)
       (progn
-        (setf *context-net* (make-net (* (+ 1 *contexto-depois* *contexto-antes*) 96) 15 107))
+        (setf *context-net* (make-net (* (+ 1 *contexto-depois* *contexto-antes*) 96) 25 107))
         (train-on-file *context-net*
                        *context-net-train-data*
                        500
