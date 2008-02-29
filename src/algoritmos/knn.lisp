@@ -54,8 +54,8 @@
 (defun insere-contagem (chave acorde diff hash n)
   (let ((acorde (processa-acorde acorde diff)))
     (if (gethash acorde *exemplos*)
-        (push n (gethash acorde *exemplos*))
-        (setf (gethash acorde *exemplos*) (list n)))
+        (push (cons chave n) (gethash acorde *exemplos*))
+        (setf (gethash acorde *exemplos*) (list (cons chave n))))
     (incf (gethash acorde
                    (hash-default chave hash (make-hash-table :test #'equal))
                    0))))
