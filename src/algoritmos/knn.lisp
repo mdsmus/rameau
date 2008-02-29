@@ -6,6 +6,8 @@
 (defparameter *1-neighbours* (make-hash-table :test #'equal))
 (defparameter *k* 1)
 
+(defparameter *exemplos* (make-hash-table :test #'equal))
+
 ;; Os vizinhos são guardados, a principio, em uma hash table
 ;; a chave é o vetor de notas, o valor é uma estrutura com contagens
 ;; de classes.
@@ -49,31 +51,35 @@
        it
        (setf (gethash key table) default)))
 
-(defun insere-contagem (chave acorde diff hash)
+(defun insere-contagem (chave acorde diff hash n)
   (let ((acorde (processa-acorde acorde diff)))
+    (if (gethash acorde *exemplos*)
+        (push n (gethash acorde *exemplos*))
+        (setf (gethash acorde *exemplos*) (list n)))
     (incf (gethash acorde
                    (hash-default chave hash (make-hash-table :test #'equal))
                    0))))
 
-(defun treina-1nn (coral gabarito)
+(defun treina-1nn (coral gabarito n)
   (loop for segmento in coral
      for acorde in gabarito
      for diff = (extrai-diff segmento)
      for pitches = (extrai-feature-list segmento diff)
      do (if (listp acorde)
-            (mapcar (lambda (x) (insere-contagem pitches x diff *1-neighbours*)) acorde)
-            (insere-contagem pitches acorde diff *1-neighbours*))))
+            (mapcar (lambda (x) (insere-contagem pitches x diff *1-neighbours* n)) acorde)
+            (insere-contagem pitches acorde diff *1-neighbours* n))))
 
 (defun treina-k1 (exemplos)
   (loop for exemplo in exemplos
+       for n from 0
        for coral = (first exemplo)
        for gabarito = (second exemplo)
-       do (treina-1nn coral gabarito)))
-
+       do (treina-1nn coral gabarito n)))
 
 (treina-k1 *exemplos-de-treinamento*)
 
 (defun retorna-classificacao (diff maxkey maxv)
+  (declare (ignore maxkey))
   (let ((resultado (make-hash-table :test #'equal)))
     (loop for hash in maxv do
          (loop for k being the hash-keys in hash
@@ -88,7 +94,6 @@
   (let* ((diff (extrai-diff segmento))
          (pitches (extrai-feature-list segmento diff)))
     (loop for key being the hash-keys in *1-neighbours* 
-       with mind = most-positive-fixnum
        with nn = nil
        do 
          (let ((d (distance pitches key)))
@@ -119,20 +124,21 @@
      nconc (loop for x in (extrai-feature-list seg diff)
               collect (* x (if (= peso 0) 1 (/ *variance* (- (abs peso))))))))
 
-(defun treina-context-nn (coral gabarito )
+(defun treina-context-nn (coral gabarito n)
   (loop for segmento in coral
      for acorde in gabarito
      for diff = (context-extrai-diff segmento)
      for pitches = (context-extrai-features segmento diff)
      do (if (listp acorde)
-            (mapcar (lambda (x) (insere-contagem pitches x diff *context-neighbors*)) acorde)
-            (insere-contagem pitches acorde diff *context-neighbors*))))
+            (mapcar (lambda (x) (insere-contagem pitches x diff *context-neighbors* n)) acorde)
+            (insere-contagem pitches acorde diff *context-neighbors* n))))
 
 (defun treina-context (exemplos)
   (loop for exemplo in exemplos
      for coral = (first exemplo)
+     for n from 0
      for gabarito = (second exemplo)
-     do (treina-context-nn (coloca-contexto coral *contexto-antes* *contexto-depois*) gabarito)))
+     do (treina-context-nn (coloca-contexto coral *contexto-antes* *contexto-depois*) gabarito n)))
 
 (treina-context *exemplos-de-treinamento*)
 
@@ -140,7 +146,6 @@
   (let* ((diff (context-extrai-diff segmento))
          (pitches (context-extrai-features segmento diff)))
     (loop for key being the hash-keys in *context-neighbors* 
-       with mind = most-positive-fixnum
        with nn = nil
        do 
          (let ((d (distance pitches key)))
