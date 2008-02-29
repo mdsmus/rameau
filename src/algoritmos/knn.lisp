@@ -104,7 +104,14 @@
   (coloca-inversoes coral (mapcar #'classifica-k1 coral)))
 
 (register-algorithm "ES-Knn" #'gera-gabarito-k1 #'compara-gabarito-tonal)
+
+(defun mostra-exemplos ()
+  "Mostra em que corais estão que tipos de acorde."
+  (loop for h being the hash-keys in *exemplos*
+     do (format t " ~a => ~a~%" h (remove-duplicates (gethash h *exemplos*)))))
+
 ;; Algoritmo context-knn. 
+
 
 
 (defparameter *contexto-antes* 2)
