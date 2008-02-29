@@ -35,6 +35,7 @@
                        (partitura
                         (("-e <estilo>" "seleciona estilo de impressão dos acordes errados (bold ou red)")))))
 
+
 (defun arg->list (list)
   (when list
     (if (next-flag list)
@@ -201,11 +202,11 @@ ponto nos corais de bach."
 
 (defun print-lily (file gabarito resultados flags notas)
   (let* ((*package* (find-package :rameau))
-         (path (concat (rameau-path)
+         (path (concat *rameau-path*
                        (get-item "corais-include" *lily-dir-list*  #'equal)))
          (file-name (pathname-name file))
          (dir (get-item "corais" *lily-dir-list* #'equal))
-         (out-file (format nil "~a/~a/coral-~a.ly" (rameau-path) dir file-name)))
+         (out-file (format nil "~a/~a/coral-~a.ly" *rameau-path* dir file-name)))
     (with-open-file (stream out-file :direction :output :if-exists :supersede)
       (format stream "~a~%" (file-string (concat path file-name ".lyi")))
       (format stream "texto = {~{c~a ~}}~%~%" (print-duracoes notas))

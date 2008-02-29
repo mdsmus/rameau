@@ -3,6 +3,11 @@
 ;;; As funções dependentes de implementação devem ficar aqui
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defparameter *rameau-path*
+  (format nil "~a" (or #+sbcl *default-pathname-defaults*
+		       #+cmu (first (ext:search-list "default:"))
+		       #+clisp (ext:default-directory))))
+
 (defun rameau-args ()
   (let ((sbcl-args #+sbcl sb-ext:*posix-argv*)
         (cmu-args #+cmu extensions:*command-line-strings*)
@@ -11,12 +16,7 @@
           (cmu-args (subseq cmu-args (1+ (position "cmurameau" cmu-args :test #'string=))))
           (clisp-args clisp-args)
           (t (error "algum problema com argumentos")))))
-
-(defun rameau-path ()
-  (format nil "~a" (or #+sbcl *default-pathname-defaults*
-                       #+cmu (first (ext:search-list "default:"))
-                       #+clisp (ext:default-directory))))
-
+  
 (defun rameau-profile ()
   #+sbcl(progn
          (setf sb-profile::*print-functions-not-called* nil)
@@ -55,9 +55,10 @@
 
 (defun read-user-config ()
   (aif (cl-fad:file-exists-p (concat (getenv "HOME") "/.rameaurc"))
-       ;; TODO: checa se arquivo está vazio
-       (with-open-file (s it)
-         (eval (read s)))))
+       (loop for (var value) in (read-file-as-sexp it) do (set var value))))
+
+(read-user-config)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -91,14 +92,14 @@
 (defun processa-gabarito (file item)
   "Transforma um gabarito de texto em sexp."
   (let* ((*package* (find-package :rameau))
-         (nome-pop (concat (rameau-path)
+         (nome-pop (concat *rameau-path*
                            (get-item item *gabarito-dir-list* #'equal)
                            (add-pop-ext (pathname-name file)))))
     (when (cl-fad:file-exists-p nome-pop)
       (read-chords (read-file-as-sexp nome-pop)))))
 
 (defun processa-files (item f &optional (ext ".ly"))
-  (let* ((path (concat (rameau-path) (get-item item *lily-dir-list*  #'equal)))
+  (let* ((path (concat *rameau-path* (get-item item *lily-dir-list*  #'equal)))
          (file-name (format nil "~a" (first f)))
          (files (if (search ".." file-name)
                     (files-range (cl-ppcre:split "\\.\\." file-name))
@@ -108,9 +109,6 @@
         (remove-if #'(lambda (x) (search "coral" x))
                    (mapcar (lambda (file) (format nil "~a" file))
                            (directory (concat path "*" ext)))))))
-
-
-(read-user-config)
 
 (defparameter *exemplos-de-treinamento*
   (loop for f in (nconc (processa-files "corais" '("1..6"))

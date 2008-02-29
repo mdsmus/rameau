@@ -7,7 +7,7 @@
   :serial t
   :depends-on (:yacc :lexer :cl-fad :cl-ppcre :lisp-unit :arnesi)
   :components (
-				   #+sbcl(:file "sbcl")
+	       #+sbcl(:file "sbcl")
                (:file "rameau-base")
                (:file "utils")
                (:file "musiclib")

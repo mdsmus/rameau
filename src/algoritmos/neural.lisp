@@ -9,7 +9,7 @@
 
 (in-package :rameau-neural)
 
-(defparameter *neural-path* (concat (rameau-path) "neural-nets/"))
+(defparameter *neural-path* (concat *rameau-path* "neural-nets/"))
 
 (defun extrai-diffs (segmento)
   (mapcar #'evento-pitch segmento))

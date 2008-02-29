@@ -38,8 +38,8 @@
    #:processa-gabarito
    #:parse-chord
    #:pitches
-   #:rameau-path
    #:rameau-args
+   #:*rameau-path*
    #:rameau-profile
    #:rameau-report
    #:rameau-quit
