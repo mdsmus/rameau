@@ -150,7 +150,7 @@ Tipo        | Gabarito | Algoritmo | ambos   | Precisão | Recall
          avg|          |           |         |     60.2%|     62.0%
 
 Tabela de precisão:
-         EC-Knn    EC-net    ES-Knn  ES-Pardo    ES-net   ES-tree  S-Pardo-     S-net    S-tree
+#         EC-Knn    EC-net    ES-Knn  ES-Pardo    ES-net   ES-tree  S-Pardo-     S-net    S-tree
 # maior
    0      93.7      94.1      93.5      88.7      97.1      86.3      67.4      97.1      86.5
 # maior7
@@ -174,7 +174,7 @@ Tabela de precisão:
 # inc
  100      20.0       9.1      29.6       4.8      27.0      35.3       0.0      29.2      35.3
 Tabela de recall:
-         EC-Knn    EC-net    ES-Knn  ES-Pardo    ES-net   ES-tree  S-Pardo-     S-net    S-tree
+#         EC-Knn    EC-net    ES-Knn  ES-Pardo    ES-net   ES-tree  S-Pardo-     S-net    S-tree
 # maior
    0      95.7      93.3      96.4      95.2      95.7      94.2      97.7      96.3      95.2
 # maior7

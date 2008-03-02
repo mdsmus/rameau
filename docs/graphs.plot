@@ -64,6 +64,7 @@ plot \
      "prec.data" using ($1+5):6:(0.5) title "ES-net" with boxes ls 6 fs solid
 
 ## Recall
+set ylabel "Recall (%)"
 
 set output "rec-tree.png"
 
