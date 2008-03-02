@@ -115,7 +115,7 @@
 
 
 (defparameter *contexto-antes* 2)
-(defparameter *contexto-depois* 1)
+(defparameter *contexto-depois* 0)
 
 (defparameter *variance* 1/2)
 
@@ -161,6 +161,6 @@
 
 (defun gera-gabarito-context (coral)
   (let ((c (coloca-contexto coral *contexto-antes* *contexto-depois*)))
-    (coloca-inversoes coral (mapcar #'classifica-context (butlast c 2)))))
+    (coloca-inversoes coral (mapcar #'classifica-context (butlast c *contexto-antes*)))))
 
 (register-algorithm "EC-Knn" #'gera-gabarito-context #'compara-gabarito-tonal)

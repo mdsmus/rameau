@@ -306,5 +306,5 @@ como do resto da lista, é a posição, quanto menor, mais na frente"
     (cons (safe-retorna-n-elementos lista n) (agrupa (rest lista) n))))
 
 (defun coloca-contexto (segmentos antes depois)
-  (butlast (agrupa (nconc (repeat-list antes nil) segmentos) (+ 1 antes depois)) (1- depois)))
+  (butlast (agrupa (nconc (repeat-list antes nil) segmentos) (+ 1 antes depois)) (max 0 (1- depois))))
 
