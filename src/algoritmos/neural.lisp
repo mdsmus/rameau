@@ -11,6 +11,8 @@
 
 (defparameter *neural-path* (concat *rameau-path* "neural-nets/"))
 
+(defparameter *hidden-units* 22)
+
 (defun extrai-diffs (segmento)
   (mapcar #'evento-pitch segmento))
 
@@ -154,7 +156,7 @@
 (defun treina-chord-net ()
   (if (cl-fad:file-exists-p *chord-net-train-data*)
       (progn
-        (setf *chord-net* (make-net 12 25 22))
+        (setf *chord-net* (make-net 12 *hidden-units* 22))
         (train-on-file *chord-net*
                        *chord-net-train-data*
                        500
@@ -241,10 +243,10 @@
 (defun treina-e-chord-net ()
   (if (cl-fad:file-exists-p *e-chord-net-train-data*)
       (progn
-        (setf *e-chord-net* (make-net 96 25 106))
+        (setf *e-chord-net* (make-net 96 *hidden-units* 106))
         (train-on-file *e-chord-net*
                        *e-chord-net-train-data*
-                       500
+                       1000
                        100
                        0.1)
         (save-e-chord-net))
@@ -321,12 +323,14 @@
 (defun treina-context-net ()
   (if (cl-fad:file-exists-p *context-net-train-data*)
       (progn
-        (setf *context-net* (make-net (* (+ 1 *contexto-depois* *contexto-antes*) 96) 25 106))
+        (setf *context-net* (make-net (* (+ 1 *contexto-depois* *contexto-antes*) 96)
+                                      *hidden-units*
+                                      106))
         (train-on-file *context-net*
                        *context-net-train-data*
-                       500
+                       1000
                        100
-                       0.1)
+                       0.01)
         (save-context-net))
       (progn
         (gera-arquivo-treinamento-context-net)
