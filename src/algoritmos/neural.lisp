@@ -150,8 +150,8 @@
            (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
            (format f "~{~a ~}~%" (second d))))))
 
-;(unless (cl-fad:file-exists-p *chord-net-train-data*)
-;  (gera-arquivo-treinamento-chord-net))
+(unless (cl-fad:file-exists-p *chord-net-train-data*)
+  (gera-arquivo-treinamento-chord-net))
 
 (defun treina-chord-net ()
   (if (cl-fad:file-exists-p *chord-net-train-data*)
@@ -168,8 +168,8 @@
         (treina-chord-net))))
 
 
-;(unless (cl-fad:file-exists-p *chord-net-file*)
-;  (treina-chord-net))
+(unless (cl-fad:file-exists-p *chord-net-file*)
+  (treina-chord-net))
 
 (defun extrai-resultado-chord-net (diff res)
   (let ((fundamental (extrai-resultado-fundamental diff (safe-retorna-n-elementos res (1+ (get-module)))))
@@ -195,7 +195,7 @@
                                      (cria-pattern-segmento x)))))
              (temperado inputs)))))
 
-;(register-algorithm "S-net" #'aplica-chord-net #'compara-gabarito-tonal)
+(register-algorithm "S-net" #'aplica-chord-net #'compara-gabarito-tonal)
 
 (defvar *e-chord-net* nil)
 
@@ -237,8 +237,8 @@
            (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
            (format f "~{~a ~}~%" (second d))))))
 
-;(unless (cl-fad:file-exists-p *e-chord-net-train-data*)
-;  (gera-arquivo-treinamento-e-chord-net))
+(unless (cl-fad:file-exists-p *e-chord-net-train-data*)
+  (gera-arquivo-treinamento-e-chord-net))
 
 (defun treina-e-chord-net ()
   (if (cl-fad:file-exists-p *e-chord-net-train-data*)
@@ -254,10 +254,10 @@
         (gera-arquivo-treinamento-e-chord-net)
         (treina-e-chord-net))))
 
-;(unless (cl-fad:file-exists-p *e-chord-net-file*)
-;  (treina-e-chord-net))
+(unless (cl-fad:file-exists-p *e-chord-net-file*)
+  (treina-e-chord-net))
 
-;(register-algorithm "ES-net" #'aplica-e-chord-net #'compara-gabarito-tonal)
+(register-algorithm "ES-net" #'aplica-e-chord-net #'compara-gabarito-tonal)
 
 (defparameter *context-net* nil)
 
