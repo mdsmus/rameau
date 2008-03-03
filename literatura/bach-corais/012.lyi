@@ -42,7 +42,7 @@ alto = \relative c' {
   a2 g4 
   g2 g4 
   a2 fis4 
-  g2 g4 
+  g2 g4~ 
   g4 fis4 e4   %10
   e2 d4 
   d4 e4 d4 
@@ -58,8 +58,8 @@ tenor = \relative c' {
   d2 d4 
   c4 e4 c4 
   c2. 
-  e2 e4   %5
-  e4 d2 
+  e2.~   %5
+  e4 d4 d4 
   e2 e4 
   e4 d4 d4 
   d4 e4 e4 
@@ -84,7 +84,7 @@ baixo = \relative c {
   a4 fis4 d4 
   g4 e4 cis4 
   d4 dis4 e4   %10
-  a,2 f'4 
+  a,2 f'4~ 
   f4 e4 fis4 
   g4 fis4 gis4 
   a4 d,4 e4 
