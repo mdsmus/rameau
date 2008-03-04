@@ -104,73 +104,61 @@ for l in linhas:
             print l
 
 print "Total:\n"
-print "Tipo        | Gabarito | Algoritmo | ambos   | Precisão | Recall"
+print "Tipo        | Gabarito | Algoritmo | ambos   | Precisão |  Recall  | F-measure"
 for gab in sorted(tipos):
-    print "%12s|%10s|%11s|%9s|%9s%%|%9s%%" % (gab.nome, gab['gab'], gab['alg'], gab['amb'], 
-                                                          precisao(gab['gab'], gab['alg'], gab['amb']),
-                                                          recall(gab['gab'], gab['alg'], gab['amb']))
+    print "%12s|%10s|%11s|%9s|%9s%%|%9s%%|%9s%%" % (gab.nome, gab['gab'], gab['alg'], gab['amb'], 
+                                                    precisao(gab['gab'], gab['alg'], gab['amb']),
+                                                    recall(gab['gab'], gab['alg'], gab['amb']),
+                                                    f_measure(gab['gab'],gab['alg'],gab['amb']))
 print
 
 for alg in algoritmos:
     print alg
-    print "Tipo        | Gabarito | Algoritmo | ambos   | Precisão | Recall"
+    print "Tipo        | Gabarito | Algoritmo | ambos   | Precisão |  Recall  | F-measure"
     n = 0
-    prec = 0.0
-    rec = 0.0
+    prec = rec = fm = 0.0
+    algo = gab = amb = 0.0
     for tipo in sorted(algoritmos[alg].keys()):
         a = algoritmos[alg][tipo]
-        print "%12s|%10s|%11s|%9s|%9s%%|%9s%%" % (tipo, a['gab'], a['alg'], a['amb'],
-                                                              precisao(a['gab'], a['alg'], a['amb']),
-                                                              recall(a['gab'], a['alg'], a['amb']))
+        print "%12s|%10s|%11s|%9s|%9s%%|%9s%%|%9s%%" % (tipo, a['gab'], a['alg'], a['amb'],
+                                                        precisao(a['gab'], a['alg'], a['amb']),
+                                                        recall(a['gab'], a['alg'], a['amb']),
+                                                        f_measure(a['gab'],a['alg'],a['amb']))
         n += 1
         prec += float(precisao(a['gab'], a['alg'], a['amb']))
         rec += float(recall(a['gab'], a['alg'], a['amb']))
-    print "%12s|%10s|%11s|%9s|%9s%%|%9s%%" % ('avg', '', '', '',"%2.1f" % (prec/n),"%2.1f" %(rec/n))
+        fm += float(f_measure(a['gab'], a['alg'], a['amb']))
+        gab += a['gab']
+        algo += a['alg']
+        amb += a['amb']
+    print "%12s|%10s|%11s|%9s|%9s%%|%9s%%|%9s%%" % ('avg', '', '', '',"%2.1f" % (prec/n),"%2.1f" %(rec/n),
+                                                    "%2.1f" % (fm/n))
+    avg = Contagem()
+    avg['alg'], avg['gab'], avg['amb'] = algo, gab, amb
+    algoritmos[alg]['avg'] = avg
+    
     print
 
 algs = sorted(algoritmos.keys())
 
-print "Tabela de precisão:"
-print "#     ",
-for alg in algs:
-    print "%9s" % alg[:8], 
-print
-i = 0
-for tipo in tipos:
-    print "#", tipo.nome
-    print "%4s" % i,
+def print_tabela(func, nome):
+    print "Tabela de %s:"  % nome
+    print "#     ",
     for alg in algs:
-        a = algoritmos[alg][tipo.nome]
-        print "%9s" % precisao(a['gab'], a['alg'], a['amb']),
+        print "%9s" % alg[:8], 
     print
-    i += 10
+    i = 0
+    for tipo in tipos + [Tipo('avg', '')]:
+        print "#", tipo.nome
+        print "%4s" % i,
+        for alg in algs:
+            a = algoritmos[alg][tipo.nome]
+            print "%9s" % func(a['gab'], a['alg'], a['amb']),
+        print
+        i += 10
+    
 
-print "Tabela de recall:"
-print "#     ",
-for alg in algs:
-    print "%9s" % alg[:8], 
-print
-i = 0
-for tipo in tipos:
-    print "#", tipo.nome
-    print "%4s" % i,
-    for alg in algs:
-        a = algoritmos[alg][tipo.nome]
-        print "%9s" % recall(a['gab'], a['alg'], a['amb']),
-    print
-    i += 10
+print_tabela(precisao, "precisão")
+print_tabela(recall, "recall")
+print_tabela(f_measure, "F-measure")
 
-print "Tabela de f-measure:"
-print "#     ",
-for alg in algs:
-    print "%9s" % alg[:8], 
-print
-i = 0
-for tipo in tipos:
-    print "#", tipo.nome
-    print "%4s" % i,
-    for alg in algs:
-        a = algoritmos[alg][tipo.nome]
-        print "%9s" % f_measure(a['gab'], a['alg'], a['amb']),
-    print
-    i += 10
