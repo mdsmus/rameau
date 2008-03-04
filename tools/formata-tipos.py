@@ -58,6 +58,13 @@ def recall(gab, alg, amb):
         return "0.0"
     return "%2.1f" % (100.0 * amb / float(gab + amb))
 
+def f_measure(gab, alg, amb):
+    if alg + amb == 0 or gab + amb == 0:
+        return "0.0"
+    prec = float(precisao(gab, alg, amb))
+    rec = float(recall(gab, alg, amb))
+    return "%2.1f" % ((2 * (prec *rec ))/(prec+rec))
+
 tipos = map(lambda x: Tipo(*x), 
             [('maior',   r'^[A-Ga-g](b|#)?(9)?(/[A-Ga-g](#|b)?)?$'),
              ('maior7',  r'^[A-Ga-g](b|#)?7(9)?(/[A-Ga-g](#|b)?)?$'),
@@ -124,7 +131,7 @@ for alg in algoritmos:
 algs = sorted(algoritmos.keys())
 
 print "Tabela de precisão:"
-print "     ",
+print "#     ",
 for alg in algs:
     print "%9s" % alg[:8], 
 print
@@ -139,7 +146,7 @@ for tipo in tipos:
     i += 10
 
 print "Tabela de recall:"
-print "     ",
+print "#     ",
 for alg in algs:
     print "%9s" % alg[:8], 
 print
@@ -150,5 +157,20 @@ for tipo in tipos:
     for alg in algs:
         a = algoritmos[alg][tipo.nome]
         print "%9s" % recall(a['gab'], a['alg'], a['amb']),
+    print
+    i += 10
+
+print "Tabela de f-measure:"
+print "#     ",
+for alg in algs:
+    print "%9s" % alg[:8], 
+print
+i = 0
+for tipo in tipos:
+    print "#", tipo.nome
+    print "%4s" % i,
+    for alg in algs:
+        a = algoritmos[alg][tipo.nome]
+        print "%9s" % f_measure(a['gab'], a['alg'], a['amb']),
     print
     i += 10
