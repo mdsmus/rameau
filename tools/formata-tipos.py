@@ -38,8 +38,7 @@ class Tipo(Contagem):
         self.re = re.compile(regexp)
 
 def preenche_contagem(algoritmo, algs, gab, modo):
-    if modo != 'amb':
-        file("%s%s-%s-%s.txt" % (dir_res, algoritmo, gab.nome, modo), 'a').write(l)
+    file("%s%s-%s-%s.txt" % (dir_res, algoritmo, gab.nome, modo), 'a').write(l)
     if not algoritmo in algs:
         algs[algoritmo] = {}
     algoritmo = algs[algoritmo]
