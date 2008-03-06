@@ -134,7 +134,7 @@
   (note-expr
    (NOTE octave-expr dur-expr  #'cria-nota)
    (SKIP dur-expr #'cria-skip)
-   (PARTIAL dur-expr #'cria-skip))
+   (PARTIAL dur-expr #'do-nothing))
 
   (octave-expr
    (#'empty-octave)
