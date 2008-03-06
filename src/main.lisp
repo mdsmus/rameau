@@ -149,12 +149,14 @@ ponto nos corais de bach."
 
 
 (defun print-duracoes (segmento)
-  (loop for s = segmento then (rest s)
-     unless s return res
-     collect (frac->dur-lily (evento-dur (first (first s)))) into res
-     unless (= 0 (intervalo (first s) (second s)))
-       collect (frac->dur-lily (intervalo (first s) (second s))) into res))
-       
+  (values (loop for s = segmento then (rest s)
+            unless s return res
+            collect (frac->dur-lily (evento-dur (first (first s)))) into res
+            unless (= 0 (intervalo (first s) (second s)))
+            collect (frac->dur-lily (intervalo (first s) (second s))) into res)
+          (when (/= 0 (evento-inicio (first (first segmento))))
+            (frac->dur-lily (evento-inicio (first (first segmento)))))))
+
 
 (defun print-score (stream lyric)
   (format stream "\\score {
@@ -209,7 +211,10 @@ ponto nos corais de bach."
          (out-file (format nil "~a/~a/coral-~a.ly" *rameau-path* dir file-name)))
     (with-open-file (stream out-file :direction :output :if-exists :supersede)
       (format stream "~a~%" (file-string (concat path file-name ".lyi")))
-      (format stream "texto = {~{c~a ~}}~%~%" (print-duracoes notas))
+      (multiple-value-bind (durs first-rest) (print-duracoes notas)
+        (if first-rest
+            (format stream "texto = {s~a ~{c~a ~}}~%~%" first-rest durs)
+            (format stream "texto = {~{c~a ~}}~%~%" durs)))
       (when gabarito
         (with-print-cifra (stream "Answer")
           (loop for i in gabarito
