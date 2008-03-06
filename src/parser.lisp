@@ -40,7 +40,7 @@
   ("#" (return (values 'HASH lexer:%0)))
   ("\\\\[Vv]ersion[:space:]+\"[^\"]*\"")
   ("\\\\clef[:space:]+\"?(treble|violin|G|G2|alto|C|tenor|bass|F|french|soprano|mezzosoprano|baritone|varbaritone|subbass)\"?")
-  ("\\\\(T|t)ime[:space:]+\\d+/\\d+")
+  ("\\\\(T|t)ime[:space:]+\\d+/\\d+" (setf *current-sig* (last1 (cl-ppcre:split " " lexer:%0))))
   ("\\\\(T|t)empo[:space:]+\\d+[:space:]+=[:space:]+\\d+")
   ("\\\\(T|t)ime[:space:]+\\d+[:space:]+=[:space:]+\\d+")
   ("\\\\(B|b)ar[:space:]+\"[^\"]*\"")
@@ -48,7 +48,9 @@
   ("\\\\(L|l)ayout" (return (values 'LAYOUT lexer:%0)))
   ;; FIXME: porque sem o foo nao funciona? (wtf!?) [ver regressao 034]
   ;; acho que \minor está sendo pegado por VARIABLE abaixo (comentar e ver)
-  ("\\\\key[:space:]+(a|b|c|d|e|f|g)(is|es)*[:space:]+\\\\(minor|major|dim)")
+  ("\\\\key[:space:]+(a|b|c|d|e|f|g)(is|es)*[:space:]+\\\\(minor|major|dim)"
+   (setf *current-key* (let ((l (remove-if (lambda (x) (equal x "")) (cl-ppcre:split " " lexer:%0))))
+                         (list (second l) (third l)))))
   ("%[^\\n]*")
   ("\\\\(S|s)kip" (return (values 'SKIP lexer:%0)))
   ("\\\\(C|c)ontext" (return (values 'CONTEXT lexer:%0)))
@@ -302,8 +304,10 @@
 
 (defun parse-string (str)
   (let ((*environment* nil)
-        (*dur* 1/4))
-    (declare (special *environment* *dur*))
+        (*dur* 1/4)
+        (*current-key* '("c" "\\major"))
+        (*current-sig* "4/4"))
+    (declare (special *environment* *dur* *current-key* *current-sig*))
     (remove-if (lambda (x) (null (evento-pitch x)))
                (aif (yacc:parse-with-lexer (string-lexer str) *expression-parser*)
                     (sequencia-de-notas-notas it)

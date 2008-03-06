@@ -18,11 +18,16 @@
 
 (in-package #:rameau)
 
+(defparameter *current-key* '("c" "\\major"))
+(defparameter *current-sig* "4/4")
+
 (defstruct evento
   (pitch)
   (octave)
   (dur)
-  (inicio))
+  (inicio)
+  (key)
+  (time-sig))
 
 (defstruct sequencia-de-notas
   (notas)
@@ -56,7 +61,9 @@
   (make-evento :pitch (evento-pitch obj)
                :octave (evento-octave obj)
                :dur (evento-dur obj)
-               :inicio (evento-inicio obj)))
+               :inicio (evento-inicio obj)
+               :key (evento-key obj)
+               :time-sig (evento-time-sig obj)))
 
 (defun cria-nota (nota &optional (octave "") dur articulation dur2) 
   (declare (ignore articulation))
@@ -66,7 +73,9 @@
              (make-evento :pitch (note->code nota)
                           :octave (octave-from-string octave)
                           :dur dur
-                          :inicio 0))
+                          :inicio 0
+                          :key *current-key*
+                          :time-sig *current-sig*))
      :inicio 0
      :dur dur)))
 
@@ -168,14 +177,18 @@
             (make-evento :pitch (module (+ (evento-pitch n) valor))
                          :octave (evento-octave n)
                          :dur (evento-dur n)
-                         :inicio (evento-inicio n)))))
+                         :inicio (evento-inicio n)
+                         :key (evento-key n)
+                         :time-sig (evento-time-sig n)))))
 
 (defun tempera (nota)
   (with-system tempered
     (make-evento :pitch (module (evento-pitch nota))
                  :octave (evento-octave nota)
                  :dur (evento-dur nota)
-                 :inicio (evento-inicio nota))))
+                 :inicio (evento-inicio nota)
+                 :key (evento-key nota)
+                 :time-sig (evento-time-sig nota))))
 
 (defun temperado (segmentos)
   (mapcar (lambda (x) (mapcar #'tempera x)) segmentos))

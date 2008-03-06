@@ -43,13 +43,17 @@
                                    :pitch (evento-pitch nota)
                                    :octave (evento-octave nota)
                                    :dur (- (evento-dur nota) tamanho)
-                                   :inicio (+ tamanho (evento-inicio nota)))
+                                   :inicio (+ tamanho (evento-inicio nota))
+                                   :key (evento-key nota)
+                                   :time-sig (evento-time-sig nota))
                                   sobras)
                             (make-evento
                              :pitch (evento-pitch nota)
                              :octave(evento-octave nota)
                              :dur tamanho
-                             :inicio (evento-inicio nota)))))
+                             :inicio (evento-inicio nota)
+                             :key (evento-key nota)
+                             :time-sig (evento-time-sig nota)))))
                     segmento)
             sobras)))
 
