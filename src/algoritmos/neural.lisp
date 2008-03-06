@@ -159,7 +159,7 @@
         (setf *chord-net* (make-net 12 *hidden-units* 22))
         (train-on-file *chord-net*
                        *chord-net-train-data*
-                       500
+                       1000
                        100
                        0.1)
         (save-chord-net))
@@ -246,7 +246,7 @@
         (setf *e-chord-net* (make-net 96 *hidden-units* 106))
         (train-on-file *e-chord-net*
                        *e-chord-net-train-data*
-                       1000
+                       1200
                        100
                        0.1)
         (save-e-chord-net))
@@ -328,7 +328,7 @@
                                       106))
         (train-on-file *context-net*
                        *context-net-train-data*
-                       1000
+                       1200
                        100
                        0.1)
         (save-context-net))

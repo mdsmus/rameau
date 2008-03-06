@@ -111,10 +111,15 @@
                            (directory (concat path "*" ext)))))))
 
 (defparameter *exemplos-de-treinamento*
-  (loop for f in (nconc (processa-files "corais" '("1..6"))
-                        (processa-files "corais" '("162")))
-     for g = (processa-gabarito f "corais")
-     collect (list (segmentos-minimos (parse-file f)) g)))
+  (nconc (loop for f in (nconc (processa-files "corais" '("1..6"))
+                               (processa-files "corais" '("162")))
+            for g = (processa-gabarito f "corais")
+            collect (list (segmentos-minimos (parse-file f)) g))
+         (loop for f in (nconc (processa-files "exemplos" '("023"))
+                               (processa-files "exemplos" '("024"))
+                               (processa-files "exemplos" '("025")))
+            for g = (processa-gabarito f "exemplos")
+            collect (list (segmentos-minimos (parse-file f)) g))))
 
 (defun extrai-feature-list (segmento diff)
   (let ((segmento (mapcar2 (lambda (x) (module (- x diff))) #'evento-pitch segmento))

@@ -62,6 +62,8 @@ def f_measure(gab, alg, amb):
         return "0.0"
     prec = float(precisao(gab, alg, amb))
     rec = float(recall(gab, alg, amb))
+    if prec == 0.0 or rec == 0.0:
+        return "0.0"
     return "%2.1f" % ((2 * (prec *rec ))/(prec+rec))
 
 tipos = map(lambda x: Tipo(*x), 
@@ -74,8 +76,8 @@ tipos = map(lambda x: Tipo(*x),
              ('dim7',    r'^[A-Ga-g](b|#)?°7(9)?(/[A-Ga-g](#|b)?)?$'),
              ('hdim',    r'^[A-Ga-g](b|#)?(Ø|ø)7(9)?(/[A-Ga-g](#|b)?)?$'),
              ('aug',     r'^[A-Ga-g](b|#)?\+(7\+)?(9)?(/[A-Ga-g](#|b)?)?$'),
-             ('mel',     r'—'),
-             ('inc',     r'^[A-Ga-g, 0, 0](b|#)?!(7)?(9)?(/[A-Ga-g](#|b)?)?$')
+             ('inc',     r'^[A-Ga-g, 0, 0](b|#)?!(7)?(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('mel',     r'—')
              ])
 
 linhas = file(sys.argv[1]).readlines()[3:]
