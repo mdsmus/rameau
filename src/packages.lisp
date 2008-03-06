@@ -25,6 +25,7 @@
    #:compara-gabarito-modo-setima
    #:compara-gabarito-tonal
    #:compara-notas
+   #:current-git-branch
    #:extrai-diff
    #:extrai-feature-list
    #:filtra-algoritmos

@@ -9,7 +9,9 @@
 
 (in-package :rameau-neural)
 
-(defparameter *neural-path* (concat *rameau-path* "neural-nets/"))
+(defparameter *versao* "-0000-")
+
+(defparameter *neural-path* (concat *rameau-path* "neural-nets/" (current-git-branch) *versao*))
 
 (defparameter *hidden-units* 22)
 

@@ -121,6 +121,12 @@
             for g = (processa-gabarito f "exemplos")
             collect (list (segmentos-minimos (parse-file f)) g))))
 
+(defun current-git-branch ()
+  "Diz o branch atual no git, útil pra poder guardar redes separadas para branches separados."
+  (if (cl-fad:file-exists-p (concat *rameau-path* ".git/head-name"))
+      (file-string (concat *rameau-path* ".git/head-name"))
+      ""))
+
 (defun extrai-feature-list (segmento diff)
   (let ((segmento (mapcar2 (lambda (x) (module (- x diff))) #'evento-pitch segmento))
         (n (length segmento))
