@@ -37,6 +37,8 @@
 (defparameter *chord-tree* nil)
 
 (defun prepara-segmento (segmento)
+  (when (< (length segmento) 4)
+      (format t "menor que quatro ~a~%" segmento))
   (loop for nota in segmento
      for n in *nomes* collect (cons n (evento-pitch nota))))
 

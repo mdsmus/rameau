@@ -2,6 +2,8 @@
 (use-package :yacc)
 (defparameter *filename* nil)
 
+(defparameter *anacruz* 0)
+
 (lexer:deflexer string-lexer
   ("('|,)+" (return (values 'OCTAVE lexer:%0)))
   ("(V|v)oice" (return (values 'VOICE lexer:%0)))
@@ -171,7 +173,12 @@
 (defun parse-repeat-block (a b dur block)
   (declare (ignore a dur))
   block)
-;  (make-instance 'music-block :expr (repeat-copy (/ 1 dur) block)))
+
+(defun cria-anacruz (ign dur)
+  (format t "tem anacruz ~%")
+  (setf *anacruz* (- dur (read-from-string *current-sig*)))
+  nil)
+        
 
 (defun parse-dur (dur)
   (/ 1 (parse-integer dur)))
@@ -306,12 +313,15 @@
   (let ((*environment* nil)
         (*dur* 1/4)
         (*current-key* '("c" "\\major"))
-        (*current-sig* "4/4"))
+        (*current-sig* "4/4")
+        (*anacruz* 0))
     (declare (special *environment* *dur* *current-key* *current-sig*))
-    (remove-if (lambda (x) (null (evento-pitch x)))
-               (aif (yacc:parse-with-lexer (string-lexer str) *expression-parser*)
-                    (sequencia-de-notas-notas it)
-                    it))))
+    (movimenta-sequencia
+     (remove-if (lambda (x) (null (evento-pitch x)))
+                (aif (yacc:parse-with-lexer (string-lexer str) *expression-parser*)
+                     (sequencia-de-notas-notas it)
+                     it))
+     *anacruz*)))
 
 (defun parse-file (filename)
   (when (cl-fad:file-exists-p filename)
@@ -320,4 +330,4 @@
       (parse-string (file-string filename)))))
 
 
-;; (print (with-system tempered (parse-file "/home/top/programas/analise-harmonica/exemplos/001.ly")))
+;; (print (with-system tempered (parse-file "/home/top/programas/analise-harmonica/corais/001.ly")))

@@ -219,7 +219,10 @@ number-of-examples-with-this-value x sample-entropy-of-this-partition"
                            (cdr attribute-data))))
     (loop for example in examples
        for value = (attribute-value attribute example)
-       do (push example (branch-contents (find value branches :key #'branch-value))))
+       do (let ((branch (find value branches :key #'branch-value)))
+            (if branch
+                (push example (branch-contents (find value branches :key #'branch-value)))
+                (format t "coisa errada: ~a ~a ~a~%" value attribute example))))
     (make-partition :attribute attribute :branches branches :examples examples)))
 
 (defun best-partition (attributes examples classes)
