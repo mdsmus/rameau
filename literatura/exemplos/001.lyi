@@ -1,0 +1,17 @@
+soprano = \relative c'' {
+  c b c
+}
+
+alto =      \relative c'' {
+        g g g
+      }
+
+
+tenor =  \relative c' {
+        e d e
+      }
+
+
+baixo =   \relative c' {
+        c g c
+      }

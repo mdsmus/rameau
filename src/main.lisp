@@ -10,7 +10,7 @@
 
 (defparameter *dados* '((teste ("unidade" "regressao" "lily"))
                         (analise ("corais" "kostka" "sonatas" "exemplos"))
-                        (partitura ("corais"))
+                        (partitura ("corais" "exemplos"))
                         (comparatamanhos ("corais" "exemplos"))
                         (enarmonia ("corais"))
                         (erros ("corais" "exemplos"))
@@ -35,6 +35,13 @@
                        (partitura
                         (("-e <estilo>" "seleciona estilo de impressão dos acordes errados (bold ou red)")))))
 
+(defparameter *singular* '(("corais" "coral")
+                           ("exemplos" "exemplo")))
+
+(defun item-singular (item &optional (item-list *singular*))
+  (if (equal (first (first item-list)) item)
+      (second (first item-list))
+      (item-singular item (rest item-list))))
 
 (defun arg->list (list)
   (when list
@@ -202,13 +209,13 @@ ponto nos corais de bach."
      ,@body
      (format ,stream "~%}~%~%")))
 
-(defun print-lily (file gabarito resultados flags notas)
+(defun print-lily (file item gabarito resultados flags notas)
   (let* ((*package* (find-package :rameau))
          (path (concat *rameau-path*
-                       (get-item "corais-include" *lily-dir-list*  #'equal)))
+                       (get-item (concat item "-include") *lily-dir-list*  #'equal)))
          (file-name (pathname-name file))
-         (dir (get-item "corais" *lily-dir-list* #'equal))
-         (out-file (format nil "~a/~a/coral-~a.ly" *rameau-path* dir file-name)))
+         (dir (get-item item *lily-dir-list* #'equal))
+         (out-file (format nil "~a/~a/~a-~a.ly" *rameau-path* dir (item-singular item) file-name)))
     (with-open-file (stream out-file :direction :output :if-exists :supersede)
       (format stream "~a~%" (file-string (concat path file-name ".lyi")))
       (multiple-value-bind (durs first-rest) (print-duracoes notas)
@@ -683,7 +690,7 @@ ponto nos corais de bach."
            (segmento (segmentos-minimos (parse-file file)))
            (resultados (loop for a in *algoritmos* collect
                             (funcall (algoritmo-processa a) segmento))))
-      (print-lily file gabarito resultados flags segmento))))
+      (print-lily file item gabarito resultados flags segmento))))
   
 (defmacro defcomando (nome dados flags files regexps &body body)
   `(defun ,nome (,dados ,flags ,files ,regexps)

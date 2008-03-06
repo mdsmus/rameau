@@ -1,0 +1,21 @@
+\global = {}
+
+\header {
+  objetivo = "acorde de sexta italiana"
+}
+
+soprano =   \relative c'' {
+        d dis e e
+      }
+
+alto =   \relative c'' {
+        d d b c
+      }
+
+tenor =  \relative c'' {
+        a a gis a
+      }
+
+baixo =  \relative c' {
+        f f e a
+      }

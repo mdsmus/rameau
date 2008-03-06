@@ -70,7 +70,8 @@
     ("exemplos" "exemplos/")
     ("regressao" "regressao/")
     ("lily" "regressao-lily/")
-    ("corais-include" "literatura/bach-corais/")))
+    ("corais-include" "literatura/bach-corais/")
+    ("exemplos-include" "literatura/exemplos/")))
 
 (defparameter *gabarito-dir-list*
   '(("corais" "gabaritos/bach-corais/")

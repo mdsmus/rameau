@@ -129,7 +129,7 @@
   (loop for seg in segmentos
      for peso from (-  *contexto-antes*)
      nconc (loop for x in (extrai-feature-list seg diff)
-              collect (* x (if (= peso 0) 1 (/ *variance* (- (abs peso))))))))
+              collect (/ x (+ 1 (* (abs peso) *variance*))))))
 
 (defun treina-context-nn (coral gabarito n)
   (loop for segmento in coral
