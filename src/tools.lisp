@@ -124,7 +124,8 @@
 (defun current-git-branch ()
   "Diz o branch atual no git, útil pra poder guardar redes separadas para branches separados."
   (if (cl-fad:file-exists-p (concat *rameau-path* ".git/head-name"))
-      (file-string (concat *rameau-path* ".git/head-name"))
+      (let ((a (file-string (concat *rameau-path* ".git/head-name"))))
+        (subseq a 0 (1- (length a))))
       ""))
 
 (defun extrai-feature-list (segmento diff)
