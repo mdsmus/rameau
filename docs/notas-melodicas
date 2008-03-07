@@ -1,0 +1,14 @@
+Classificação de non-chord tones (Kostka)
+
+NCT name                   abbreviation       approached by          left by
+
+Passing tone               p                  Step                   Step in same direction
+Neighboring tone           n                  Step                   Step in opposite direction
+Suspension                 s                  Same tone              Step down
+Retardation                r                  Same tone              Step up
+
+Appoggiatura               app                Leap                   Step
+Escape tone                e                  Step                   Leap in opposite direction
+Neighbor group             n.gr
+Anticipation               ant                Step or leap           Same tone (or leap)
+Pedal point                ped
