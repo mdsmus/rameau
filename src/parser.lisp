@@ -175,7 +175,6 @@
   block)
 
 (defun cria-anacruz (ign dur)
-  (format t "tem anacruz ~%")
   (setf *anacruz* (- dur (read-from-string *current-sig*)))
   nil)
         
