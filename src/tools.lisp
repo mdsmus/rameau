@@ -112,8 +112,7 @@
                            (directory (concat path "*" ext)))))))
 
 (defparameter *exemplos-de-treinamento*
-  (nconc (loop for f in (nconc (processa-files "corais" '("001..6"))
-                               (processa-files "corais" '("162")))
+  (nconc (loop for f in (processa-files "corais" '("001..6"))
             for g = (processa-gabarito f "corais")
             collect (list (segmentos-minimos (parse-file f)) g))
          (loop for f in (nconc (processa-files "exemplos" '("023"))
