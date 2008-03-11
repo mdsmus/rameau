@@ -76,7 +76,7 @@ tipos = map(lambda x: Tipo(*x),
              ('dim7',    r'^[A-Ga-g](b|#)?°7(9)?(/[A-Ga-g](#|b)?)?$'),
              ('hdim',    r'^[A-Ga-g](b|#)?(Ø|ø)7(9)?(/[A-Ga-g](#|b)?)?$'),
              ('aug',     r'^[A-Ga-g](b|#)?\+(7\+)?(9)?(/[A-Ga-g](#|b)?)?$'),
-#             ('inc',     r'^[A-Ga-g, 0, 0](b|#)?!(7)?(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('inc',     r'^[A-Ga-g, 0, 0](b|#)?!(7)?(9)?(/[A-Ga-g](#|b)?)?$'),
              ('mel',     r'—')
              ])
 
@@ -153,7 +153,7 @@ def print_tabela(func, nome):
         print "#", tipo.nome
         print "%4s" % i,
         for alg in algs:
-            a = algoritmos[alg][tipo.nome]
+            a = algoritmos[alg].get(tipo.nome, Tipo(tipo.nome, ""))
             print "%9s" % func(a['gab'], a['alg'], a['amb']),
         print
         i += 10
