@@ -26,7 +26,7 @@ default: corais-ly rameau
 all-rameau: rameau cmurameau clisprameau
 
 resultados: rameau clean-resultados
-	./rameau resultados c > resultados/rameau
+	./rameau resultados c -f 21..300 > resultados/rameau
 	python tools/formata-tipos.py resultados/rameau resultados/
 
 clean-erros:
