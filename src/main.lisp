@@ -662,9 +662,6 @@ ponto nos corais de bach."
   (dolist (file files)
     (let ((segmento (segmentos-minimos (parse-file file)))
 	  (*package* (find-package :rameau)))
-      (format t " * ~a~%" file)
-      (format t "~% #: interv. notas     ~%")
-      (format t "-----------------------------------~%")
       (loop
 	 for x in (mapcar2 #'set-intervals #'pitch-list segmento)
 	 for nota in (mapcar #'pitch-list segmento)
@@ -681,14 +678,14 @@ ponto nos corais de bach."
 				    '((2 AUG) (3 MIN) (5 DIM))))
 			(not (equal (sort list #'< :key #'first)
 				    '((3 MIN) (5 DIM)))))
-	       (format t "~a: ~{~(~a ~)~} ~13a~%"
-		       n aug (lista-notas s))))
+	       (format t "~4a ~4a: ~{~(~a ~)~} ~13a~%"
+		       (pathname-name file) n aug (lista-notas s))))
 	   (when dim
 	     (when (and (/= (first dim) 5)
 			(not (equal (sort list #'< :key #'first)
 				    '((3 MAJ) (3 MAJ) (4 DIM)))))
-	       (format t "~a: ~{~(~a ~)~} ~13a~%"
-		       n dim (lista-notas s))))
+	       (format t "~4a ~4a: ~{~(~a ~)~} ~13a~%"
+		       (pathname-name file) n dim (lista-notas s))))
 	   ))))
 
 (defun run-partitura (flags files item)
