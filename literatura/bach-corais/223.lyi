@@ -63,10 +63,10 @@ tenor = \relative c {
   f4 g4 a4 a4 
   a2 r4 c4 
   c4 d4 g,4 d'8 c8 
-  ais4 a4 a4 g4~   %10
+  bes4 a4 a4 g4~   %10
   g8 a4 g16 fis16 e4 e'8 d8 
   d4 d8. c16 b4 g4 
-  g4 c8 ais8 a8. b16 c8. ais16 
+  g4 c8 bes8 a8. b16 c8. bes16 
   a8 g8 g4 a8 d,8 g8 f8 
   e1   %15
   
@@ -74,7 +74,7 @@ tenor = \relative c {
 
 baixo = \relative c {
   \partial 4 c4 
-    ais4 a4 g4 b4 
+    bes4 a4 g4 b4 
   c4 g4 c,4 c'4 
   b4 c8 b8 a4 g4 
   e'4 d4 c4 d4 

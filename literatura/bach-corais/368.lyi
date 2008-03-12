@@ -16,7 +16,7 @@ soprano = \relative c'' {
   \repeat volta 2 {
     c4 a2 
     g2 f4 
-    bes4 c4. d16 dis16 
+    bes4 c4. d16 ees16 
     d2. 
     c2.     %5
     d4 bes2 
@@ -88,7 +88,7 @@ baixo = \relative c {
   \repeat volta 2 {
     f8 g8 a4 f4 
     c2 d4 
-    g8 f8 dis4 f4 
+    g8 f8 ees4 f4 
     bes,8 c8 d4 bes4 
     f'2.     %5
     d4 g4 f4 

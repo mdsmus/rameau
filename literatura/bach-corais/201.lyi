@@ -46,7 +46,7 @@ alto = \relative c' {
     f4 ees16 d16 ees8 bes8 ees16 d16 ees4~     %5
     ees8 d16 c16 d4 bes4 } bes'8 aes8 
   g4 f4 f4 ees4 
-  ees8 cis8 ees4 ees4 g4 
+  ees8 des8 ees4 ees4 g4 
   f4 f4 f4 f4 
   g4 f8 ees8 d4 ees8 f8   %10
   g4 aes4 g4 g4~ 
@@ -93,13 +93,13 @@ baixo = \relative c {
     c4 f,4 bes4 f'8 ees8 
     d8 bes8 c8 d8 ees8 d8 c8 bes8     %5
     aes8 f8 bes4 ees,4 } ees8 f8 
-  g4 a4 bes8 c8 cis4 
+  g4 a4 bes8 c8 des4 
   c8 bes8 aes4 ees'4 c8 bes8 
   a8 g8 f4 bes8 c8 d4 
   c4 f4 bes,4 ees4~   %10
-  ees8 cis8 c8 d8 ees4 e4 
-  f4 b,4 c4 cis4~ 
-  cis4 c4 bes8 aes8 g4 
+  ees8 des8 c8 d8 ees4 e4 
+  f4 b,4 c4 des4~ 
+  des4 c4 bes8 aes8 g4 
   f4 g8 aes8 bes4 bes'4 
   a4 aes4 g4. f8   %15
   e4 fis4 g4 aes4~ 
