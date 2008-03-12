@@ -34,7 +34,7 @@ alto = \relative c' {
   d4 g,4 c4 c4   %5
   e8 fis8 g8 e8 f8 e8 d4~ 
   d8 c4 d16 c16 b4 g4 
-  f'8 dis8 d8 e8 f4. e8~ 
+  f'8 ees8 d8 e8 f4. e8~ 
   e8 d16 e16 f4. e8 c4~ 
   c4 
 }
@@ -57,7 +57,7 @@ baixo = \relative c {
   \partial 4 f8  e8 
     d4 e8 c8 f4 c4 
   d8 e8 f4 bes,4 c4 
-  f,2 r4 f'8 dis8 
+  f,2 r4 f'8 ees8 
   d8 e8 f4 b,8 c8 d4 
   c8 bes8 a8 f8 c'4 a4   %5
   g4 d'8 c8 b4 c4 
