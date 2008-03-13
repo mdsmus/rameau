@@ -52,6 +52,8 @@
    #:evento-dur
    #:evento-octave
    #:evento-inicio
+   #:evento-time-sig
+   #:evento-key
    #:make-evento
    #:fim-evento
    #:processa-cifras
