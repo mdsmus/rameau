@@ -311,8 +311,8 @@
 (defun parse-string (str)
   (let ((*environment* nil)
         (*dur* 1/4)
-        (*current-key* '("c" "\\major"))
-        (*current-sig* "4/4")
+        (*current-key* '(c major))
+        (*current-sig* 4/4)
         (*anacruz* 0))
     (declare (special *environment* *dur* *current-key* *current-sig*))
     (movimenta-sequencia
