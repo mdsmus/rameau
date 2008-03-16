@@ -2,7 +2,7 @@
 # coding: utf-8
 """Script para separar os tipos de erros do rameau."""
 
-import sys,re
+import sys,re,os
 
 if len(sys.argv) != 3:
     print "Erro. Passe o arquivo com os dados e o diretório de resultados como parâmetro"
@@ -32,8 +32,8 @@ class Linha(object):
         self.coral, self.algoritmo, self.segmento, self.notas, self.gabarito, self.resultado = quebra(linha)
 
 class Contagem(dict):
-    def __init__(self):
-        super(Contagem, self).__init__()
+    def __init__(self, valores=()):
+        super(Contagem, self).__init__(valores)
         self['gab'] = self['alg'] = self['amb'] = 0
 
 class Tipo(Contagem):
@@ -42,15 +42,24 @@ class Tipo(Contagem):
         self.nome = nome
         self.re = re.compile(regexp)
 
-def preenche_contagem(algoritmo, algs, gab, modo):
+class Algoritmo(object):
+    def __init__(self, nome, tipos):
+        self.nome = nome
+        self.contagem = dict([(t.nome, Contagem()) for t in tipos])
+        self.ida = dict([(t.nome, dict([(i.nome, 0) for i in tipos])) for t in tipos])
+        self.vinda = dict([(t.nome, dict([(i.nome, 0) for i in tipos])) for t in tipos])
+
+
+def preenche_contagem(algoritmo, algs, gab, modo, res):
     file("%s%s-%s-%s.txt" % (dir_res, algoritmo, gab.nome, modo), 'a').write(l)
-    if not algoritmo in algs:
-        algs[algoritmo] = {}
+    assert algoritmo in algs, "Algoritmo %s não encontrado" % algoritmo
     algoritmo = algs[algoritmo]
-    if not gab.nome in algoritmo:
-        algoritmo[gab.nome] = Contagem()
-    algoritmo[gab.nome][modo] += 1
+    contagem = algoritmo.contagem
+    assert gab.nome in contagem
+    contagem[gab.nome][modo] += 1
     gab[modo] += 1
+    algoritmo.ida[gab.nome][tipo(res)] += 1
+    
 
 def precisao(gab, alg, amb):
     if alg + amb == 0:
@@ -72,14 +81,14 @@ def f_measure(gab, alg, amb):
     return "%2.1f" % ((2 * (prec *rec ))/(prec+rec))
 
 tipos = map(lambda x: Tipo(*x), 
-            [('maior',   r'^[A-Ga-g](b|#)?(9)?(/[A-Ga-g](#|b)?)?$'),
-             ('maior7',  r'^[A-Ga-g](b|#)?7(9)?(/[A-Ga-g](#|b)?)?$'),
-             ('maior7+', r'^[A-Ga-g](b|#)?7\+(9)?(/[A-Ga-g](#|b)?)?$'),
-             ('menor',   r'^[A-Ga-g](b|#)?[Mm](9)?(/[A-Ga-g](#|b)?)?$'),
-             ('menor7',  r'^[A-Ga-g](b|#)?[Mm]7(9)?(/[A-Ga-g](#|b)?)?$'),
-             ('dim',     r'^[A-Ga-g](b|#)?°(9)?(/[A-Ga-g](#|b)?)?$'),
-             ('dim7',    r'^[A-Ga-g](b|#)?°7(9)?(/[A-Ga-g](#|b)?)?$'),
-             ('hdim',    r'^[A-Ga-g](b|#)?(Ø|ø)7(9)?(/[A-Ga-g](#|b)?)?$'),
+            [('M',   r'^[A-Ga-g](b|#)?(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('M7',  r'^[A-Ga-g](b|#)?7(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('M7+', r'^[A-Ga-g](b|#)?7\+(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('m',   r'^[A-Ga-g](b|#)?[Mm](9)?(/[A-Ga-g](#|b)?)?$'),
+             ('m7',  r'^[A-Ga-g](b|#)?[Mm]7(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('d',     r'^[A-Ga-g](b|#)?°(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('d7',    r'^[A-Ga-g](b|#)?°7(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('hd7',    r'^[A-Ga-g](b|#)?(Ø|ø)7(9)?(/[A-Ga-g](#|b)?)?$'),
              ('aug',     r'^[A-Ga-g](b|#)?\+(7\+)?(9)?(/[A-Ga-g](#|b)?)?$'),
              ('inc',     r'^[A-Ga-g, 0, 0](b|#)?!(7)?(9)?(/[A-Ga-g](#|b)?)?$'),
              ('al+',     r'Al\+6'),
@@ -88,26 +97,43 @@ tipos = map(lambda x: Tipo(*x),
              ('mel',     r'—')
              ])
 
-linhas = file(sys.argv[1]).readlines()[3:]
-algoritmos = {}
+def tipo(res):
+    for t in tipos:
+        if t.re.match(res):
+            return t.nome
+
+entrada = file(sys.argv[1])
+
+if not entrada.readline().startswith("Algoritmos:"):
+    print "Algo errado no rameau. Parando."
+    sys.exit(-1)
+
+alg_names = []
+
+for l in entrada:
+    if not l.startswith("- "):
+        break
+    alg_names.append(l[2:].strip())
+
+algoritmos = dict([(nome, Algoritmo(nome, tipos)) for nome in alg_names])
 
 
-for l in linhas:
+for l in entrada:
     t = Linha(l)
     for gab in tipos:
         if gab.re.match(t.resultado) and any(gab.re.match(x) for x in t.gabarito):
-            preenche_contagem(t.algoritmo, algoritmos, gab, 'amb')
+            preenche_contagem(t.algoritmo, algoritmos, gab, 'amb', t.resultado)
             break
     else:
         usado = False
         for gab in tipos:
             if gab.re.match(t.resultado) and not any(gab.re.match(x) for x in t.gabarito):
-                preenche_contagem(t.algoritmo, algoritmos, gab, 'alg')
+                preenche_contagem(t.algoritmo, algoritmos, gab, 'alg', t.resultado)
                 usado = True
                 break
         for gab in tipos:
             if any(gab.re.match(x) for x in t.gabarito) and not gab.re.match(t.resultado):
-                preenche_contagem(t.algoritmo, algoritmos, gab, 'gab')
+                preenche_contagem(t.algoritmo, algoritmos, gab, 'gab', t.resultado)
                 usado = True
         if not usado:
             print l
@@ -127,8 +153,8 @@ for alg in algoritmos:
     n = 0
     prec = rec = fm = 0.0
     algo = gab = amb = 0.0
-    for tipo in sorted(algoritmos[alg].keys()):
-        a = algoritmos[alg][tipo]
+    for tipo in sorted(algoritmos[alg].contagem.keys()):
+        a = algoritmos[alg].contagem[tipo]
         print "%12s|%10s|%11s|%9s|%9s%%|%9s%%|%9s%%" % (tipo, a['gab'], a['alg'], a['amb'],
                                                         precisao(a['gab'], a['alg'], a['amb']),
                                                         recall(a['gab'], a['alg'], a['amb']),
@@ -144,7 +170,7 @@ for alg in algoritmos:
                                                     "%2.1f" % (fm/n))
     avg = Contagem()
     avg['alg'], avg['gab'], avg['amb'] = algo, gab, amb
-    algoritmos[alg]['avg'] = avg
+    algoritmos[alg].contagem['avg'] = avg
     
     print
 
@@ -161,7 +187,7 @@ def print_tabela(func, nome):
         print "#", tipo.nome
         print "%4s" % i,
         for alg in algs:
-            a = algoritmos[alg].get(tipo.nome, Tipo(tipo.nome, ""))
+            a = algoritmos[alg].contagem.get(tipo.nome, Tipo(tipo.nome, ""))
             print "%9s" % func(a['gab'], a['alg'], a['amb']),
         print
         i += 10
@@ -171,3 +197,51 @@ print_tabela(precisao, "precisão")
 print_tabela(recall, "recall")
 print_tabela(f_measure, "F-measure")
 
+out = sys.stdout
+sys.stdout = file(dir_res + "tabelas.tex", 'w')
+
+def print_tabela_algoritmo_erro(algoritmo):
+    print r"\begin{table}"
+    print r"\centering"
+    print r"\begin{tabular}{l|" + "r"*(1+len(tipos)) + "}"
+    print "%5s" % "", "&",
+    for t in sorted(tipos, lambda x,y: x.nome < y.nome):
+        print "%5s" % t.nome, "&", 
+    print r"\\  \hline"
+    for t in tipos:
+        print "%5s" % t.nome, "&", 
+        for i in sorted(algoritmo.ida[t.nome].keys()):
+            print "%5s" % (algoritmo.ida[t.nome][i]), "&", 
+        print r"\\"
+    print r"\end{tabular}"
+    print r"\caption{Classificacoes de %s:}" % algoritmo.nome
+    print r"\end{table}"
+    
+
+print r"""
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{times}
+\usepackage{color}
+\usepackage[displaymath,textmath,sections,graphics,floats,auctex]{preview}
+
+
+\title{Tabelas de resultados do Rameau}
+
+
+\begin{document}
+
+\maketitle
+
+"""
+
+for a in algoritmos.values():
+    print_tabela_algoritmo_erro(a)
+            
+print r"\end{document}"
+sys.stdout = out
+
+os.system("cd " + dir_res + " &&  " + "latex " +  "tabelas.tex" + " && " + "xdvi " +  "tabelas.dvi")

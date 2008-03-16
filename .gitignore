@@ -21,4 +21,7 @@ src/temperley-original/mftext-release-07/mftext
 src/*.c
 src/*.h
 src/*.data
+resultados/*tex
+resultados/*dvi
+resultados/*log
 out

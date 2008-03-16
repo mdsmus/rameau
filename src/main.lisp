@@ -516,6 +516,8 @@ ponto nos corais de bach."
                      erros?))))))
 
 (defun run-gera-resultados (flags files item regexps)
+  (format t "Algoritmos:~%")
+  (loop for a in *algoritmos* do (format t "- ~a~%" (algoritmo-nome a)))
   (format t "Coral Algoritmo Segmento Resultado_esperado Resultado_obtido~%")
   (dolist (file files)
     (let* ((musica (parse-file file))
@@ -712,7 +714,6 @@ ponto nos corais de bach."
             for item = (first-string i dados-list) do
               (if (member item dados-list :test #'string=)
                   (progn
-                    (format t "~%* ~(~a~): ~(~a~)~%" ',nome item)
                     ,@body)
                   (progn
                     (format t "~a não é um comando de ~(~a~).~%" item ',nome)
@@ -730,7 +731,6 @@ ponto nos corais de bach."
             for item = (first-string i dados-list) do
               (if (member item dados-list :test #'string=)
                   (progn
-                    (format t "~%* ~(~a~): ~(~a~)~%" ',nome item)
                     (,fn flags (processa-files item files) item ,@args))
                   (progn
                     (format t "~a não é um comando de ~(~a~).~%" item ',nome)
@@ -773,8 +773,6 @@ ponto nos corais de bach."
     (when (member 'h flags) (print-help))
     (when algoritmos
       (setf *algoritmos* (filtra-algoritmos algoritmos)))
-    (format t "Algoritmos:")
-    (loop for a in *algoritmos* do (format t "-   ~a~%" (algoritmo-nome a)))
     (cond ((null comando) (print-help))
           ((equal comando "help") (print-help))
           ((equal comando "-h") (print-help))
