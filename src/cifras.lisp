@@ -76,6 +76,21 @@
       )
   fundamental 7th 9th 11th 13th bass inversion mode)
 
+(defparameter *augmented-sixth-templates* '((al (0 28 55 70))
+                                            (it (0 28 70))
+                                            (fr (0 28 42 70))))
+
+(defstruct (augmented-sixth
+             (:constructor make-augmented-sixth
+                           (&key type (template (second (assoc type *augmented-sixth-templates*)))))
+             (:print-function
+              (lambda (struct stream depth)
+                (declare (ignore depth))
+                (format stream "~:(~a+6~)" (augmented-sixth-type struct)))))
+  type
+  key
+  template)
+
 (defun chordp (chord?)
   (eq (type-of chord?) 'CHORD))
 
@@ -97,23 +112,26 @@ position."
          (error "don't know inversion ~a" it))))
 
 (defun %parse-chord (chord)
-  (let* ((poplist (cl-ppcre:split "/" (stringify chord)))
+  (let* ((6+ (second (multiple-value-list (cl-ppcre:scan-to-strings "(al|fr|it)+\\+6" (stringify chord)))))
+         (poplist (cl-ppcre:split "/" (stringify chord)))
          (bass-note (second poplist)))
-    (cl-ppcre:register-groups-bind (fundamental mode 7th 9th 11th 13th)
-        ("([cdefgab]+[#b]?)(m|°|ø|!|\\+)?(7[\\+-]?)?\\.?(9[b\\#]?)?\\.?(11[b\\#]?)?\\.?(13[b\\#]?)?"
-         (first poplist) :sharedp t)
-      (make-chord :fundamental fundamental
-                  ;;; mode = nil é maior
-                  :mode mode
-                  :bass bass-note
-                  :inversion (return-inversion fundamental bass-note)
-                  :7th (if (and (string= 7th "7") (string= mode "°"))
-                           "7-"
-                           7th)
+    (if 6+
+        (make-augmented-sixth :type (string->symbol (elt 6+ 0)))
+        (cl-ppcre:register-groups-bind (fundamental mode 7th 9th 11th 13th)
+            ("([cdefgab]+[#b]?)(m|°|ø|!|\\+)?(7[\\+-]?)?\\.?(9[b\\#]?)?\\.?(11[b\\#]?)?\\.?(13[b\\#]?)?"
+             (first poplist) :sharedp t)
+          (make-chord :fundamental fundamental
+                      ;; mode = nil é maior
+                      :mode mode
+                      :bass bass-note
+                      :inversion (return-inversion fundamental bass-note)
+                      :7th (if (and (string= 7th "7") (string= mode "°"))
+                               "7-"
+                               7th)
                   
-                  :9th 9th
-                  :11th 11th
-                  :13th 13th))))
+                      :9th 9th
+                      :11th 11th
+                      :13th 13th)))))
 
 (defun parse-chord (chord)
   (typecase chord
