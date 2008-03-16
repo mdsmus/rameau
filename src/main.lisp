@@ -13,7 +13,6 @@
                         (partitura ("corais" "exemplos"))
                         (tamanhos ("corais" "exemplos"))
                         (enarmonia ("corais"))
-                        (notas ("corais"))
                         (erros ("corais" "exemplos"))
                         (acertos ("corais" "exemplos"))
                         (resultados ("corais" "exemplos"))
@@ -692,16 +691,6 @@ ponto nos corais de bach."
 		       (pathname-name file) n dim (lista-notas s))))
 	   ))))
 
-(defun run-notas (flags files item)
-  (declare (ignore flags))
-  (format t "~a:~%" item)
-  (dolist (file files)
-    (let ((segmento (segmentos-minimos (parse-file file)))
-	  (*package* (find-package :rameau)))
-      (loop
-	 for nota in (mapcar #'pitch-list segmento)
-         do (print nota)))))
-  
 (defun run-partitura (flags files item)
   (when (member 'v flags) (format t "gerando "))
   (dolist (file files)
@@ -758,7 +747,6 @@ ponto nos corais de bach."
 (defcommand dados run-gera-dados)
 (defcommand enarmonia run-enarmonia)
 (defcommand erros run-gera-erros regexps t)
-(defcommand notas run-notas)
 (defcommand partitura run-partitura)
 (defcommand resultados run-gera-resultados regexps)
 (defcommand tamanhos run-compara-tamanhos)
