@@ -58,7 +58,11 @@ def preenche_contagem(algoritmo, algs, gab, modo, res):
     assert gab.nome in contagem
     contagem[gab.nome][modo] += 1
     gab[modo] += 1
-    algoritmo.ida[gab.nome][tipo(res)] += 1
+    try:
+        algoritmo.ida[gab.nome][tipo(res)] += 1
+    except KeyError:
+        print "gab", gab.nome, "res", tipo(res), res, "algoritmo", algoritmo.nome
+        sys.exit()
     
 
 def precisao(gab, alg, amb):
@@ -81,16 +85,16 @@ def f_measure(gab, alg, amb):
     return "%2.1f" % ((2 * (prec *rec ))/(prec+rec))
 
 tipos = map(lambda x: Tipo(*x), 
-            [('M',   r'^[A-Ga-g](b|#)?(9)?(/[A-Ga-g](#|b)?)?$'),
-             ('M7',  r'^[A-Ga-g](b|#)?7(9)?(/[A-Ga-g](#|b)?)?$'),
-             ('M7+', r'^[A-Ga-g](b|#)?7\+(9)?(/[A-Ga-g](#|b)?)?$'),
-             ('m',   r'^[A-Ga-g](b|#)?[Mm](9)?(/[A-Ga-g](#|b)?)?$'),
-             ('m7',  r'^[A-Ga-g](b|#)?[Mm]7(9)?(/[A-Ga-g](#|b)?)?$'),
-             ('d',     r'^[A-Ga-g](b|#)?°(9)?(/[A-Ga-g](#|b)?)?$'),
-             ('d7',    r'^[A-Ga-g](b|#)?°7(9)?(/[A-Ga-g](#|b)?)?$'),
-             ('hd7',    r'^[A-Ga-g](b|#)?(Ø|ø)7(9)?(/[A-Ga-g](#|b)?)?$'),
-             ('aug',     r'^[A-Ga-g](b|#)?\+(7\+)?(9)?(/[A-Ga-g](#|b)?)?$'),
-             ('inc',     r'^[A-Ga-g, 0, 0](b|#)?!(7)?(9)?(/[A-Ga-g](#|b)?)?$'),
+            [('M',   r'^[A-Ga-g](b|#)*(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('M7',  r'^[A-Ga-g](b|#)*7(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('M7+', r'^[A-Ga-g](b|#)*7\+(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('m',   r'^[A-Ga-g](b|#)*[Mm](9)?(/[A-Ga-g](#|b)?)?$'),
+             ('m7',  r'^[A-Ga-g](b|#)*[Mm]7(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('d',     r'^[A-Ga-g](b|#)*°(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('d7',    r'^[A-Ga-g](b|#)*°7(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('hd7',    r'^[A-Ga-g](b|#)*(Ø|ø)7(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('aug',     r'^[A-Ga-g](b|#)*\+(7\+)?(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('inc',     r'^[A-Ga-g, 0, 0](b|#)*!(7)?(9)?(/[A-Ga-g](#|b)?)?$'),
              ('al+',     r'Al\+6'),
              ('it+',     r'Fr\+6'),
              ('fr+',     r'It\+6'),
@@ -179,23 +183,6 @@ for alg in algoritmos:
 
 sys.stdout = file(dir_res + "tabelas.tex", 'w')
 
-def print_tabela_algoritmo_erro(algoritmo):
-    print r"\begin{table}"
-    print r"\centering"
-    print r"\begin{tabular}{l|" + "r"*(1+len(tipos)) + "}"
-    print "%5s" % "", "&",
-    for t in sorted(tipos, lambda x,y: x.nome < y.nome):
-        print "%5s" % t.nome, "&", 
-    print r"\\  \hline"
-    for t in tipos:
-        print "%5s" % t.nome, "&", 
-        for i in sorted(algoritmo.ida[t.nome].keys()):
-            print "%5s" % (algoritmo.ida[t.nome][i]), "&", 
-        print r"\\"
-    print r"\end{tabular}"
-    print r"\caption{Classificacoes de %s:}" % algoritmo.nome
-    print r"\end{table}"
-
 def print_tabela(func, nome):
     print r"\begin{table}"
     print r"\centering"
@@ -215,7 +202,31 @@ def print_tabela(func, nome):
     print r"\caption{Tabela de %s:}" % nome
     print r"\end{table}"
 
-    
+
+def print_tabela_algoritmo_erro(algoritmo):
+    print r"\begin{table}"
+    print r"\centering"
+    print r"\begin{tabular}{l|" + "r"*(1+len(tipos)) + "}"
+    print "%5s" % "", "&",
+    for t in tipos:
+        print "%5s" % t.nome, "&", 
+    print r"\\  \hline"
+    for t in tipos:
+        print "%5s" % t.nome, "&", 
+        soma = float(sum(algoritmo.ida[t.nome].values())) / len(algoritmo.ida[t.nome]) or 1.0
+        for i in tipos:
+            i = i.nome
+            print "$",
+            if t.nome == i:
+                print r"\mathbf{"
+            print "%5s" % ("%2.1f" % (algoritmo.ida[t.nome][i]/soma)), 
+            if t.nome == i:
+                print r"}"
+            print "$&",
+        print r"\\"
+    print r"\end{tabular}"
+    print r"\caption{Classificacoes de %s:}" % algoritmo.nome
+    print r"\end{table}"
 
 print r"""
 \documentclass{article}
