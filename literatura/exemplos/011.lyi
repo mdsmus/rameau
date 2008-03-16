@@ -5,17 +5,21 @@
 }
 
 
-soprano =      \relative c'' {
-        d dis e e
+soprano =      \relative c' {
+        d4 dis e e
+        e1
       }
 
-alto =      \relative c'' {
-        d c b c
+alto =      \relative c' {
+        d4 c c b
+        c1
       }
-tenor =      \relative c'' {
-        a a gis a
+tenor =      \relative c' {
+        a4 a a gis
+        a1
       }
 
-baixo =      \relative c' {
-        f f e a
+baixo =      \relative c {
+        f4 f e e
+        a,1
       }

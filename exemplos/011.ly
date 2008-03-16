@@ -4,23 +4,33 @@
 \score {
   <<
     \new Staff {
-      \relative c'' {
-        d dis e e
-      }
-    }
-    \new Staff {
-      \relative c'' {
-        d c b c
-      }
-    }
-    \new Staff {
-      \relative c'' {
-        a a gis a
+      \relative c' {
+        d4 dis e e
+        e1
+        \bar "|."
       }
     }
     \new Staff {
       \relative c' {
-        f f e a
+        d4 c c b
+        c1
+        \bar "|."
+      }
+    }
+    \new Staff {
+      \relative c' {
+        \clef bass
+        a4 a a gis
+        a1
+        \bar "|."
+      }
+    }
+    \new Staff {
+      \relative c {
+        \clef bass
+        f4 f e e
+        a,1
+        \bar "|."
       }
     }
   >>
