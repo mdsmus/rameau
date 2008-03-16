@@ -773,6 +773,8 @@ ponto nos corais de bach."
     (when (member 'h flags) (print-help))
     (when algoritmos
       (setf *algoritmos* (filtra-algoritmos algoritmos)))
+    (format t "Algoritmos:")
+    (loop for a in *algoritmos* do (format t "-   ~a~%" (algoritmo-nome a)))
     (cond ((null comando) (print-help))
           ((equal comando "help") (print-help))
           ((equal comando "-h") (print-help))
