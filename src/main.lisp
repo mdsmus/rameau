@@ -11,8 +11,9 @@
 (defparameter *dados* '((teste ("unidade" "regressao" "lily"))
                         (analise ("corais" "kostka" "sonatas" "exemplos"))
                         (partitura ("corais" "exemplos"))
-                        (comparatamanhos ("corais" "exemplos"))
+                        (tamanhos ("corais" "exemplos"))
                         (enarmonia ("corais"))
+                        (notas ("corais"))
                         (erros ("corais" "exemplos"))
                         (acertos ("corais" "exemplos"))
                         (resultados ("corais" "exemplos"))
@@ -213,6 +214,7 @@ ponto nos corais de bach."
      (format ,stream "~%}~%~%")))
 
 (defun print-lily (file item gabarito resultados flags notas)
+  (declare (ignore flags))
   (let* ((*package* (find-package :rameau))
          (path (concat *rameau-path*
                        (get-item (concat item "-include") *lily-dir-list*  #'equal)))
@@ -258,7 +260,7 @@ ponto nos corais de bach."
            unless s return 0
            do (format stream "\"~a\" " x)
            unless (= 0 (intervalo (first s) (second s)))
-           do (format stream "\" \" " x)))
+           do (format stream "\" \" ")))
       (print-score stream (reduce #'concat
                                   (append
                                    (list (print-lyric "sonority"))
@@ -307,6 +309,7 @@ ponto nos corais de bach."
              (format t "  ~(~15a~) ~,2f%~%" name value))))))
 
 (defun gera-dados (item gabarito resultados flags)
+  (declare (ignore flags))
   (let ((*package* (find-package :rameau))
         (size-gab (length gabarito))
         (corretos (repeat-list (length *algoritmos*) 0))
@@ -336,6 +339,7 @@ ponto nos corais de bach."
       (values total corretos (loop for i in counts collect (percent i size-gab))))))
 
 (defun gera-erros (item notas gabarito resultados flags regab reres erros?)
+  (declare (ignore flags))
   (let ((*package* (find-package :rameau))
         (size-gab (length gabarito)))
     (loop
@@ -365,6 +369,7 @@ ponto nos corais de bach."
                              alg)))))))
 
 (defun gera-resultados (item notas gabarito resultados flags regab reres)
+  (declare (ignore flags))
   (let ((*package* (find-package :rameau))
         (size-gab (length gabarito)))
     (loop
@@ -487,7 +492,7 @@ ponto nos corais de bach."
         (loop for r in (sort l #'> :key #'second)
            do (apply #'format t "Total ~(~15a~):  ~5a ~5a ~,2f% (~,2f +- ~,2f)~%" r)))))
 
-(defun run-gera-erros (erros? flags files item regexps)
+(defun run-gera-erros (flags files item regexps &optional erros?)
   (format t "Coral Algoritmo Segmento Resultado_esperado Resultado_obtido~%")
   (dolist (file files)
     (let* ((musica (parse-file file))
@@ -497,8 +502,7 @@ ponto nos corais de bach."
                          (loop for a in *algoritmos* collect
                               (funcall (algoritmo-processa a) segmentos))))
            (file-name (pathname-name file))
-           (notas (mapcar #'lista-notas segmentos))
-           (duracoes (calcula-duracoes segmentos)))
+           (notas (mapcar #'lista-notas segmentos)))
       (cond
         ((< 2 (length regexps)) (format t "São duas as expressoes regulares"))
         ((and (not gabarito) (not (member 'i flags))))
@@ -522,8 +526,7 @@ ponto nos corais de bach."
                          (loop for a in *algoritmos* collect
                               (funcall (algoritmo-processa a) segmentos))))
            (file-name (pathname-name file))
-           (notas (mapcar #'lista-notas segmentos))
-           (duracoes (calcula-duracoes segmentos)))
+           (notas (mapcar #'lista-notas segmentos)))
       (cond
         ((< 2 (length regexps)) (format t "São duas as expressoes regulares"))
           ((and (not gabarito) (not (member 'i flags))))
@@ -540,6 +543,7 @@ ponto nos corais de bach."
   (subseq arquivo (1+ (position #\/ arquivo :from-end t))))
 
 (defun run-gera-tipos (flags files item regexps)
+  (declare (ignore regexps))
   (let ((maior 0)
         (maiorl nil)
         (maior7 0)
@@ -641,7 +645,6 @@ ponto nos corais de bach."
       (let* ((musica (parse-file file))
              (segmentos (segmentos-minimos musica))
              (gabarito (processa-gabarito (tira-extensao file) item))
-             (file-name (pathname-name file))
              (size-gab (length gabarito))
              (size-seg (length segmentos)))
         (unless (or (= size-gab 0) (= size-gab size-seg))
@@ -658,6 +661,7 @@ ponto nos corais de bach."
   (sort (remove-duplicates (mapcar #'evento-pitch list)) #'<))
 
 (defun run-enarmonia (flags files item)
+  (declare (ignore flags))
   (format t "~a:~%" item)
   (dolist (file files)
     (let ((segmento (segmentos-minimos (parse-file file)))
@@ -688,6 +692,16 @@ ponto nos corais de bach."
 		       (pathname-name file) n dim (lista-notas s))))
 	   ))))
 
+(defun run-notas (flags files item)
+  (declare (ignore flags))
+  (format t "~a:~%" item)
+  (dolist (file files)
+    (let ((segmento (segmentos-minimos (parse-file file)))
+	  (*package* (find-package :rameau)))
+      (loop
+	 for nota in (mapcar #'pitch-list segmento)
+         do (print nota)))))
+  
 (defun run-partitura (flags files item)
   (when (member 'v flags) (format t "gerando "))
   (dolist (file files)
@@ -713,41 +727,42 @@ ponto nos corais de bach."
                     ,@body)
                   (progn
                     (format t "~a não é um comando de ~(~a~).~%" item ',nome)
-                    (format t "comandos possíveis são: all ~{~a ~}~%" dados-list))))))))
+                    (format t "comandos possíveis são: all ~{~a ~}~%" dados-list)
+                    )))))))
 
+(defmacro defcommand (nome fn &rest args)
+  `(defun ,nome (dados flags files regexps)
+     (declare (ignorable regexps))
+     (let* ((dados-list (get-item ',nome *dados*))
+            (comandos-lista (if (string= dados "all") dados-list (split-dados dados))))
+       (with-profile flags
+         (loop
+            for i in comandos-lista
+            for item = (first-string i dados-list) do
+              (if (member item dados-list :test #'string=)
+                  (progn
+                    (format t "~%* ~(~a~): ~(~a~)~%" ',nome item)
+                    (,fn flags (processa-files item files) item ,@args))
+                  (progn
+                    (format t "~a não é um comando de ~(~a~).~%" item ',nome)
+                    (format t "comandos possíveis são: all ~{~a ~}~%" dados-list)
+                    )))))))
 
 (defcomando teste dados flags files regexps
     (if (string= item "unidade")
         (run-unidade flags (processa-files item files))
         (run-regressao flags (processa-files item files))))
 
-(defcomando analise dados flags files regexps
-  (run-compara-gabarito flags (processa-files item files) item))
-
-(defcomando dados dados flags files regexps
-  (run-gera-dados flags (processa-files item files) item))
-
-(defcomando erros dados flags files regexps
-  (run-gera-erros t flags (processa-files item files) item regexps))
-
-(defcomando acertos dados flags files regexps
-  (run-gera-erros nil flags (processa-files item files) item regexps))
-
-(defcomando resultados dados flags files regexps
-  (run-gera-resultados flags (processa-files item files) item regexps))
-
-(defcomando tipos dados flags files regexps
-  (run-gera-tipos flags (processa-files item files) item regexps))
-
-(defcomando partitura dados flags files regexps
-  (run-partitura flags (processa-files item files) item))
-
-(defcomando comparatamanhos dados flags files regexps
-  (run-compara-tamanhos flags (processa-files item files) item))
-
-(defcomando enarmonia dados flags files regexps
-  (run-enarmonia flags (processa-files item files) item))
-
+(defcommand acertos run-gera-erros regexps nil)
+(defcommand analise run-compara-gabarito)
+(defcommand dados run-gera-dados)
+(defcommand enarmonia run-enarmonia)
+(defcommand erros run-gera-erros regexps t)
+(defcommand notas run-notas)
+(defcommand partitura run-partitura)
+(defcommand resultados run-gera-resultados regexps)
+(defcommand tamanhos run-compara-tamanhos)
+(defcommand tipos run-gera-tipos regexps)
 
 (defun main ()
   (let* ((args (rameau-args))
@@ -774,10 +789,10 @@ ponto nos corais de bach."
           ((equal comando "help") (print-help))
           ((equal comando "-h") (print-help))
           ((and (null dados) (string= comando "teste"))
-           (teste "all" flags files))
+           (teste "all" flags files regexps))
           ((and comando (null dados))
            (if (member comando (get-comandos) :test #'string=)
-               (format t "as opções de ~a são: ~{~a ~}~%"
+               (format t "as opções de ~a são: ~{~a ~} ~%"
                        comando
                        (get-item (intern (string-upcase comando) :rameau-main) *dados*))
                (progn
