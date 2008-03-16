@@ -87,7 +87,7 @@
   (let ((color (if res 21 31))
         (string (if (member 'l flags)
                     "~A[0;~Dm~(~15a~)"
-                    "~A[0;~Dm~6a")))
+                    "~A[0;~Dm~7a")))
     (format t string (code-char #x1b) color alg)
     (format t "~A[0m" (code-char #x1b))
     (format t "|")))
@@ -277,7 +277,7 @@ ponto nos corais de bach."
        for a in *algoritmos*
        do (print-res-alg (subseq (algoritmo-nome a) 0 (min 5 (length (algoritmo-nome a)))) "ok?" flags))
     (format t "~%")
-    (write-line (repeat-string 80 "-"))
+    (write-line (repeat-string 87 "-"))
     (let ((counts (repeat-list (length *algoritmos*) 0)))
       (loop
          for n in notas
