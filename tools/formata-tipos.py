@@ -117,6 +117,8 @@ for l in entrada:
 
 algoritmos = dict([(nome, Algoritmo(nome, tipos)) for nome in alg_names])
 
+out = sys.stdout
+sys.stdout = file(dir_res + "resultados.txt", 'w')
 
 for l in entrada:
     t = Linha(l)
@@ -174,30 +176,7 @@ for alg in algoritmos:
     
     print
 
-algs = sorted(algoritmos.keys())
 
-def print_tabela(func, nome):
-    print "Tabela de %s:"  % nome
-    print "#     ",
-    for alg in algs:
-        print "%9s" % alg[:8], 
-    print
-    i = 0
-    for tipo in tipos + [Tipo('avg', '')]:
-        print "#", tipo.nome
-        print "%4s" % i,
-        for alg in algs:
-            a = algoritmos[alg].contagem.get(tipo.nome, Tipo(tipo.nome, ""))
-            print "%9s" % func(a['gab'], a['alg'], a['amb']),
-        print
-        i += 10
-    
-
-print_tabela(precisao, "precisão")
-print_tabela(recall, "recall")
-print_tabela(f_measure, "F-measure")
-
-out = sys.stdout
 sys.stdout = file(dir_res + "tabelas.tex", 'w')
 
 def print_tabela_algoritmo_erro(algoritmo):
@@ -216,6 +195,26 @@ def print_tabela_algoritmo_erro(algoritmo):
     print r"\end{tabular}"
     print r"\caption{Classificacoes de %s:}" % algoritmo.nome
     print r"\end{table}"
+
+def print_tabela(func, nome):
+    print r"\begin{table}"
+    print r"\centering"
+    print r"\begin{tabular}{l|" + "r"*(1+len(algoritmos)) + "}"
+    print "    &",
+    algs = sorted(algoritmos.keys())
+    for alg in algs:
+        print "%9s" % alg[:8], "&",
+    print r" \\ \hline"
+    for tipo in tipos + [Tipo('avg', '')]:
+        print tipo.nome, "&",
+        for alg in algs:
+            a = algoritmos[alg].contagem.get(tipo.nome, Tipo(tipo.nome, ""))
+            print "$%9s$" % func(a['gab'], a['alg'], a['amb']), "&",
+        print r" \\"
+    print r"\end{tabular}"
+    print r"\caption{Tabela de %s:}" % nome
+    print r"\end{table}"
+
     
 
 print r"""
@@ -230,7 +229,7 @@ print r"""
 
 
 \title{Tabelas de resultados do Rameau}
-
+\author{Rameau}
 
 \begin{document}
 
@@ -238,10 +237,16 @@ print r"""
 
 """
 
+print_tabela(precisao, "precisão")
+print_tabela(recall, "recall")
+print_tabela(f_measure, "F-measure")
+
 for a in algoritmos.values():
     print_tabela_algoritmo_erro(a)
             
 print r"\end{document}"
 sys.stdout = out
 
-os.system("cd " + dir_res + " &&  " + "latex " +  "tabelas.tex" + " && " + "xdvi " +  "tabelas.dvi")
+print file(dir_res + "resultados.txt").read()
+
+os.system("cd " + dir_res + " &&  " + "latex " +  "tabelas.tex > /dev/null" + " && " + "xdvi " +  "tabelas.dvi")
