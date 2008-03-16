@@ -201,6 +201,8 @@ def print_tabela(func, nome):
     print r"\end{tabular}"
     print r"\caption{Tabela de %s:}" % nome
     print r"\end{table}"
+    print r'\clearpage'
+
 
 
 def print_tabela_algoritmo_erro(algoritmo):
@@ -213,20 +215,19 @@ def print_tabela_algoritmo_erro(algoritmo):
     print r"\\  \hline"
     for t in tipos:
         print "%5s" % t.nome, "&", 
-        soma = float(sum(algoritmo.ida[t.nome].values())) / len(algoritmo.ida[t.nome]) or 1.0
+        soma = float(sum(algoritmo.ida[t.nome].values()))  or 1.0
         for i in tipos:
             i = i.nome
             print "$",
-            if t.nome == i:
-                print r"\mathbf{"
-            print "%5s" % ("%2.1f" % (algoritmo.ida[t.nome][i]/soma)), 
-            if t.nome == i:
-                print r"}"
+            if t.nome != i:
+                print "%5s" % ("%2.1f" % (100*algoritmo.ida[t.nome][i]/soma)), 
             print "$&",
         print r"\\"
     print r"\end{tabular}"
     print r"\caption{Classificacoes de %s:}" % algoritmo.nome
     print r"\end{table}"
+    print r'\clearpage'
+
 
 print r"""
 \documentclass{article}
@@ -241,6 +242,8 @@ print r"""
 
 \title{Tabelas de resultados do Rameau}
 \author{Rameau}
+
+\twocolumn
 
 \begin{document}
 
