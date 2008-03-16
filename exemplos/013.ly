@@ -10,7 +10,7 @@
     }
     \new Staff {
       \relative c'' {
-        d d b c
+        d a b c
       }
     }
     \new Staff {
