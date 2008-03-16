@@ -18,8 +18,13 @@ if sys.version < '2.5':
         return False
 
 def quebra(linha):
-    linha = map(str.strip, linha.split('|'))
-    linha[4] = linha[4].replace('(','').replace(')','').split()
+    try:
+        linha = map(str.strip, linha.split('|'))
+        linha[4] = linha[4].replace('(','').replace(')','').split()
+    except IndexError:
+        print "Erro: linha errada"
+        print "linha:", linha
+        sys.exit(-1)
     return linha
 
 class Linha(object):
@@ -77,6 +82,9 @@ tipos = map(lambda x: Tipo(*x),
              ('hdim',    r'^[A-Ga-g](b|#)?(Ø|ø)7(9)?(/[A-Ga-g](#|b)?)?$'),
              ('aug',     r'^[A-Ga-g](b|#)?\+(7\+)?(9)?(/[A-Ga-g](#|b)?)?$'),
              ('inc',     r'^[A-Ga-g, 0, 0](b|#)?!(7)?(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('al+',     r'Al\+6'),
+             ('it+',     r'Fr\+6'),
+             ('fr+',     r'It\+6'),
              ('mel',     r'—')
              ])
 

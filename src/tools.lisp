@@ -115,9 +115,8 @@
   (nconc (loop for f in (processa-files "corais" '("001..6"))
             for g = (processa-gabarito f "corais")
             collect (list (segmentos-minimos (parse-file f)) g))
-         (loop for f in (nconc (processa-files "exemplos" '("023"))
-                               (processa-files "exemplos" '("024"))
-                               (processa-files "exemplos" '("025")))
+         (loop for f in (mapcan (lambda (x) (processa-files "exemplos" (list x)))
+                                '("011" "012" "013" "023" "024" "025"))
             for g = (processa-gabarito f "exemplos")
             collect (list (segmentos-minimos (parse-file f)) g))))
 

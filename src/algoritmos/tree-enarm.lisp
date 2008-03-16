@@ -31,37 +31,38 @@
                              :mode modo
                              :7th setima)))))
 
-(defparameter *chord-classes* (mapcar #'string->symbol (mapcar #'stringify (cons '— *chords*))))
+(defparameter *chord-classes* (mapcar #'string->symbol (mapcar #'stringify (append (list '— 'al+6 'fr+6 'it+6)
+                                                                                   *chords*))))
 
 
 (defparameter *chord-tree* nil)
 
 (defun prepara-segmento (segmento)
-  (when (< (length segmento) 4)
-      (format t "menor que quatro ~a~%" segmento))
   (loop for nota in segmento
      for n in *nomes* collect (cons n (evento-pitch nota))))
 
 (defun simplifica (acorde)
-  (if (or (equal nil (chord-mode acorde))
-          (equal "m" (chord-mode acorde))
-          (equal "°" (chord-mode acorde))
-          (equal "!" (chord-mode acorde))
-          (equal "+" (chord-mode acorde))
-          (equal "ø" (chord-mode acorde)))
+  (if (and (chordp acorde)
+           (or (equal nil (chord-mode acorde))
+               (equal "m" (chord-mode acorde))
+               (equal "°" (chord-mode acorde))
+               (equal "!" (chord-mode acorde))
+               (equal "+" (chord-mode acorde))
+               (equal "ø" (chord-mode acorde))))
       (string->symbol
        (stringify
         (make-chord :fundamental (chord-fundamental acorde)
                     :7th (chord-7th acorde)
                     :mode (chord-mode acorde))))
-      (string->symbol "—")))
+      (if (melodic-note-p acorde)
+          (string->symbol "—")
+          (string->symbol (stringify acorde)))))
 
 (defun prepara-chord-exemplo-treinamento (coral gabarito)
   (loop for s in coral
      for g in gabarito
      collect (make-example :name "foo"
-                           :class (if (chordp g) (simplifica g)
-                                      (string->symbol "—"))
+                           :class (simplifica g)
                            :values (prepara-segmento s))))
 
 (defun prepara-chord-entrada-treinamento (corais gabaritos)

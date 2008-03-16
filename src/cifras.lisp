@@ -184,6 +184,10 @@ position."
 (defun compara-gabarito-modo-setima-individual (resultado gabarito)
   (or (and (melodic-note-p resultado)
            (melodic-note-p gabarito))
+      (and (augmented-sixth-p resultado)
+           (augmented-sixth-p gabarito)
+           (equal (string-downcase (stringify (augmented-sixth-type resultado)))
+                  (string-downcase (stringify (augmented-sixth-type gabarito)))))
       (and (chordp resultado)
            (chordp gabarito)
            (compara-notes-tempered (chord-fundamental resultado)
@@ -201,6 +205,10 @@ position."
 (defun compara-gabarito-tonal-individual (resultado gabarito)
   (or (and (melodic-note-p resultado)
            (melodic-note-p gabarito))
+      (and (augmented-sixth-p resultado)
+           (augmented-sixth-p gabarito)
+           (equal (string-downcase (stringify (augmented-sixth-type resultado)))
+                  (string-downcase (stringify (augmented-sixth-type gabarito)))))
       (and (chordp resultado)
            (chordp gabarito)
            (equal (chord-fundamental resultado)
@@ -236,5 +244,5 @@ testes
        (print file)
        (print (read-chords (read-file-as-sexp file)))))
 
-(read-chords (read-file-as-sexp "/home/kroger/src/rameau/gabaritos/bach-corais/001.pop"))
+(read-chords (read-file-as-sexp "/home/top/programas/analise-harmonica/gabaritos/exemplos/011.pop"))
 |#

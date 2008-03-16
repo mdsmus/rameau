@@ -141,11 +141,19 @@
                                        (segment-to-template segmento)))
                           templates))))
 
+(defun augmented-sixth-template? (template)
+  (let ((modo (second template)))
+    (or (equal modo "al")
+        (equal modo "fr")
+        (equal modo "it"))))
+
 (defun pardo->chord (pardo)
   (let ((pardo (nota-pardo-gabarito pardo)))
-    (make-chord :fundamental (first pardo)
-                :mode (second pardo)
-                :7th (third pardo))))
+    (if (augmented-sixth-template? pardo)
+        (make-augmented-sixth :type (second pardo))
+        (make-chord :fundamental (first pardo)
+                    :mode (second pardo)
+                    :7th (third pardo)))))
 
 (defun gera-gabarito-pardo (segmentos)
   (with-system tempered
@@ -167,6 +175,9 @@
   ((nil "7+") (0 28 55 83))
   (("+" nil) (0 28 56))
   (("!" nil) (0 55)) 
+  (("al" nil) (0 28 55 70))
+  (("it" nil) (0 28 70))
+  (("fr" nil) (0 28 42 70))
   )
 
 (defun incf-pardo (segmento)

@@ -9,11 +9,13 @@
 
 (in-package :rameau-neural)
 
-(defparameter *versao* "-0000-")
+(defparameter *versao* "-0001-")
 
 (defparameter *neural-path* (concat *rameau-path* "neural-nets/" (current-git-branch) *versao*))
 
 (defparameter *hidden-units* 22)
+
+(defparameter *root-increment* 4)
 
 (defun extrai-diffs (segmento)
   (mapcar #'evento-pitch segmento))
@@ -23,10 +25,19 @@
     (mapcar (lambda (x) (coerce x 'float)) (extrai-feature-list seg diff))))
 
 (defun cria-pattern-saida (gabarito diff)
-  (let ((atual (make-list (1+ (get-module)) :initial-element 0)))
-    (if (chordp gabarito)
-      (incf (nth (module (- (note->code (stringify (chord-fundamental gabarito))) diff)) atual))
-      (incf (nth (get-module) atual)))
+  (let ((atual (make-list (+ *root-increment* (get-module)) :initial-element 0)))
+    (cond ((chordp gabarito)
+           (incf (nth (module (- (note->code (stringify (chord-fundamental gabarito))) diff)) atual)))
+          ((melodic-note-p gabarito)
+           (incf (nth (get-module) atual)))
+          ((equal 'it (augmented-sixth-type gabarito))
+           (incf (nth (1+ (get-module)) atual)))
+          ((equal 'al (augmented-sixth-type gabarito))
+           (incf (nth (+ 2 (get-module)) atual)))
+          ((equal 'fr (augmented-sixth-type gabarito))
+           (incf (nth (+ 3 (get-module)) atual)))
+          (t (format t "gabarito: ~s ~s~%" 'al (augmented-sixth-type gabarito))))
+           
     atual))
 
 (defun extrai-resultado-fundamental (diff output)
@@ -35,10 +46,19 @@
      with maxi = 0
      with maxr = 0
      when (< maxr r) do (setf maxi i maxr r)
-     finally (return (if (= (get-module) maxi)
-                         (make-melodic-note)
-                         (make-chord :fundamental (print-note (code->note (module (+ diff maxi)))
-                                                              'latin))))))
+     finally (return (cond ((= (get-module) maxi)
+                            (make-melodic-note))
+                           ((> (get-module) maxi)
+                            (make-chord :fundamental (print-note (code->note (module (+ diff maxi)))
+                                                              'latin)))
+                           ((= (+ 1 (get-module)) maxi)
+                            (make-augmented-sixth :type "IT"))
+                           ((= (+ 2 (get-module)) maxi)
+                            (make-augmented-sixth :type "AL"))
+                           ((= (+ 3 (get-module)) maxi)
+                            (make-augmented-sixth :type "FR"))
+                           (t (format t "module: ~a, maxi: ~a, output: ~a" (get-module) maxi output)
+                              (error "erro"))))))
 
 (defvar *chord-net* nil)
 
@@ -146,7 +166,7 @@
   (let* ((dados (gera-dados-treinamento-chord-net))
          (tamanho (length dados)))
     (with-open-file (f *chord-net-train-data* :direction :output)
-      (format f "~a ~a ~a~%" tamanho 12 22)
+      (format f "~a ~a ~a~%" tamanho 12 25)
       (loop for d in dados
          do
            (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
@@ -158,7 +178,7 @@
 (defun treina-chord-net ()
   (if (cl-fad:file-exists-p *chord-net-train-data*)
       (progn
-        (setf *chord-net* (make-net 12 *hidden-units* 22))
+        (setf *chord-net* (make-net 12 *hidden-units* 25))
         (train-on-file *chord-net*
                        *chord-net-train-data*
                        1000
@@ -174,8 +194,10 @@
   (treina-chord-net))
 
 (defun extrai-resultado-chord-net (diff res)
-  (let ((fundamental (extrai-resultado-fundamental diff (safe-retorna-n-elementos res (1+ (get-module)))))
-        (resto (nthcdr (1+ (get-module)) res)))
+  (let ((fundamental (extrai-resultado-fundamental
+                      diff
+                      (safe-retorna-n-elementos res (+ *root-increment* (get-module)))))
+        (resto (nthcdr (+ *root-increment* (get-module)) res)))
     (if (chordp fundamental)
         (let* ((7th (extract-7th (nthcdr *mode-length* resto)))
                (mode (extract-mode (safe-retorna-n-elementos resto *mode-length*) 7th)))
@@ -183,7 +205,7 @@
           (make-chord :fundamental (chord-fundamental fundamental)
                       :mode mode
                       :7th 7th))
-        (make-melodic-note))))
+        fundamental)))
 
 (defun aplica-chord-net (inputs)
   (load-chord-net)
@@ -233,7 +255,7 @@
   (let* ((dados (gera-dados-treinamento-e-chord-net))
          (tamanho (length dados)))
     (with-open-file (f *e-chord-net-train-data* :direction :output)
-      (format f "~a ~a ~a~%" tamanho 96 106)
+      (format f "~a ~a ~a~%" tamanho 96 109)
       (loop for d in dados
          do
            (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
@@ -245,7 +267,7 @@
 (defun treina-e-chord-net ()
   (if (cl-fad:file-exists-p *e-chord-net-train-data*)
       (progn
-        (setf *e-chord-net* (make-net 96 *hidden-units* 106))
+        (setf *e-chord-net* (make-net 96 *hidden-units* 109))
         (train-on-file *e-chord-net*
                        *e-chord-net-train-data*
                        1200
@@ -276,7 +298,7 @@
   (extrai-diff (nth *contexto-antes* segmentos)))
 
 (defun context-extrai-features (segmento &optional diff)
-  (let ((diff (or diff (context-extrai-diff segmentos))))
+  (let ((diff (or diff (context-extrai-diff segmento))))
     (loop for s in segmento nconc (cria-pattern-segmento s diff))))
 
 (defun load-context-net ()
@@ -313,7 +335,7 @@
   (let* ((dados (gera-dados-treinamento-context-net))
          (tamanho (length dados)))
     (with-open-file (f *context-net-train-data* :direction :output)
-      (format f "~a ~a ~a~%" tamanho (* (+ 1 *contexto-depois* *contexto-antes*) 96) 106)
+      (format f "~a ~a ~a~%" tamanho (* (+ 1 *contexto-depois* *contexto-antes*) 96) 109)
       (loop for d in dados
          do
            (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
@@ -327,7 +349,7 @@
       (progn
         (setf *context-net* (make-net (* (+ 1 *contexto-depois* *contexto-antes*) 96)
                                       *hidden-units*
-                                      106))
+                                      109))
         (train-on-file *context-net*
                        *context-net-train-data*
                        1200

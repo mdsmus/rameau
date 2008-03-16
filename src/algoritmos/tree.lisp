@@ -29,7 +29,7 @@
 
 (defparameter *chord-classes* (mapcar #'string->symbol
                                       (mapcar #'stringify
-                                              '(a  b  c  d  e  f  g  —
+                                              '(a  b  c  d  e  f  g  — al+6 it+6 fr+6
                                                 a# b# c# d# e# f# g#
                                                 ab bb cb db eb fb gb
                                                 a7  b7  c7  d7  e7  f7  g7
@@ -83,12 +83,17 @@
                     :mode (chord-mode acorde))))
       (string->symbol "—")))
 
+(defun processa-mel (acorde)
+  (if (melodic-note-p acorde)
+      (string->symbol "—")
+      (string->symbol (stringify acorde))))
+
 (defun prepara-chord-exemplo-treinamento (coral gabarito)
   (loop for s in coral
      for g in gabarito
      collect (make-example :name "foo"
                            :class (if (chordp g) (simplifica g)
-                                      (string->symbol "—"))
+                                      (processa-mel g))
                            :values (prepara-segmento s))))
 
 (defun prepara-chord-entrada-treinamento (corais gabaritos)

@@ -8,6 +8,12 @@
    #:p
    #:v
    #:m
+   #:al
+   #:fr
+   #:it
+   #:al+6
+   #:fr+6
+   #:it+6
    #:*algoritmos*
    #:*exemplos-de-treinamento*
    #:*lily-dir-list*
@@ -15,6 +21,8 @@
    #:algoritmo-compara
    #:algoritmo-nome
    #:algoritmo-processa
+   #:augmented-sixth-type
+   #:augmented-sixth-template
    #:calcula-duracoes
    #:chord-fundamental
    #:chord-mode
@@ -34,6 +42,8 @@
    #:lista-notas
    #:make-chord
    #:make-melodic-note
+   #:make-augmented-sixth
+   #:melodic-note-p
    #:parse-file
    #:processa-files
    #:processa-gabarito
