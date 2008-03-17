@@ -9,9 +9,9 @@
 
 (in-package :rameau-neural)
 
-(defparameter *versao* "-0001-")
+(defparameter *versao* "-0002-")
 
-(defparameter *neural-path* (concat *rameau-path* "neural-nets/" (current-git-branch) *versao*))
+(defparameter *neural-path* (concat *rameau-path* "neural-nets/" "master" *versao*))
 
 (defparameter *hidden-units* 22)
 
@@ -181,7 +181,7 @@
         (setf *chord-net* (make-net 12 *hidden-units* 25))
         (train-on-file *chord-net*
                        *chord-net-train-data*
-                       1000
+                       1200
                        100
                        0.1)
         (save-chord-net))
@@ -270,7 +270,7 @@
         (setf *e-chord-net* (make-net 96 *hidden-units* 109))
         (train-on-file *e-chord-net*
                        *e-chord-net-train-data*
-                       1200
+                       1500
                        100
                        0.1)
         (save-e-chord-net))
@@ -352,7 +352,7 @@
                                       109))
         (train-on-file *context-net*
                        *context-net-train-data*
-                       1200
+                       1500
                        100
                        0.1)
         (save-context-net))

@@ -50,8 +50,8 @@ class Algoritmo(object):
         self.vinda = dict([(t.nome, dict([(i.nome, 0) for i in tipos])) for t in tipos])
 
 
-def preenche_contagem(algoritmo, algs, gab, modo, res):
-    file("%s%s-%s-%s.txt" % (dir_res, algoritmo, gab.nome, modo), 'a').write(l)
+def preenche_contagem(algoritmo, algs, gab, modo, gabo, res):
+    file("%s%s-%s-%s.txt" % (dir_res, algoritmo, gab.nome, tipo(res)), 'a').write(l)
     assert algoritmo in algs, "Algoritmo %s não encontrado" % algoritmo
     algoritmo = algs[algoritmo]
     contagem = algoritmo.contagem
@@ -59,10 +59,11 @@ def preenche_contagem(algoritmo, algs, gab, modo, res):
     contagem[gab.nome][modo] += 1
     gab[modo] += 1
     try:
-        algoritmo.ida[gab.nome][tipo(res)] += 1
+        for i in gabo:
+            algoritmo.ida[tipo(i)][tipo(res)] += 1
     except KeyError:
         print "gab", gab.nome, "res", tipo(res), res, "algoritmo", algoritmo.nome
-        sys.exit()
+        sys.exit(1)
     
 
 def precisao(gab, alg, amb):
@@ -90,15 +91,15 @@ tipos = map(lambda x: Tipo(*x),
              ('M7+', r'^[A-Ga-g](b|#)*7\+(9)?(/[A-Ga-g](#|b)?)?$'),
              ('m',   r'^[A-Ga-g](b|#)*[Mm](9)?(/[A-Ga-g](#|b)?)?$'),
              ('m7',  r'^[A-Ga-g](b|#)*[Mm]7(9)?(/[A-Ga-g](#|b)?)?$'),
-             ('d',     r'^[A-Ga-g](b|#)*°(9)?(/[A-Ga-g](#|b)?)?$'),
-             ('d7',    r'^[A-Ga-g](b|#)*°7(9)?(/[A-Ga-g](#|b)?)?$'),
-             ('hd7',    r'^[A-Ga-g](b|#)*(Ø|ø)7(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('°',     r'^[A-Ga-g](b|#)*°(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('°7',    r'^[A-Ga-g](b|#)*°7(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('ø7',    r'^[A-Ga-g](b|#)*(Ø|ø)7(9)?(/[A-Ga-g](#|b)?)?$'),
              ('aug',     r'^[A-Ga-g](b|#)*\+(7\+)?(9)?(/[A-Ga-g](#|b)?)?$'),
              ('inc',     r'^[A-Ga-g, 0, 0](b|#)*!(7)?(9)?(/[A-Ga-g](#|b)?)?$'),
              ('al+',     r'Al\+6'),
-             ('it+',     r'Fr\+6'),
-             ('fr+',     r'It\+6'),
-             ('mel',     r'—')
+             ('it+',     r'It\+6'),
+             ('fr+',     r'Fr\+6'),
+             ('nct',     r'—')
              ])
 
 def tipo(res):
@@ -128,18 +129,18 @@ for l in entrada:
     t = Linha(l)
     for gab in tipos:
         if gab.re.match(t.resultado) and any(gab.re.match(x) for x in t.gabarito):
-            preenche_contagem(t.algoritmo, algoritmos, gab, 'amb', t.resultado)
+            preenche_contagem(t.algoritmo, algoritmos, gab, 'amb', t.gabarito, t.resultado)
             break
     else:
         usado = False
         for gab in tipos:
             if gab.re.match(t.resultado) and not any(gab.re.match(x) for x in t.gabarito):
-                preenche_contagem(t.algoritmo, algoritmos, gab, 'alg', t.resultado)
+                preenche_contagem(t.algoritmo, algoritmos, gab, 'alg', t.gabarito, t.resultado)
                 usado = True
                 break
         for gab in tipos:
             if any(gab.re.match(x) for x in t.gabarito) and not gab.re.match(t.resultado):
-                preenche_contagem(t.algoritmo, algoritmos, gab, 'gab', t.resultado)
+                preenche_contagem(t.algoritmo, algoritmos, gab, 'gab', t.gabarito, t.resultado)
                 usado = True
         if not usado:
             print l
@@ -208,7 +209,7 @@ def print_tabela(func, nome):
 def print_tabela_algoritmo_erro(algoritmo):
     print r"\begin{table}"
     print r"\centering"
-    print r"\begin{tabular}{l|" + "r"*(1+len(tipos)) + "}"
+    print r"\begin{tabular}{l|" + "p{0.55cm}|"*(1+len(tipos)) + "}"
     print "%5s" % "", "&",
     for t in tipos:
         print "%5s" % t.nome, "&", 
@@ -219,10 +220,10 @@ def print_tabela_algoritmo_erro(algoritmo):
         for i in tipos:
             i = i.nome
             print "$",
-            if t.nome != i:
-                print "%5s" % ("%2.1f" % (100*algoritmo.ida[t.nome][i]/soma)), 
+            if algoritmo.ida[t.nome][i] != 0:
+                print "%3s" % ("%2.1f" % (100*algoritmo.ida[t.nome][i]/soma)), 
             print "$&",
-        print r"\\"
+        print r"\\ \hline"
     print r"\end{tabular}"
     print r"\caption{Classificacoes de %s:}" % algoritmo.nome
     print r"\end{table}"
