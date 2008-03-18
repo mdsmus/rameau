@@ -207,11 +207,11 @@ def print_tabela(func, nome):
 def print_tabela_algoritmo_erro(algoritmo, total):
     print r"\begin{table}"
     print r"\centering"
-    print r"\begin{tabular}{l|" + "p{0.55cm}|"*(1+len(tipos)) + "}"
+    print r"\begin{tabular}{l||" + "p{0.55cm}|"*(1+len(tipos)) + "}"
     print "%5s" % "", "&",
     for t in tipos:
         print "%5s" % t.nome, "&", 
-    print r"\\  \hline"
+    print r"\\  \hline \hline"
     for t in tipos:
         print "%5s" % t.nome, "&", 
         soma = float(sum(algoritmo.ida[t.nome].values()))  or 1.0
