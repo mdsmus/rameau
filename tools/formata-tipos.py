@@ -186,13 +186,13 @@ def print_tabela(func, nome):
     print r"\begin{table}"
     print r"\centering"
     print r"\begin{tabular}{l|" + "r"*(1+len(algoritmos)) + "}"
-    print "    &",
+    print "       &",
     algs = sorted(algoritmos.keys())
     for alg in algs:
-        print "%9s" % alg[:8], "&",
+        print "%11s" % alg[:8], "&",
     print r" \\ \hline"
     for tipo in tipos + [Tipo('avg', '')]:
-        print tipo.nome, "&",
+        print "%4s" % tipo.nome, "&",
         for alg in algs:
             a = algoritmos[alg].contagem.get(tipo.nome, Tipo(tipo.nome, ""))
             print "$%9s$" % func(a['gab'], a['alg'], a['amb']), "&",
@@ -221,6 +221,8 @@ def print_tabela_algoritmo_erro(algoritmo, total):
             print "$",
             if algoritmo.ida[t.nome][i] != 0:
                 print "%3s" % (algoritmo.ida[t.nome][i]), 
+            else:
+                print "   ",
             print "$&",
         print r"\\ \hline"
     print r"\end{tabular}"

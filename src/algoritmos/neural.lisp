@@ -219,7 +219,7 @@
                                      (cria-pattern-segmento x)))))
              (temperado inputs)))))
 
-(register-algorithm "S-net" #'aplica-chord-net #'compara-gabarito-tonal)
+;(register-algorithm "S-net" #'aplica-chord-net #'compara-gabarito-tonal)
 
 (defvar *e-chord-net* nil)
 
