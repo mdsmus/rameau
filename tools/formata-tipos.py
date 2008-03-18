@@ -96,9 +96,7 @@ tipos = map(lambda x: Tipo(*x),
              ('ø7',    r'^[A-Ga-g](b|#)*(Ø|ø)7(9)?(/[A-Ga-g](#|b)?)?$'),
              ('aug',     r'^[A-Ga-g](b|#)*\+(7\+)?(9)?(/[A-Ga-g](#|b)?)?$'),
              ('inc',     r'^[A-Ga-g, 0, 0](b|#)*!(7)?(9)?(/[A-Ga-g](#|b)?)?$'),
-             ('al+',     r'Al\+6'),
-             ('it+',     r'It\+6'),
-             ('fr+',     r'Fr\+6'),
+             ('aug6',     r'(Al\+6|It\+6|Fr\+6)'),
              ('nct',     r'—')
              ])
 
@@ -206,7 +204,7 @@ def print_tabela(func, nome):
 
 
 
-def print_tabela_algoritmo_erro(algoritmo):
+def print_tabela_algoritmo_erro(algoritmo, total):
     print r"\begin{table}"
     print r"\centering"
     print r"\begin{tabular}{l|" + "p{0.55cm}|"*(1+len(tipos)) + "}"
@@ -219,9 +217,10 @@ def print_tabela_algoritmo_erro(algoritmo):
         soma = float(sum(algoritmo.ida[t.nome].values()))  or 1.0
         for i in tipos:
             i = i.nome
+            total.ida[t.nome][i] += algoritmo.ida[t.nome][i]
             print "$",
             if algoritmo.ida[t.nome][i] != 0:
-                print "%3s" % ("%2.1f" % (100*algoritmo.ida[t.nome][i]/soma)), 
+                print "%3s" % (algoritmo.ida[t.nome][i]), 
             print "$&",
         print r"\\ \hline"
     print r"\end{tabular}"
@@ -256,8 +255,11 @@ print_tabela(precisao, "precisão")
 print_tabela(recall, "recall")
 print_tabela(f_measure, "F-measure")
 
+total = Algoritmo("total", tipos)
 for a in algoritmos.values():
-    print_tabela_algoritmo_erro(a)
+    print_tabela_algoritmo_erro(a, total)
+
+print_tabela_algoritmo_erro(total, Algoritmo("", tipos))
             
 print r"\end{document}"
 sys.stdout = out
