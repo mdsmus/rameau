@@ -207,23 +207,23 @@ def print_tabela(func, nome):
 def print_tabela_algoritmo_erro(algoritmo, total):
     print r"\begin{table}"
     print r"\centering"
-    print r"\begin{tabular}{l||" + "p{0.55cm}|"*(1+len(tipos)) + "}"
-    print "%5s" % "", "&",
+    print r"\begin{tabular}{l||" + "r|"*(1+len(tipos)) + "}"
+    print "%5s" % "",
     for t in tipos:
-        print "%5s" % t.nome, "&", 
+        print "&", "%5s" % t.nome,
     print r"\\  \hline \hline"
     for t in tipos:
-        print "%5s" % t.nome, "&", 
+        print "%5s" % t.nome,
         soma = float(sum(algoritmo.ida[t.nome].values()))  or 1.0
         for i in tipos:
             i = i.nome
             total.ida[t.nome][i] += algoritmo.ida[t.nome][i]
-            print "$",
+            print "& $",
             if algoritmo.ida[t.nome][i] != 0:
                 print "%3s" % (algoritmo.ida[t.nome][i]), 
             else:
                 print "   ",
-            print "$&",
+            print "$",
         print r"\\ \hline"
     print r"\end{tabular}"
     print r"\caption{Classificacoes de %s:}" % algoritmo.nome
@@ -268,4 +268,4 @@ sys.stdout = out
 
 print file(dir_res + "resultados.txt").read()
 
-os.system("cd " + dir_res + " &&  " + "latex " +  "tabelas.tex > /dev/null" + " && " + "xdvi " +  "tabelas.dvi")
+os.system("cd " + dir_res + " &&  " + "latex -interaction batchmode " +  "tabelas.tex > /dev/null" + " && " + "xdvi " +  "tabelas.dvi")
