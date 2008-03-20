@@ -9,7 +9,7 @@
 
 (in-package :rameau-neural)
 
-(defparameter *versao* "-0002-")
+(defparameter *versao* "-0003-")
 
 (defparameter *neural-path* (concat *rameau-path* "neural-nets/" "master" *versao*))
 

@@ -116,7 +116,7 @@
             for g = (processa-gabarito f "corais")
             collect (list (segmentos-minimos (parse-file f)) g))
          (loop for f in (mapcan (lambda (x) (processa-files "exemplos" (list x)))
-                                '("011" "012" "013" "023" "024" "025"))
+                                '("11..13" "23..31"))
             for g = (processa-gabarito f "exemplos")
             collect (list (segmentos-minimos (parse-file f)) g))))
 
