@@ -67,16 +67,19 @@ def preenche_contagem(algoritmo, algs, gab, modo, gabo, res):
     
 
 def precisao(gab, alg, amb):
+    print >> sys.stderr, "prec", gab, alg, amb
     if alg + amb == 0:
         return "0.0"
     return "%2.1f" % (100.0 * amb / float(alg + amb))
 
 def recall(gab, alg, amb):
+    print >> sys.stderr, "rec", gab, alg, amb
     if gab + amb == 0:
         return "0.0"
     return "%2.1f" % (100.0 * amb / float(gab + amb))
 
 def f_measure(gab, alg, amb):
+    print >> sys.stderr, "fm", gab, alg, amb
     if alg + amb == 0 or gab + amb == 0:
         return "0.0"
     prec = float(precisao(gab, alg, amb))
@@ -160,21 +163,23 @@ for alg in algoritmos:
     algo = gab = amb = 0.0
     for tipo in sorted(algoritmos[alg].contagem.keys()):
         a = algoritmos[alg].contagem[tipo]
+        a['prec'] = precisao(a['gab'], a['alg'], a['amb'])
+        a['rec']  = recall(a['gab'], a['alg'], a['amb'])
+        a['fm']   = f_measure(a['gab'],a['alg'],a['amb'])
         print "%12s|%10s|%11s|%9s|%9s%%|%9s%%|%9s%%" % (tipo, a['gab'], a['alg'], a['amb'],
-                                                        precisao(a['gab'], a['alg'], a['amb']),
-                                                        recall(a['gab'], a['alg'], a['amb']),
-                                                        f_measure(a['gab'],a['alg'],a['amb']))
+                                                        a['prec'], a['rec'], a['fm'])
         n += 1
-        prec += float(precisao(a['gab'], a['alg'], a['amb']))
-        rec += float(recall(a['gab'], a['alg'], a['amb']))
-        fm += float(f_measure(a['gab'], a['alg'], a['amb']))
+        prec += float(a['prec'])
+        rec += float(a['rec'])
+        fm += float(a['fm'])
         gab += a['gab']
         algo += a['alg']
         amb += a['amb']
-    print "%12s|%10s|%11s|%9s|%9s%%|%9s%%|%9s%%" % ('avg', '', '', '',"%2.1f" % (prec/n),"%2.1f" %(rec/n),
+    print "%12s|%10s|%11s|%9s|%9s%%|%9s%%|%9s%%" % ('avg', gab, algo, amb,"%2.1f" % (prec/n),"%2.1f" %(rec/n),
                                                     "%2.1f" % (fm/n))
     avg = Contagem()
-    avg['alg'], avg['gab'], avg['amb'] = algo, gab, amb
+    print >> sys.stderr, "A média de", alg,"é,", algo, gab, amb
+    avg['prec'], avg['rec'], avg['fm'] = prec/n, rec/n, fm/n
     algoritmos[alg].contagem['avg'] = avg
     
     print
@@ -182,7 +187,7 @@ for alg in algoritmos:
 
 sys.stdout = file(dir_res + "tabelas.tex", 'w')
 
-def print_tabela(func, nome):
+def print_tabela(chave, nome):
     print r"\begin{table}"
     print r"\centering"
     print r"\begin{tabular}{l|" + "r"*(1+len(algoritmos)) + "}"
@@ -194,8 +199,9 @@ def print_tabela(func, nome):
     for tipo in tipos + [Tipo('avg', '')]:
         print "%4s" % tipo.nome, "&",
         for alg in algs:
-            a = algoritmos[alg].contagem.get(tipo.nome, Tipo(tipo.nome, ""))
-            print "$%9s$" % func(a['gab'], a['alg'], a['amb']), "&",
+            a = algoritmos[alg].contagem[tipo.nome]
+            print >> sys.stderr, tipo.nome,
+            print "$%6s$" % ("%2.1f" % float(a[chave])), "&",
         print r" \\"
     print r"\end{tabular}"
     print r"\caption{Tabela de %s:}" % nome
@@ -253,9 +259,9 @@ print r"""
 
 """
 
-print_tabela(precisao, "precisão")
-print_tabela(recall, "recall")
-print_tabela(f_measure, "F-measure")
+print_tabela('prec', "precisão")
+print_tabela('rec', "recall")
+print_tabela('fm', "F-measure")
 
 total = Algoritmo("total", tipos)
 for a in algoritmos.values():
