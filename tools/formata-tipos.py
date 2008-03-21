@@ -172,13 +172,9 @@ for alg in algoritmos:
         prec += float(a['prec'])
         rec += float(a['rec'])
         fm += float(a['fm'])
-        gab += a['gab']
-        algo += a['alg']
-        amb += a['amb']
-    print "%12s|%10s|%11s|%9s|%9s%%|%9s%%|%9s%%" % ('avg', gab, algo, amb,"%2.1f" % (prec/n),"%2.1f" %(rec/n),
+    print "%12s|%10s|%11s|%9s|%9s%%|%9s%%|%9s%%" % ('avg', '', '', '',"%2.1f" % (prec/n),"%2.1f" %(rec/n),
                                                     "%2.1f" % (fm/n))
     avg = Contagem()
-    print >> sys.stderr, "A média de", alg,"é,", algo, gab, amb
     avg['prec'], avg['rec'], avg['fm'] = prec/n, rec/n, fm/n
     algoritmos[alg].contagem['avg'] = avg
     
