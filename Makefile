@@ -1,6 +1,6 @@
 hostname = $(shell hostname)
 maindir = $(shell pwd)
-sbcl = /usr/bin/sbcl  --disable-debugger --eval
+sbcl = /usr/bin/sbcl --no-userinit --disable-debugger --eval
 lisp = /usr/bin/lisp -batch -quiet -eval
 lisp-files = $(wildcard src/*.lisp src/lib/*.lisp tools/*.lisp src/algoritmos/*.lisp)
 corais-lyi = $(wildcard literatura/bach-corais/*.lyi)
