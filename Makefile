@@ -62,7 +62,7 @@ deps:
 	cd rameau-deps ; git pull ;\
 	fi
 
-rameau: $(lisp-files) cl-fann
+rameau: $(lisp-files) 
 	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" --eval "(load \"tools/make-image.lisp\")"
 
 cmurameau: $(lisp-files)
@@ -78,7 +78,7 @@ doc:
 	cd docs ;\
 	make pdf
 
-update: 
+update: cl-fann
 	git fetch && git rebase origin/master
 
 corais-ly: $(corais-ly)
