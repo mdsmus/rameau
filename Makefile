@@ -49,11 +49,20 @@ acertos: rameau clean-acertos
 	./rameau acertos c > acertos/rameau
 	python tools/formata-tipos.py acertos/rameau acertos/
 
-rameau-deps:
-	git clone git://genos.mus.br/rameau-deps
+cl-fann: deps
+	@if [ ! -d rameau-deps/cl-fann ]; then \
+	cd rameau-deps ; git clone git://genos.mus.br/cl-fann ;\
+	else \
+	cd rameau-deps/cl-fann ; git pull ;\
+	fi
+deps:
+	@if [ ! -d rameau-deps ]; then \
+	git clone git://genos.mus.br/rameau-deps ;\
+	else \
+	cd rameau-deps ; git pull ;\
+	fi
 
-rameau: $(lisp-files) rameau-deps
-	echo ${RAMEAUDEPS}
+rameau: $(lisp-files) cl-fann
 	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" --eval "(load \"tools/make-image.lisp\")"
 
 cmurameau: $(lisp-files)

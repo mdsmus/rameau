@@ -11,7 +11,8 @@
 #+(or sbcl ecl) (require 'asdf)
 
 (defparameter *packages* '("arnesi_dev-20080217" "cffi_0.9.2" "cl-fad-0.6.0"
-                           "cl-ppcre-1.3.2" "cl-yacc-0.2" "lexer" "regex"))
+                           "cl-ppcre-1.3.2" "cl-yacc-0.2" "lexer" "regex"
+                           "lisp-unit" "machine-learning" "cl-fann"))
 
 (defun main-path ()
   (format nil "~a" (or #+ecl (si::getcwd)
@@ -20,7 +21,6 @@
                        #+clisp (ext:default-directory))))
 
 (push (concatenate 'string (main-path) "src/") asdf:*central-registry*)
-(push (concatenate 'string (main-path) "src/lib/") asdf:*central-registry*)
 
 (when *use-rameau-deps*
   (loop for p in *packages* do
