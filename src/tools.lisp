@@ -116,9 +116,10 @@
             for g = (processa-gabarito f "corais")
             collect (list (segmentos-minimos (parse-file f)) g))
          (loop for f in (mapcan (lambda (x) (processa-files "exemplos" (list x)))
-                                '("11..13" "23..31"))
+                                '("11..13" "23..28"))
             for g = (processa-gabarito f "exemplos")
             collect (list (segmentos-minimos (parse-file f)) g))))
+
 
 (defun current-git-branch ()
   "Diz o branch atual no git, útil pra poder guardar redes separadas para branches separados."
