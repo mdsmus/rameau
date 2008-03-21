@@ -67,19 +67,16 @@ def preenche_contagem(algoritmo, algs, gab, modo, gabo, res):
     
 
 def precisao(gab, alg, amb):
-    print >> sys.stderr, "prec", gab, alg, amb
     if alg + amb == 0:
         return "0.0"
     return "%2.1f" % (100.0 * amb / float(alg + amb))
 
 def recall(gab, alg, amb):
-    print >> sys.stderr, "rec", gab, alg, amb
     if gab + amb == 0:
         return "0.0"
     return "%2.1f" % (100.0 * amb / float(gab + amb))
 
 def f_measure(gab, alg, amb):
-    print >> sys.stderr, "fm", gab, alg, amb
     if alg + amb == 0 or gab + amb == 0:
         return "0.0"
     prec = float(precisao(gab, alg, amb))
@@ -196,7 +193,6 @@ def print_tabela(chave, nome):
         print "%4s" % tipo.nome, "&",
         for alg in algs:
             a = algoritmos[alg].contagem[tipo.nome]
-            print >> sys.stderr, tipo.nome,
             print "$%6s$" % ("%2.1f" % float(a[chave])), "&",
         print r" \\"
     print r"\end{tabular}"
