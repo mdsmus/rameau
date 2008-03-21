@@ -22,8 +22,9 @@
 (push (concatenate 'string (main-path) "src/") asdf:*central-registry*)
 (push (concatenate 'string (main-path) "src/lib/") asdf:*central-registry*)
 
-(loop for p in *packages* do
-     (push (concatenate 'string (main-path) "rameau-deps/" p "/") asdf:*central-registry*))
+(when *use-rameau-deps*
+  (loop for p in *packages* do
+       (push (concatenate 'string (main-path) "rameau-deps/" p "/") asdf:*central-registry*)))
 
 #+(or sbcl ecl) (require 'rameau)
 #+(or clisp cmu) (asdf:oos 'asdf:load-op :rameau :verbose nil)
