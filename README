@@ -1,20 +1,25 @@
 1. INSTALAÇÃO
 
-Para instalar rameau voce precisa instalar os seguintes pacotes:
+Para instalar rameau voce precisa instalar o sbcl, o compilador de
+lisp, e fann, a biblioteca para redes neurais. No debian voce pode
+instalar o sbcl com o comando:
 
-  sbcl cl-lexer cl-regex cl-yacc cl-fad cl-ppcre cl-arnesi cl-cffi
+  aptitude install sbcl
 
-Além disso, é necessário instalar osicat pelo asdf-install. Para isso,
-execute o sbcl e faça
+mas NÃO instale libfann com o aptitude porque a versão do debian é
+ultrapassada. Instale o .deb distribuído no site da fann:
 
-(require 'asdf)
- (require 'asdf-install)
- (asdf-install:install 'osicat)
+http://download.sourceforge.net/sourceforge/fann/libfann2_2.0.0-1_i386.deb
 
-É recomendado fazer uma instalação local como usuário.
+Se você usa Arch, instale fann desse pacote:
 
-Para compilar é só digitar 'make' no diretorio onde está o repositório
-da pequisa.
+http://www.genos.mus.br/arch/fann-2.0.0-1-i686.pkg.tar.gz
+
+Depois de instalar as dependências, rode o comando:
+
+  make cl-fann rameau
+
+Isso vai baixar o restante das dependências e compilar rameau.
 
 Eu sugiro fazer um link simbolico dele para algum lugar no PATH, por
 exemplo:
