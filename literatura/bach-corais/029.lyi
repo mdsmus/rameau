@@ -37,10 +37,10 @@ alto = \relative c' {
     e'4 d4 d4 a'4 
     d,4 d4 d2 }
   g4 g4 fis4 g4   %5
-  g4 g8 fis8 g2 
-  g4 g4 g4 g8 fis8 
+  g4~ g8 fis8 g2 
+  g4 g4 g4~ g8 fis8 
   e4 d8 e8 fis2 
-  g4 g8 fis8 e8 fis8 g8 fis8 
+  g4~ g8 fis8 e8 fis8 g8 fis8 
   e4 fis4 g2   %10
   e2 g4 a4 
   g4 d8 e8 fis4 g4 
@@ -50,7 +50,7 @@ alto = \relative c' {
 
 tenor = \relative c' {
   \repeat volta 2 {
-    b4 a4 g4 g8 fis8 
+    b4 a4 g4~ g8 fis8 
     g4 a4 a8 g8 fis4 
     b4 a4 g8 fis8 e8 fis8 
     g4 g8 fis8 b2 }
