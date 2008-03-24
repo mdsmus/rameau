@@ -62,7 +62,7 @@ def preenche_contagem(algoritmo, algs, gab, modo, gabo, res):
         for i in gabo:
             algoritmo.ida[tipo(i)][tipo(res)] += 1
     except KeyError:
-        print "gab", gab.nome, "res", tipo(res), res, "algoritmo", algoritmo.nome
+        print "gab", gab.nome, tipo(i), i, "res", tipo(res), res, "algoritmo", algoritmo.nome, algoritmo.ida.get("nct", None)
         sys.exit(1)
     
 
@@ -88,7 +88,7 @@ def f_measure(gab, alg, amb):
 tipos = map(lambda x: Tipo(*x), 
             [('M',   r'^[A-Ga-g](b|#)*(9)?(/[A-Ga-g](#|b)?)?$'),
              ('M7',  r'^[A-Ga-g](b|#)*7(9)?(/[A-Ga-g](#|b)?)?$'),
-             ('M7+', r'^[A-Ga-g](b|#)*7\+(9)?(/[A-Ga-g](#|b)?)?$'),
+             ('M7+', r'^[A-Ga-g](b|#)*(m)?7\+(9)?(/[A-Ga-g](#|b)?)?$'),
              ('m',   r'^[A-Ga-g](b|#)*[Mm](9)?(/[A-Ga-g](#|b)?)?$'),
              ('m7',  r'^[A-Ga-g](b|#)*[Mm]7(9)?(/[A-Ga-g](#|b)?)?$'),
              ('°',     r'^[A-Ga-g](b|#)*°(9)?(/[A-Ga-g](#|b)?)?$'),
@@ -121,7 +121,6 @@ for l in entrada:
 algoritmos = dict([(nome, Algoritmo(nome, tipos)) for nome in alg_names])
 
 out = sys.stdout
-sys.stdout = file(dir_res + "resultados.txt", 'w')
 
 for l in entrada:
     t = Linha(l)
@@ -264,6 +263,6 @@ print_tabela_algoritmo_erro(total, Algoritmo("", tipos))
 print r"\end{document}"
 sys.stdout = out
 
-print file(dir_res + "resultados.txt").read()
+#print file(dir_res + "resultados.txt").read()
 
 os.system("cd " + dir_res + " &&  " + "latex -interaction batchmode " +  "tabelas.tex > /dev/null" + " && " + "xdvi " +  "tabelas.dvi")
