@@ -103,7 +103,7 @@ corais-partitura-fast: $(corais-ly)
 	@if [ ! -d $(corais-dir) ]; then mkdir -p $(corais-dir); fi;
 	@cat $< lily/score.lyi > $(corais-dir)/$(basename $(notdir $<)).ly
 
-coral-%.png: %.ly %.pop
+coral-%.png: %.ly %.pop rameau
 	./rameau partitura corais -f $(notdir $(basename $<))
 	cd $(corais-dir); \
 	$(lilypond) --png coral-$(notdir $<) 2> $(corais-dir)/coral-$(notdir $(basename $<)).log
