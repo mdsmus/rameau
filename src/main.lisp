@@ -195,7 +195,7 @@ ponto nos corais de bach."
       \\Lyrics
       \\override LyricSpace #'minimum-distance = #1.0
       \\override LyricText #'font-size = #-1
-      %\\override LyricText #'font-name = #\"Bitstream Vera Serif\"
+      \\override LyricText #'font-family = #'roman
     }
   }
   \\midi {}
@@ -248,7 +248,7 @@ ponto nos corais de bach."
                 if (funcall (algoritmo-compara a) res gab) do
                   (format stream "\"~a\" " (if res res " "))
                 else do
-                  (format stream "\\markup{\\italic \\bold \"~a\"}"
+                  (format stream "\\markup{\\roman \\italic \\bold \"~a\"}"
                           ;"\\markup{\\bold \\with-color #(x11-color 'red) \"~a\"}"
                           (if res res " "))
                 unless (= 0 (intervalo (first s) (second s))) do
