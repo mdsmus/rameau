@@ -1,5 +1,5 @@
 (defpackage :rameau-main
-  (:use :rameau :cl :arnesi)
+  (:use :rameau :cl :arnesi :cl-ppcre)
   (:export :main :check))
 
 (in-package :rameau-main)
@@ -708,17 +708,19 @@ ponto nos corais de bach."
   "Remove test files from list of files."
   (remove-if (lambda (f) (search "test-" (pathname-name f))) list))
 
-(defun get-functions (file)
+(defun get-functions (string &optional test)
   "Return an alist with the functions or testes of a file."
-  (with-open-file (s file)
-    (list (intern (string-upcase (cl-ppcre:regex-replace-all "test-" (pathname-name file) "")))
-          (mapcar #'intern
-                  (mapcar (lambda (x) (cl-ppcre:regex-replace-all "(DEFINE-TEST|DEFUN|DEFMETHOD|DEFCACHED)[ ]+" x ""))
-                          (cl-ppcre:all-matches-as-strings *regexp* (string-upcase (file-string s))))))))
-
-(defparameter *regexp* "(DEFINE-TEST|DEFUN|DEFMETHOD|DEFCACHED)[ ]+[0-9a-zA-Z><\!\$%&\*\?/-]+")
-(defparameter *tests* (mapcar #'get-functions (directory (concat *rameau-path* "src/test-*.lisp"))))
-(defparameter *functions* (mapcar #'get-functions (remove-test (directory (concat *rameau-path* "src/*.lisp")))))
+  (let* ((regexp-def "(DEFINE-TEST|DEFUN|DEFMETHOD|DEFCACHED)[ ]+")
+         (regexp-name "[0-9a-zA-Z><\!\$%&\*\?/-]+")
+         (regexp (concat regexp-def regexp-name))
+         (files-orig (directory (concat *rameau-path* string)))
+         (files (if test files-orig (remove-test files-orig))))
+    (loop for file in files collect
+         (with-open-file (s file)
+           (list (intern (string-upcase (regex-replace-all "test-" (pathname-name file) "")))
+                 (mapcar #'intern
+                         (mapcar (lambda (x) (regex-replace-all regexp-def x ""))
+                                 (all-matches-as-strings regexp (string-upcase (file-string s))))))))))
 
 (defun check-for (a b)
   (loop
@@ -738,8 +740,10 @@ ponto nos corais de bach."
          (format t "~{~(    ~a~%~)~}~%" list))))
   
 (defun check ()
-  (print-check (check-for *functions* *tests*) "as seguintes funções estão sem testes")
-  (print-check (check-for *tests* *functions*) "os seguintes testes estão orfãos"))
+  (let ((tests (get-functions "src/test-*.lisp" 'test))
+        (functions (get-functions "src/*.lisp")))
+    (print-check (check-for functions tests) "as seguintes funções estão sem testes")
+    (print-check (check-for tests functions) "os seguintes testes estão orfãos")))
 
 (defmacro defcomando (nome dados flags files regexps &body body)
   `(defun ,nome (,dados ,flags ,files ,regexps)
