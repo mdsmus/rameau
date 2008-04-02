@@ -1,6 +1,6 @@
 (defpackage :rameau-main
   (:use :rameau :cl :arnesi)
-  (:export :main))
+  (:export :main :check))
 
 (in-package :rameau-main)
 
@@ -13,6 +13,7 @@
                         (partitura ("corais" "exemplos"))
                         (tamanhos ("corais" "exemplos"))
                         (enarmonia ("corais"))
+                        (check nil)
                         (erros ("corais" "exemplos"))
                         (acertos ("corais" "exemplos"))
                         (resultados ("corais" "exemplos"))
@@ -702,7 +703,44 @@ ponto nos corais de bach."
            (resultados (loop for a in *algoritmos* collect
                             (funcall (algoritmo-processa a) segmento))))
       (print-lily file item gabarito resultados flags segmento))))
+
+(defun remove-test (list)
+  "Remove test files from list of files."
+  (remove-if (lambda (f) (search "test-" (pathname-name f))) list))
+
+(defun get-functions (file)
+  "Return an alist with the functions or testes of a file."
+  (with-open-file (s file)
+    (list (intern (string-upcase (cl-ppcre:regex-replace-all "test-" (pathname-name file) "")))
+          (mapcar #'intern
+                  (mapcar (lambda (x) (cl-ppcre:regex-replace-all "(DEFINE-TEST|DEFUN|DEFMETHOD|DEFCACHED)[ ]+" x ""))
+                          (cl-ppcre:all-matches-as-strings *regexp* (string-upcase (file-string s))))))))
+
+(defparameter *regexp* "(DEFINE-TEST|DEFUN|DEFMETHOD|DEFCACHED)[ ]+[0-9a-zA-Z><\!\$%&\*\?/-]+")
+(defparameter *tests* (mapcar #'get-functions (directory "src/test-*.lisp")))
+(defparameter *functions* (mapcar #'get-functions (remove-test (directory "src/*.lisp"))))
+
+(defun check-for (a b)
+  (loop
+     for (key list) in a
+     collect
+       (list key
+             (remove-if (lambda (item) (member item (second (assoc key b)))) list))))
+
+(defun print-check (alist text)
+  (format t "~%~a:~%~%" text)
   
+  (loop
+     for (key list) in alist
+     do
+       (when list
+         (format t "* ~(~a.lisp~) [~a]~%" key (length list))
+         (format t "~{~(    ~a~%~)~}~%" list))))
+  
+(defun check ()
+  (print-check (check-for *functions* *tests*) "as seguintes funções estão sem testes")
+  (print-check (check-for *tests* *functions*) "os seguintes testes estão orfãos"))
+
 (defmacro defcomando (nome dados flags files regexps &body body)
   `(defun ,nome (,dados ,flags ,files ,regexps)
      (declare (ignorable ,regexps))
@@ -778,6 +816,8 @@ ponto nos corais de bach."
           ((equal comando "-h") (print-help))
           ((and (null dados) (string= comando "teste"))
            (teste "all" flags files regexps))
+          ((and (null dados) (string= comando "check"))
+           (check))
           ((and comando (null dados))
            (if (member comando (get-comandos) :test #'string=)
                (format t "as opções de ~a são: ~{~a ~} ~%"
