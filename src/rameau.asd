@@ -26,6 +26,5 @@
                (:file "test-cifras")
                ;;(:file "test-segmento")
                (:file "load-algorithms")
-               (:file "check")
                (:file "main")
                ))

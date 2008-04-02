@@ -717,8 +717,8 @@ ponto nos corais de bach."
                           (cl-ppcre:all-matches-as-strings *regexp* (string-upcase (file-string s))))))))
 
 (defparameter *regexp* "(DEFINE-TEST|DEFUN|DEFMETHOD|DEFCACHED)[ ]+[0-9a-zA-Z><\!\$%&\*\?/-]+")
-(defparameter *tests* (mapcar #'get-functions (directory "src/test-*.lisp")))
-(defparameter *functions* (mapcar #'get-functions (remove-test (directory "src/*.lisp"))))
+(defparameter *tests* (mapcar #'get-functions (directory (concat *rameau-path* "src/test-*.lisp"))))
+(defparameter *functions* (mapcar #'get-functions (remove-test (directory (concat *rameau-path* "src/*.lisp")))))
 
 (defun check-for (a b)
   (loop
