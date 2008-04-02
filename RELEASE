@@ -1,5 +1,13 @@
 ; -*- org -*-
 
+* Rameau 4.0, 02 abril 2008
+
+Esse release tem as seguintes melhorias desde 3.0
+
+** algoritmo para análise usando knn
+** algoritmos com informação enarmonica
+** diversas funcoes utilitarias como erros, acertos, resultados, etc
+
 * Rameau 3.0, 24 dezembro 2007
 
 Esse release tem as seguintes melhorias desde 2.0
