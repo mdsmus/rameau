@@ -1,19 +1,5 @@
 (in-package :rameau)
 
-(define-test compara-notas
-  (assert-true
-   (compara-notas (make-evento :pitch 0 :octave 1)
-                  (make-evento :pitch 0 :octave 2)))
-  (assert-false
-   (compara-notas (make-evento :pitch 0 :octave 2)
-                  (make-evento :pitch 0 :octave 1)))
-  (assert-false
-   (compara-notas (make-evento :pitch 55 :octave 1)
-                  (make-evento :pitch 14 :octave 1)))
-  (assert-true
-   (compara-notas (make-evento :pitch 55 :octave 1)
-                  (make-evento :pitch 14 :octave 2))))
-
 (define-test concat
   (assert-equal
    "abracadabra"
@@ -29,21 +15,6 @@
   (assert-equal
    3
    (count-subseq "foo" "fofofoofofooooofofoofofo")))
-
-(define-test last1
-  (assert-equal
-   'foo
-   (last1 '(d gb g lkfglkd kfglk dlfgk dkf foo))))
-
-(define-test lista-notas
-  (assert-equal
-   '("c" "e" "g" "c")
-   (lista-notas
-    (list
-     (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0)
-     (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-     (make-evento :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-     (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0)))))
 
 (define-test max-predicado
   (assert-equal
@@ -91,5 +62,11 @@
 (define-test repeat-string
   (assert-equal "foofoofoo" (repeat-string 3 "foo")))
 
-(define-test remove-duplicates
-  (assert-equal '(1 2 3) (remove-duplicates '(1 2 1 3))))
+(lisp-unit:define-test octave-from-string
+  (lisp-unit:assert-equal 8  (octave-from-string ""))
+  (lisp-unit:assert-equal 7  (octave-from-string ","))
+  (lisp-unit:assert-equal 6  (octave-from-string ",,"))
+  (lisp-unit:assert-equal 9  (octave-from-string "'"))
+  (lisp-unit:assert-equal 10 (octave-from-string "''"))
+  )
+
