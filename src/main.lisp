@@ -729,9 +729,6 @@ ponto nos corais de bach."
                          (mapcar (lambda (x) (regex-replace-all regexp-def x ""))
                                  (all-matches-as-strings regexp (string-upcase (file-string s))))))))))
 
-(defun string-member (item list)
-  (member (stringify item) list :test #'equal :key #'stringify))
-
 (defun check-for (a b)
   (loop
      for (key list) in a
@@ -750,7 +747,9 @@ ponto nos corais de bach."
        (when list
          (format t "* ~(~a.lisp~) [~a]~%" key (length list))
          (format t "~{~(    ~a~%~)~}~%" list))))
-  
+
+(do-not-test print-check check-for)
+
 (defun run-check (&rest ignore)
   (declare (ignore ignore))
   (let ((tests (get-functions "src/test-*.lisp" 'test))
@@ -788,6 +787,20 @@ ponto nos corais de bach."
 (defcommand tamanhos run-compara-tamanhos)
 (defcommand check run-check)
 (defcommand tipos run-gera-tipos regexps)
+
+(do-not-test main
+  run-testes
+  run-check
+  run-gera-erros
+  run-compara-gabarito
+  run-gera-dados
+  run-enarmonia
+  run-partitura
+  run-gera-resultados
+  run-compara-tamanhos
+  run-check
+  run-gera-tipos
+  )
 
 (defun main ()
   (let* ((args (rameau-args))

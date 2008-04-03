@@ -39,6 +39,7 @@
                                sorted
                                sort-set
                                stringify
+                               string-member
                                string->symbol
                                symbol->number
                                tem-ext?
@@ -289,4 +290,7 @@ como do resto da lista, é a posição, quanto menor, mais na frente"
 
 (defun coloca-contexto (segmentos antes depois)
   (butlast (agrupa (append (repeat-list antes nil) segmentos) (+ 1 antes depois)) (max 0 (1- depois))))
+
+(defun string-member (item list)
+  (member (stringify item) list :test #'equal :key #'stringify))
 

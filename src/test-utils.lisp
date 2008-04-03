@@ -128,3 +128,6 @@
 
 (define-test sort-set
   (assert-equal '(1 2 3) (sort-set '(2 3 1))))
+
+(define-test string-member
+  (assert-equal '(foo bar baz) (string-member 'foo '(a b foo bar baz))))
