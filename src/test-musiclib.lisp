@@ -1,15 +1,15 @@
 (in-package #:rameau)
 
 
-(define-test code->note
-  (assert-equal '(c 0) (code->note 0))
-  (assert-equal '(c -1) (code->note 95))
-  (assert-equal '(d 0) (code->note 14))
-  (assert-equal '(c 0) (code->note 96))
-  (assert-equal '(c 0) (with-system tempered (code->note 0)))
-  (assert-equal '(b 0) (with-system tempered (code->note 95)))
-  (assert-equal '(d 0) (with-system tempered (code->note 14)))
-  (assert-equal '(c 0) (with-system tempered (code->note 96))))
+(define-test code->notename
+  (assert-equal '(c 0) (code->notename 0))
+  (assert-equal '(c -1) (code->notename 95))
+  (assert-equal '(d 0) (code->notename 14))
+  (assert-equal '(c 0) (code->notename 96))
+  (assert-equal '(c 0) (with-system tempered (code->notename 0)))
+  (assert-equal '(b 0) (with-system tempered (code->notename 95)))
+  (assert-equal '(d 0) (with-system tempered (code->notename 14)))
+  (assert-equal '(c 0) (with-system tempered (code->notename 96))))
 
 
 (define-test note?
@@ -181,3 +181,6 @@
   (assert-false (rest? "c"))
   (assert-false (rest? "cis"))
   (assert-true (rest? "R")))
+
+(define-test notename->code
+  (assert-equal (code->notename 10) (notename->code '(D -4))))

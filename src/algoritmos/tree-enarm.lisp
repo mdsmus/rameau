@@ -27,7 +27,7 @@
        (loop for setima in '(nil "7" "7-" "7+")
           append
             (loop for fundamental from 0 to 95 collect
-                 (make-chord :fundamental (print-note (code->note fundamental))
+                 (make-chord :fundamental (print-note (code->notename fundamental))
                              :mode modo
                              :7th setima)))))
 

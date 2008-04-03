@@ -49,7 +49,7 @@
      finally (return (cond ((= (get-module) maxi)
                             (make-melodic-note))
                            ((> (get-module) maxi)
-                            (make-chord :fundamental (print-note (code->note (module (+ diff maxi)))
+                            (make-chord :fundamental (print-note (code->notename (module (+ diff maxi)))
                                                               'latin)))
                            ((= (+ 1 (get-module)) maxi)
                             (make-augmented-sixth :type "IT"))

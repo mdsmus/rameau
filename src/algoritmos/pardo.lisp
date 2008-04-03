@@ -64,7 +64,7 @@
                      :resultado (avalia-template
                                  (set-transpose
                                   template
-                                  (inverse-code->note nota))
+                                  (notename->code nota))
                                  segmento)
                      :segmento segmento)))
 
@@ -95,7 +95,7 @@
          (cod (module
                (+ (note->code (stringify proxima-tonica))
                   (code->interval '(7 maj)))))
-         (nota (print-note (code->note cod) 'latin)))
+         (nota (print-note (code->notename cod) 'latin)))
     (or (find-if
          (lambda (x)
            (equal nota (stringify (nota-pardo-root x))))
@@ -126,7 +126,7 @@
                           (nota-pardo-resultado x))
                         (avalia-segmento-notas (second template)
                                                segmento
-                                               (mapcar #'code->note *notas-interessantes-tonal*)))))
+                                               (mapcar #'code->notename *notas-interessantes-tonal*)))))
     (dolist (r resultados)
       (setf (nota-pardo-gabarito r) (cons (stringify (nota-pardo-root r))
                                           (first template))))

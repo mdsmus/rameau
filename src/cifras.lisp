@@ -146,7 +146,7 @@ position."
 (defun transpose-chord (c n)
   (if (chordp c)
       (make-chord :fundamental (string->symbol
-                                (print-note (code->note
+                                (print-note (code->notename
                                              (+ n
                                                 (note->code
                                                  (chord-fundamental c))))

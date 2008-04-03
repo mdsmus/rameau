@@ -15,11 +15,11 @@
                                number-of-accidentals
                                match-note-representation
                                sort-form-list tempered tonal
-                               get-system-notes get-notes code->note note->code
+                               get-system-notes get-notes code->notename note->code
+                               notename->code
                                compara-notes-tempered
                                get-module
                                note? rest? latin->lily
-                               inverse-code->note
                                print-accidentals print-note module
                                lily->latin transpose inversion
                                interval interval->code code->interval
@@ -170,7 +170,7 @@ acorde. EXEMPLO: (get-interval-quantity 3) retorna TRIPLE."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun code->note (number)
+(defun code->notename (number)
   "Retorna o nome da nota dado o seu código numérico."
   (nth (module number) (get-system-notes *system*)))
 
@@ -238,10 +238,8 @@ usa a representação do lilypond e 'd#' usa a representação 'latin'."
              ((match-note-representation note 'latin) (%parse-note note 'latin *system*))
              (t (error "tipo de nota não conhecida")))))))
 
-(defun inverse-code->note (note)
-  "Essa função é o inverso de code->note. Isso é necessário por note->code *não*
-ser esse inverso. Musiclib precisa urgentemente de um rename."
-  (position note (get-notes)))
+(defun notename->code (note)
+  (position note (get-notes) :test #'equal))
 
 (defun compara-notes-tempered (notea noteb)
   (with-system tempered
@@ -261,12 +259,12 @@ Example: (print-note '(c 1) 'lily) return cis."
 (defun latin->lily (nota)
   "Aceita uma string com o nome da nota em latin e retorna a
 representação do lilypond. Exemplo: (latin->lily \"Eb\") => \"ees\""
-  (print-note (code->note (note->code (stringify nota))) 'lily))
+  (print-note (code->notename (note->code (stringify nota))) 'lily))
 
 (defun lily->latin (nota)
   "Aceita uma string com o nome da nota em lily e retorna a
 representação em latin. Exemplo: (lily->latin \"cis\") => \"C#\""
-  (print-note (code->note (note->code nota)) 'latin))
+  (print-note (code->notename (note->code nota)) 'latin))
 
 (defun module (n)
   "Returns the module according to a system.
