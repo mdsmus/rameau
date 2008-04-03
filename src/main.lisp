@@ -741,7 +741,8 @@ ponto nos corais de bach."
          (format t "* ~(~a.lisp~) [~a]~%" key (length list))
          (format t "~{~(    ~a~%~)~}~%" list))))
   
-(defun check ()
+(defun run-check (&rest ignore)
+  (declare (ignore ignore))
   (let ((tests (get-functions "src/test-*.lisp" 'test))
         (functions (get-functions "src/*.lisp")))
     (print-check (check-for functions tests) "as seguintes funções estão sem testes")
@@ -770,16 +771,17 @@ ponto nos corais de bach."
      (let* ((dados-list (get-item ',nome *dados*))
             (comandos-lista (if (string= dados "all") dados-list (split-dados dados))))
        (with-profile flags
-         (loop
-            for i in comandos-lista
-            for item = (first-string i dados-list) do
-              (if (member item dados-list :test #'string=)
-                  (progn
-                    (,fn flags (processa-files item files) item ,@args))
-                  (progn
-                    (format t "~a não é um comando de ~(~a~).~%" item ',nome)
-                    (format t "comandos possíveis são: all ~{~a ~}~%" dados-list)
-                    )))))))
+         (or (and comandos-lista
+                  (loop
+                     for i in comandos-lista
+                     for item = (first-string i dados-list) do
+                       (if (member item dados-list :test #'string=)
+                           (progn
+                             (,fn flags (processa-files item files) item ,@args))
+                           (progn
+                             (format t "~a não é um comando de ~(~a~).~%" item ',nome)
+                             (format t "comandos possíveis são: all ~{~a ~}~%" dados-list)))))
+             (,fn flags nil nil ,@args))))))
 
 (defcomando teste dados flags files regexps
     (if (string= item "unidade")
@@ -794,6 +796,7 @@ ponto nos corais de bach."
 (defcommand partitura run-partitura)
 (defcommand resultados run-gera-resultados regexps)
 (defcommand tamanhos run-compara-tamanhos)
+(defcommand check run-check)
 (defcommand tipos run-gera-tipos regexps)
 
 (defun main ()
@@ -822,8 +825,6 @@ ponto nos corais de bach."
           ((equal comando "-h") (print-help))
           ((and (null dados) (string= comando "teste"))
            (teste "all" flags files regexps))
-          ((and (null dados) (string= comando "check"))
-           (check))
           ((and comando (null dados))
            (if (member comando (get-comandos) :test #'string=)
                (format t "as opções de ~a são: ~{~a ~} ~%"
