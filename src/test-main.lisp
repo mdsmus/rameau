@@ -1,5 +1,4 @@
 (in-package :rameau-main)
-(use-package :lisp-unit)
 
 (define-test item-singular
   (assert-equal "coral" (item-singular "corais")))

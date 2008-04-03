@@ -1,4 +1,4 @@
-(in-package :rameau
+(in-package :rameau)
 (use-package :lisp-unit)
 
 (define-test files-range

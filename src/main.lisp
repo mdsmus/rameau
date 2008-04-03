@@ -1,5 +1,5 @@
 (defpackage :rameau-main
-  (:use :rameau :cl :arnesi :cl-ppcre)
+  (:use :rameau :cl :arnesi :cl-ppcre :lisp-unit)
   (:export :main :check))
 
 (in-package :rameau-main)
@@ -661,6 +661,11 @@ ponto nos corais de bach."
       (format t "Todos corretos.~%")
       (format t "~a errados.~%" errados))))
 
+(defun run-testes (flags files item)
+  (if (string= item "unidade")
+      (run-unidade flags (processa-files item files))
+      (run-regressao flags (processa-files item files))))
+
 (defun pitch-list (list)
   (sort (remove-duplicates (mapcar #'evento-pitch list)) #'<))
 
@@ -753,23 +758,6 @@ ponto nos corais de bach."
     (print-check (check-for functions tests) "as seguintes funções estão sem testes")
     (print-check (check-for tests functions) "os seguintes testes estão orfãos")))
 
-(defmacro defcomando (nome dados flags files regexps &body body)
-  `(defun ,nome (,dados ,flags ,files ,regexps)
-     (declare (ignorable ,regexps))
-     (let* ((dados-list (get-item ',nome *dados*))
-            (comandos-lista (if (string= ,dados "all") dados-list (split-dados ,dados))))
-       (with-profile ,flags
-         (loop
-            for i in comandos-lista
-            for item = (first-string i dados-list) do
-              (if (member item dados-list :test #'string=)
-                  (progn
-                    ,@body)
-                  (progn
-                    (format t "~a não é um comando de ~(~a~).~%" item ',nome)
-                    (format t "comandos possíveis são: all ~{~a ~}~%" dados-list)
-                    )))))))
-
 (defmacro defcommand (nome fn &rest args)
   `(defun ,nome (dados flags files regexps)
      (declare (ignorable regexps))
@@ -789,11 +777,7 @@ ponto nos corais de bach."
              (,fn flags nil nil ,@args))))))
 
 
-(defcomando teste dados flags files regexps
-    (if (string= item "unidade")
-        (run-unidade flags (processa-files item files))
-        (run-regressao flags (processa-files item files))))
-
+(defcommand teste run-testes)
 (defcommand acertos run-gera-erros regexps nil)
 (defcommand analise run-compara-gabarito)
 (defcommand dados run-gera-dados)
