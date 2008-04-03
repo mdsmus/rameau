@@ -111,9 +111,6 @@
 
 (defclass voice (no-op-node) ())
 
-(defmethod copy ((obj ast-node))
-  (make-instance (type-of obj) :expr (copy (node-expr obj))))
-
 (defun parse-music-block (a block b)
   (declare (ignore a b))
   (make-instance 'music-block :expr block))
@@ -328,5 +325,41 @@
       (declare (special *filename*))
       (parse-string (file-string filename)))))
 
+
+(do-not-test
+        parse-music-block
+    parse-chord-dur
+    parse-simultaneous
+    parse-simult
+    parse-staff-block
+    parse-context-staff
+    parse-new-staff
+    parse-score-block
+    parse-context-score
+    parse-variable-block
+    parse-times-block
+    parse-voice-block
+    parse-voice-block-string
+    parse-repeat-block
+    cria-anacruz
+    parse-dur
+    parse-dur-ponto
+    parse-dur-multiplica
+    parse-include
+    parse-context-voice
+    parse-relative-block
+    parse-lilypond
+    parse-assignment
+    process-ast
+    process-trees
+    process-ast
+    process-ast
+    process-ast
+    process-ast
+    process-ast
+    process-ast
+    process-ast
+    parse-file
+)
 
 ;; (print (with-system tempered (parse-file "/home/top/programas/analise-harmonica/corais/001.ly")))

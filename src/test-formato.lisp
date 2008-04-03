@@ -107,3 +107,35 @@
      (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
      (make-evento :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)
      (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0)))))
+
+(define-test pitches
+  (assert-equal '(0 55 28 0) (pitches
+                              (list
+                               (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0)
+                               (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+                               (make-evento :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+                               (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0)))))
+
+
+(define-test calcula-duracoes
+  (assert-equal '(1/4) (calcula-duracoes
+                     (list (list
+                            (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0)
+                            (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+                            (make-evento :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+                            (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0))))))
+
+
+                     
+
+(define-test temperado
+  (assert-equalp (list (list
+                       (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0)
+                       (make-evento :PITCH 7 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+                       (make-evento :PITCH 4 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+                       (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0)))
+                (temperado (list (list
+                       (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0)
+                       (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+                       (make-evento :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+                       (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0))))))

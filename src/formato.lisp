@@ -52,19 +52,6 @@
 (defun calcula-duracoes (segmento)
   (mapcar (lambda (x) (evento-dur (first x))) segmento))
 
-(defmethod copy ((obj sequencia-de-notas))
-  (make-sequencia-de-notas :notas (copy (sequencia-de-notas-notas obj))
-                           :inicio (sequencia-de-notas-inicio obj)
-                           :dur (sequencia-de-notas-dur obj)))
-
-(defmethod copy ((obj evento))
-  (make-evento :pitch (evento-pitch obj)
-               :octave (evento-octave obj)
-               :dur (evento-dur obj)
-               :inicio (evento-inicio obj)
-               :key (evento-key obj)
-               :time-sig (evento-time-sig obj)))
-
 (defun cria-nota (nota &optional (octave "") dur articulation dur2) 
   (declare (ignore articulation))
   (let ((dur (if dur2 dur2 dur)))
@@ -90,7 +77,9 @@
 (defun movimenta-sequencia (seq tempo)
   (mapcar (lambda (x) (move-evento-no-tempo x tempo))
           seq))
-  
+
+(do-not-test move-evento-no-tempo movimenta-sequencia)
+
 (defun fim-evento (evento)
   (+ (evento-inicio evento) (evento-dur evento)))
 
@@ -189,6 +178,8 @@
                  :inicio (evento-inicio nota)
                  :key (evento-key nota)
                  :time-sig (evento-time-sig nota))))
+
+(do-not-test tempera)
 
 (defun temperado (segmentos)
   (mapcar (lambda (x) (mapcar #'tempera x)) segmentos))

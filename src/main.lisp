@@ -115,6 +115,8 @@
 (defun get-comandos ()
   (mapcar #'(lambda (item) (format nil "~(~a~)" (first item))) *dados*))
 
+(do-not-test report print-condition print-ok/no-list print-gab-columns print-res-alg maptrace)
+
 (defun parse-verbose (files)
   (dolist (file files)
     (handler-case (parse-file file)
@@ -785,6 +787,7 @@ ponto nos corais de bach."
                              (format t "~a não é um comando de ~(~a~).~%" item ',nome)
                              (format t "comandos possíveis são: all ~{~a ~}~%" dados-list)))))
              (,fn flags nil nil ,@args))))))
+
 
 (defcomando teste dados flags files regexps
     (if (string= item "unidade")

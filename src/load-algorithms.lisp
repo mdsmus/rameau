@@ -10,3 +10,4 @@
 
 (carrega-algoritmos)
 
+(do-not-test carrega-algoritmos)

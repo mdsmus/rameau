@@ -34,7 +34,6 @@
    #:compara-gabarito-modo-setima
    #:compara-gabarito-tonal
    #:compara-notas
-   #:current-git-branch
    #:do-not-test
    #:extrai-diff
    #:extrai-feature-list
@@ -102,3 +101,4 @@
                     collect i)))
     *algoritmos*))
 
+(do-not-test register-algorithm filtra-algoritmos)

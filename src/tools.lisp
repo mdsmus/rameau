@@ -59,6 +59,17 @@
 
 (read-user-config)
 
+(do-not-test
+    rameau-args
+  rameau-profile
+  rameau-report
+  rameau-quit
+  getenv
+  remove-comma-if-needed
+  unicode-term
+  read-user-config
+  )
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -99,6 +110,7 @@
     (when (cl-fad:file-exists-p nome-pop)
       (read-chords (read-file-as-sexp nome-pop)))))
 
+
 (defun processa-files (item f &optional (ext ".ly"))
   (let* ((path (concat *rameau-path* (get-item item *lily-dir-list*  #'equal)))
          (file-name (format nil "~a" (first f)))
@@ -111,6 +123,8 @@
                    (mapcar (lambda (file) (format nil "~a" file))
                            (directory (concat path "*" ext)))))))
 
+(do-not-test processa-gabarito processa-files)
+
 (defparameter *exemplos-de-treinamento*
   (nconc (loop for f in (processa-files "corais" '("001..6"))
             for g = (processa-gabarito f "corais")
@@ -120,13 +134,6 @@
             for g = (processa-gabarito f "exemplos")
             collect (list (segmentos-minimos (parse-file f)) g))))
 
-
-(defun current-git-branch ()
-  "Diz o branch atual no git, útil pra poder guardar redes separadas para branches separados."
-  (if (cl-fad:file-exists-p (concat *rameau-path* ".git/head-name"))
-      (let ((a (file-string (concat *rameau-path* ".git/head-name"))))
-        (subseq a 0 (1- (length a))))
-      ""))
 
 (defun extrai-feature-list (segmento diff)
   (let ((segmento (mapcar2 (lambda (x) (module (- x diff))) #'evento-pitch segmento))

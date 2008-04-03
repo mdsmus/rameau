@@ -19,3 +19,4 @@
 (defmacro do-not-test (&rest funcs)
   `(progn ,@(mapcar (lambda (x) `(push ',x *do-not-test*)) funcs)))
 
+(do-not-test export-rameau-symbols register-and-export-symbols)

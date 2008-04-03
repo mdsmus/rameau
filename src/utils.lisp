@@ -14,7 +14,6 @@
                                coloca-contexto
                                concat
                                converte-strings
-                               copy
                                count-subseq
                                defcached
                                destringify
@@ -25,16 +24,13 @@
                                insere
                                mapcar2
                                max-predicado
-                               no-op
                                octave-from-string
                                pula
                                rameau-debug
                                rameau-undebug
                                read-file-as-sexp
-                               repeat-copy
                                repeat-string
                                repeat-list
-                               retorna-n-segmentos
                                safe-retorna-n-elementos
                                smallest
                                split-word
@@ -138,7 +134,7 @@ como do resto da lista, é a posição, quanto menor, mais na frente"
 
 (defun sort-set (set)
   "Sort a set in crescent order. "
-  (sort set #'<))
+  (sorted set #'<))
 
 (defun pula (elemento lista)
   "Pula as ocorrências iniciais de elemento na lista"
@@ -224,11 +220,7 @@ quantos acidentes ou oitavas uma nota tem."
            (*package* (find-package :rameau)))
       (values data (read-sequence data s)))))
 
-(defun no-op (musica)
-  (mapcar #'lista-notas (segmentos-minimos musica)))
-
-(defun retorna-n-segmentos (musica n)
-  (subseq musica 0 n))
+(do-not-test file-string)
 
 (defun safe-retorna-n-elementos (lista n)
   (loop for i from 0 to (1- n) collect
@@ -238,21 +230,10 @@ quantos acidentes ou oitavas uma nota tem."
   (if (> n 0)
       (cons list (repeat-list (- n 1) list))))
 
-(defgeneric copy (obj)
-  (:documentation "Copia um objeto"))
-
-(defmethod copy ((obj list))
-  (mapcar #'copy obj))
-
-(defmethod copy (obj)
-  obj)
-
-(defun repeat-copy (n list)
-  (if (> n 0)
-      (cons (copy list) (repeat-copy (- n 1) list))))
-
 (defun read-file-as-sexp (file)
   (read-from-string (format nil "(~a)" (file-string file))))
+
+(do-not-test read-file-as-sexp)
 
 (defun unzip (lista)
   (let (lista1
@@ -288,7 +269,7 @@ Exemplo: (split-word \"foo\") => (F O O)"
 
 (defun mapcar2 (fn1 fn2 list)
   "Faz a mapcar do mapcar de uma lista"
-  (mapcar fn1 (mapcar fn2 list)))
+  (mapcar (lambda (x) (funcall fn1 (funcall fn2 x))) list))
 
 (defun insere (elemento lista)
   "Insere elemento em lista, na posição correta. O primeiro elemento de elemento, assim

@@ -70,8 +70,6 @@
   (lisp-unit:assert-equal 10 (octave-from-string "''"))
   )
 
-
-
 (define-test clip
   (assert-equal '(foo bar baz) (clip 8 '(foo bar baz 1 2 3)))
   (assert-equal '(foo baz baz) (clip 10 '(foo baz baz))))
@@ -79,3 +77,54 @@
 (define-test insere
   (assert-equal '((1 b) (2 c) (3 a) (4 e)) (insere '(3 a) '((1 b) (2 c) (4 e)))))
 
+(define-test smallest
+  (assert-equal 10 (smallest '(100 1000 10 20 30))))
+
+(define-test avanca-todos
+  (assert-equal '(nil (10) (10 100)) (avanca-todos '((a) (10 10) (1 10 100)))))
+
+
+(define-test converte-strings
+  (assert-equal '(foo bar baz) (converte-strings '("foo" "bar" "baz"))))
+
+(define-test safe-retorna-n-elementos
+  (assert-equal '(10 20 30) (safe-retorna-n-elementos '(10 20 30) 3))
+  (assert-equal '(10 nil nil) (safe-retorna-n-elementos '(10) 3)))
+
+(define-test repeat-list
+  (assert-equal '(10 10 10) (repeat-list 3 10))
+  (assert-equal '((10) (10) (10)) (repeat-list 3 '(10))))
+
+(define-test unzip
+  (assert-equal '(10 20 30 40) (unzip '((10 1) (20 2) (30 3) (40 4)))))
+
+(define-test get-item
+  (assert-equal 10 (get-item 1 '((1 10)))))
+
+(define-test char->symbol
+  (assert-equal 'a (char->symbol #\a)))
+
+(define-test split-word
+  (assert-equal '(f o o) (split-word "foo")))
+
+(define-test split-opts
+  (assert-equal '(f f o o b a r b z q) (split-opts "-f foo bar -b -z -q")))
+
+(define-test split-dados
+  (assert-equal '("a" " b c") (split-dados "a, b c")))
+
+(define-test sorted
+  (assert-equal '(1 2 3 4) (sorted '(4 3 2 1) #'<)))
+
+(define-test mapcar2
+  (assert-equal '("foo" "bar") (mapcar2 #'string-downcase #'stringify '(foo bar))))
+
+(define-test agrupa
+  (assert-equal '((a b c) (b c nil) (c nil nil)) (agrupa '(a b c) 3)))
+
+(define-test coloca-contexto
+  (assert-equal '((NIL A B C) (A B C D) (B C D E) (C D E NIL) (D E NIL NIL)) (coloca-contexto '(a b c d e) 1 2)))
+
+
+(define-test sort-set
+  (assert-equal '(1 2 3) (sort-set '(2 3 1))))
