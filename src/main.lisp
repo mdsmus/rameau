@@ -722,13 +722,16 @@ ponto nos corais de bach."
                          (mapcar (lambda (x) (regex-replace-all regexp-def x ""))
                                  (all-matches-as-strings regexp (string-upcase (file-string s))))))))))
 
+(defun string-member (item list)
+  (member (stringify item) list :test #'equal :key #'stringify))
+
 (defun check-for (a b)
   (loop
      for (key list) in a
      collect
        (list key
-             (remove-if (lambda (item) (or (member item *do-not-test* :test #'equal :key #'stringify)
-                                           (member item (second (assoc key b)) :test #'equal :key #'stringify)))
+             (remove-if (lambda (item) (or (string-member item *do-not-test*)
+                                           (string-member item (second (assoc key b)))))
                         list))))
 
 (defun print-check (alist text)
