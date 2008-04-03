@@ -356,7 +356,7 @@ returns (((0 3 7) 7 3) ((3 7 0) 9 4) ((7 0 3) 8 5))."
 
 (defun sort-form-list (set)
   "Sort a form-list by the overall interval of the set."
-  (sort set #'< :key #'cadr))
+  (sorted set #'< :key #'cadr))
   
 (defun smaller-sets (sorted-list)
   "Retuns a new form-list with the smaller rotations."
@@ -366,7 +366,7 @@ returns (((0 3 7) 7 3) ((3 7 0) 9 4) ((7 0 3) 8 5))."
   "Sort a form-list of smaller rotations, sort it by the inverval of
 the first and second notes, and returns the smallest set of all. This
 is a low level function. You should use smallest-set instead."
-  (caar (sort smaller-sets #'< :key #'caddr)))
+  (caar (sorted smaller-sets #'< :key #'caddr)))
 
 (defun smallest-set (smaller-sets)
   "If the form-list only has one option, returns the set inside it.

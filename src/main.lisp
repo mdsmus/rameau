@@ -667,7 +667,9 @@ ponto nos corais de bach."
       (run-regressao flags (processa-files item files))))
 
 (defun pitch-list (list)
-  (sort (remove-duplicates (mapcar #'evento-pitch list)) #'<))
+  (sorted (remove-duplicates (mapcar #'evento-pitch list)) #'<))
+
+(do-not-test pitch-list)
 
 (defun run-enarmonia (flags files item)
   (declare (ignore flags))
@@ -748,7 +750,7 @@ ponto nos corais de bach."
          (format t "* ~(~a.lisp~) [~a]~%" key (length list))
          (format t "~{~(    ~a~%~)~}~%" list))))
 
-(do-not-test print-check check-for)
+(do-not-test print-check check-for get-functions remove-tests)
 
 (defun run-check (&rest ignore)
   (declare (ignore ignore))

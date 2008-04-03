@@ -265,8 +265,8 @@ Exemplo: (split-word \"foo\") => (F O O)"
 (defun split-dados (dados)
   (cl-ppcre:split "," dados))
 
-(defun sorted (lista key)
-  (sort (copy-list lista) key))
+(defun sorted (lista ord &key (key #'identity))
+  (sort (copy-list lista) ord :key key))
 
 (defun mapcar2 (fn1 fn2 list)
   "Faz a mapcar do mapcar de uma lista"
