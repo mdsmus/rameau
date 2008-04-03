@@ -102,6 +102,7 @@ como do resto da lista, é a posição, quanto menor, mais na frente"
                       nill
                       (set-difference *dbg-ids* ids))))
 
+(do-not-test dbg rameau-debug rameau-undebug dbg-indent)
 
 (defun add-lily-ext (file)
   (if (tem-ext? file) file (concat file ".ly")))

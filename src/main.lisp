@@ -727,7 +727,9 @@ ponto nos corais de bach."
      for (key list) in a
      collect
        (list key
-             (remove-if (lambda (item) (member item (second (assoc key b)))) list))))
+             (remove-if (lambda (item) (or (member item *do-not-test* :test #'equal :key #'stringify)
+                                           (member item (second (assoc key b)) :test #'equal :key #'stringify)))
+                        list))))
 
 (defun print-check (alist text)
   (format t "~%~a:~%~%" text)

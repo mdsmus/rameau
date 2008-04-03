@@ -18,6 +18,7 @@
    #:*exemplos-de-treinamento*
    #:*lily-dir-list*
    #:*gabarito-dir-list*
+   #:*do-not-test*
    #:algoritmo-compara
    #:algoritmo-nome
    #:algoritmo-processa
@@ -34,6 +35,7 @@
    #:compara-gabarito-tonal
    #:compara-notas
    #:current-git-branch
+   #:do-not-test
    #:extrai-diff
    #:extrai-feature-list
    #:filtra-algoritmos
