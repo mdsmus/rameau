@@ -687,17 +687,17 @@ ponto nos corais de bach."
 	 for dim = (find 'dim list :key #'second) do
 	   (when aug
 	     (when (and (/= (first aug) 4)
-			(not (equal (sort list #'< :key #'first)
+			(not (equal (sorted list #'< :key #'first)
 				    '((2 AUG) (3 MIN) (3 MIN) (3 MIN))))
-			(not (equal (sort list #'< :key #'first)
+			(not (equal (sorted list #'< :key #'first)
 				    '((2 AUG) (3 MIN) (5 DIM))))
-			(not (equal (sort list #'< :key #'first)
+			(not (equal (sorted list #'< :key #'first)
 				    '((3 MIN) (5 DIM)))))
 	       (format t "~4a ~4a: ~{~(~a ~)~} ~13a~%"
 		       (pathname-name file) n aug (lista-notas s))))
 	   (when dim
 	     (when (and (/= (first dim) 5)
-			(not (equal (sort list #'< :key #'first)
+			(not (equal (sorted list #'< :key #'first)
 				    '((3 MAJ) (3 MAJ) (4 DIM)))))
 	       (format t "~4a ~4a: ~{~(~a ~)~} ~13a~%"
 		       (pathname-name file) n dim (lista-notas s))))
