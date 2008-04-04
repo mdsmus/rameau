@@ -35,7 +35,7 @@
 (defun processa-acorde (acorde diff)
   (cond ((chordp acorde)
          (list 'chord
-               (- (note->code (chord-fundamental acorde)) diff)
+               (- (parse-note (chord-fundamental acorde)) diff)
                (chord-mode acorde)
                (chord-7th acorde)))
         ((melodic-note-p acorde)

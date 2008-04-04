@@ -99,8 +99,8 @@
 (defun %chord-interval-code (fundamental bass)
   "Retorna o interval-code do intervalo entre o bass e a fundamental
 do acorde. Expects fundamental and bass to be a string."
-  (interval->code (interval (note->code bass)
-                            (note->code fundamental))))
+  (interval->code (interval (parse-note bass)
+                            (parse-note fundamental))))
 
 (defun return-inversion (fundamental bass)
   "Return the inversion number of the chord with fundamental and bass (both
@@ -148,7 +148,7 @@ position."
       (make-chord :fundamental (string->symbol
                                 (print-note (code->notename
                                              (+ n
-                                                (note->code
+                                                (parse-note
                                                  (chord-fundamental c))))
                                         'latin))
                   :bass (chord-bass c)
@@ -169,8 +169,8 @@ position."
 (defun compara-gabarito-fundamental-individual (resultado gabarito)
   (with-system rameau:tempered
     (if (and (chordp resultado) (chordp gabarito))
-        (equal (note->code (chord-fundamental resultado))
-               (note->code (chord-fundamental gabarito)))
+        (equal (parse-note (chord-fundamental resultado))
+               (parse-note (chord-fundamental gabarito)))
         (equal (type-of resultado) (type-of gabarito)))))
 
 (defun compara-gabarito-fundamental (resultado gabarito)

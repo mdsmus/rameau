@@ -73,7 +73,7 @@
 
 (defun root-weight (res)
   (let* ((root-note (stringify (nota-pardo-root res)))
-         (weight (assoc-item (note->code root-note)
+         (weight (assoc-item (parse-note root-note)
                              (nota-pardo-segmento res))))
     (or weight 0)))
 
@@ -93,7 +93,7 @@
 (defun dim7-res (segmento proximo)
   (let* ((proxima-tonica (nota-pardo-root proximo))
          (cod (module
-               (+ (note->code (stringify proxima-tonica))
+               (+ (parse-note (stringify proxima-tonica))
                   (code->interval '(7 maj)))))
          (nota (print-note (code->notename cod) 'latin)))
     (or (find-if

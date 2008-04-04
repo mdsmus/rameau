@@ -27,7 +27,7 @@
 (defun cria-pattern-saida (gabarito diff)
   (let ((atual (make-list (+ *root-increment* (get-module)) :initial-element 0)))
     (cond ((chordp gabarito)
-           (incf (nth (module (- (note->code (stringify (chord-fundamental gabarito))) diff)) atual)))
+           (incf (nth (module (- (parse-note (stringify (chord-fundamental gabarito))) diff)) atual)))
           ((melodic-note-p gabarito)
            (incf (nth (get-module) atual)))
           ((equal 'it (augmented-sixth-type gabarito))

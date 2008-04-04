@@ -15,7 +15,7 @@
                                number-of-accidentals
                                match-note-representation
                                sort-form-list tempered tonal
-                               get-system-notes get-notes code->notename note->code
+                               get-system-notes get-notes code->notename parse-note
                                notename->code
                                compara-notes-tempered
                                get-module
@@ -168,6 +168,23 @@ Exemplo: (get-interval-name 'dim) retorna diminished."
 acorde. EXEMPLO: (get-interval-quantity 3) retorna TRIPLE."
   (assoc-item num *intervals-quantity*))
 
+(do-not-test
+    get-system-item
+    get-system-notes
+    get-notes
+    get-system-module
+    get-module
+    get-system-intervals
+    get-accidentals
+    %get-accidental
+    get-sharp
+    get-flat
+    get-interval-name
+    get-interval-quantity
+    my-position
+    %parse-note
+    %note->code
+    )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun code->notename (number)
@@ -192,7 +209,7 @@ EXAMPLE: (match-note-representation \"cis\" 'latin) returns nil."
 (defun %parse-note (note representation system)
   "Returns the numeric code for a note according with the representation and system.
 EXAMPLE: (%parse-note \"ces\" 'lily 'tonal) returns 95. This is a low
-level function, you should use note->code instead."
+level function, you should use parse-note instead."
   (let ((note-code-tonal
          (my-position (list (string->symbol (subseq note 0 1))
                             (number-of-accidentals (subseq note 1) representation))
@@ -226,7 +243,7 @@ retorna 14."
   "Testa se uma string pode representar um silêncio"
   (cl-ppcre:scan "^[sSRr]$" string))
 
-(defun note->code (note)
+(defun parse-note (note)
   "Retorna o código numérico da nota, dada sua representação em
 string. Essa função é inteligente o suficiente para saber que 'aes'
 usa a representação do lilypond e 'd#' usa a representação 'latin'."
@@ -243,7 +260,7 @@ usa a representação do lilypond e 'd#' usa a representação 'latin'."
 
 (defun compara-notes-tempered (notea noteb)
   (with-system tempered
-    (equal (note->code notea) (note->code noteb))))
+    (equal (parse-note notea) (parse-note noteb))))
 
 (defun print-accidentals (acc repr)
   "Return a string of a note according to the numeric value of an
@@ -259,12 +276,12 @@ Example: (print-note '(c 1) 'lily) return cis."
 (defun latin->lily (nota)
   "Aceita uma string com o nome da nota em latin e retorna a
 representação do lilypond. Exemplo: (latin->lily \"Eb\") => \"ees\""
-  (print-note (code->notename (note->code (stringify nota))) 'lily))
+  (print-note (code->notename (parse-note (stringify nota))) 'lily))
 
 (defun lily->latin (nota)
   "Aceita uma string com o nome da nota em lily e retorna a
 representação em latin. Exemplo: (lily->latin \"cis\") => \"C#\""
-  (print-note (code->notename (note->code nota)) 'latin))
+  (print-note (code->notename (parse-note nota)) 'latin))
 
 (defun module (n)
   "Returns the module according to a system.

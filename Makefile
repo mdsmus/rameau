@@ -38,6 +38,9 @@ resultados: rameau clean-resultados
 clean-erros:
 	rm -f erros/*
 
+check: rameau
+	./rameau check all
+
 erros: rameau clean-erros
 	./rameau erros c > erros/rameau
 	python tools/formata-tipos.py erros/rameau erros/

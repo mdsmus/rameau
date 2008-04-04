@@ -37,14 +37,14 @@
     (assert-equal 1 (match-note-representation "c#" 'latin))
     (assert-equal 1 (match-note-representation "cis" 'lily)))
 
-(define-test note->code
-  (assert-equal 0 (note->code "c"))
-  (assert-equal 13 (note->code "des"))
-  (assert-equal 14 (note->code "d"))
-  (assert-equal 1  (note->code "cis"))
-  (assert-equal 1 (with-system tempered (note->code "db")))
-  (assert-equal 2 (with-system tempered (note->code "c##")))
-  (assert-equal 1 (with-system tempered (note->code "c#"))))
+(define-test parse-note
+  (assert-equal 0 (parse-note "c"))
+  (assert-equal 13 (parse-note "des"))
+  (assert-equal 14 (parse-note "d"))
+  (assert-equal 1  (parse-note "cis"))
+  (assert-equal 1 (with-system tempered (parse-note "db")))
+  (assert-equal 2 (with-system tempered (parse-note "c##")))
+  (assert-equal 1 (with-system tempered (parse-note "c#"))))
 
 (define-test print-accidentals
   (assert-equal "isisis" (print-accidentals 3 'lily))
@@ -184,3 +184,6 @@
 
 (define-test notename->code
   (assert-equal (code->notename 10) (notename->code '(D -4))))
+
+(define-test compara-notes-tempered
+  (assert-true  (compara-notes-tempered  "a#" "bb")))

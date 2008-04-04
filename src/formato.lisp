@@ -57,7 +57,7 @@
   (let ((dur (if dur2 dur2 dur)))
     (make-sequencia-de-notas
      :notas (list
-             (make-evento :pitch (note->code nota)
+             (make-evento :pitch (parse-note nota)
                           :octave (octave-from-string octave)
                           :dur dur
                           :inicio 0

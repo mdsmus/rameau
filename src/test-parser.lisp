@@ -3,23 +3,23 @@
 (lisp-unit:define-test parse-string
   (lisp-unit:assert-equalp
    (list
-    (make-evento :PITCH 0 :OCTAVE 8 :DUR 1/4 :INICIO 0)
-    (make-evento :PITCH 0 :OCTAVE 8 :DUR 1/4 :INICIO 0)
-    (make-evento :PITCH 14 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)
-    (make-evento :PITCH 14 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)
-    (make-evento :PITCH 28 :OCTAVE 8 :DUR 1/4 :INICIO 1/2)
-    (make-evento :PITCH 28 :OCTAVE 8 :DUR 1/4 :INICIO 1/2)
-    (make-evento :PITCH 41 :OCTAVE 8 :DUR 1/4 :INICIO 3/4)
-    (make-evento :PITCH 41 :OCTAVE 8 :DUR 1/4 :INICIO 3/4))
+    (make-evento :key nil :time-sig nil :PITCH 0 :OCTAVE 8 :DUR 1/4 :INICIO 0)
+    (make-evento :key nil :time-sig nil :PITCH 0 :OCTAVE 8 :DUR 1/4 :INICIO 0)
+    (make-evento :key nil :time-sig nil :PITCH 14 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)
+    (make-evento :key nil :time-sig nil :PITCH 14 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)
+    (make-evento :key nil :time-sig nil :PITCH 28 :OCTAVE 8 :DUR 1/4 :INICIO 1/2)
+    (make-evento :key nil :time-sig nil :PITCH 28 :OCTAVE 8 :DUR 1/4 :INICIO 1/2)
+    (make-evento :key nil :time-sig nil :PITCH 41 :OCTAVE 8 :DUR 1/4 :INICIO 3/4)
+    (make-evento :key nil :time-sig nil :PITCH 41 :OCTAVE 8 :DUR 1/4 :INICIO 3/4))
    (parse-string "\\score { <<
 \\new Staff { c d e f }
 \\new Staff { c d e f }
 >> }"))
   (lisp-unit:assert-equalp
    (list
-    (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-    (make-evento :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-    (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0))
+    (make-evento :key nil :time-sig nil :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+    (make-evento :key nil :time-sig nil :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+    (make-evento :key nil :time-sig nil :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0))
    (parse-string "<<
   \\new Staff \\relative c'' {
     g
@@ -33,9 +33,9 @@
 >>"))
   (lisp-unit:assert-equalp
    (list
-    (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-    (make-evento :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-    (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0))
+    (make-evento :key nil :time-sig nil :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+    (make-evento :key nil :time-sig nil :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+    (make-evento :key nil :time-sig nil :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0))
    (parse-string
     "<<
   \\new Staff <<
@@ -87,36 +87,36 @@
     }
   >>
 }")
-   (list (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0)
-         (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-         (make-evento :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-         (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-         (make-evento :PITCH 83 :OCTAVE 9 :DUR 1/4 :INICIO 1/4)
-         (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 1/4)
-         (make-evento :PITCH 14 :OCTAVE 9 :DUR 1/4 :INICIO 1/4)
-         (make-evento :PITCH 55 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)
-         (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 1/2)
-         (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 1/2)
-         (make-evento :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 1/2)
-         (make-evento :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 1/2)))
+   (list (make-evento :key nil :time-sig nil :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0)
+         (make-evento :key nil :time-sig nil :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+         (make-evento :key nil :time-sig nil :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+         (make-evento :key nil :time-sig nil :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0)
+         (make-evento :key nil :time-sig nil :PITCH 83 :OCTAVE 9 :DUR 1/4 :INICIO 1/4)
+         (make-evento :key nil :time-sig nil :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 1/4)
+         (make-evento :key nil :time-sig nil :PITCH 14 :OCTAVE 9 :DUR 1/4 :INICIO 1/4)
+         (make-evento :key nil :time-sig nil :PITCH 55 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)
+         (make-evento :key nil :time-sig nil :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 1/2)
+         (make-evento :key nil :time-sig nil :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 1/2)
+         (make-evento :key nil :time-sig nil :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 1/2)
+         (make-evento :key nil :time-sig nil :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 1/2)))
   (lisp-unit:assert-equalp
    (parse-string "{ foo = { c d e} \\foo }")
    (list
-    (make-evento :PITCH 0 :OCTAVE 8 :DUR 1/4 :INICIO 0)
-    (make-evento :PITCH 14 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)
-    (make-evento :PITCH 28 :OCTAVE 8 :DUR 1/4 :INICIO 1/2)))
+    (make-evento :key nil :time-sig nil :PITCH 0 :OCTAVE 8 :DUR 1/4 :INICIO 0)
+    (make-evento :key nil :time-sig nil :PITCH 14 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)
+    (make-evento :key nil :time-sig nil :PITCH 28 :OCTAVE 8 :DUR 1/4 :INICIO 1/2)))
   (lisp-unit:assert-equalp
    (parse-string "{ foo = { c } \\foo foo = { d } \\foo }")
    (list
-    (make-evento :PITCH 0 :OCTAVE 8 :DUR 1/4 :INICIO 0)
-    (make-evento :PITCH 14 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)))
+    (make-evento :key nil :time-sig nil :PITCH 0 :OCTAVE 8 :DUR 1/4 :INICIO 0)
+    (make-evento :key nil :time-sig nil :PITCH 14 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)))
   )
 
 
 (lisp-unit:define-test acerta-times
   (lisp-unit:assert-equal
-   (evento-dur (make-evento :PITCH 0 :OCTAVE 8 :DUR 9/2 :INICIO 0))
-   (let ((nota (make-evento :PITCH 0 :OCTAVE 8 :DUR 3 :INICIO 0)))
+   (evento-dur (make-evento :key nil :time-sig nil :PITCH 0 :OCTAVE 8 :DUR 9/2 :INICIO 0))
+   (let ((nota (make-evento :key nil :time-sig nil :PITCH 0 :OCTAVE 8 :DUR 3 :INICIO 0)))
      (acerta-times 3/2 nota)
      (evento-dur nota))))
 
@@ -125,23 +125,23 @@
    '(4 4 4 8 8)
    (let ((notas
           (list
-           (make-evento :pitch 1
+           (make-evento :key nil :time-sig nil :pitch 1
                         :octave 1
                         :inicio 0
                         :dur 4)
-           (make-evento :pitch 2
+           (make-evento :key nil :time-sig nil :pitch 2
                         :octave 1
                         :inicio 0
                         :dur nil)
-           (make-evento :pitch 3
+           (make-evento :key nil :time-sig nil :pitch 3
                         :octave 1
                         :inicio 0
                         :dur nil)
-           (make-evento :pitch 3
+           (make-evento :key nil :time-sig nil :pitch 3
                         :octave 1
                         :inicio 0
                         :dur 8)
-           (make-evento :pitch 4
+           (make-evento :key nil :time-sig nil :pitch 4
                         :octave 1
                         :inicio 0
                         :dur nil))))
