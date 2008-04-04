@@ -34,11 +34,11 @@
 (define-test remove-ext
   (assert-equal "foo" (remove-ext "foo.ext")))
 
-(define-test troca-extensao
-  (assert-equal "foo.ly" (troca-extensao "foo.ext" ".ly")))
+(define-test change-ext
+  (assert-equal "foo.ly" (change-ext "foo.ext" ".ly")))
 
-(define-test pula
-  (assert-equal '(2 3 4 1 2) (pula 1 '(1 1 1 1 2 3 4 1 2))))
+(define-test skip
+  (assert-equal '(2 3 4 1 2) (skip 1 '(1 1 1 1 2 3 4 1 2))))
 
 (define-test stringify
   (assert-equal "mel" (stringify :mel))

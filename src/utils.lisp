@@ -11,6 +11,7 @@
                                avanca-todos
                                clip
                                char->symbol
+                               change-ext
                                coloca-contexto
                                concat
                                converte-strings
@@ -25,13 +26,13 @@
                                mapcar2
                                max-predicado
                                octave-from-string
-                               pula
                                rameau-debug
                                rameau-undebug
                                read-file-as-sexp
                                repeat-string
                                repeat-list
                                safe-retorna-n-elementos
+                               skip
                                smallest
                                split-word
                                split-opts
@@ -44,7 +45,6 @@
                                symbol->number
                                has-ext?
                                remove-ext
-                               troca-extensao
                                unzip
                                ))
 
@@ -116,10 +116,12 @@
   "Heuristic for removing a file's extension."
   (subseq file 0 (position #\. file)))
 
-(defun troca-extensao (file ext)
+(defun change-ext (file ext)
+  "Heuristic for changing a filename \texttt{file}'s extension to \texttt{ext}."
   (if (has-ext? file) (concat (remove-ext file) ext) file))
 
 (defmacro defcached (funcname args &body body)
+  "Defines \texttt{funcname} just as defun, but with a cache around it."
   (labels ((varnames (symbols)
              (cons 'list
                    (loop for s in symbols unless (and (symbolp s)
@@ -133,18 +135,18 @@
                 (setf (gethash ,(varnames args) ,cache) (progn ,@body))))))))
 
 (defun concat (&rest strings)
-  "Concatenate a bunch of strings."
+  "Concatenate strings \texttt{strings}."
   (apply #'concatenate 'string strings))
 
 (defun sort-set (set)
   "Sort a set in crescent order. "
   (sorted set #'<))
 
-(defun pula (elemento lista)
-  "Pula as ocorrências iniciais de elemento na lista"
-  (if (equal elemento (first lista))
-      (pula elemento (rest lista))
-      lista))
+(defun skip (element list &key (test #'equal))
+  "Skip every initial occurence of \texttt{element} in \textt{list}."
+  (if (funcall test element (first list))
+      (skip element (rest list) :test test)
+      list))
 
 (defun count-subseq (sub seq &optional (start -1) (acumula 0))
   (let ((s (search sub seq :start2 (+ start 1))))

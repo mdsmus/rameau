@@ -460,7 +460,7 @@ ponto nos corais de bach."
            (segmentos (segmentos-minimos musica))
            (resultados (loop for a in *algoritmos* collect
                             (funcall (algoritmo-processa a) segmentos)))
-           (gabarito (processa-gabarito (tira-extensao file) item))
+           (gabarito (processa-gabarito (remove-ext file) item))
            (file-name (pathname-name file))
            (notas (mapcar #'lista-notas segmentos))
            (duracoes (calcula-duracoes segmentos)))
@@ -485,7 +485,7 @@ ponto nos corais de bach."
     (dolist (file files)
       (let* ((musica (parse-file file))
              (segmentos (segmentos-minimos musica))
-             (gabarito (processa-gabarito (tira-extensao file) item))
+             (gabarito (processa-gabarito (remove-ext file) item))
              (resultados (when gabarito
                            (loop for a in *algoritmos* collect
                                 (funcall (algoritmo-processa a) segmentos))))
@@ -526,7 +526,7 @@ ponto nos corais de bach."
   (dolist (file files)
     (let* ((musica (parse-file file))
            (segmentos (segmentos-minimos musica))
-           (gabarito (processa-gabarito (tira-extensao file) item))
+           (gabarito (processa-gabarito (remove-ext file) item))
            (resultados (when gabarito
                          (loop for a in *algoritmos* collect
                               (funcall (algoritmo-processa a) segmentos))))
@@ -552,7 +552,7 @@ ponto nos corais de bach."
   (dolist (file files)
     (let* ((musica (parse-file file))
            (segmentos (segmentos-minimos musica))
-           (gabarito (processa-gabarito (tira-extensao file) item))
+           (gabarito (processa-gabarito (remove-ext file) item))
            (resultados (when gabarito
                          (loop for a in *algoritmos* collect
                               (funcall (algoritmo-processa a) segmentos))))
@@ -579,12 +579,12 @@ ponto nos corais de bach."
     (dolist (file files)
       (let* ((musica (parse-file file))
              (segmentos (segmentos-minimos musica))
-             (gabarito (processa-gabarito (tira-extensao file) item))
+             (gabarito (processa-gabarito (remove-ext file) item))
              (size-gab (length gabarito))
              (size-seg (length segmentos)))
         (unless (or (= size-gab 0) (= size-gab size-seg))
           (format t " ~a errado (gabarito: ~a, mas ~a segmentos)~%"
-                  (tira-extensao file)
+                  (remove-ext file)
                   size-gab
                   size-seg)
           (incf errados))))
@@ -638,7 +638,7 @@ ponto nos corais de bach."
   (when (member 'v flags) (format t "gerando "))
   (dolist (file files)
     (when (member 'v flags) (format t "~a " (pathname-name file)))
-    (let* ((gabarito (processa-gabarito (tira-extensao file) item))
+    (let* ((gabarito (processa-gabarito (remove-ext file) item))
            (segmento (segmentos-minimos (parse-file file)))
            (resultados (loop for a in *algoritmos* collect
                             (funcall (algoritmo-processa a) segmento))))
