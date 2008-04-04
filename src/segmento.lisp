@@ -79,5 +79,5 @@
 (defun segmentos-minimos (musica)
   (redivide-segmentos (agrupa-inicio musica)))
 
-(do-not-test agrupa-por agrupa-inicio redivide-segmentos)
+(do-not-test agrupa-por agrupa-inicio redivide-segmentos normaliza-notas)
 

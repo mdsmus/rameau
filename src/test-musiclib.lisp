@@ -183,7 +183,7 @@
   (assert-true (rest? "R")))
 
 (define-test notename->code
-  (assert-equal (code->notename 10) (notename->code '(D -4))))
+  (assert-equal 10 (notename->code (code->notename 10))))
 
 (define-test compara-notes-tempered
   (assert-true  (compara-notes-tempered  "a#" "bb")))

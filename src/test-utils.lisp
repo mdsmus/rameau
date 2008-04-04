@@ -71,7 +71,7 @@
   )
 
 (define-test clip
-  (assert-equal '(foo bar baz) (clip 8 '(foo bar baz 1 2 3)))
+  (assert-equal '(foo bar baz) (clip 3 '(foo bar baz 1 2 3)))
   (assert-equal '(foo baz baz) (clip 10 '(foo baz baz))))
 
 (define-test insere
