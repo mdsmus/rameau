@@ -31,50 +31,6 @@
                                smallest-set normal-form prime-form
                                set-equal? deftemplates tempered tonal))
 
-(defconstant +tonal-system+
-  '((c 0)  (c 1)  (c 2)  (c 3)  (c 4)  (c 5)  (c 6)
-    (d -7) (d -6) (d -5) (d -4) (d -3) (d -2) (d -1)
-    (d 0)  (d 1)  (d 2)  (d 3)  (d 4)  (d 5)  (d 6)
-    (e -7) (e -6) (e -5) (e -4) (e -3) (e -2) (e -1)
-    (e 0)  (e 1)  (e 2)  (e 3)  (e 4)  (e 5)  (e 6)
-    (f -6) (f -5) (f -4) (f -3) (f -2) (f -1)
-    (f 0)  (f 1)  (f 2)  (f 3)  (f 4)  (f 5)  (f 6) (f 7)
-    (g -6) (g -5) (g -4) (g -3) (g -2) (g -1)
-    (g 0)  (g 1)  (g 2)  (g 3)  (g 4)  (g 5)  (g 6)
-    (a -7) (a -6) (a -5) (a -4) (a -3) (a -2) (a -1)
-    (a 0)  (a 1)  (a 2)  (a 3)  (a 4)  (a 5)  (a 7)
-    (b -7) (b -6) (b -5) (b -4) (b -3) (b -2) (b -1)
-    (b 0)  (b 1)  (b 2)  (b 3)  (b 4)  (b 5)  (b 7)
-    (c -6) (c -5) (c -4) (c -3) (c -2) (c -1))
-  "A table with note-codes for every note in Jamary's table (p. 18).")
-
-(defconstant +tonal-intervals+
-  '((1 just) (1 aug) (1 aug 2) (1 aug 3) (1 aug 4) (1 aug 5) (1 aug 6)
-    (2 dim 6) (2 dim 5) (2 dim 4) (2 dim 3) (2 dim 2) (2 dim) (2 min) (2 maj) (2 aug)
-    (2 aug 2) (2 aug 3) (2 aug 4) (2 aug 5) (2 aug 6) 
-    (3 dim 6) (3 dim 5) (3 dim 4) (3 dim 3) (3 dim 2) (3 dim)
-    (3 min) (3 maj) (3 aug) (3 aug 2) (3 aug 3) (3 aug 4) (3 aug 5) (3 aug 6)
-    (4 dim 6) (4 dim 5) (4 dim 4) (4 dim 3) (4 dim 2) (4 dim)
-    (4 just) (4 aug) (4 aug 2) (4 aug 3) (4 aug 4) (4 aug 5) (4 aug 6) (4 aug 7)
-    (5 dim 6) (5 dim 5) (5 dim 4) (5 dim 3) (5 dim 2) (5 dim)
-    (5 just) (5 aug) (5 aug 2) (5 aug 3) (5 aug 4) (5 aug 5) (5 aug 6)
-    (6 dim 6) (6 dim 5) (6 dim 4) (6 dim 3) (6 dim 2) (6 dim)
-    (6 min) (6 maj) (6 aug) (6 aug 2) (6 aug 3) (6 aug 4) (6 aug 5) (6 aug 6)
-    (7 dim 6) (7 dim 5) (7 dim 4) (7 dim 3) (7 dim 2) (7 dim)
-    (7 min) (7 maj) (7 aug) (7 aug 2) (7 aug 3) (7 aug 4) (7 aug 5) (7 aug 6)
-    (8 dim 6) (8 dim 5) (8 dim 4) (8 dim 3) (8 dim 2) (8 dim) (8 just))
-  "A table with the code for tonal intervals according to Jamary (p.
-  21). The format is (inverval kind quantity). For instance, (3 min)
-  represents a minor third; (3 dim 2) represents double-diminished
-  third. Quantity is optional when equal to 1.")
-
-(defconstant +tempered-intervals+
-  '((1 just) (2 min) (2 maj) (3 min) (3 maj) (4 just)
-    (5 dim) (5 just) (6 min) (6 maj) (7 min) (7 maj) (8 just)))
-
-(defconstant +tempered-system+ '((c 0) (c 1) (d 0) (d 1) (e 0) (f 0)
-                                 (f 1) (g 0) (g 1) (a 0) (a 1) (b 0)))
-
 (defvar *system* 'tonal)
 
 (defmacro with-system (system &body body)
@@ -87,19 +43,60 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun get-system-item (item)
-  "Get the value list from *systems*."
-  (assoc-item item '((tonal (+tonal-system+ 96 +tonal-intervals+))
-                     (tempered (+tempered-system+ 12 +tempered-intervals+)))))
+  "Get the value list from each system. tonal-system is a table with
+note-codes for every note in Jamary's table (p. 18). Tonal-intervals
+is a table with the code for tonal intervals according to Jamary (p.
+21). The format is (inverval kind quantity). For instance, (3 min)
+represents a minor third; (3 dim 2) represents double-diminished
+third. Quantity is optional when equal to 1."
+  (let ((tonal-system
+         '((c 0)  (c 1)  (c 2)  (c 3)  (c 4)  (c 5)  (c 6)
+           (d -7) (d -6) (d -5) (d -4) (d -3) (d -2) (d -1)
+           (d 0)  (d 1)  (d 2)  (d 3)  (d 4)  (d 5)  (d 6)
+           (e -7) (e -6) (e -5) (e -4) (e -3) (e -2) (e -1)
+           (e 0)  (e 1)  (e 2)  (e 3)  (e 4)  (e 5)  (e 6)
+           (f -6) (f -5) (f -4) (f -3) (f -2) (f -1)
+           (f 0)  (f 1)  (f 2)  (f 3)  (f 4)  (f 5)  (f 6) (f 7)
+           (g -6) (g -5) (g -4) (g -3) (g -2) (g -1)
+           (g 0)  (g 1)  (g 2)  (g 3)  (g 4)  (g 5)  (g 6)
+           (a -7) (a -6) (a -5) (a -4) (a -3) (a -2) (a -1)
+           (a 0)  (a 1)  (a 2)  (a 3)  (a 4)  (a 5)  (a 7)
+           (b -7) (b -6) (b -5) (b -4) (b -3) (b -2) (b -1)
+           (b 0)  (b 1)  (b 2)  (b 3)  (b 4)  (b 5)  (b 7)
+           (c -6) (c -5) (c -4) (c -3) (c -2) (c -1)))
+        (tonal-intervals
+         '((1 just) (1 aug) (1 aug 2) (1 aug 3) (1 aug 4) (1 aug 5) (1 aug 6)
+           (2 dim 6) (2 dim 5) (2 dim 4) (2 dim 3) (2 dim 2) (2 dim) (2 min) (2 maj) (2 aug)
+           (2 aug 2) (2 aug 3) (2 aug 4) (2 aug 5) (2 aug 6) 
+           (3 dim 6) (3 dim 5) (3 dim 4) (3 dim 3) (3 dim 2) (3 dim)
+           (3 min) (3 maj) (3 aug) (3 aug 2) (3 aug 3) (3 aug 4) (3 aug 5) (3 aug 6)
+           (4 dim 6) (4 dim 5) (4 dim 4) (4 dim 3) (4 dim 2) (4 dim)
+           (4 just) (4 aug) (4 aug 2) (4 aug 3) (4 aug 4) (4 aug 5) (4 aug 6) (4 aug 7)
+           (5 dim 6) (5 dim 5) (5 dim 4) (5 dim 3) (5 dim 2) (5 dim)
+           (5 just) (5 aug) (5 aug 2) (5 aug 3) (5 aug 4) (5 aug 5) (5 aug 6)
+           (6 dim 6) (6 dim 5) (6 dim 4) (6 dim 3) (6 dim 2) (6 dim)
+           (6 min) (6 maj) (6 aug) (6 aug 2) (6 aug 3) (6 aug 4) (6 aug 5) (6 aug 6)
+           (7 dim 6) (7 dim 5) (7 dim 4) (7 dim 3) (7 dim 2) (7 dim)
+           (7 min) (7 maj) (7 aug) (7 aug 2) (7 aug 3) (7 aug 4) (7 aug 5) (7 aug 6)
+           (8 dim 6) (8 dim 5) (8 dim 4) (8 dim 3) (8 dim 2) (8 dim) (8 just)))
+        (tempered-intervals
+         '((1 just) (2 min) (2 maj) (3 min) (3 maj) (4 just)
+           (5 dim) (5 just) (6 min) (6 maj) (7 min) (7 maj) (8 just)))
+        (tempered-system
+         '((c 0) (c 1) (d 0) (d 1) (e 0) (f 0)
+           (f 1) (g 0) (g 1) (a 0) (a 1) (b 0))))
+    (assoc-item item `((tonal (,tonal-system 96 ,tonal-intervals))
+                       (tempered (,tempered-system 12 ,tempered-intervals))))))
 
 (defun get-system-notes (system)
   "Returns a table defining notes in the system."
-  (symbol-value (first (get-system-item system))))
+  (first (get-system-item system)))
 
 (defun get-notes ()
   "Returns a table defining notes in the system."
   (if (eq 'tempered *system*)
-    (get-system-notes 'tempered)
-    (get-system-notes 'tonal)))
+      (get-system-notes 'tempered)
+      (get-system-notes 'tonal)))
 
 (defun get-system-module (system)
   "Returns the numeric value to be used as a module in the defined
@@ -113,7 +110,7 @@ system."
 
 (defun get-system-intervals (system)
   "Returns a table defining intervals in the system."
-  (symbol-value (third (get-system-item system))))
+  (third (get-system-item system)))
 
 (defun get-accidentals (representation)
   "Retorna os acidentes de uma representação específica."
