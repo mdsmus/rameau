@@ -78,7 +78,6 @@
   (mapcar (lambda (x) (move-evento-no-tempo x tempo))
           seq))
 
-(do-not-test move-evento-no-tempo movimenta-sequencia)
 
 (defun fim-evento (evento)
   (+ (evento-inicio evento) (evento-dur evento)))
@@ -179,7 +178,17 @@
                  :key (evento-key nota)
                  :time-sig (evento-time-sig nota))))
 
-(do-not-test tempera)
+(do-not-test tempera
+  move-evento-no-tempo
+  movimenta-sequencia
+  cria-skip
+  coloca-expressoes-em-sequencia
+  %expmerge
+  merge-exprs
+  modificador-oitava
+  %relativiza
+  transpose-segmentos
+  )
 
 (defun temperado (segmentos)
   (mapcar (lambda (x) (mapcar #'tempera x)) segmentos))

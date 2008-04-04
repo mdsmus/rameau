@@ -115,13 +115,22 @@
 (defun get-comandos ()
   (mapcar #'(lambda (item) (format nil "~(~a~)" (first item))) *dados*))
 
-(do-not-test report print-condition print-ok/no-list print-gab-columns print-res-alg maptrace)
 
 (defun parse-verbose (files)
   (dolist (file files)
     (handler-case (parse-file file)
       (serious-condition (expr) (print-condition 'no file expr))
       (:no-error (&rest rest) (print-condition 'ok file rest)))))
+
+(do-not-test report
+  print-condition
+  print-ok/no-list
+  print-gab-columns
+  print-res-alg
+  maptrace
+  get-comandos
+  parse-verbose
+  )
 
 (defun percent (x total)
   (unless (= 0 total)
@@ -169,7 +178,6 @@ ponto nos corais de bach."
               (if (listp n)
                   n
                   (list n))))))
-
 
 (defun print-score (stream lyric)
   (format stream "\\score {
@@ -310,6 +318,7 @@ ponto nos corais de bach."
         (loop for (name value) in (sort l #'> :key #'second) do
              (format t "  ~(~15a~) ~,2f%~%" name value))))))
 
+
 (defun gera-dados (item gabarito resultados flags)
   (declare (ignore flags))
   (let ((*package* (find-package :rameau))
@@ -426,6 +435,24 @@ ponto nos corais de bach."
     (if (member 'v flags)
         (write-line string-result)
         (write-line (subseq (last1 (cl-ppcre:split "\\n" string-result)) 34)))))
+
+
+(do-not-test parse-summary
+  print-duracoes
+  print-score
+  print-lyric
+  print-lily
+  print-gabarito
+  gera-dados
+  gera-erros
+  gera-resultados
+  print-help-item
+  print-help
+  run-regressao
+  run-unidade
+  nome-original
+  remove-test
+  )
 
 (defun run-compara-gabarito (flags files item)
   (dolist (file files)

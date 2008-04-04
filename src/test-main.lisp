@@ -21,3 +21,12 @@
 (define-test get-lone-flags
   ; FIXME: melhorar esses testes
   (assert-equal nil (get-lone-flags '("-b" ("c" "b")))))
+
+(define-test get-flag-list
+  (assert-equal ("b" "c" "d") (get-flag-list "-f" '(("-d" "a" "b" "c") ("-f" "b" "c" "d")))))
+
+(define-test percent
+  (assert-equal 100.0 (percent 1 1)))
+
+(define-test frac->dur-lily
+  (assert-equal "4" (frac->dur-lily 1/4)))
