@@ -34,9 +34,6 @@
 (define-test remove-ext
   (assert-equal "foo" (remove-ext "foo.ext")))
 
-(define-test change-ext
-  (assert-equal "foo.ly" (change-ext "foo.ext" ".ly")))
-
 (define-test skip
   (assert-equal '(2 3 4 1 2) (skip 1 '(1 1 1 1 2 3 4 1 2))))
 
@@ -80,12 +77,8 @@
 (define-test smallest
   (assert-equal 10 (smallest '(100 1000 10 20 30))))
 
-(define-test avanca-todos
-  (assert-equal '(nil (10) (10 100)) (avanca-todos '((a) (10 10) (1 10 100)))))
-
-
-(define-test converte-strings
-  (assert-equal '(foo bar baz) (converte-strings '("foo" "bar" "baz"))))
+(define-test advance-all
+  (assert-equal '(nil (10) (10 100)) (advance-all '((a) (10 10) (1 10 100)))))
 
 (define-test safe-retorna-n-elementos
   (assert-equal '(10 20 30) (safe-retorna-n-elementos '(10 20 30) 3))

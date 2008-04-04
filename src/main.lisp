@@ -297,7 +297,7 @@ ponto nos corais de bach."
          for numero-seg from 0
          for gab-lista = gabarito then (cdr gab-lista)
          for gab = (car gab-lista) then (car gab-lista)
-         for res = resultados then (avanca-todos res)
+         for res = resultados then (advance-all res)
          do
            (print-gab-columns (1+ numero-seg) n gab d flags)
            (loop
@@ -330,7 +330,7 @@ ponto nos corais de bach."
          for numero-seg from 0 to (1- size-gab)
          for gab-lista = gabarito then (cdr gab-lista)
          for gab = (car gab-lista) then (car gab-lista)
-         for res = resultados then (avanca-todos res)
+         for res = resultados then (advance-all res)
          do
            (incf total)
            (loop
@@ -357,7 +357,7 @@ ponto nos corais de bach."
        for numero-seg from 0 to (1- size-gab)
        for gab-lista = gabarito then (cdr gab-lista)
        for gab = (car gab-lista) then (car gab-lista)
-       for res = resultados then (avanca-todos res)
+       for res = resultados then (advance-all res)
        for s in notas
        do
          (loop
@@ -387,7 +387,7 @@ ponto nos corais de bach."
        for numero-seg from 0 to (1- size-gab)
        for gab-lista = gabarito then (cdr gab-lista)
        for gab = (car gab-lista) then (car gab-lista)
-       for res = resultados then (avanca-todos res)
+       for res = resultados then (advance-all res)
        for s in notas
        do
          (loop

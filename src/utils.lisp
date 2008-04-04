@@ -8,13 +8,11 @@
                                add-pop-ext
                                agrupa
                                assoc-item
-                               avanca-todos
+                               advance-all
                                clip
                                char->symbol
-                               change-ext
                                coloca-contexto
                                concat
-                               converte-strings
                                count-subseq
                                defcached
                                destringify
@@ -50,16 +48,16 @@
 
 
 (defun stringify (obj)
-  "Convert \texttt{obj} to a string according to predefined conventions."
+  "Convert \\texttt{obj} to a string according to predefined conventions."
   (let ((*package* (find-package :rameau)))
     (format nil "~(~a~)" obj)))
 
 (defun clip (size list)
-  "Clip \texttt{list} to size \texttt{size}."
+  "Clip \\texttt{list} to size \\texttt{size}."
   (remove-if #'null (safe-retorna-n-elementos list size)))
 
 (defun insert (element list &key (less #'<) (key #'identity))
-  "Insert \texttt{element} into \texttt{list} in a sorted position."
+  "Insert \\texttt{element} into \\texttt{list} in a sorted position."
   (if list
       (let ((fe (funcall key element))
             (fl (funcall key (first list))))
@@ -101,27 +99,23 @@
 (do-not-test dbg rameau-debug rameau-undebug dbg-indent)
 
 (defun add-lily-ext (file)
-  "Add a .ly extension to filename \texttt{file} if nonexistent."
+  "Add a .ly extension to filename \\texttt{file} if nonexistent."
   (if (has-ext? file) file (concat file ".ly")))
 
 (defun add-pop-ext (file)
-  "Add a .pop extension to filename \texttt{file} if nonexistent."  
+  "Add a .pop extension to filename \\texttt{file} if nonexistent."  
   (if (has-ext? file) file (concat file ".pop")))
 
 (defun has-ext? (file)
-  "Heuristic check to see whether filename \texttt{file} has an extension."
+  "Heuristic check to see whether filename \\texttt{file} has an extension."
   (find #\. file))
 
 (defun remove-ext (file)
   "Heuristic for removing a file's extension."
   (subseq file 0 (position #\. file)))
 
-(defun change-ext (file ext)
-  "Heuristic for changing a filename \texttt{file}'s extension to \texttt{ext}."
-  (if (has-ext? file) (concat (remove-ext file) ext) file))
-
 (defmacro defcached (funcname args &body body)
-  "Defines \texttt{funcname} just as defun, but with a cache around it."
+  "Defines \\texttt{funcname} just as defun, but with a cache around it."
   (labels ((varnames (symbols)
              (cons 'list
                    (loop for s in symbols unless (and (symbolp s)
@@ -135,7 +129,7 @@
                 (setf (gethash ,(varnames args) ,cache) (progn ,@body))))))))
 
 (defun concat (&rest strings)
-  "Concatenate strings \texttt{strings}."
+  "Concatenate strings \\texttt{strings}."
   (apply #'concatenate 'string strings))
 
 (defun sort-set (set)
@@ -143,29 +137,29 @@
   (sorted set #'<))
 
 (defun skip (element list &key (test #'equal))
-  "Skip every initial occurence of \texttt{element} in \textt{list}."
+  "Skip every initial occurence of \\texttt{element} in \\texttt{list}."
   (if (funcall test element (first list))
       (skip element (rest list) :test test)
       list))
 
-(defun count-subseq (sub seq &optional (start -1) (acumula 0))
+(defun count-subseq (sub seq &optional (start -1) (acc 0))
+  "Count the number of occurences of \\texttt{sub} in \\texttt{seq}."
   (let ((s (search sub seq :start2 (+ start 1))))
     (if s
-        (count-subseq sub seq s (+ acumula 1))
-        acumula)))
+        (count-subseq sub seq s (+ acc 1))
+        acc)))
 
 (defun symbol->number (string string-list)
-  "Essa função conta quantas ocorrências tem do caractere na lista de
-mapeamento e retorna esse valor. Essa função é usada para contar
-quantos acidentes ou oitavas uma nota tem."
+  "Search for each element of \\texttt{string-list} in \\texttt{string}."
   (destructuring-bind (flat sharp) string-list
     (cond ((search sharp string) (count-subseq sharp string))
           ((search flat string) (- (count-subseq flat string)))
           (t 0))))
 
-(defun smallest (lista &optional (teste #'identity))
-  (when lista
-    (reduce #'min lista :key teste)))
+(defun smallest (list &optional (test #'identity))
+  "The smallest element of \\texttt{list}, according to \\texttt{test}."
+  (when list
+    (reduce #'min list :key test)))
 
 (defun repeat-string (n string)
   "Repeat a string n times. EXAMPLE: (repeat-string 3 \"foo\") returns
@@ -173,30 +167,22 @@ quantos acidentes ou oitavas uma nota tem."
   (with-output-to-string (s)
     (dotimes (i (abs n)) (format s string))))
 
-(defun avanca-todos (lista)
-  "Substitui todos os elementos de uma lista pelos seus cdrs."
-  (mapcar #'cdr lista))
+(defun advance-all (list)
+  "Advances every list in \\texttt{list}."
+  (mapcar #'cdr list))
 
 (defcached string->symbol (string)
-  "Convert a string to a symbol."
+  "Convert the string \\texttt{string} to a symbol."
   (let ((*package* (find-package :rameau)))
     (intern (string-upcase string) :rameau)))
 
 
 (defun destringify (coisa)
+  "Reverses the operation of stringify in a few interesting cases."
   (let ((*package* (find-package :rameau)))
     (cond ((numberp coisa) coisa)
           ((stringp coisa) (read-from-string (string-upcase coisa)))
           (t coisa))))
-
-(defun converte-strings (coisas)
-  (when coisas
-    (let ((atual (first coisas))
-          (resto (rest coisas)))
-      (cons (if (listp atual)
-                (converte-strings atual)
-                (destringify atual))
-            (converte-strings resto)))))
 
 (defun assoc-item (item alist)
   "Returns an item from a alist. "
