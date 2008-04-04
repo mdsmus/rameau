@@ -16,6 +16,8 @@
 (set-macro-character #\{ #'expand-repeat)
 (set-macro-character #\} (get-macro-character #\)))
 
+(do-not-test expand-mel expand-repeat)
+
 (defun parse-multiplication (chord)
   (if (listp chord)
       (if (eql (first chord) '*)
@@ -43,6 +45,8 @@
 
 (defun expand-chords (list)
   (expand-multiplications (mapcar #'parse-multiplication list)))
+
+(do-not-test expand-chords)
 
 (defstruct (melodic-note
              (:print-function
@@ -94,6 +98,8 @@
 (defun chordp (chord?)
   (eq (type-of chord?) 'CHORD))
 
+(do-not-test chordp)
+
 (defparameter *inversions-pop* '(1 3 5 7))
 
 (defun %chord-interval-code (fundamental bass)
@@ -101,6 +107,8 @@
 do acorde. Expects fundamental and bass to be a string."
   (interval->code (interval (parse-note bass)
                             (parse-note fundamental))))
+
+(do-not-test %chord-interval-code)
 
 (defun return-inversion (fundamental bass)
   "Return the inversion number of the chord with fundamental and bass (both
@@ -133,6 +141,8 @@ position."
                       :11th 11th
                       :13th 13th)))))
 
+(do-not-test %parse-chord)
+
 (defun parse-chord (chord)
   (typecase chord
     (list (case (first chord)
@@ -143,14 +153,15 @@ position."
 (defun read-chords (list)
   (mapcar #'parse-chord (expand-chords list)))
 
+(do-not-test read-chords)
+
 (defun transpose-chord (c n)
   (if (chordp c)
-      (make-chord :fundamental (string->symbol
-                                (print-note (code->notename
+      (make-chord :fundamental (print-note (code->notename
                                              (+ n
                                                 (parse-note
                                                  (chord-fundamental c))))
-                                        'latin))
+                                        'latin)
                   :bass (chord-bass c)
                   :mode (chord-mode c)
                   :inversion (chord-inversion c)
@@ -160,28 +171,15 @@ position."
                   :13th (chord-13th c))
       c))
 
+(do-not-test transpose-chord)
+
 (defun transpose-chords (chords n)
   (loop for c in chords
      collect (transpose-chord (if (listp c) (find-if #'chordp c) c)
                               n)))
 
 
-(defun compara-gabarito-fundamental-individual (resultado gabarito)
-  (with-system rameau:tempered
-    (if (and (chordp resultado) (chordp gabarito))
-        (equal (parse-note (chord-fundamental resultado))
-               (parse-note (chord-fundamental gabarito)))
-        (equal (type-of resultado) (type-of gabarito)))))
-
-(defun compara-gabarito-fundamental (resultado gabarito)
-  "Compara um resultado com um gabarito levando em consideração apenas
-   a fundamental do acorde"
-  (if (listp gabarito)
-      (some (lambda (x) (compara-gabarito-fundamental-individual resultado x)) gabarito)
-      (compara-gabarito-fundamental-individual resultado gabarito)))
-
-
-(defun compara-gabarito-modo-setima-individual (resultado gabarito)
+(defun compara-gabarito-temperado-individual (resultado gabarito)
   (or (and (melodic-note-p resultado)
            (melodic-note-p gabarito))
       (and (augmented-sixth-p resultado)
@@ -195,11 +193,11 @@ position."
            (equal (chord-mode resultado) (chord-mode gabarito))
            (equal (chord-7th resultado) (chord-7th gabarito)))))
 
-(defun compara-gabarito-modo-setima (res gab)
+(defun compara-gabarito-temperado (res gab)
   (if (atom gab)
-      (compara-gabarito-modo-setima-individual res gab)
+      (compara-gabarito-temperado-individual res gab)
       (some (lambda (x)
-              (compara-gabarito-modo-setima-individual res x))
+              (compara-gabarito-temperado-individual res x))
             gab)))
 
 (defun compara-gabarito-tonal-individual (resultado gabarito)
@@ -211,9 +209,10 @@ position."
                   (string-downcase (stringify (augmented-sixth-type gabarito)))))
       (and (chordp resultado)
            (chordp gabarito)
-           (equal (chord-fundamental resultado)
-                  (chord-fundamental gabarito))
-           (equal (chord-mode resultado) (chord-mode gabarito))
+           (equal (string-downcase (chord-fundamental resultado))
+                  (string-downcase (chord-fundamental gabarito)))
+           (equal (string-downcase (chord-mode resultado))
+                  (string-downcase (chord-mode gabarito)))
            (equal (chord-7th resultado) (chord-7th gabarito)))))
 
 (defun compara-gabarito-tonal (res gab)
@@ -222,6 +221,8 @@ position."
       (some (lambda (x)
               (compara-gabarito-tonal-individual res x))
             gab)))
+
+(do-not-test compara-gabarito-temperado-individual compara-gabarito-tonal-individual)
 
 (defun coloca-inversao (segmento acorde)
   (if (chordp acorde)
@@ -236,13 +237,4 @@ position."
 (defun coloca-inversoes (segmentos acordes)
   (mapcar #'coloca-inversao segmentos acordes))
 
-#|
-testes
-
-(defun roda-all-pop ()
-  (loop for file in (directory "/home/kroger/src/rameau/gabaritos/bach-corais/*.pop") do
-       (print file)
-       (print (read-chords (read-file-as-sexp file)))))
-
-(read-chords (read-file-as-sexp "/home/top/programas/analise-harmonica/gabaritos/exemplos/011.pop"))
-|#
+(do-not-test coloca-inversao coloca-inversoes)
