@@ -150,7 +150,7 @@ get-shap ou get-flat devem ser usadas no lugar."
 
 (defun get-sharp (representation)
   "Returns a string with a sharp in representation.
-EXAMPLE: (get-sharp 'latin) returns #."
+\\example{(get-sharp 'latin)}{#}."
   (%get-accidental representation #'second))
 
 (defun get-flat (representation)

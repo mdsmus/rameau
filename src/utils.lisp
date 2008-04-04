@@ -57,6 +57,7 @@
   "Corta lista para ter um tamanho maximo tamanho"
   (remove-if #'null (safe-retorna-n-elementos lista tamanho)))
 
+
 (defun insere (elemento lista)
   "Insere elemento em lista, na posição correta. O primeiro elemento de elemento, assim
 como do resto da lista, é a posição, quanto menor, mais na frente"
@@ -70,7 +71,6 @@ como do resto da lista, é a posição, quanto menor, mais na frente"
 
 
 ;;; Norvig's functions for debugging in PAIP, p. 124
-
 
 (defvar *dbg-ids* nil "identifiers used by dbg")
 (setf *debug-io* *error-output*)
@@ -271,17 +271,6 @@ Exemplo: (split-word \"foo\") => (F O O)"
 (defun mapcar2 (fn1 fn2 list)
   "Faz a mapcar do mapcar de uma lista"
   (mapcar (lambda (x) (funcall fn1 (funcall fn2 x))) list))
-
-(defun insere (elemento lista)
-  "Insere elemento em lista, na posição correta. O primeiro elemento de elemento, assim
-como do resto da lista, é a posição, quanto menor, mais na frente"
-  (if lista
-      (let ((fe (first elemento))
-            (fl (first (first lista))))
-        (if (< fe fl)
-            (cons elemento lista)
-            (cons (first lista) (insere elemento (rest lista)))))
-      (list elemento)))
 
 (defun agrupa (lista n)
   "Agrupa os elementos da lista em grupos de n em n, repetindo"

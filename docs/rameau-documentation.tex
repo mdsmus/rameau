@@ -1,0 +1,38 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{color}
+\usepackage{times}
+
+\title{Rameau Programmer's Guide}
+\author{Pedro Kroger and Alexandre Passos}
+
+\newcommand{\function}[2]{
+  \noindent\texttt{#1}\hfill\textbf{[function]}\\
+  #2
+\vspace{2em}
+}
+
+\newcommand{\example}[2]{
+  \par Example: \texttt{#1} $\rightarrow$ #2
+}
+
+\begin{document}
+\maketitle
+
+\section{Musiclib}
+\label{sec:musiclib}
+
+Musiclib is a library to deal with music information and operations.
+
+\subsection{Assessors functions}
+\label{sec:accessors-functions}
+
+The following functions foo bar ....
+
+\input{musiclib}
+
+\end{document}
