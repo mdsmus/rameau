@@ -166,7 +166,7 @@ Exemplo: (get-interval-name 'dim) retorna diminished."
 (defun get-interval-quantity (num)
   "Retorna uma palavra que representa a quantidade numérica de um
 acorde. EXEMPLO: (get-interval-quantity 3) retorna TRIPLE."
-  (assoc-item num *intervals-quantity*))
+  (assoc-item 2 *intervals-quantity*))
 
 (do-not-test
     get-system-item
