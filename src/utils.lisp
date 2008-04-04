@@ -43,23 +43,23 @@
                                string->symbol
                                symbol->number
                                has-ext?
-                               tira-extensao
+                               remove-ext
                                troca-extensao
                                unzip
                                ))
 
 
 (defun stringify (obj)
-  "Convert <obj> to a string according to predefined conventions."
+  "Convert \texttt{obj} to a string according to predefined conventions."
   (let ((*package* (find-package :rameau)))
     (format nil "~(~a~)" obj)))
 
 (defun clip (size list)
-  "Clip <list> to size <size>."
+  "Clip \texttt{list} to size \texttt{size}."
   (remove-if #'null (safe-retorna-n-elementos list size)))
 
 (defun insert (element list &key (less #'<) (key #'identity))
-  "Insert <element> into <list> in a sorted position."
+  "Insert \texttt{element} into \texttt{list} in a sorted position."
   (if list
       (let ((fe (funcall key element))
             (fl (funcall key (first list))))
@@ -101,22 +101,23 @@
 (do-not-test dbg rameau-debug rameau-undebug dbg-indent)
 
 (defun add-lily-ext (file)
-  "Add a .ly extension to filename <file> if nonexistent."
+  "Add a .ly extension to filename \texttt{file} if nonexistent."
   (if (has-ext? file) file (concat file ".ly")))
 
 (defun add-pop-ext (file)
-  "Add a .pop extension to filename <file> if nonexistent."  
+  "Add a .pop extension to filename \texttt{file} if nonexistent."  
   (if (has-ext? file) file (concat file ".pop")))
 
 (defun has-ext? (file)
-  "Heuristic check to see whether filename <file> has an extension."
+  "Heuristic check to see whether filename \texttt{file} has an extension."
   (find #\. file))
 
-(defun tira-extensao (file)
+(defun remove-ext (file)
+  "Heuristic for removing a file's extension."
   (subseq file 0 (position #\. file)))
 
 (defun troca-extensao (file ext)
-  (if (has-ext? file) (concat (tira-extensao file) ext) file))
+  (if (has-ext? file) (concat (remove-ext file) ext) file))
 
 (defmacro defcached (funcname args &body body)
   (labels ((varnames (symbols)

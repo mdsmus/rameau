@@ -31,8 +31,8 @@
   (assert-true (has-ext? "foo.ext"))
   (assert-false (has-ext? "foo-sem-ext")))
 
-(define-test tira-extensao
-  (assert-equal "foo" (tira-extensao "foo.ext")))
+(define-test remove-ext
+  (assert-equal "foo" (remove-ext "foo.ext")))
 
 (define-test troca-extensao
   (assert-equal "foo.ly" (troca-extensao "foo.ext" ".ly")))
