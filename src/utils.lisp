@@ -203,6 +203,7 @@ that have the largest value according to \\texttt{pred}."
       list-max)))
 
 (defun octave-from-string (string)
+  "Parse string \\texttt{string} and return the octave it implies."
   (+ 8 (symbol->number string '("," "'"))))
 
 (defun file-string (path)
