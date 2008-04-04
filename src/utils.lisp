@@ -42,7 +42,7 @@
                                string-member
                                string->symbol
                                symbol->number
-                               tem-ext?
+                               has-ext?
                                tira-extensao
                                troca-extensao
                                unzip
@@ -102,20 +102,21 @@
 
 (defun add-lily-ext (file)
   "Add a .ly extension to filename <file> if nonexistent."
-  (if (tem-ext? file) file (concat file ".ly")))
+  (if (has-ext? file) file (concat file ".ly")))
 
 (defun add-pop-ext (file)
   "Add a .pop extension to filename <file> if nonexistent."  
-  (if (tem-ext? file) file (concat file ".pop")))
+  (if (has-ext? file) file (concat file ".pop")))
 
-(defun tem-ext? (file)
+(defun has-ext? (file)
+  "Heuristic check to see whether filename <file> has an extension."
   (find #\. file))
 
 (defun tira-extensao (file)
   (subseq file 0 (position #\. file)))
 
 (defun troca-extensao (file ext)
-  (if (tem-ext? file) (concat (tira-extensao file) ext) file))
+  (if (has-ext? file) (concat (tira-extensao file) ext) file))
 
 (defmacro defcached (funcname args &body body)
   (labels ((varnames (symbols)

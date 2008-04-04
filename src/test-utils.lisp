@@ -27,9 +27,9 @@
 (define-test add-pop-ext
   (assert-equal "foo.pop" (add-pop-ext "foo")))
 
-(define-test tem-ext?
-  (assert-true (tem-ext? "foo.ext"))
-  (assert-false (tem-ext? "foo-sem-ext")))
+(define-test has-ext?
+  (assert-true (has-ext? "foo.ext"))
+  (assert-false (has-ext? "foo-sem-ext")))
 
 (define-test tira-extensao
   (assert-equal "foo" (tira-extensao "foo.ext")))
