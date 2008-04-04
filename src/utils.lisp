@@ -21,7 +21,7 @@
                                dbg-indent
                                file-string
                                get-item
-                               insere
+                               insert
                                mapcar2
                                max-predicado
                                octave-from-string
@@ -49,25 +49,24 @@
                                ))
 
 
-(defun stringify (symb)
+(defun stringify (obj)
+  "Convert <obj> to a string according to predefined conventions."
   (let ((*package* (find-package :rameau)))
-    (format nil "~(~a~)" symb)))
+    (format nil "~(~a~)" obj)))
 
-(defun clip (tamanho lista)
-  "Corta lista para ter um tamanho maximo tamanho"
-  (remove-if #'null (safe-retorna-n-elementos lista tamanho)))
+(defun clip (size list)
+  "Clip <list> to size <size>."
+  (remove-if #'null (safe-retorna-n-elementos list size)))
 
-
-(defun insere (elemento lista)
-  "Insere elemento em lista, na posição correta. O primeiro elemento de elemento, assim
-como do resto da lista, é a posição, quanto menor, mais na frente"
-  (if lista
-      (let ((fe (first elemento))
-            (fl (first (first lista))))
-        (if (< fe fl)
-            (cons elemento lista)
-            (cons (first lista) (insere elemento (rest lista)))))
-      (list elemento)))
+(defun insert (element list &key (less #'<) (key #'identity))
+  "Insert <element> into <list> in a sorted position."
+  (if list
+      (let ((fe (funcall key element))
+            (fl (funcall key (first list))))
+        (if (funcall less fe fl)
+            (cons element list)
+            (cons (first list) (insert element (rest list) :key key :less less))))
+      (list element)))
 
 
 ;;; Norvig's functions for debugging in PAIP, p. 124
@@ -96,15 +95,17 @@ como do resto da lista, é a posição, quanto menor, mais na frente"
 (defun rameau-undebug (&rest ids)
   "Stop dbg on the ids. With no ids, stop dbg altogether."
   (setf *dbg-ids* (if (null ids)
-                      nill
+                      nil
                       (set-difference *dbg-ids* ids))))
 
 (do-not-test dbg rameau-debug rameau-undebug dbg-indent)
 
 (defun add-lily-ext (file)
+  "Add a .ly extension to filename <file> if nonexistent."
   (if (tem-ext? file) file (concat file ".ly")))
 
 (defun add-pop-ext (file)
+  "Add a .pop extension to filename <file> if nonexistent."  
   (if (tem-ext? file) file (concat file ".pop")))
 
 (defun tem-ext? (file)
@@ -237,12 +238,10 @@ quantos acidentes ou oitavas uma nota tem."
 (do-not-test read-file-as-sexp)
 
 (defun unzip (lista)
-  (let (lista1
-        lista2)
-    (loop for el in lista
-       nconc (list (first el)) into lista1
-       nconc (list (second el)) into lista2
-       finally (return (values lista1 lista2)))))
+  (loop for el in lista
+     nconc (list (first el)) into lista1
+     nconc (list (second el)) into lista2
+     finally (return (values lista1 lista2))))
 
 (defun get-item (item lista &optional (test #'eql))
   "Pega um item em uma lista de associação."

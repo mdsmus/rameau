@@ -103,7 +103,7 @@
        with nn = nil
        do 
          (let ((d (distance pitches key)))
-           (setf nn (clip *k* (insere (list d key (gethash key *1-neighbours*)) nn))))
+           (setf nn (clip *k* (insert (list d key (gethash key *1-neighbours*)) nn :key #'car))))
        finally (return (retorna-classificacao diff (mapcar #'second nn) (mapcar #'third nn))))))
 
 (defun gera-gabarito-k1 (coral)
@@ -162,7 +162,7 @@
        with nn = nil
        do 
          (let ((d (distance pitches key)))
-           (setf nn (clip *k-neighbors* (insere (list d key (gethash key *context-neighbors*)) nn))))
+           (setf nn (clip *k-neighbors* (insert (list d key (gethash key *context-neighbors*)) nn :key #'car))))
        finally (return (retorna-classificacao diff (mapcar #'second nn) (mapcar #'third nn))))))
 
 (defun gera-gabarito-context (coral)

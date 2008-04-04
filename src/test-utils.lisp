@@ -74,8 +74,8 @@
   (assert-equal '(foo bar baz) (clip 3 '(foo bar baz 1 2 3)))
   (assert-equal '(foo baz baz) (clip 10 '(foo baz baz))))
 
-(define-test insere
-  (assert-equal '((1 b) (2 c) (3 a) (4 e)) (insere '(3 a) '((1 b) (2 c) (4 e)))))
+(define-test insert
+  (assert-equal '((1 b) (2 c) (3 a) (4 e)) (insert '(3 a) '((1 b) (2 c) (4 e)) :key #'car)))
 
 (define-test smallest
   (assert-equal 10 (smallest '(100 1000 10 20 30))))
