@@ -22,7 +22,7 @@
                                get-item
                                insert
                                mapcar2
-                               max-predicado
+                               mostn
                                octave-from-string
                                rameau-debug
                                rameau-undebug
@@ -185,20 +185,22 @@
           (t coisa))))
 
 (defun assoc-item (item alist)
-  "Returns an item from a alist. "
+  "Returns the item keyed by \\texttt{item} from the alist \\texttt{alist}. "
   (second (assoc item alist)))
 
-(defun max-predicado (predicado lista)
-  (when lista
-    (let ((maior-valor (funcall predicado (first lista)))
-          (lista-max nil))
-      (dolist (par lista)
-        (cond ((> (funcall predicado par) maior-valor)
-               (setf maior-valor (funcall predicado par))
-               (setf lista-max (list par)))
-              ((= (funcall predicado par) maior-valor)
-               (push par lista-max))))
-      lista-max)))
+(defun mostn (pred list)
+  "Reimplementation of \\texttt{mostn} from On Lisp. Finds the elements of \\texttt{list}
+that have the largest value according to \\texttt{pred}."
+  (when list
+    (let ((max-value (funcall pred (first list)))
+          (list-max nil))
+      (dolist (el list)
+        (cond ((> (funcall pred el) max-value)
+               (setf max-value (funcall pred el))
+               (setf list-max (list el)))
+              ((= (funcall pred el) max-value)
+               (push el list-max))))
+      list-max)))
 
 (defun octave-from-string (string)
   (+ 8 (symbol->number string '("," "'"))))

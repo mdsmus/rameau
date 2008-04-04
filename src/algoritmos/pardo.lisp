@@ -104,11 +104,11 @@
 
 (defun desempata-pardo (segmento resto)
   (let* ((proximo (first resto))
-         (max-root (max-predicado #'root-weight segmento)))
+         (max-root (mostn #'root-weight segmento)))
     (cons 
      (if (= (length max-root) 1)
          (car max-root)
-         (let ((temp-prob (max-predicado #'template-prob max-root)))
+         (let ((temp-prob (mostn #'template-prob max-root)))
            (if (= (length temp-prob) 1)
                (car temp-prob)
                (if (dim7? segmento)
@@ -122,7 +122,7 @@
   "Gera as notas de um segmento comparado com todas as transposições de
    um template."
   (let ((resultados
-         (max-predicado (lambda (x)
+         (mostn (lambda (x)
                           (nota-pardo-resultado x))
                         (avalia-segmento-notas (second template)
                                                segmento
@@ -133,7 +133,7 @@
     resultados))
 
 (defun pardo (segmento &optional (templates *pardo-templates*))
-  (max-predicado (lambda (x) (nota-pardo-resultado x))
+  (mostn (lambda (x) (nota-pardo-resultado x))
                  (reduce #'append
                          (mapcar
                           (lambda (x) (avalia-segmento

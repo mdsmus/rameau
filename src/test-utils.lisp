@@ -16,10 +16,10 @@
    3
    (count-subseq "foo" "fofofoofofooooofofoofofo")))
 
-(define-test max-predicado
+(define-test mostn
   (assert-equal
    '(-10 -10)
-   (max-predicado #'- '(1 2 10 3 -10 4 5 10 4 8 4 -10 10))))
+   (mostn #'- '(1 2 10 3 -10 4 5 10 4 8 4 -10 10))))
 
 (define-test add-lily-ext
   (assert-equal "foo.ly" (add-lily-ext "foo")))
