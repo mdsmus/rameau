@@ -196,11 +196,11 @@
 (defun extrai-resultado-chord-net (diff res)
   (let ((fundamental (extrai-resultado-fundamental
                       diff
-                      (safe-retorna-n-elementos res (+ *root-increment* (get-module)))))
+                      (firstn res (+ *root-increment* (get-module)))))
         (resto (nthcdr (+ *root-increment* (get-module)) res)))
     (if (chordp fundamental)
         (let* ((7th (extract-7th (nthcdr *mode-length* resto)))
-               (mode (extract-mode (safe-retorna-n-elementos resto *mode-length*) 7th)))
+               (mode (extract-mode (firstn resto *mode-length*) 7th)))
           
           (make-chord :fundamental (chord-fundamental fundamental)
                       :mode mode
@@ -318,15 +318,15 @@
 
 (defun aplica-context-net (inputs)
   (load-context-net)
-  (let ((contexto (butlast (coloca-contexto inputs *contexto-antes* *contexto-depois*)
+  (let ((contexto (butlast (contextualize inputs *contexto-antes* *contexto-depois*)
                            *contexto-antes*)))
     (coloca-inversoes inputs (mapcar #'run-context-net contexto))))
 
 (defun gera-dados-treinamento-context-net ()
   (loop for i in *exemplos-de-treinamento*
-     nconc (prepara-exemplos-treinamento-chord-net (coloca-contexto (first i)
-                                                                    *contexto-antes*
-                                                                    *contexto-depois*)
+     nconc (prepara-exemplos-treinamento-chord-net (contextualize (first i)
+                                                                  *contexto-antes*
+                                                                  *contexto-depois*)
                                                    (second i)
                                                    #'context-extrai-diffs
                                                    #'context-extrai-features)))

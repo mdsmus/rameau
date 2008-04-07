@@ -80,9 +80,9 @@
 (define-test advance-all
   (assert-equal '(nil (10) (10 100)) (advance-all '((a) (10 10) (1 10 100)))))
 
-(define-test safe-retorna-n-elementos
-  (assert-equal '(10 20 30) (safe-retorna-n-elementos '(10 20 30) 3))
-  (assert-equal '(10 nil nil) (safe-retorna-n-elementos '(10) 3)))
+(define-test firstn
+  (assert-equal '(10 20 30) (firstn '(10 20 30) 3))
+  (assert-equal '(10 nil nil) (firstn '(10) 3)))
 
 (define-test repeat-list
   (assert-equal '(10 10 10) (repeat-list 3 10))
@@ -112,11 +112,12 @@
 (define-test mapcar2
   (assert-equal '("foo" "bar") (mapcar2 #'string-downcase #'stringify '(foo bar))))
 
-(define-test agrupa
-  (assert-equal '((a b c) (b c nil) (c nil nil)) (agrupa '(a b c) 3)))
+(define-test group
+  (assert-equal '((a b c) (b c nil) (c nil nil)) (group '(a b c) 3)))
 
-(define-test coloca-contexto
-  (assert-equal '((NIL A B C) (A B C D) (B C D E) (C D E NIL) (D E NIL NIL)) (coloca-contexto '(a b c d e) 1 2)))
+(define-test contextualize
+  (assert-equal '((NIL A B C) (A B C D) (B C D E) (C D E NIL) (D E NIL NIL))
+                (contextualize '(a b c d e) 1 2)))
 
 
 (define-test sort-set

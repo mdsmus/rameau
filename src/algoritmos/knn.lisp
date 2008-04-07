@@ -151,7 +151,7 @@
      for coral = (first exemplo)
      for n from 0
      for gabarito = (second exemplo)
-     do (treina-context-nn (coloca-contexto coral *contexto-antes* *contexto-depois*) gabarito n)))
+     do (treina-context-nn (contextualize coral *contexto-antes* *contexto-depois*) gabarito n)))
 
 (treina-context *exemplos-de-treinamento*)
 
@@ -166,7 +166,7 @@
        finally (return (retorna-classificacao diff (mapcar #'second nn) (mapcar #'third nn))))))
 
 (defun gera-gabarito-context (coral)
-  (let ((c (coloca-contexto coral *contexto-antes* *contexto-depois*)))
+  (let ((c (contextualize coral *contexto-antes* *contexto-depois*)))
     (coloca-inversoes coral (mapcar #'classifica-context (butlast c *contexto-antes*)))))
 
 (register-algorithm "EC-Knn" #'gera-gabarito-context #'compara-gabarito-tonal)

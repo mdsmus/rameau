@@ -6,12 +6,11 @@
 (register-and-export-symbols '(
                                add-lily-ext
                                add-pop-ext
-                               agrupa
                                assoc-item
                                advance-all
                                clip
                                char->symbol
-                               coloca-contexto
+                               contextualize
                                concat
                                count-subseq
                                defcached
@@ -19,7 +18,9 @@
                                dbg
                                dbg-indent
                                file-string
+                               firstn
                                get-item
+                               group
                                insert
                                mapcar2
                                mostn
@@ -29,7 +30,6 @@
                                read-file-as-sexp
                                repeat-string
                                repeat-list
-                               safe-retorna-n-elementos
                                skip
                                smallest
                                split-word
@@ -54,7 +54,7 @@
 
 (defun clip (size list)
   "Clip \\texttt{list} to size \\texttt{size}."
-  (remove-if #'null (safe-retorna-n-elementos list size)))
+  (remove-if #'null (firstn list size)))
 
 (defun insert (element list &key (less #'<) (key #'identity))
   "Insert \\texttt{element} into \\texttt{list} in a sorted position."
@@ -207,8 +207,8 @@ that have the largest value according to \\texttt{pred}."
   (+ 8 (symbol->number string '("," "'"))))
 
 (defun file-string (path)
-  "Sucks up an entire file from PATH into a freshly-allocated string,
-      returning two values: the string and the number of bytes read."
+  "Suck up an entire file from \\texttt{path} into a freshly-allocated string,
+returning two values: the string and the number of bytes read."
   (with-open-file (s path #+sbcl :external-format #+sbcl :utf-8 )
     (let* ((len (file-length s))
            (data (make-string len :initial-element #\Space))
@@ -217,61 +217,73 @@ that have the largest value according to \\texttt{pred}."
 
 (do-not-test file-string)
 
-(defun safe-retorna-n-elementos (lista n)
+(defun firstn (list n)
+  "Return the first \\texttt{n} elements of \\texttt{list}, or \\texttt{n} nulls."
   (loop for i from 0 to (1- n) collect
-       (nth i lista)))
+       (nth i list)))
 
 (defun repeat-list (n list)
+  "Repeat \\texttt{n} times the element \\texttt{list}, forming a list."
   (if (> n 0)
       (cons list (repeat-list (- n 1) list))))
 
 (defun read-file-as-sexp (file)
+  "Read file named \\texttt{file} as a single sexp"
   (read-from-string (format nil "(~a)" (file-string file))))
 
 (do-not-test read-file-as-sexp)
 
 (defun unzip (lista)
+  "Transform the list of pairs \\texttt{lista} in a pair of lists."
   (loop for el in lista
      nconc (list (first el)) into lista1
      nconc (list (second el)) into lista2
      finally (return (values lista1 lista2))))
 
 (defun get-item (item lista &optional (test #'eql))
-  "Pega um item em uma lista de associação."
+  "Get item keyed by \\texttt{item} in alist \\texttt{lista}."
   (second (assoc item lista :test test)))
 
 (defun char->symbol (char)
-  "Retorna o símbolo representado pelo caractere char.
-Exemplo: (char->symbol #\a) => A"
+  "Returns the symbol for the character \\texttt{char}."
   (intern (string-upcase (string char)) :rameau))
 
 (defun split-word (word)
-  "Retorna uma lista de símbolos para cada letra da palavra 'word'.
-Exemplo: (split-word \"foo\") => (F O O)"
+  "Splits word \\texttt{word} into a list of characters and returns
+their symbolic representations."
   (loop for char across word collect (char->symbol char)))
 
 (defun split-opts (string)
+  "Split the options in command-line argument \\texttt{string}."
   (mapcan (lambda (s) (split-word (delete #\- s)))
           (cl-ppcre:split #\Space string)))
 
 (defun split-dados (dados)
+  "Split string \\texttt{dados} using commas as separators."
   (cl-ppcre:split "," dados))
 
 (defun sorted (lista ord &key (key #'identity))
+  "Returns a sorted copy of list \\texttt{lista} ordered by \\texttt{ord}."
   (sort (copy-list lista) ord :key key))
 
 (defun mapcar2 (fn1 fn2 list)
-  "Faz a mapcar do mapcar de uma lista"
+  "mapcar + compose."
   (mapcar (lambda (x) (funcall fn1 (funcall fn2 x))) list))
 
-(defun agrupa (lista n)
-  "Agrupa os elementos da lista em grupos de n em n, repetindo"
+(defun group (lista n)
+  "Groups the elements of \\texttt{lista} in groups of \\texttt{n} elements.
+Every element is part of \\texttt{n} groups. The list is padded with nulls."
   (when lista
-    (cons (safe-retorna-n-elementos lista n) (agrupa (rest lista) n))))
+    (cons (firstn lista n) (group (rest lista) n))))
 
-(defun coloca-contexto (segmentos antes depois)
-  (butlast (agrupa (append (repeat-list antes nil) segmentos) (+ 1 antes depois)) (max 0 (1- depois))))
+(defun contextualize (segments before after)
+  "Contextualize music \\texttt{segments} by putting \\texttt{before} segments before and \\texttt{after} segments after each segment."
+  (butlast (group (append (repeat-list before nil) segments)
+                  (+ 1 before after))
+           (max 0 (1- after))))
 
 (defun string-member (item list)
+  "Tests whether there is an item in \\texttt{list} with the same
+string representation as \\texttt{item}."
   (member (stringify item) list :test #'equal :key #'stringify))
 

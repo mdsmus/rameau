@@ -41,6 +41,9 @@ clean-erros:
 check: rameau
 	./rameau check all
 
+unit: rameau
+	./rameau teste unidade -v
+
 erros: rameau clean-erros
 	./rameau erros c > erros/rameau
 	python tools/formata-tipos.py erros/rameau erros/

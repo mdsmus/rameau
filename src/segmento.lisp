@@ -25,6 +25,7 @@
               (agrupa-inicio restante))))))
 
 (defun normaliza-notas (segmento proximo)
+  (declare (list proximo))
   (let* ((sobras nil)
          (proximo-evento (if proximo (evento-inicio (first proximo))))
          (proximo-inicio (if proximo
