@@ -8,6 +8,10 @@
                                add-pop-ext
                                assoc-item
                                advance-all
+                               apush
+                               aget
+                               aset
+                               aincf
                                clip
                                char->symbol
                                contextualize
@@ -15,6 +19,7 @@
                                count-subseq
                                defcached
                                destringify
+                               distance
                                dbg
                                dbg-indent
                                file-string
@@ -23,6 +28,7 @@
                                group
                                insert
                                mapcar2
+                               make-alist
                                mostn
                                octave-from-string
                                rameau-debug
@@ -37,6 +43,7 @@
                                split-dados
                                sorted
                                sort-set
+                               square
                                stringify
                                string-member
                                string->symbol
@@ -287,3 +294,52 @@ Every element is part of \\texttt{n} groups. The list is padded with nulls."
 string representation as \\texttt{item}."
   (member (stringify item) list :test #'equal :key #'stringify))
 
+;; Alist helper functions
+
+(defun make-alist ()
+  "Makes a helped alist."
+  (list nil))
+
+(do-not-test make-alist)
+
+(defun apush (obj place)
+  "Destructively modifies list \\texttt{place} and puts \\texttt{obj}
+as its car."
+  (let ((ap (car place))
+        (dp (cdr place)))
+    (setf (car place) obj
+          (cdr place) (cons ap dp)))
+  place)
+
+(defun aget (key list &optional default)
+  "Get element keyed by \\texttt{key} from alist \\texttt{list}. If it does not exist, insert and return \\texttt{default} unless default is null or 'erro."
+  (aif (assoc key list :test #'equal)
+       (second it)
+       (progn
+         (when (and default (not (eq default 'erro)))
+           (apush (list key default) list))
+         default)))
+
+(defmacro aset (key list value)
+  "Set the value for \\texttt{key} in alist \\texttt{list}."
+  `(if (eq 'erro (aget ,key ,list 'erro))
+       (apush (list ,key ,value) ,list)
+       (setf (second (assoc ,key ,list :test #'equal)) ,value)))
+
+(defmacro aincf (key list &optional (amount 1))
+  "Increment the value of \\texttt{key} in alist \\texttt{list} by \\texttt{amount}."
+  `(if (eq 'erro (aget ,key ,list 'erro))
+       (aset ,key ,list ,amount)
+       (incf (car (cdr (assoc ,key ,list :test #'equal))) ,amount)))
+
+(defmacro square (x)
+  (let ((n (gensym)))
+    `(let ((,n ,x))
+       (* ,n ,n))))
+
+(defun distance (a b)
+  (if (and a b)
+      (loop for i in a
+         for j in b
+         sum (square (- i j)))
+      most-positive-fixnum))

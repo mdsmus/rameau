@@ -4,43 +4,6 @@
 (in-package :rameau-knn)
 
 
-(defun make-alist () (list nil))
-
-(defun apush (obj place)
-  (let ((ap (car place))
-        (dp (cdr place)))
-    (setf (car place) obj
-          (cdr place) (cons ap dp))))
-
-(defun aget (key list &optional default)
-  (aif (assoc key list :test #'equal)
-       (second it)
-       (progn
-         (when (and default (not (eq default 'erro)))
-           (apush (list key default) list))
-         default)))
-
-(defmacro aset (key list value)
-  `(if (eq 'erro (aget ,key ,list 'erro))
-       (apush (list ,key ,value) ,list)
-       (setf (second (assoc ,key ,list :test #'equal)) ,value)))
-
-(defmacro aincf (key list &optional (amount 1))
-  `(if (eq 'erro (aget ,key ,list 'erro))
-       (aset ,key ,list ,amount)
-       (incf (car (cdr (assoc ,key ,list :test #'equal))) ,amount)))
-
-(defmacro square (x)
-  (let ((n (gensym)))
-    `(let ((,n ,x))
-       (* ,n ,n))))
-
-(defun distance (a b)
-  (if (and a b)
-      (loop for i in a
-         for j in b
-         sum (square (- i j)))
-      most-positive-fixnum))
 
 ;; src/algoritmos/knn.lisp
 ;; A k-nearest-neighbor chord finder, for use in Rameau.

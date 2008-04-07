@@ -125,3 +125,26 @@
 
 (define-test string-member
   (assert-equal '(foo bar baz) (string-member 'foo '(a b foo bar baz))))
+
+(define-test apush
+  (assert-equal '((foo bar) nil) (apush (list 'foo 'bar) (list nil))))
+
+(define-test aget
+  (assert-equal 'bar (aget 'foo (apush '(foo bar) (make-alist)))))
+
+(define-test aset
+  (let ((a (make-alist)))
+    (aset 'foo a 'bar)
+    (assert-equal 'bar (aget 'foo a))))
+
+(define-test aincf
+  (let ((a (make-alist)))
+    (aincf 'foo a 42)
+    (assert-equal 42 (aget 'foo a))))
+
+
+(define-test square
+  (assert-equal 4 (square 2)))
+
+(define-test distance
+  (assert-equal 100 (distance '(0) '(10))))
