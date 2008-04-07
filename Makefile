@@ -132,7 +132,7 @@ clean-nets:
 clean-resultados:
 	rm -f resultados/*
 
-clean: clean-nets
+clean:
 	rm -f rameau
 	rm -f *.data *.fann
 	find -name *.fasl -exec rm {} \;
@@ -144,7 +144,7 @@ clean-lisp-cache:
 cleanall: clean clean-nets clean-resultados
 	rm -rf rameau cmurameau eclrameau clisprameau $(corais-dir)
 
-lispclean: cleanall
+lispclean: clean
 	@if [ $(hostname) == "phoenix" ]; then \
 	rm -rf ~/lisp/fasl/* ;\
 	find ~/lisp -name *.fas -exec rm {} \; ;\

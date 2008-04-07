@@ -21,8 +21,8 @@
   (mapcar #'evento-pitch segmento))
 
 (defun cria-pattern-segmento (seg &optional diff)
-  (let ((diff (or diff (extrai-diff seg))))
-    (mapcar (lambda (x) (coerce x 'float)) (extrai-feature-list seg diff))))
+  (let ((diff (or diff (extract-diff seg))))
+    (mapcar (lambda (x) (coerce x 'float)) (extract-feature-list seg diff))))
 
 (defun cria-pattern-saida (gabarito diff)
   (let ((atual (make-list (+ *root-increment* (get-module)) :initial-element 0)))
@@ -159,7 +159,7 @@
 
 (defun gera-dados-treinamento-chord-net ()
   (with-system rameau:tempered
-    (loop for i in *exemplos-de-treinamento*
+    (loop for i in *training-data*
        nconc (prepara-exemplos-treinamento-chord-net (temperado (first i)) (second i)))))
 
 (defun gera-arquivo-treinamento-chord-net ()
@@ -212,7 +212,7 @@
   (coloca-inversoes
    inputs
    (with-system tempered
-     (mapcar (lambda (x) (let ((d (extrai-diff x)))
+     (mapcar (lambda (x) (let ((d (extract-diff x)))
                            (extrai-resultado-chord-net
                             d
                             (run-net *chord-net*
@@ -235,7 +235,7 @@
   (save-to-file *e-chord-net* *e-chord-net-file*))
 
 (defun run-e-chord-net (x)
-  (let ((d (extrai-diff x)))
+  (let ((d (extract-diff x)))
     (extrai-resultado-chord-net
      d
      (run-net *e-chord-net*
@@ -246,7 +246,7 @@
   (coloca-inversoes inputs (mapcar #'run-e-chord-net inputs)))
 
 (defun gera-dados-treinamento-e-chord-net ()
-  (loop for i in *exemplos-de-treinamento*
+  (loop for i in *training-data*
      nconc (prepara-exemplos-treinamento-chord-net (first i) (second i))))
 
 
@@ -295,7 +295,7 @@
   (extrai-diffs (nth *contexto-antes* segmento)))
 
 (defun context-extrai-diff (segmentos)
-  (extrai-diff (nth *contexto-antes* segmentos)))
+  (extract-diff (nth *contexto-antes* segmentos)))
 
 (defun context-extrai-features (segmento &optional diff)
   (let ((diff (or diff (context-extrai-diff segmento))))
@@ -323,7 +323,7 @@
     (coloca-inversoes inputs (mapcar #'run-context-net contexto))))
 
 (defun gera-dados-treinamento-context-net ()
-  (loop for i in *exemplos-de-treinamento*
+  (loop for i in *training-data*
      nconc (prepara-exemplos-treinamento-chord-net (contextualize (first i)
                                                                   *contexto-antes*
                                                                   *contexto-depois*)

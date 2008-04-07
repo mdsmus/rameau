@@ -101,8 +101,8 @@
                       (return s)))))
     (if tmp tmp string)))
 
-(defun processa-gabarito (file item)
-  "Transforma um gabarito de texto em sexp."
+(defun parse-answer-sheet (file item)
+  "Parse the answer sheet for song \\texttt{file}."
   (let* ((*package* (find-package :rameau))
          (nome-pop (concat *rameau-path*
                            (get-item item *gabarito-dir-list* #'equal)
@@ -111,7 +111,8 @@
       (read-chords (read-file-as-sexp nome-pop)))))
 
 
-(defun processa-files (item f &optional (ext ".ly"))
+(defun parse-file-list (item f &optional (ext ".ly"))
+  "Parse file list \\texttt{f} into a list of filenames."
   (let* ((path (concat *rameau-path* (get-item item *lily-dir-list*  #'equal)))
          (file-name (format nil "~a" (first f)))
          (files (if (search ".." file-name)
@@ -123,19 +124,20 @@
                    (mapcar (lambda (file) (format nil "~a" file))
                            (directory (concat path "*" ext)))))))
 
-(do-not-test processa-gabarito processa-files)
+(do-not-test parse-file-list parse-answer-sheet)
 
-(defparameter *exemplos-de-treinamento*
-  (nconc (loop for f in (processa-files "corais" '("001..6"))
-            for g = (processa-gabarito f "corais")
+(defparameter *training-data*
+  (nconc (loop for f in (parse-file-list "corais" '("001..6"))
+            for g = (parse-answer-sheet f "corais")
             collect (list (segmentos-minimos (parse-file f)) g))
-         (loop for f in (mapcan (lambda (x) (processa-files "exemplos" (list x)))
+         (loop for f in (mapcan (lambda (x) (parse-file-list "exemplos" (list x)))
                                 '("11..13" "23..28"))
-            for g = (processa-gabarito f "exemplos")
+            for g = (parse-answer-sheet f "exemplos")
             collect (list (segmentos-minimos (parse-file f)) g))))
 
 
-(defun extrai-feature-list (segmento diff)
+(defun extract-feature-list (segmento diff)
+  "Extract the feature list of a sonority givern its \\texttt{diff}."
   (let ((segmento (mapcar2 (lambda (x) (module (- x diff))) #'evento-pitch segmento))
         (n (length segmento))
         (feature-list (repeat-list (get-module) 0)))
@@ -143,7 +145,8 @@
        do (incf (nth nota feature-list) (/ 1 n)))
     feature-list))
 
-(defun extrai-diff (segmento)
+(defun extract-diff (segmento)
+  "Extract the diff of a sonority."
   (let ((segmento (sorted segmento #'compara-notas)))
     (evento-pitch (first segmento))))
 

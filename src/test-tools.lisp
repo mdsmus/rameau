@@ -11,16 +11,16 @@
 
 
 
-(define-test extrai-diff
-  (assert-equal 10 (extrai-diff (list (make-evento :pitch 10 :octave 0) (make-evento :pitch 20 :octave 10)))))
+(define-test extract-diff
+  (assert-equal 10 (extract-diff (list (make-evento :pitch 10 :octave 0) (make-evento :pitch 20 :octave 10)))))
 
 
 
-(define-test extrai-feature-list
+(define-test extract-feature-list
   (assert-equal '(1/2 0 0 0 0 0 0 0 0 0 1/2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
                   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
                   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-                (extrai-feature-list (list (make-evento :pitch 10 :octave 0) (make-evento :pitch 20 :octave 10)) 10)))
+                (extract-feature-list (list (make-evento :pitch 10 :octave 0) (make-evento :pitch 20 :octave 10)) 10)))
 
 
 

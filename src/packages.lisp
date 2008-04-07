@@ -15,7 +15,7 @@
    #:fr+6
    #:it+6
    #:*algoritmos*
-   #:*exemplos-de-treinamento*
+   #:*training-data*
    #:*lily-dir-list*
    #:*gabarito-dir-list*
    #:*do-not-test*
@@ -35,8 +35,8 @@
    #:compara-gabarito-tonal
    #:compara-notas
    #:do-not-test
-   #:extrai-diff
-   #:extrai-feature-list
+   #:extract-diff
+   #:extract-feature-list
    #:filtra-algoritmos
    #:first-string
    #:get-comandos
@@ -46,8 +46,8 @@
    #:make-augmented-sixth
    #:melodic-note-p
    #:parse-file
-   #:processa-files
-   #:processa-gabarito
+   #:parse-file-list
+   #:parse-answer-sheet
    #:parse-chord
    #:pitches
    #:rameau-args

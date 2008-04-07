@@ -460,7 +460,7 @@ ponto nos corais de bach."
            (segmentos (segmentos-minimos musica))
            (resultados (loop for a in *algoritmos* collect
                             (funcall (algoritmo-processa a) segmentos)))
-           (gabarito (processa-gabarito (remove-ext file) item))
+           (gabarito (parse-answer-sheet (remove-ext file) item))
            (file-name (pathname-name file))
            (notas (mapcar #'lista-notas segmentos))
            (duracoes (calcula-duracoes segmentos)))
@@ -485,7 +485,7 @@ ponto nos corais de bach."
     (dolist (file files)
       (let* ((musica (parse-file file))
              (segmentos (segmentos-minimos musica))
-             (gabarito (processa-gabarito (remove-ext file) item))
+             (gabarito (parse-answer-sheet (remove-ext file) item))
              (resultados (when gabarito
                            (loop for a in *algoritmos* collect
                                 (funcall (algoritmo-processa a) segmentos))))
@@ -526,7 +526,7 @@ ponto nos corais de bach."
   (dolist (file files)
     (let* ((musica (parse-file file))
            (segmentos (segmentos-minimos musica))
-           (gabarito (processa-gabarito (remove-ext file) item))
+           (gabarito (parse-answer-sheet (remove-ext file) item))
            (resultados (when gabarito
                          (loop for a in *algoritmos* collect
                               (funcall (algoritmo-processa a) segmentos))))
@@ -552,7 +552,7 @@ ponto nos corais de bach."
   (dolist (file files)
     (let* ((musica (parse-file file))
            (segmentos (segmentos-minimos musica))
-           (gabarito (processa-gabarito (remove-ext file) item))
+           (gabarito (parse-answer-sheet (remove-ext file) item))
            (resultados (when gabarito
                          (loop for a in *algoritmos* collect
                               (funcall (algoritmo-processa a) segmentos))))
@@ -579,7 +579,7 @@ ponto nos corais de bach."
     (dolist (file files)
       (let* ((musica (parse-file file))
              (segmentos (segmentos-minimos musica))
-             (gabarito (processa-gabarito (remove-ext file) item))
+             (gabarito (parse-answer-sheet (remove-ext file) item))
              (size-gab (length gabarito))
              (size-seg (length segmentos)))
         (unless (or (= size-gab 0) (= size-gab size-seg))
@@ -594,8 +594,8 @@ ponto nos corais de bach."
 
 (defun run-testes (flags files item)
   (if (string= item "unidade")
-      (run-unidade flags (processa-files item files))
-      (run-regressao flags (processa-files item files))))
+      (run-unidade flags (parse-file-list item files))
+      (run-regressao flags (parse-file-list item files))))
 
 (defun pitch-list (list)
   (sorted (remove-duplicates (mapcar #'evento-pitch list)) #'<))
@@ -638,7 +638,7 @@ ponto nos corais de bach."
   (when (member 'v flags) (format t "gerando "))
   (dolist (file files)
     (when (member 'v flags) (format t "~a " (pathname-name file)))
-    (let* ((gabarito (processa-gabarito (remove-ext file) item))
+    (let* ((gabarito (parse-answer-sheet (remove-ext file) item))
            (segmento (segmentos-minimos (parse-file file)))
            (resultados (loop for a in *algoritmos* collect
                             (funcall (algoritmo-processa a) segmento))))
@@ -702,7 +702,7 @@ ponto nos corais de bach."
                      for item = (first-string i dados-list) do
                        (if (member item dados-list :test #'string=)
                            (progn
-                             (,fn flags (processa-files item files) item ,@args))
+                             (,fn flags (parse-file-list item files) item ,@args))
                            (progn
                              (format t "~a não é um comando de ~(~a~).~%" item ',nome)
                              (format t "comandos possíveis são: all ~{~a ~}~%" dados-list)))))

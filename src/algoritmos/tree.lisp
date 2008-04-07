@@ -127,7 +127,7 @@
 (defun faz-treina-chord-tree ()
   (with-system rameau:tempered
     (multiple-value-bind (corais gabaritos)
-        (unzip *exemplos-de-treinamento*)
+        (unzip *training-data*)
       (treina-chord-tree corais gabaritos))))
 
 (faz-treina-chord-tree)

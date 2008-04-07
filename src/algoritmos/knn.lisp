@@ -69,8 +69,8 @@
 (defun treina-1nn (coral gabarito n)
   (loop for segmento in coral
      for acorde in gabarito
-     for diff = (extrai-diff segmento)
-     for pitches = (extrai-feature-list segmento diff)
+     for diff = (extract-diff segmento)
+     for pitches = (extract-feature-list segmento diff)
      do (if (listp acorde)
             (mapcar (lambda (x) (insere-contagem pitches x diff *1-neighbours* n)) acorde)
             (insere-contagem pitches acorde diff *1-neighbours* n))))
@@ -82,7 +82,7 @@
        for gabarito = (second exemplo)
        do (treina-1nn coral gabarito n)))
 
-(treina-k1 *exemplos-de-treinamento*)
+(treina-k1 *training-data*)
 
 (defun retorna-classificacao (diff maxkey maxv)
   (declare (ignore maxkey))
@@ -97,8 +97,8 @@
        finally (return (extrai-acorde maxk diff)))))
 
 (defun classifica-k1 (segmento)
-  (let* ((diff (extrai-diff segmento))
-         (pitches (extrai-feature-list segmento diff)))
+  (let* ((diff (extract-diff segmento))
+         (pitches (extract-feature-list segmento diff)))
     (loop for key being the hash-keys in *1-neighbours* 
        with nn = nil
        do 
@@ -129,12 +129,12 @@
 (defparameter *k-neighbors* 1)
 
 (defun context-extrai-diff (segmentos)
-  (extrai-diff (nth *contexto-antes* segmentos)))
+  (extract-diff (nth *contexto-antes* segmentos)))
 
 (defun context-extrai-features (segmentos diff)
   (loop for seg in segmentos
      for peso from (-  *contexto-antes*)
-     nconc (loop for x in (extrai-feature-list seg diff)
+     nconc (loop for x in (extract-feature-list seg diff)
               collect (/ x (+ 1 (* (abs peso) *variance*))))))
 
 (defun treina-context-nn (coral gabarito n)
@@ -153,7 +153,7 @@
      for gabarito = (second exemplo)
      do (treina-context-nn (contextualize coral *contexto-antes* *contexto-depois*) gabarito n)))
 
-(treina-context *exemplos-de-treinamento*)
+(treina-context *training-data*)
 
 (defun classifica-context (segmento)
   (let* ((diff (context-extrai-diff segmento))
