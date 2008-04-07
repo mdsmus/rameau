@@ -20,3 +20,4 @@
   `(progn ,@(mapcar (lambda (x) `(push ',x *do-not-test*)) funcs)))
 
 (do-not-test export-rameau-symbols register-and-export-symbols)
+(do-not-test do-not-test)

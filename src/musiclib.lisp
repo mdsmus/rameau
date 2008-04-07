@@ -408,6 +408,7 @@ EXAMPLE: (equal-sets? '(0 3 7) '(8 1 4)) returns T."
 (defmacro deftemplates (name &body templates)
   `(defparameter ,name ',templates))
 
+(do-not-test deftemplates with-system)
 
 (defparameter *notas-puras-tonal* '(0 14 28 41 55 69  83))
 

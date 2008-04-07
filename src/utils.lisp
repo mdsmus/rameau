@@ -135,6 +135,8 @@
                 it
                 (setf (gethash ,(varnames args) ,cache) (progn ,@body))))))))
 
+(do-not-test defcached)
+
 (defun concat (&rest strings)
   "Concatenate strings \\texttt{strings}."
   (apply #'concatenate 'string strings))

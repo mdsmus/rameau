@@ -650,7 +650,7 @@ ponto nos corais de bach."
 
 (defun get-functions (string &optional test)
   "Return an alist with the functions or testes of a file."
-  (let* ((regexp-def "(DEFINE-TEST|DEFUN|DEFMETHOD|DEFCACHED)[ ]+")
+  (let* ((regexp-def "(DEFINE-TEST|DEFUN|DEFMETHOD|DEFCACHED|DEFMACRO)[ ]+")
          (regexp-name "[0-9a-zA-Z><\!\$%&\*\?/-]+")
          (regexp (concat regexp-def regexp-name))
          (files-orig (directory (concat *rameau-path* string)))
@@ -731,6 +731,9 @@ ponto nos corais de bach."
   run-gera-resultados
   run-compara-tamanhos
   run-check
+  with-profile
+  with-print-cifra
+  defcommand
   )
 
 (defun main ()
