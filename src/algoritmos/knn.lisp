@@ -36,9 +36,11 @@
        (* ,n ,n))))
 
 (defun distance (a b)
-  (loop for i in a
-     for j in b
-     sum (square (- i j))))
+  (if (and a b)
+      (loop for i in a
+         for j in b
+         sum (square (- i j)))
+      most-positive-fixnum))
 
 ;; src/algoritmos/knn.lisp
 ;; A k-nearest-neighbor chord finder, for use in Rameau.
