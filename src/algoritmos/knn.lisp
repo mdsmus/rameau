@@ -3,24 +3,32 @@
 
 (in-package :rameau-knn)
 
-(defparameter *1-neighbours* (make-hash-table :test #'equal))
-(defparameter *k* 1)
 
-(defparameter *exemplos* (make-hash-table :test #'equal))
+(defun make-alist () (list nil))
 
-;; Os vizinhos são guardados, a principio, em uma hash table
-;; a chave é o vetor de notas, o valor é uma estrutura com contagens
-;; de classes.
+(defun apush (obj place)
+  (let ((ap (car place))
+        (dp (cdr place)))
+    (setf (car place) obj
+          (cdr place) (cons ap dp))))
 
-;; A estrutura com contagens de classes é uma hash table equal.
-;; A chave é uma lista com pitch, modo e setima do acorde, o
-;; conteudo é a contagem daquele acorde naquele vizinho, a principio.
+(defun aget (key list &optional default)
+  (aif (assoc key list :test #'equal)
+       (second it)
+       (progn
+         (when (and default (not (eq default 'erro)))
+           (apush (list key default) list))
+         default)))
 
-;; Isso é necessário por knn usar um voto majoritário dos vizinhos mais
-;; próximos, e, como o rameau é noisy, pode ser necessário
+(defmacro aset (key list value)
+  `(if (eq 'erro (aget ,key ,list 'erro))
+       (apush (list ,key ,value) ,list)
+       (setf (second (assoc ,key ,list :test #'equal)) ,value)))
 
-;; As notas são guardadas em um vetor transposto, já que analise harmônica é
-;; invariante em relação a transposição.
+(defmacro aincf (key list &optional (amount 1))
+  `(if (eq 'erro (aget ,key ,list 'erro))
+       (aset ,key ,list ,amount)
+       (incf (car (cdr (assoc ,key ,list :test #'equal))) ,amount)))
 
 (defmacro square (x)
   (let ((n (gensym)))
@@ -31,6 +39,21 @@
   (loop for i in a
      for j in b
      sum (square (- i j))))
+
+;; src/algoritmos/knn.lisp
+;; A k-nearest-neighbor chord finder, for use in Rameau.
+
+;; The training examples as stored in a hash table, keyed by their
+;; pitches. In the e-knn version, only one sonority is stored at a time, while
+;; in the ec-knn a few surrouding sonorities are also stored.
+
+;; The values in the hash table are also hash tables. These tables
+;; are keyed by the classes for that example (there can be more than one)
+;; and the values are the counts for how many times each class appears.
+
+(defparameter *exemplos* (make-alist))
+(defparameter *1-neighbours* (make-alist))
+(defparameter *k* 1)
 
 (defun processa-acorde (acorde diff)
   (cond ((chordp acorde)
@@ -59,12 +82,10 @@
 
 (defun insere-contagem (chave acorde diff hash n)
   (let ((acorde (processa-acorde acorde diff)))
-    (if (gethash acorde *exemplos*)
-        (push (cons chave n) (gethash acorde *exemplos*))
-        (setf (gethash acorde *exemplos*) (list (cons chave n))))
-    (incf (gethash acorde
-                   (hash-default chave hash (make-hash-table :test #'equal))
-                   0))))
+    (if (aget acorde *exemplos*)
+        (apush (cons chave n) (aget acorde *exemplos*))
+        (aset acorde *exemplos* (list (cons chave n))))
+    (aincf acorde (aget chave hash (make-alist)))))
 
 (defun treina-1nn (coral gabarito n)
   (loop for segmento in coral
@@ -88,8 +109,8 @@
   (declare (ignore maxkey))
   (let ((resultado (make-hash-table :test #'equal)))
     (loop for hash in maxv do
-         (loop for k being the hash-keys in hash
-            do (incf (gethash k resultado 0) (gethash k hash))))
+         (loop for (k v) in hash
+            do (incf (gethash k resultado 0) (or v 0))))
     (loop for k being the hash-keys in resultado
        with maxk = 0
        with maxv = 0
@@ -99,11 +120,11 @@
 (defun classifica-k1 (segmento)
   (let* ((diff (extract-diff segmento))
          (pitches (extract-feature-list segmento diff)))
-    (loop for key being the hash-keys in *1-neighbours* 
+    (loop for (key value) in *1-neighbours* 
        with nn = nil
        do 
          (let ((d (distance pitches key)))
-           (setf nn (clip *k* (insert (list d key (gethash key *1-neighbours*)) nn :key #'car))))
+           (setf nn (clip *k* (insert (list d key value) nn :key #'car))))
        finally (return (retorna-classificacao diff (mapcar #'second nn) (mapcar #'third nn))))))
 
 (defun gera-gabarito-k1 (coral)
@@ -125,7 +146,7 @@
 
 (defparameter *variance* 1/2)
 
-(defparameter *context-neighbors* (make-hash-table :test #'equal))
+(defparameter *context-neighbors* (make-alist))
 (defparameter *k-neighbors* 1)
 
 (defun context-extrai-diff (segmentos)
@@ -158,11 +179,11 @@
 (defun classifica-context (segmento)
   (let* ((diff (context-extrai-diff segmento))
          (pitches (context-extrai-features segmento diff)))
-    (loop for key being the hash-keys in *context-neighbors* 
+    (loop for (key value) in *context-neighbors* 
        with nn = nil
        do 
          (let ((d (distance pitches key)))
-           (setf nn (clip *k-neighbors* (insert (list d key (gethash key *context-neighbors*)) nn :key #'car))))
+           (setf nn (clip *k-neighbors* (insert (list d key value) nn :key #'car))))
        finally (return (retorna-classificacao diff (mapcar #'second nn) (mapcar #'third nn))))))
 
 (defun gera-gabarito-context (coral)
