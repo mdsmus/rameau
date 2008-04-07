@@ -388,5 +388,146 @@ coral 48 estava tão mal-codificado que terá que ser feito manualmente.
 O coral 150 tem 1 voz faltando (ele é a 5 vozes).
 
 
+
+\chapter{Hashtables}
+\label{chap:hash}
+
+\begin{abstract}
+  Como pessoa que aprendeu a programar usando python e usa muito lisp
+  e outras linguagens dinâmicas, minha reação instintiva a vários
+  problemas é gritar "Hashtables!" e codificar usando uma hash-table
+  quando eu muito bem poderia usar listas, vetores, árvores e outras
+  estruturas mais complexas. Isso se baseava, além de hashes serem
+  triviais em python, em hashtables serem muito rápidos 99% do tempo.
+
+  Agora, no entanto, eu acabei de tornar um pedaço de código 5x mais
+  rápido simplesmente trocando hashtables por listas de
+  associação. Como eu achei isso muito estranho, resolvi documentar. O
+  código original roda no sbcl, no linux (o pseudocódigo desse artigo
+  não roda em lugar nenhum, por sinal).
+  
+\end{abstract}
+
+\section{O Problema}
+\label{sec:prob}
+
+
+Estou trabalhando numa aplicação que usa várias técnicas de Machine
+Learning pra fazer análise harmônica automática. A parte que ficou
+mais rápida foi um classificador KNN.
+
+\section{K-Nearest-Neighbors}
+\label{knn}
+
+
+Para quem não sabe, KNN (K-nearest-neighbors) é um algoritmo muito
+simples de classificação estatística. Você, primeiro, gera um corpus
+de treinamento. Depois, para classificar um exemplo, você compara ele
+com o corpus de treinamento, olha os K vizinhos mais próximos, e
+classifica ele de acordo com a classificação que os k vizinhos
+possuíam.
+
+Existem várias versões desse algoritmo, das Bayesianas (usar todos os
+vizinhos para classificar, usando uma função da distância como peso (o
+que é a marginalização sobre K do algoritmo original, e a função da
+distância é especificada pela pior de K)) às triviais (K = 1, não
+existe ruído, não existem erros no corpus de treinamento). A variedade
+que eu implementei é mais próxima da trivial, mas assume (como é o
+caso) ruído na classificação dos exemplos de treinamento. Para lidar
+com isso, em vez de simplesmente usar a classe mais provável, eu fui
+um pouco bayesiano e guardo todas as classes que foram usadas junto
+com um número que representa o quanto elas foram usadas, e, dentre os
+K vizinhos mais próximos, escolho a classe mais popular.
+
+A versão original usando hashtables era mais ou menos assim:
+
+\begin{verbatim}
+
+(defparameter *training-data* (foo))
+(defparameter *k* 2)
+
+(defparameter *vizinhos* (make-hash-table :test #'equal))
+
+(defun treina-knn ()
+ (loop for a in *training-data*
+    for e = (extrai-caracteristicas a)
+    for r = (extrai-classe a)
+    do (unless (gethash e *vizinhos*)
+         (cria-contagem e *vizinhos*))
+      (incrementa-contagem-classe e *vizinhos* r)))
+
+(treina-knn)
+
+(defun extrai-classificacao (k-vizinhos)
+ (let ((c (cria-contagem)))
+   (loop for (d key contagem) in k-vizinhos
+      do (loop for (classe valor) in contagem
+            do (incrementa-contagem c classe valor)))
+   (maior-contagem c)))
+
+(defun classifica-knn (exemplo)
+ (loop for h being the hash-keys in *vizinhos* with (hash-value v)
+    with e = (extrai-caracteristicas exemplo)
+    with k-vizinhos = nil
+    do (let ((d (distancia exemplo h)))
+         (setf k-vizinhos (clip *k* (insert (list d h v) k-vizinhos))))
+    finally (return (extrai-classificacao k-vizinhos))))
+
+;; clip n list -> corta list pra ter tamanho n
+;; insert el list -> insere el em list no lugar certo pra list ficar ordenada
+
+;; fim do pseudocódigo
+\end{verbatim}
+
+\section{Performance}
+\label{sec:perf}
+
+A princípio eu escrevi o código assim para simplificar a inserção dos
+exemplos de treinamento, que eu achei que seria a parte mais
+complicada de fazer (estava errado, como vi quando o código de
+classifica-knn e extrai-classificacao cresceu muito) e seria a que
+demoraria mais tempo (afinal, teoricamente, eu estava comparando todos
+os exemplos de treinamento entre si pra checar por repetições e coisas
+assim).
+
+Eu estava errado. A parte de treinamento é trivial (o sbcl voa por
+cima dela), enquanto a parte de classificar demora (já que, pra cada
+exemplo, ele tem que ser comparado com todos os de treinamento) um
+bocado. E uma boa parte desse tempo é passada fazendo os laços por
+todos os elementos da hash table.
+
+Assim que eu vi que eu só processava os elementos em sequência, eu vi
+que poderia simplesmente usar uma lista. Então, obviamente, fiquei com
+preguiça e guardei isso na minha to-do list. Afinal, tinha mais o que
+fazer.
+
+Hoje, tive tempo de sobra e fui testar a otimização e, para minha
+surpresa, trocar a hash-table de vizinhos e as hash-tables de contagem
+por listas fez uma tarefa que levava 50s de real-time levar 10s de
+real-time, ou seja: ficou 5x mais rápido.
+
+\section{Conclusão}
+\label{sec:concl}
+
+A mensagem final: hashtables são pra quando o gargalo principal são
+buscas, não inserções ou operações executadas em todos os
+elementos. Como diria meu professor de estruturas de dados 2, isso foi
+otimização prematura.
+
+(na verdade ele teria ataques ao ler esse código e ver que eu não
+estou implementando uma kd-tree ou algo equivalente, mas isso ainda
+não é absolutamente necessário)
+
+Ok, achei isso interessante e resolvi compartilhar (talvez devesse ter
+um blog pra esse tipo de atitude, mas blogs dão trabalho). Se alguém
+gostou da idéia ou do algoritmo, tem vários experimentos que se podem
+fazer aí pra se divertir, como implementar clip, insere,
+extrai-caracteristicas, distancia, cria-contagem, incrementa-contagem
+e maior-contagem pra ver esse código rodando; ou então implementar a
+versão bayesiana (usar (/ 1 (distancia elemento x)) ao classificar
+elemento, e usar todos os elementos, por exemplo); ou então me chamar
+de besta por não usar um sistema especialista.
+
+
 \end{document}
 
