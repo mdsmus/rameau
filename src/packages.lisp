@@ -14,14 +14,14 @@
    #:al+6
    #:fr+6
    #:it+6
-   #:*algoritmos*
+   #:*algorithms*
    #:*training-data*
    #:*lily-dir-list*
    #:*gabarito-dir-list*
    #:*do-not-test*
-   #:algoritmo-compara
-   #:algoritmo-nome
-   #:algoritmo-processa
+   #:algorithm-compare
+   #:algorithm-name
+   #:algorithm-classify
    #:augmented-sixth-type
    #:augmented-sixth-template
    #:calcula-duracoes
@@ -37,7 +37,7 @@
    #:do-not-test
    #:extract-diff
    #:extract-feature-list
-   #:filtra-algoritmos
+   #:filter-algorithms
    #:first-string
    #:get-comandos
    #:lista-notas
@@ -81,24 +81,24 @@
 (export-rameau-symbols)
 
 
-(defstruct algoritmo
-  (nome)
-  (processa)
-  (compara))
+(defstruct algorithm
+  (name)
+  (classify)
+  (compare))
 
-(defparameter *algoritmos* nil)
+(defparameter *algorithms* nil)
 
 (defun register-algorithm (nome processa compara)
-  (push (make-algoritmo :nome nome :processa processa :compara compara)
-        *algoritmos*))
+  (push (make-algorithm :name nome :classify processa :compare compara)
+        *algorithms*))
 
-(defun filtra-algoritmos (algoritmos)
+(defun filter-algorithms (algoritmos)
   (if algoritmos
       (remove-duplicates
        (loop for alg in algoritmos
-          append (loop for i in *algoritmos*
-                    when (> (count-subseq alg (string-downcase (algoritmo-nome i))) 0)
+          append (loop for i in *algorithms*
+                    when (> (count-subseq alg (string-downcase (algorithm-name i))) 0)
                     collect i)))
-    *algoritmos*))
+    *algorithms*))
 
 (do-not-test register-algorithm filtra-algoritmos)

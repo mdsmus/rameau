@@ -245,9 +245,9 @@ ponto nos corais de bach."
              do (format stream "\"~a\" ~%" i)
              unless (= 0 (intervalo (first s) (second s)))
              do (format stream "\" \" "))))
-      (loop for a in *algoritmos*
+      (loop for a in *algorithms*
          for r in resultados do
-           (with-print-cifra (stream (algoritmo-nome a))
+           (with-print-cifra (stream (algorithm-name a))
              (loop
                 for alg-lista = r then (rest alg-lista)
                 for gab-lista = gabarito then (rest gab-lista)
@@ -256,7 +256,7 @@ ponto nos corais de bach."
                 for gab = (first gab-lista) then (first gab-lista)
                 unless s return 0
                 unless alg-lista return 0
-                if (funcall (algoritmo-compara a) res gab) do
+                if (funcall (algorithm-compare a) res gab) do
                   (format stream "\"~a\" " (if res res " "))
                 else do
                   (format stream "\\markup{\\roman \\italic \\bold \"~a\"}"
@@ -274,8 +274,8 @@ ponto nos corais de bach."
       (print-score stream (reduce #'concat
                                   (append
                                    (list (print-lyric "sonority"))
-                                   (loop for a in *algoritmos* collect
-                                        (print-lyric (algoritmo-nome a)))
+                                   (loop for a in *algorithms* collect
+                                        (print-lyric (algorithm-name a)))
                                    (list
                                     (when gabarito
                                       (print-lyric "Answer")))))))))
@@ -286,11 +286,11 @@ ponto nos corais de bach."
     (format t "~a:~%" arquivo)
     (print-gab-columns "#" "notas" "gab" "dur" flags)
     (loop
-       for a in *algoritmos*
-       do (print-res-alg (subseq (algoritmo-nome a) 0 (min 5 (length (algoritmo-nome a)))) "ok?" flags))
+       for a in *algorithms*
+       do (print-res-alg (subseq (algorithm-name a) 0 (min 5 (length (algorithm-name a)))) "ok?" flags))
     (format t "~%")
     (write-line (repeat-string 87 "-"))
-    (let ((counts (repeat-list (length *algoritmos*) 0)))
+    (let ((counts (repeat-list (length *algorithms*) 0)))
       (loop
          for n in notas
          for d in dur
@@ -301,20 +301,20 @@ ponto nos corais de bach."
          do
            (print-gab-columns (1+ numero-seg) n gab d flags)
            (loop
-              for a in *algoritmos*
+              for a in *algorithms*
               for i from 0
               for r in res
               for alg = (first r) then (first r)
-              for certo? = (funcall (algoritmo-compara a) alg gab)
-              then (funcall (algoritmo-compara a) alg gab)
+              for certo? = (funcall (algorithm-compare a) alg gab)
+              then (funcall (algorithmo-compare a) alg gab)
               do (print-res-alg alg certo? flags)
               when certo? do (incf (nth i counts)))
            (format t "~%"))
       (format t "~% correto:~%")
       (let ((l (loop
                   for i in counts
-                  for a in *algoritmos*
-                  collect (list (algoritmo-nome a) (percent i size-gab)))))
+                  for a in *algorithms*
+                  collect (list (algorithm-name a) (percent i size-gab)))))
         (loop for (name value) in (sort l #'> :key #'second) do
              (format t "  ~(~15a~) ~,2f%~%" name value))))))
 
@@ -323,9 +323,9 @@ ponto nos corais de bach."
   (declare (ignore flags))
   (let ((*package* (find-package :rameau))
         (size-gab (length gabarito))
-        (corretos (repeat-list (length *algoritmos*) 0))
+        (corretos (repeat-list (length *algorithms*) 0))
         (total 0))
-    (let ((counts (repeat-list (length *algoritmos*) 0)))
+    (let ((counts (repeat-list (length *algorithms*) 0)))
       (loop
          for numero-seg from 0 to (1- size-gab)
          for gab-lista = gabarito then (cdr gab-lista)
@@ -334,17 +334,17 @@ ponto nos corais de bach."
          do
            (incf total)
            (loop
-              for a in *algoritmos*
+              for a in *algorithms*
               for i from 0
               for r in res
               for alg = (first r) then (first r)
-              for certo? = (funcall (algoritmo-compara a) alg gab)
-              then (funcall (algoritmo-compara a) alg gab)
+              for certo? = (funcall (algorithmo-compare a) alg gab)
+              then (funcall (algorithm-compare a) alg gab)
               when certo? do (incf (nth i counts)) (incf (nth i corretos))))
       (let ((l (loop
                   for i in counts
-                  for a in *algoritmos*
-                  collect (list (algoritmo-nome a) (percent i size-gab) i))))
+                  for a in *algorithms*
+                  collect (list (algorithm-name a) (percent i size-gab) i))))
         (loop for (name perc correct) in (sort l #'> :key #'second) do
              (format t "~a  ~(~15a~) ~5a ~5a ~,2f%~%" item name correct (- size-gab correct) perc)))
       (values total corretos (loop for i in counts collect (percent i size-gab))))))
@@ -361,11 +361,11 @@ ponto nos corais de bach."
        for s in notas
        do
          (loop
-            for a in *algoritmos*
+            for a in *algorithms*
             for i from 0
             for r in res
             for alg = (first r) then (first r)
-            for certo? = (funcall (algoritmo-compara a) alg gab)
+            for certo? = (funcall (algorithm-compare a) alg gab)
             do (if (or (and certo? (not erros?))
                        (and erros? (not certo?)))
                    (when (and
@@ -373,7 +373,7 @@ ponto nos corais de bach."
                           (cl-ppcre:scan reres (format nil "~a" alg)))
                      (format t "~a| ~20a| ~4a| ~14a| ~12a| ~4a~%"
                              item
-                             (algoritmo-nome a)
+                             (algorithmo-name a)
                              numero-seg
                              s
                              gab
@@ -391,7 +391,7 @@ ponto nos corais de bach."
        for s in notas
        do
          (loop
-            for a in *algoritmos*
+            for a in *algorithms*
             for i from 0
             for r in res
             for alg = (first r) then (first r)
@@ -400,7 +400,7 @@ ponto nos corais de bach."
                       (cl-ppcre:scan reres (format nil "~a" alg)))
                  (format t "~a| ~20a| ~4a| ~14a| ~12a| ~4a~%"
                          item
-                         (algoritmo-nome a)
+                         (algorithm-name a)
                          numero-seg
                          s
                          gab
@@ -458,16 +458,16 @@ ponto nos corais de bach."
   (dolist (file files)
     (let* ((musica (parse-file file))
            (segmentos (segmentos-minimos musica))
-           (resultados (loop for a in *algoritmos* collect
-                            (funcall (algoritmo-processa a) segmentos)))
+           (resultados (loop for a in *algorithms* collect
+                            (funcall (algorithm-classify a) segmentos)))
            (gabarito (parse-answer-sheet (remove-ext file) item))
            (file-name (pathname-name file))
            (notas (mapcar #'lista-notas segmentos))
            (duracoes (calcula-duracoes segmentos)))
       (format t "tamanhos:~%  gabarito: ~a~%" (length gabarito))
       (loop for i in resultados
-         for a in *algoritmos*
-         do (format t "  ~a: ~a~%" (algoritmo-nome a) (length i)))
+         for a in *algorithms*
+         do (format t "  ~a: ~a~%" (algorithm-name a) (length i)))
       (cond
         ((and (not gabarito) (not (member 'rameau::i flags)))
          (format t "~&[ERRO] o gabarito de ~a não existe~%" file-name))
@@ -477,18 +477,18 @@ ponto nos corais de bach."
 
 (defun run-gera-dados (flags files item)
   (format t "Coral Algoritmo Corretos Incorretos Percentual~%")
-  (let ((corretos (repeat-list (length *algoritmos*) 0))
+  (let ((corretos (repeat-list (length *algorithms*) 0))
         (total 0)
         (processados 0)
-        (media-x (repeat-list (length *algoritmos*) 0.0))
-        (media-x² (repeat-list (length *algoritmos*) 0.0)))
+        (media-x (repeat-list (length *algorithms*) 0.0))
+        (media-x² (repeat-list (length *algorithms*) 0.0)))
     (dolist (file files)
       (let* ((musica (parse-file file))
              (segmentos (segmentos-minimos musica))
              (gabarito (parse-answer-sheet (remove-ext file) item))
              (resultados (when gabarito
-                           (loop for a in *algoritmos* collect
-                                (funcall (algoritmo-processa a) segmentos))))
+                           (loop for a in *algorithms* collect
+                                (funcall (algorithm-classify a) segmentos))))
              (file-name (pathname-name file))
              (notas (mapcar #'lista-notas segmentos))
              (duracoes (calcula-duracoes segmentos)))
@@ -507,10 +507,10 @@ ponto nos corais de bach."
                 do (incf (nth i corretos) (nth i corretos1))))))))
       (let ((l (loop
                   for i in corretos
-                  for a in *algoritmos*
+                  for a in *algorithms*
                   for mx in media-x
                   for mx² in media-x²
-                  collect (list (algoritmo-nome a)
+                  collect (list (algorithm-name a)
                                 i
                                 (- total i)
                                 (percent i total)
@@ -528,8 +528,8 @@ ponto nos corais de bach."
            (segmentos (segmentos-minimos musica))
            (gabarito (parse-answer-sheet (remove-ext file) item))
            (resultados (when gabarito
-                         (loop for a in *algoritmos* collect
-                              (funcall (algoritmo-processa a) segmentos))))
+                         (loop for a in *algorithms* collect
+                              (funcall (algorithm-classify a) segmentos))))
            (file-name (pathname-name file))
            (notas (mapcar #'lista-notas segmentos)))
       (cond
@@ -547,15 +547,15 @@ ponto nos corais de bach."
 
 (defun run-gera-resultados (flags files item regexps)
   (format t "Algoritmos:~%")
-  (loop for a in *algoritmos* do (format t "- ~a~%" (algoritmo-nome a)))
+  (loop for a in *algorithms* do (format t "- ~a~%" (algorithm-name a)))
   (format t "Coral Algoritmo Segmento Resultado_esperado Resultado_obtido~%")
   (dolist (file files)
     (let* ((musica (parse-file file))
            (segmentos (segmentos-minimos musica))
            (gabarito (parse-answer-sheet (remove-ext file) item))
            (resultados (when gabarito
-                         (loop for a in *algoritmos* collect
-                              (funcall (algoritmo-processa a) segmentos))))
+                         (loop for a in *algorithms* collect
+                              (funcall (algorithm-classify a) segmentos))))
            (file-name (pathname-name file))
            (notas (mapcar #'lista-notas segmentos)))
       (cond
@@ -640,8 +640,8 @@ ponto nos corais de bach."
     (when (member 'v flags) (format t "~a " (pathname-name file)))
     (let* ((gabarito (parse-answer-sheet (remove-ext file) item))
            (segmento (segmentos-minimos (parse-file file)))
-           (resultados (loop for a in *algoritmos* collect
-                            (funcall (algoritmo-processa a) segmento))))
+           (resultados (loop for a in *algorithms* collect
+                            (funcall (algorithm-classify a) segmento))))
       (print-lily file item gabarito resultados flags segmento))))
 
 (defun remove-test (list)
@@ -756,7 +756,7 @@ ponto nos corais de bach."
     (when max-error (setf max-print-error (read-from-string max-error)))
     (when (member 'h flags) (print-help))
     (when algoritmos
-      (setf *algoritmos* (filtra-algoritmos algoritmos)))
+      (setf *algorithms* (filter-algorithms algoritmos)))
     (cond ((null comando) (print-help))
           ((equal comando "help") (print-help))
           ((equal comando "-h") (print-help))
