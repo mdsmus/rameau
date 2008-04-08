@@ -134,7 +134,7 @@
   (note-expr
    (NOTE octave-expr dur-expr  #'cria-nota)
    (SKIP dur-expr #'cria-skip)
-   (PARTIAL dur-expr #'cria-anacruz))
+   (PARTIAL dur-expr #'make-anacruz))
 
   (octave-expr
    (#'empty-octave)

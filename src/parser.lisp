@@ -171,7 +171,7 @@
   (declare (ignore a dur))
   block)
 
-(defun cria-anacruz (ign dur)
+(defun make-anacruz (ign dur)
   (setf *anacruz* (- dur (read-from-string *current-sig*)))
   nil)
         
@@ -208,7 +208,7 @@
   (make-instance 'relative :expr block :start relative))
 
 (defun parse-lilypond (expression)
-  (process-ast (ajusta-duracao (parse-music-block nil expression nil))))
+  (process-ast (correct-durations (parse-music-block nil expression nil))))
 
 (defun empty-octave ()
   "")
@@ -221,50 +221,50 @@
   (declare (ignore equal))
   (make-instance 'set-variable :varname variable :value value))
 
-(defgeneric ajusta-duracao (tree) 
+(defgeneric correct-durations (tree) 
     (:documentation "Acerta as durações das notas em uma música"))
 
-(defmethod ajusta-duracao ((tree ast-node))
-  (ajusta-duracao (node-expr tree))
+(defmethod correct-durations ((tree ast-node))
+  (correct-durations (node-expr tree))
   tree)
 
-(defmethod ajusta-duracao ((tree evento))
+(defmethod correct-durations ((tree evento))
   (if (evento-dur tree)
       (setf *dur* (evento-dur tree))
       (setf (evento-dur tree) *dur*))
   tree)
 
-(defmethod ajusta-duracao ((tree sequencia-de-notas))
-  (mapcar #'ajusta-duracao (sequencia-de-notas-notas tree))
+(defmethod correct-durations ((tree sequencia-de-notas))
+  (mapcar #'correct-durations (sequencia-de-notas-notas tree))
   (setf (sequencia-de-notas-dur tree) (evento-dur (car (sequencia-de-notas-notas tree))))
   tree)
 
-(defmethod ajusta-duracao ((tree list))
-  (mapcar #'ajusta-duracao tree)
+(defmethod correct-durations ((tree list))
+  (mapcar #'correct-durations tree)
   tree)
 
-(defmethod ajusta-duracao ((tree set-variable))
-  (ajusta-duracao (node-value tree))
+(defmethod correct-durations ((tree set-variable))
+  (correct-durations (node-value tree))
   tree)
 
-(defmethod ajusta-duracao (tree) tree)
+(defmethod correct-durations (tree) tree)
 
-(defgeneric acerta-times (times tree)
+(defgeneric correct-times (times tree)
   (:documentation "Multiplica um pedaco de música por um tempo especificado"))
 
-(defmethod acerta-times (times (tree ast-node))
-  (acerta-times times (node-expr tree)))
+(defmethod correct-times (times (tree ast-node))
+  (correct-times times (node-expr tree)))
 
-(defmethod acerta-times (times (e evento))
+(defmethod correct-times (times (e evento))
   (setf (evento-dur e) (* times (evento-dur e))))
 
-(defmethod acerta-times (times (e sequencia-de-notas))
-  (mapcar #'acerta-times (sequencia-de-notas-notas e)))
+(defmethod correct-times (times (e sequencia-de-notas))
+  (mapcar #'correct-times (sequencia-de-notas-notas e)))
 
-(defmethod acerta-times (times (tree set-variable))
-  (acerta-times times (node-value tree)))
+(defmethod correct-times (times (tree set-variable))
+  (correct-times times (node-value tree)))
 
-(defmethod acerta-times (times tree))
+(defmethod correct-times (times tree))
 
 (defgeneric process-ast (astnode)
   (:documentation "Processa um nó na AST e retorna a parte correspondente"))
@@ -287,7 +287,7 @@
 (defmethod process-ast ((node times))
   (let ((dur (node-times node))
         (expr (node-expr node)))
-    (acerta-times dur expr)
+    (correct-times dur expr)
     (process-ast expr)))
 
 (defmethod process-ast ((node relative))
@@ -341,7 +341,7 @@
     parse-voice-block
     parse-voice-block-string
     parse-repeat-block
-    cria-anacruz
+    make-anacruz
     parse-dur
     parse-dur-ponto
     parse-dur-multiplica
@@ -362,4 +362,3 @@
     parse-file
 )
 
-;; (print (with-system tempered (parse-file "/home/top/programas/analise-harmonica/corais/001.ly")))
