@@ -9,22 +9,22 @@
 
 (in-package :rameau-neural)
 
-(defparameter *versao* "-0003-")
+(defparameter *version* "-0003-")
 
-(defparameter *neural-path* (concat *rameau-path* "neural-nets/" "master" *versao*))
+(defparameter *neural-path* (concat *rameau-path* "neural-nets/" "master" *version*))
 
 (defparameter *hidden-units* 22)
 
 (defparameter *root-increment* 4)
 
-(defun extrai-diffs (segmento)
+(defun extract-diffs (segmento)
   (mapcar #'evento-pitch segmento))
 
-(defun cria-pattern-segmento (seg &optional diff)
+(defun make-sonority-pattern (seg &optional diff)
   (let ((diff (or diff (extract-diff seg))))
     (mapcar (lambda (x) (coerce x 'float)) (extract-feature-list seg diff))))
 
-(defun cria-pattern-saida (gabarito diff)
+(defun make-answer-pattern (gabarito diff)
   (let ((atual (make-list (+ *root-increment* (get-module)) :initial-element 0)))
     (cond ((chordp gabarito)
            (incf (nth (module (- (parse-note (stringify (chord-fundamental gabarito))) diff)) atual)))
@@ -40,7 +40,7 @@
            
     atual))
 
-(defun extrai-resultado-fundamental (diff output)
+(defun extract-root-result (diff output)
   (loop for i from 0
      for r in output
      with maxi = 0
@@ -60,10 +60,6 @@
                            (t (format t "module: ~a, maxi: ~a, output: ~a" (get-module) maxi output)
                               (error "erro"))))))
 
-(defvar *chord-net* nil)
-
-(defparameter *chord-net-file* (concat *neural-path* "chord-net.fann"))
-(defparameter *chord-net-train-data* (concat *neural-path* "chord-net-train.data"))
 
 (defparameter *mode-length* 5)
 (defparameter *7th-length* 4)
@@ -104,7 +100,7 @@
                            ((= maxi 3) "7+")
                            (t (error "Sétima não encontrada"))))))
 
-(defun make-pattern-modo (modo)
+(defun make-mode-pattern (modo)
   (let ((pattern (repeat-list *mode-length* 0)))
     (incf (nth (cond ((equal modo nil)
                       0)
@@ -132,69 +128,20 @@
                            ((= maxi 3) (if (equal "7" 7th) "ø" "°"))
                            ((= maxi 4) "!")))))
 
-(defun cria-pattern-saida-modo (gabarito)
+(defun make-mode-answer-pattern (gabarito)
   (if (chordp gabarito)
-      (append (make-pattern-modo (chord-mode gabarito))
+      (append (make-mode-pattern (chord-mode gabarito))
               (make-pattern-7th (chord-7th gabarito)))
       (make-empty-pattern)))
 
-(defun cria-pattern-saida-acorde (gabarito diff)
-  (append (cria-pattern-saida gabarito diff)
-          (cria-pattern-saida-modo gabarito)))
-
-(defun prepara-exemplos-treinamento-chord-net (coral gabarito &optional
-                                               (diff-func #'extrai-diffs)
-                                               (feature #'cria-pattern-segmento))
-  (loop for c in coral
-     for gab in gabarito
-     for ds = (funcall diff-func c)
-     if (listp gab)
-       nconc (prepara-exemplos-treinamento-chord-net (repeat-list (length gab) c)
-                                                     gab diff-func feature)
-     else
-       nconc (loop for d in ds
-                nconc (list (list (funcall feature c d)
-                                  (cria-pattern-saida-acorde gab d))))))
+(defun make-chord-answer-pattern (gabarito diff)
+  (append (make-answer-pattern gabarito diff)
+          (make-mode-answer-pattern gabarito)))
 
 
-(defun gera-dados-treinamento-chord-net ()
-  (with-system rameau:tempered
-    (loop for i in *training-data*
-       nconc (prepara-exemplos-treinamento-chord-net (temperado (first i)) (second i)))))
 
-(defun gera-arquivo-treinamento-chord-net ()
-  (let* ((dados (gera-dados-treinamento-chord-net))
-         (tamanho (length dados)))
-    (with-open-file (f *chord-net-train-data* :direction :output)
-      (format f "~a ~a ~a~%" tamanho 12 25)
-      (loop for d in dados
-         do
-           (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
-           (format f "~{~a ~}~%" (second d))))))
-
-(unless (cl-fad:file-exists-p *chord-net-train-data*)
-  (gera-arquivo-treinamento-chord-net))
-
-(defun treina-chord-net ()
-  (if (cl-fad:file-exists-p *chord-net-train-data*)
-      (progn
-        (setf *chord-net* (make-net 12 *hidden-units* 25))
-        (train-on-file *chord-net*
-                       *chord-net-train-data*
-                       1200
-                       100
-                       0.1)
-        (save-chord-net))
-      (progn
-        (gera-arquivo-treinamento-chord-net)
-        (treina-chord-net))))
-
-
-(unless (cl-fad:file-exists-p *chord-net-file*)
-  (treina-chord-net))
-
-(defun extrai-resultado-chord-net (diff res)
-  (let ((fundamental (extrai-resultado-fundamental
+(defun get-class-chord-net (diff res)
+  (let ((fundamental (extract-root-result
                       diff
                       (firstn res (+ *root-increment* (get-module)))))
         (resto (nthcdr (+ *root-increment* (get-module)) res)))
@@ -207,19 +154,7 @@
                       :7th 7th))
         fundamental)))
 
-(defun aplica-chord-net (inputs)
-  (load-chord-net)
-  (coloca-inversoes
-   inputs
-   (with-system tempered
-     (mapcar (lambda (x) (let ((d (extract-diff x)))
-                           (extrai-resultado-chord-net
-                            d
-                            (run-net *chord-net*
-                                     (cria-pattern-segmento x)))))
-             (temperado inputs)))))
 
-;(register-algorithm "S-net" #'aplica-chord-net #'compara-gabarito-tonal)
 
 (defvar *e-chord-net* nil)
 
@@ -229,30 +164,28 @@
 (defun load-e-chord-net ()
   (if (cl-fad:file-exists-p *e-chord-net-file*)
       (setf *e-chord-net* (load-from-file *e-chord-net-file*))
-      (treina-e-chord-net)))
+      (train-e-chord-net)))
 
 (defun save-e-chord-net ()
   (save-to-file *e-chord-net* *e-chord-net-file*))
 
 (defun run-e-chord-net (x)
   (let ((d (extract-diff x)))
-    (extrai-resultado-chord-net
+    (get-class-chord-net
      d
      (run-net *e-chord-net*
-              (cria-pattern-segmento x d)))))
+              (make-sonority-pattern x d)))))
 
-(defun aplica-e-chord-net (inputs)
+(defun apply-e-chord-net (inputs)
   (load-e-chord-net)
   (coloca-inversoes inputs (mapcar #'run-e-chord-net inputs)))
 
-(defun gera-dados-treinamento-e-chord-net ()
+(defun make-training-data-e-chord-net ()
   (loop for i in *training-data*
-     nconc (prepara-exemplos-treinamento-chord-net (first i) (second i))))
+     nconc (prepare-training-data-chord-net (first i) (second i))))
 
-
-
-(defun gera-arquivo-treinamento-e-chord-net ()
-  (let* ((dados (gera-dados-treinamento-e-chord-net))
+(defun write-training-file-e-chord-net ()
+  (let* ((dados (make-training-data-e-chord-net))
          (tamanho (length dados)))
     (with-open-file (f *e-chord-net-train-data* :direction :output)
       (format f "~a ~a ~a~%" tamanho 96 109)
@@ -262,9 +195,9 @@
            (format f "~{~a ~}~%" (second d))))))
 
 (unless (cl-fad:file-exists-p *e-chord-net-train-data*)
-  (gera-arquivo-treinamento-e-chord-net))
+  (write-training-file-e-chord-net))
 
-(defun treina-e-chord-net ()
+(defun train-e-chord-net ()
   (if (cl-fad:file-exists-p *e-chord-net-train-data*)
       (progn
         (setf *e-chord-net* (make-net 96 *hidden-units* 109))
@@ -275,79 +208,79 @@
                        0.1)
         (save-e-chord-net))
       (progn
-        (gera-arquivo-treinamento-e-chord-net)
-        (treina-e-chord-net))))
+        (write-training-file-e-chord-net)
+        (train-e-chord-net))))
 
 (unless (cl-fad:file-exists-p *e-chord-net-file*)
-  (treina-e-chord-net))
+  (train-e-chord-net))
 
-(register-algorithm "ES-net" #'aplica-e-chord-net #'compara-gabarito-tonal)
+(register-algorithm "ES-net" #'apply-e-chord-net #'compara-gabarito-tonal)
 
 (defparameter *context-net* nil)
 
 (defparameter *context-net-file* (concat *neural-path* "context-net.fann"))
 (defparameter *context-net-train-data* (concat *neural-path* "context-net-train.data"))
 
-(defparameter *contexto-antes* 1)
-(defparameter *contexto-depois* 1)
+(defparameter *context-before* 1)
+(defparameter *context-after* 1)
 
-(defun context-extrai-diffs (segmento)
-  (extrai-diffs (nth *contexto-antes* segmento)))
+(defun context-extract-diffs (segmento)
+  (extract-diffs (nth *context-before* segmento)))
 
-(defun context-extrai-diff (segmentos)
-  (extract-diff (nth *contexto-antes* segmentos)))
+(defun context-extract-diff (segmentos)
+  (extract-diff (nth *context-before* segmentos)))
 
 (defun context-extrai-features (segmento &optional diff)
-  (let ((diff (or diff (context-extrai-diff segmento))))
-    (loop for s in segmento nconc (cria-pattern-segmento s diff))))
+  (let ((diff (or diff (context-extract-diff segmento))))
+    (loop for s in segmento nconc (make-sonority-pattern s diff))))
 
 (defun load-context-net ()
   (if (cl-fad:file-exists-p *context-net-file*)
       (setf *context-net* (load-from-file *context-net-file*))
-      (treina-context-net)))
+      (train-context-net)))
 
 (defun save-context-net ()
   (save-to-file *context-net* *context-net-file*))
 
 (defun run-context-net (x)
-  (let ((d (context-extrai-diff x)))
-    (extrai-resultado-chord-net
+  (let ((d (context-extract-diff x)))
+    (get-class-chord-net
      d
      (run-net *context-net*
               (context-extrai-features x d)))))
 
-(defun aplica-context-net (inputs)
+(defun apply-context-net (inputs)
   (load-context-net)
-  (let ((contexto (butlast (contextualize inputs *contexto-antes* *contexto-depois*)
-                           *contexto-antes*)))
+  (let ((contexto (butlast (contextualize inputs *context-before* *context-after*)
+                           *context-before*)))
     (coloca-inversoes inputs (mapcar #'run-context-net contexto))))
 
-(defun gera-dados-treinamento-context-net ()
+(defun make-training-data-context-net ()
   (loop for i in *training-data*
-     nconc (prepara-exemplos-treinamento-chord-net (contextualize (first i)
-                                                                  *contexto-antes*
-                                                                  *contexto-depois*)
+     nconc (prepare-training-data-chord-net (contextualize (first i)
+                                                                  *context-before*
+                                                                  *context-after*)
                                                    (second i)
-                                                   #'context-extrai-diffs
+                                                   #'context-extract-diffs
                                                    #'context-extrai-features)))
 
-(defun gera-arquivo-treinamento-context-net ()
-  (let* ((dados (gera-dados-treinamento-context-net))
+(defun write-training-file-context-net ()
+  (let* ((dados (make-training-data-context-net))
          (tamanho (length dados)))
     (with-open-file (f *context-net-train-data* :direction :output)
-      (format f "~a ~a ~a~%" tamanho (* (+ 1 *contexto-depois* *contexto-antes*) 96) 109)
+      (format f "~a ~a ~a~%" tamanho (* (+ 1 *context-after* *context-before*) 96) 109)
       (loop for d in dados
          do
            (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
            (format f "~{~a ~}~%" (second d))))))
 
 (unless (cl-fad:file-exists-p *context-net-train-data*)
-  (gera-arquivo-treinamento-context-net))
+  (write-training-file-context-net))
 
-(defun treina-context-net ()
+(defun train-context-net ()
   (if (cl-fad:file-exists-p *context-net-train-data*)
       (progn
-        (setf *context-net* (make-net (* (+ 1 *contexto-depois* *contexto-antes*) 96)
+        (setf *context-net* (make-net (* (+ 1 *context-after* *context-before*) 96)
                                       *hidden-units*
                                       109))
         (train-on-file *context-net*
@@ -357,10 +290,10 @@
                        0.1)
         (save-context-net))
       (progn
-        (gera-arquivo-treinamento-context-net)
-        (treina-context-net))))
+        (write-training-file-context-net)
+        (train-context-net))))
 
 (unless (cl-fad:file-exists-p *context-net-file*)
-  (treina-context-net))
+  (train-context-net))
 
-(register-algorithm "EC-net" #'aplica-context-net #'compara-gabarito-tonal)
+(register-algorithm "EC-net" #'apply-context-net #'compara-gabarito-tonal)
