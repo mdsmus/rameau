@@ -8,19 +8,20 @@
 ;; src/algoritmos/knn.lisp
 ;; A k-nearest-neighbor chord finder, for use in Rameau.
 
-;; The training examples as stored in a hash table, keyed by their
-;; pitches. In the e-knn version, only one sonority is stored at a time, while
-;; in the ec-knn a few surrouding sonorities are also stored.
+;; The training examples as stored in an alist, keyed by their
+;; pitches. In the e-knn version, only one sonority is stored at a
+;; time, while in the ec-knn a few surrouding sonorities are also
+;; stored.
 
-;; The values in the hash table are also hash tables. These tables
-;; are keyed by the classes for that example (there can be more than one)
-;; and the values are the counts for how many times each class appears.
+;; The values in the alist are also alists. These lists are keyed by
+;; the classes for that example (there can be more than one) and the
+;; values are the counts for how many times each class appears.
 
-(defparameter *exemplos* (make-alist))
+(defparameter *examples* (make-alist))
 (defparameter *1-neighbours* (make-alist))
 (defparameter *k* 1)
 
-(defun processa-acorde (acorde diff)
+(defun process-chord (acorde diff)
   (cond ((chordp acorde)
          (list 'chord
                (- (parse-note (chord-fundamental acorde)) diff)
@@ -31,7 +32,7 @@
         (t
          (list (augmented-sixth-type acorde)))))
 
-(defun extrai-acorde (lista diff)
+(defun extract-chord (lista diff)
   (cond ((eq (first lista) '-)
          (make-melodic-note))
         ((eq (first lista) 'chord)
@@ -45,32 +46,32 @@
        it
        (setf (gethash key table) default)))
 
-(defun insere-contagem (chave acorde diff hash n)
-  (let ((acorde (processa-acorde acorde diff)))
-    (if (aget acorde *exemplos*)
-        (apush (cons chave n) (aget acorde *exemplos*))
-        (aset acorde *exemplos* (list (cons chave n))))
+(defun insert-count (chave acorde diff hash n)
+  (let ((acorde (process-chord acorde diff)))
+    (if (aget acorde *examples*)
+        (apush (cons chave n) (aget acorde *examples*))
+        (aset acorde *examples* (list (cons chave n))))
     (aincf acorde (aget chave hash (make-alist)))))
 
-(defun treina-1nn (coral gabarito n)
+(defun train-1nn (coral answer n)
   (loop for segmento in coral
-     for acorde in gabarito
+     for acorde in answer
      for diff = (extract-diff segmento)
      for pitches = (extract-feature-list segmento diff)
      do (if (listp acorde)
-            (mapcar (lambda (x) (insere-contagem pitches x diff *1-neighbours* n)) acorde)
-            (insere-contagem pitches acorde diff *1-neighbours* n))))
+            (mapcar (lambda (x) (insert-count pitches x diff *1-neighbours* n)) acorde)
+            (insert-count pitches acorde diff *1-neighbours* n))))
 
-(defun treina-k1 (exemplos)
+(defun train-k1 (exemplos)
   (loop for exemplo in exemplos
        for n from 0
        for coral = (first exemplo)
-       for gabarito = (second exemplo)
-       do (treina-1nn coral gabarito n)))
+       for answer = (second exemplo)
+       do (train-1nn coral answer n)))
 
-(treina-k1 *training-data*)
+(train-k1 *training-data*)
 
-(defun retorna-classificacao (diff maxkey maxv)
+(defun get-class (diff maxkey maxv)
   (declare (ignore maxkey))
   (let ((resultado (make-hash-table :test #'equal)))
     (loop for hash in maxv do
@@ -80,9 +81,9 @@
        with maxk = 0
        with maxv = 0
        when (> (gethash k resultado) maxv) do (setf maxk k maxv (gethash k resultado))
-       finally (return (extrai-acorde maxk diff)))))
+       finally (return (extract-chord maxk diff)))))
 
-(defun classifica-k1 (segmento)
+(defun classify-k1 (segmento)
   (let* ((diff (extract-diff segmento))
          (pitches (extract-feature-list segmento diff)))
     (loop for (key value) in *1-neighbours* 
@@ -90,69 +91,69 @@
        do 
          (let ((d (distance pitches key)))
            (setf nn (clip *k* (insert (list d key value) nn :key #'car))))
-       finally (return (retorna-classificacao diff (mapcar #'second nn) (mapcar #'third nn))))))
+       finally (return (get-class diff (mapcar #'second nn) (mapcar #'third nn))))))
 
-(defun gera-gabarito-k1 (coral)
-  (coloca-inversoes coral (mapcar #'classifica-k1 coral)))
+(defun prepare-answers-k1 (coral)
+  (coloca-inversoes coral (mapcar #'classify-k1 coral)))
 
-(register-algorithm "ES-Knn" #'gera-gabarito-k1 #'compara-gabarito-tonal)
+(register-algorithm "ES-Knn" #'prepare-answers-k1 #'compara-gabarito-tonal)
 
-(defun mostra-exemplos ()
+(defun show-examples ()
   "Mostra em que corais estão que tipos de acorde."
-  (loop for h being the hash-keys in *exemplos*
-     do (format t " ~a => ~a~%" h (remove-duplicates (gethash h *exemplos*)))))
+  (loop for h being the hash-keys in *examples*
+     do (format t " ~a => ~a~%" h (remove-duplicates (gethash h *examples*)))))
 
 ;; Algoritmo context-knn. 
 
 
 
-(defparameter *contexto-antes* 2)
-(defparameter *contexto-depois* 0)
+(defparameter *before-context* 2)
+(defparameter *after-context* 0)
 
 (defparameter *variance* 1/2)
 
 (defparameter *context-neighbors* (make-alist))
 (defparameter *k-neighbors* 1)
 
-(defun context-extrai-diff (segmentos)
-  (extract-diff (nth *contexto-antes* segmentos)))
+(defun context-extract-diff (segmentos)
+  (extract-diff (nth *before-context* segmentos)))
 
-(defun context-extrai-features (segmentos diff)
+(defun context-extract-features (segmentos diff)
   (loop for seg in segmentos
-     for peso from (-  *contexto-antes*)
+     for peso from (-  *before-context*)
      nconc (loop for x in (extract-feature-list seg diff)
               collect (/ x (+ 1 (* (abs peso) *variance*))))))
 
-(defun treina-context-nn (coral gabarito n)
+(defun train-context-nn (coral answer n)
   (loop for segmento in coral
-     for acorde in gabarito
-     for diff = (context-extrai-diff segmento)
-     for pitches = (context-extrai-features segmento diff)
+     for acorde in answer
+     for diff = (context-extract-diff segmento)
+     for pitches = (context-extract-features segmento diff)
      do (if (listp acorde)
-            (mapcar (lambda (x) (insere-contagem pitches x diff *context-neighbors* n)) acorde)
-            (insere-contagem pitches acorde diff *context-neighbors* n))))
+            (mapcar (lambda (x) (insert-count pitches x diff *context-neighbors* n)) acorde)
+            (insert-count pitches acorde diff *context-neighbors* n))))
 
-(defun treina-context (exemplos)
+(defun train-context (exemplos)
   (loop for exemplo in exemplos
      for coral = (first exemplo)
      for n from 0
-     for gabarito = (second exemplo)
-     do (treina-context-nn (contextualize coral *contexto-antes* *contexto-depois*) gabarito n)))
+     for answer = (second exemplo)
+     do (train-context-nn (contextualize coral *before-context* *after-context*) answer n)))
 
-(treina-context *training-data*)
+(train-context *training-data*)
 
-(defun classifica-context (segmento)
-  (let* ((diff (context-extrai-diff segmento))
-         (pitches (context-extrai-features segmento diff)))
+(defun classify-context (segmento)
+  (let* ((diff (context-extract-diff segmento))
+         (pitches (context-extract-features segmento diff)))
     (loop for (key value) in *context-neighbors* 
        with nn = nil
        do 
          (let ((d (distance pitches key)))
            (setf nn (clip *k-neighbors* (insert (list d key value) nn :key #'car))))
-       finally (return (retorna-classificacao diff (mapcar #'second nn) (mapcar #'third nn))))))
+       finally (return (get-class diff (mapcar #'second nn) (mapcar #'third nn))))))
 
-(defun gera-gabarito-context (coral)
-  (let ((c (contextualize coral *contexto-antes* *contexto-depois*)))
-    (coloca-inversoes coral (mapcar #'classifica-context (butlast c *contexto-antes*)))))
+(defun prepare-answers-context (coral)
+  (let ((c (contextualize coral *before-context* *after-context*)))
+    (coloca-inversoes coral (mapcar #'classify-context (butlast c *before-context*)))))
 
-(register-algorithm "EC-Knn" #'gera-gabarito-context #'compara-gabarito-tonal)
+(register-algorithm "EC-Knn" #'prepare-answers-context #'compara-gabarito-tonal)
