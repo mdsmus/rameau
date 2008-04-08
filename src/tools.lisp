@@ -129,11 +129,11 @@
 (defparameter *training-data*
   (nconc (loop for f in (parse-file-list "corais" '("001..6"))
             for g = (parse-answer-sheet f "corais")
-            collect (list (segmentos-minimos (parse-file f)) g))
+            collect (list (sonorities (parse-file f)) g))
          (loop for f in (mapcan (lambda (x) (parse-file-list "exemplos" (list x)))
                                 '("11..13" "23..28"))
             for g = (parse-answer-sheet f "exemplos")
-            collect (list (segmentos-minimos (parse-file f)) g))))
+            collect (list (sonorities (parse-file f)) g))))
 
 
 (defun extract-feature-list (segmento diff)

@@ -57,7 +57,7 @@
    #:rameau-quit
    #:remove-comma-if-needed
    #:read-user-config
-   #:segmentos-minimos
+   #:sonorities
    #:set-lang
    #:evento-pitch
    #:evento-dur

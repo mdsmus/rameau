@@ -457,7 +457,7 @@ ponto nos corais de bach."
 (defun run-compara-gabarito (flags files item)
   (dolist (file files)
     (let* ((musica (parse-file file))
-           (segmentos (segmentos-minimos musica))
+           (segmentos (sonorities musica))
            (resultados (loop for a in *algorithms* collect
                             (funcall (algorithm-classify a) segmentos)))
            (gabarito (parse-answer-sheet (remove-ext file) item))
@@ -484,7 +484,7 @@ ponto nos corais de bach."
         (media-x² (repeat-list (length *algorithms*) 0.0)))
     (dolist (file files)
       (let* ((musica (parse-file file))
-             (segmentos (segmentos-minimos musica))
+             (segmentos (sonorities musica))
              (gabarito (parse-answer-sheet (remove-ext file) item))
              (resultados (when gabarito
                            (loop for a in *algorithms* collect
@@ -525,7 +525,7 @@ ponto nos corais de bach."
   (format t "Coral Algoritmo Segmento Resultado_esperado Resultado_obtido~%")
   (dolist (file files)
     (let* ((musica (parse-file file))
-           (segmentos (segmentos-minimos musica))
+           (segmentos (sonorities musica))
            (gabarito (parse-answer-sheet (remove-ext file) item))
            (resultados (when gabarito
                          (loop for a in *algorithms* collect
@@ -551,7 +551,7 @@ ponto nos corais de bach."
   (format t "Coral Algoritmo Segmento Resultado_esperado Resultado_obtido~%")
   (dolist (file files)
     (let* ((musica (parse-file file))
-           (segmentos (segmentos-minimos musica))
+           (segmentos (sonorities musica))
            (gabarito (parse-answer-sheet (remove-ext file) item))
            (resultados (when gabarito
                          (loop for a in *algorithms* collect
@@ -578,7 +578,7 @@ ponto nos corais de bach."
   (let ((errados 0))
     (dolist (file files)
       (let* ((musica (parse-file file))
-             (segmentos (segmentos-minimos musica))
+             (segmentos (sonorities musica))
              (gabarito (parse-answer-sheet (remove-ext file) item))
              (size-gab (length gabarito))
              (size-seg (length segmentos)))
@@ -606,7 +606,7 @@ ponto nos corais de bach."
   (declare (ignore flags))
   (format t "~a:~%" item)
   (dolist (file files)
-    (let ((segmento (segmentos-minimos (parse-file file)))
+    (let ((segmento (sonorities (parse-file file)))
 	  (*package* (find-package :rameau)))
       (loop
 	 for x in (mapcar2 #'set-intervals #'pitch-list segmento)
@@ -639,7 +639,7 @@ ponto nos corais de bach."
   (dolist (file files)
     (when (member 'v flags) (format t "~a " (pathname-name file)))
     (let* ((gabarito (parse-answer-sheet (remove-ext file) item))
-           (segmento (segmentos-minimos (parse-file file)))
+           (segmento (sonorities (parse-file file)))
            (resultados (loop for a in *algorithms* collect
                             (funcall (algorithm-classify a) segmento))))
       (print-lily file item gabarito resultados flags segmento))))

@@ -2,9 +2,9 @@
 (use-package 'lisp-unit)
 
 
-(lisp-unit:define-test segmentos-minimos
+(lisp-unit:define-test sonorities
   (lisp-unit:assert-equalp
-   (segmentos-minimos
+   (sonorities
     (list (make-evento :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0)
           (make-evento :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
           (make-evento :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)

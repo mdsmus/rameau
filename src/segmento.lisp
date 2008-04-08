@@ -2,10 +2,11 @@
 
 (in-package #:rameau)
 
-(defun agrupa-por (inicio resto)
+(defun group-by (inicio resto)
+  "Helper grouping function"
   (if resto
       (if (= inicio (evento-inicio (car resto)))
-          (multiple-value-bind (segmento restante) (agrupa-por inicio (cdr resto))
+          (multiple-value-bind (segmento restante) (group-by inicio (cdr resto))
             (values (cons (car resto) segmento)
                     restante))
           (values
@@ -13,18 +14,21 @@
            resto))
       (values nil nil)))
   
-(defun agrupa-inicio (musica)
-  "Separa a musica em pedaços com inicio igual, primeira etapa da segmentação"
+(defun group-with-start (musica)
+  "Group \\texttt{music} by the on-set times of the notes."
   (when musica
     (let* ((primeiro (first musica))
            (inicio (evento-inicio primeiro))
            (resto (cdr musica)))
-      (multiple-value-bind (grupo restante) (agrupa-por inicio resto)
+      (multiple-value-bind (grupo restante) (group-by inicio resto)
         
         (cons (cons primeiro grupo)
-              (agrupa-inicio restante))))))
+              (group-with-start restante))))))
 
-(defun normaliza-notas (segmento proximo)
+(defun correct-segments (segmento proximo)
+  "Split the notes in segment to ensure they do not overflow the
+  possible sonority. Any too long notes are bunked into the next
+  sonority."
   (declare (list proximo))
   (let* ((sobras nil)
          (proximo-evento (if proximo (evento-inicio (first proximo))))
@@ -58,27 +62,28 @@
                     segmento)
             sobras)))
 
-(defun redivide-segmentos (musica)
-  "Pega uma musica agrupada em pedaços de inicio igual e cria os
-   segmentos minimos.  Para isso é preciso garantir que todos os
-   pedaços tem o mesmo início e o mesmo fim. Escolhe-se o menor
-   fim de cada pedaço e, caso haja alguma nota com fim posterior,
-   divide-se ela e coloca-se o resto no próximo pedaço."
+(defun resplit-segments (musica)
+  "Create the sonorities of a piece already grouped by note onset
+  time.
+
+  For this, it is necessary to ensure that the notes in every sonority
+  have the same on-set and off-set times. This is accomplished by
+  splitting notes, which is made by correct-segments."
   (if (cdr musica)
       (multiple-value-bind
             (segmento sobras)
-          (normaliza-notas (first musica) (second musica))
+          (correct-segments (first musica) (second musica))
         (let* ((sobras-acumuladas (nconc sobras (second musica)))
-               (segmentos (nconc (agrupa-inicio (sort sobras-acumuladas
+               (segmentos (nconc (group-with-start (sort sobras-acumuladas
                                                        (lambda (x y)
                                                          (< (evento-inicio x)
                                                             (evento-inicio y)))))
                                  (cddr musica))))
-          (cons segmento (redivide-segmentos segmentos))))
+          (cons segmento (resplit-segments segmentos))))
       musica))
 
-(defun segmentos-minimos (musica)
-  (redivide-segmentos (agrupa-inicio musica)))
+(defun sonorities (musica)
+  (resplit-segments (group-with-start musica)))
 
-(do-not-test agrupa-por agrupa-inicio redivide-segmentos normaliza-notas)
+(do-not-test group-by group-with-start resplit-segments correct-segments)
 
