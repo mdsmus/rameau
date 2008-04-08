@@ -12,14 +12,14 @@
 
 
 
-(defparameter *atributos* (list
+(defparameter *attributes* (list
                            (cons 'pitch1 (loop for i from 0 to 95 collect i))
                            (cons 'pitch2 (loop for i from 0 to 95 collect i))
                            (cons 'pitch3 (loop for i from 0 to 95 collect i))
                            (cons 'pitch4 (loop for i from 0 to 95 collect i))
                             ))
 
-(defparameter *nomes* '(pitch1 pitch2 pitch3 pitch4))
+(defparameter *names* '(pitch1 pitch2 pitch3 pitch4))
 
 (defparameter *chords*
   (loop for modo in '(nil "m" "+" "°" "ø" "!")
@@ -37,11 +37,11 @@
 
 (defparameter *chord-tree* nil)
 
-(defun prepara-segmento (segmento)
+(defun prepare-sonority (segmento)
   (loop for nota in segmento
-     for n in *nomes* collect (cons n (evento-pitch nota))))
+     for n in *names* collect (cons n (evento-pitch nota))))
 
-(defun simplifica (acorde)
+(defun extract-class (acorde)
   (if (and (chordp acorde)
            (or (equal nil (chord-mode acorde))
                (equal "m" (chord-mode acorde))
@@ -58,44 +58,44 @@
           (string->symbol "—")
           (string->symbol (stringify acorde)))))
 
-(defun prepara-chord-exemplo-treinamento (coral gabarito)
+(defun prepare-training-sample (coral gabarito)
   (loop for s in coral
      for g in gabarito
      collect (make-example :name "foo"
-                           :class (simplifica g)
-                           :values (prepara-segmento s))))
+                           :class (extract-class g)
+                           :values (prepare-sonority s))))
 
-(defun prepara-chord-entrada-treinamento (corais gabaritos)
+(defun prepare-training-song (corais gabaritos)
    (loop for c in corais
       for g in gabaritos
       nconc (loop for i in *notas-interessantes-tonal*
-               nconc (prepara-chord-exemplo-treinamento (transpose-segmentos c i)
+               nconc (prepare-training-sample (transpose-segmentos c i)
                                                         (transpose-chords g i)))))
 
-(defun treina-chord-tree (corais gabaritos)
-  (setf *chord-tree* (id3 (prepara-chord-entrada-treinamento corais gabaritos)
-                          *atributos*
+(defun train-chord-tree (corais gabaritos)
+  (setf *chord-tree* (id3 (prepare-training-song corais gabaritos)
+                          *attributes*
                           *chord-classes*)))
 
-(defun aplica-chord-tree (segmento)
-  (let ((res (classify (make-example :values (prepara-segmento segmento)) *chord-tree*)))
+(defun chord-tree-classify (segmento)
+  (let ((res (classify (make-example :values (prepare-sonority segmento)) *chord-tree*)))
     (aif (parse-chord res)
          it
          (make-melodic-note))))
 
-(defun exibe-chord-tree (&rest args)
+(defun show-chord-tree (&rest args)
   (declare (ignore args))
   (print-tree *chord-tree*))
 
-(defun gera-gabarito-chord-tree (coral)
-  (dbg 'rameau::mostra-arvore "Arvore: ~/rameau-tree-enarm::exibe-chord-tree/ ~%" *chord-tree*)
-  (coloca-inversoes coral (mapcar #'aplica-chord-tree coral)))
+(defun do-classification (coral)
+  (dbg 'rameau::mostra-arvore "Arvore: ~/rameau-tree-enarm::show-chord-tree/ ~%" *chord-tree*)
+  (coloca-inversoes coral (mapcar #'chord-tree-classify coral)))
 
-(register-algorithm "ES-tree" #'gera-gabarito-chord-tree #'compara-gabarito-tonal)
+(register-algorithm "ES-tree" #'do-classification #'compara-gabarito-tonal)
 
-(defun faz-treina-chord-tree ()
+(defun do-train-chord-tree ()
   (multiple-value-bind (corais gabaritos)
       (unzip *training-data*)
-    (treina-chord-tree corais gabaritos)))
+    (train-chord-tree corais gabaritos)))
 
-(faz-treina-chord-tree)
+(do-train-chord-tree)
