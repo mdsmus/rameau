@@ -201,5 +201,5 @@
 (define-test notename->code
   (assert-equal 10 (notename->code (code->notename 10))))
 
-(define-test compara-notes-tempered
-  (assert-true  (compara-notes-tempered  "a#" "bb")))
+(define-test enharmonicaly-equal-p
+  (assert-true  (enharmonicaly-equal-p  "a#" "bb")))

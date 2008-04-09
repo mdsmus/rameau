@@ -11,7 +11,7 @@
                                sort-form-list tempered tonal
                                get-system-notes get-notes code->notename parse-note
                                notename->code
-                               compara-notes-tempered
+                               enharmonicaly-equal-p
                                get-module get-accidental get-octave
                                octave-from-string
                                note? rest? latin->lily
@@ -27,10 +27,6 @@
                                set-equal? deftemplates tempered tonal))
 
 (defvar *system* 'tonal)
-
-(defparameter *notas-interessantes-tonal*
-  (loop for i in '(0 14 28 41 55 69  83)
-     append (mapcar #'module (list (- i 2) (- i 1) i (+ i 1) (+ i 2)))))
 
 (defmacro with-system (system &body body)
   `(let ((*system* ',system))
@@ -157,7 +153,7 @@ acorde. EXEMPLO: (get-interval-quantity 3) retorna TRIPLE."
     get-system-intervals
     get-interval-name
     get-interval-quantity
-    my-position
+    %my-position
     %parse-note
     %note->code
     )
@@ -173,7 +169,7 @@ acorde. EXEMPLO: (get-interval-quantity 3) retorna TRIPLE."
                (t 0)))))
 
 (defun code->notename (number)
-  "Retorna o nome da nota dado o seu código numérico."
+  "Return a note nome given its numeric code."
   (nth (module number) (get-system-notes *system*)))
 
 (defun number-of-accidentals (acc-string representation)
@@ -194,19 +190,20 @@ EXAMPLE: (match-note-representation \"cis\" 'latin) returns nil."
   (or (search (get-accidental 'flat representation) note)
       (search (get-accidental 'sharp representation) note)))
 
-(defun my-position (&rest args) (apply #'position args))
+(defun %my-position (&rest args)
+  (apply #'position args))
 
 (defun %parse-note (note representation system)
   "Returns the numeric code for a note according with the representation and system.
 EXAMPLE: (%parse-note \"ces\" 'lily 'tonal) returns 95. This is a low
 level function, you should use parse-note instead."
   (let ((note-code-tonal
-         (my-position (list (string->symbol (subseq note 0 1))
+         (%my-position (list (string->symbol (subseq note 0 1))
                             (number-of-accidentals (subseq note 1) representation))
                    (get-system-notes 'tonal)
                    :test #'equal))
         (note-code-tempered
-         (+ (my-position (list (string->symbol (subseq note 0 1)) 0)
+         (+ (%my-position (list (string->symbol (subseq note 0 1)) 0)
                       (get-system-notes 'tempered)
                       :test #'equal)
             (number-of-accidentals (subseq note 1) representation))))
@@ -246,9 +243,12 @@ usa a representação do lilypond e 'd#' usa a representação 'latin'."
              (t (error "tipo de nota não conhecida")))))))
 
 (defun notename->code (note)
+  "R"
   (position note (get-notes) :test #'equal))
 
-(defun compara-notes-tempered (notea noteb)
+(defun enharmonicaly-equal-p (notea noteb)
+  "Compare if two notes are enarmonically equivalent. Both notes
+shoulbe be represented as strings."
   (with-system tempered
     (equal (parse-note notea) (parse-note noteb))))
 
@@ -416,3 +416,6 @@ EXAMPLE: (equal-sets? '(0 3 7) '(8 1 4)) returns T."
 
 (do-not-test deftemplates with-system)
 
+(defparameter *notas-interessantes-tonal*
+  (loop for i in '(0 14 28 41 55 69  83)
+     append (mapcar #'module (list (- i 2) (- i 1) i (+ i 1) (+ i 2)))))

@@ -188,8 +188,8 @@ position."
                    (stringify (augmented-sixth-type gabarito))))
       (and (chordp resultado)
            (chordp gabarito)
-           (compara-notes-tempered (chord-fundamental resultado)
-                                   (chord-fundamental gabarito))
+           (enharmonicaly-equal-p (chord-fundamental resultado)
+                                  (chord-fundamental gabarito))
            (equal (chord-mode resultado) (chord-mode gabarito))
            (equal (chord-7th resultado) (chord-7th gabarito)))))
 
