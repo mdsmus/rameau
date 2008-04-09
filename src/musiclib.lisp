@@ -28,6 +28,10 @@
 
 (defvar *system* 'tonal)
 
+(defparameter *notas-interessantes-tonal*
+  (loop for i in '(0 14 28 41 55 69  83)
+     append (mapcar #'module (list (- i 2) (- i 1) i (+ i 1) (+ i 2)))))
+
 (defmacro with-system (system &body body)
   `(let ((*system* ',system))
      (declare (special *system*))
@@ -412,8 +416,3 @@ EXAMPLE: (equal-sets? '(0 3 7) '(8 1 4)) returns T."
 
 (do-not-test deftemplates with-system)
 
-(defparameter *notas-puras-tonal* '(0 14 28 41 55 69  83))
-
-(defparameter *notas-interessantes-tonal*
-  (loop for i in *notas-puras-tonal*
-     append (mapcar #'module (list (- i 2) (- i 1) i (+ i 1) (+ i 2)))))
