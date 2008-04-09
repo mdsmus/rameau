@@ -306,7 +306,7 @@ ponto nos corais de bach."
               for r in res
               for alg = (first r) then (first r)
               for certo? = (funcall (algorithm-compare a) alg gab)
-              then (funcall (algorithmo-compare a) alg gab)
+              then (funcall (algorithm-compare a) alg gab)
               do (print-res-alg alg certo? flags)
               when certo? do (incf (nth i counts)))
            (format t "~%"))
@@ -338,7 +338,7 @@ ponto nos corais de bach."
               for i from 0
               for r in res
               for alg = (first r) then (first r)
-              for certo? = (funcall (algorithmo-compare a) alg gab)
+              for certo? = (funcall (algorithm-compare a) alg gab)
               then (funcall (algorithm-compare a) alg gab)
               when certo? do (incf (nth i counts)) (incf (nth i corretos))))
       (let ((l (loop
