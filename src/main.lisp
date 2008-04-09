@@ -259,8 +259,9 @@ ponto nos corais de bach."
                 if (funcall (algorithm-compare a) res gab) do
                   (format stream "\"~a\" " (if res res " "))
                 else do
-                  (format stream "\\markup{\\roman \\italic \\bold \"~a\"}"
-                          ;"\\markup{\\bold \\with-color #(x11-color 'red) \"~a\"}"
+                  (format stream
+                          ;;"\\markup{\\roman \\italic \\bold \"~a\"}"
+                          "\\markup{\\bold \\with-color #(x11-color 'red) \"~a\"}"
                           (if res res " "))
                 unless (= 0 (intervalo (first s) (second s))) do
                   (format stream "\" \""))))
