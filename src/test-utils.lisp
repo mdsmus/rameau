@@ -47,10 +47,6 @@
   (assert-equal '|123| (string->symbol "123"))
   (assert-equal 'foo (string->symbol "foo")))
 
-(define-test symbol->number
-  (assert-equal 2 (symbol->number "foodfood" '("bar" "foo")))
-  (assert-equal -2 (symbol->number "foodfood" '("foo" "bar"))))
-
 (define-test destringify
   (assert-equal :baz (destringify :baz))
   (assert-equal 'foo (destringify "foo"))
@@ -58,14 +54,6 @@
 
 (define-test repeat-string
   (assert-equal "foofoofoo" (repeat-string 3 "foo")))
-
-(lisp-unit:define-test octave-from-string
-  (lisp-unit:assert-equal 8  (octave-from-string ""))
-  (lisp-unit:assert-equal 7  (octave-from-string ","))
-  (lisp-unit:assert-equal 6  (octave-from-string ",,"))
-  (lisp-unit:assert-equal 9  (octave-from-string "'"))
-  (lisp-unit:assert-equal 10 (octave-from-string "''"))
-  )
 
 (define-test clip
   (assert-equal '(foo bar baz) (clip 3 '(foo bar baz 1 2 3)))

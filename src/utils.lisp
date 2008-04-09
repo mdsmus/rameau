@@ -30,7 +30,6 @@
                                mapcar2
                                make-alist
                                mostn
-                               octave-from-string
                                rameau-debug
                                rameau-undebug
                                read-file-as-sexp
@@ -158,13 +157,6 @@
         (count-subseq sub seq s (+ acc 1))
         acc)))
 
-(defun symbol->number (string string-list)
-  "Search for each element of \\texttt{string-list} in \\texttt{string}."
-  (destructuring-bind (flat sharp) string-list
-    (cond ((search sharp string) (count-subseq sharp string))
-          ((search flat string) (- (count-subseq flat string)))
-          (t 0))))
-
 (defun smallest (list &optional (test #'identity))
   "The smallest element of \\texttt{list}, according to \\texttt{test}."
   (when list
@@ -210,10 +202,6 @@ that have the largest value according to \\texttt{pred}."
               ((= (funcall pred el) max-value)
                (push el list-max))))
       list-max)))
-
-(defun octave-from-string (string)
-  "Parse string \\texttt{string} and return the octave it implies."
-  (+ 8 (symbol->number string '("," "'"))))
 
 (defun file-string (path)
   "Suck up an entire file from \\texttt{path} into a freshly-allocated string,

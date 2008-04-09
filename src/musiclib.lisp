@@ -1,16 +1,10 @@
-;; note-code is a list representing a note name and it's accidentals.
-;;   Examples: (c 2)  is C## (c double-sharp)
-;;             (d -1) is Db (d flat)
-;; interval-code is alist representing an interval
-
-
 (in-package #:genoslib)
 
 (register-and-export-symbols '( a b c d e f g
                                a# b# c# d# e# f# g#
                                ab bb cb db eb fb gb
                                maj min dim aug just
-                               lily latin prime with-system
+                               sharp flat up down lily latin prime with-system
                                *notas-interessantes-tonal*
                                number-of-accidentals
                                match-note-representation
@@ -18,7 +12,8 @@
                                get-system-notes get-notes code->notename parse-note
                                notename->code
                                compara-notes-tempered
-                               get-module
+                               get-module get-accidental get-octave
+                               octave-from-string
                                note? rest? latin->lily
                                print-accidentals print-note module
                                lily->latin transpose inversion
@@ -112,26 +107,23 @@ system."
   "Returns a table defining intervals in the system."
   (third (get-system-item system)))
 
-(defun get-accidentals (representation)
-  "Retorna os acidentes de uma representação específica."
-  (assoc-item representation '((lily ("es" "is"))
-                               (latin ("b" "#")))))
+(defun get-accidental (accidental representation)
+  "Returns a string with the accidental in a specific
+    representation. \\example{(get-accidental 'sharp 'latin)}{#}"
+  (assoc-item accidental
+              (assoc-item representation '((lily ((flat "es")
+                                                  (sharp "is")))
+                                           (latin ((flat "b")
+                                                   (sharp "#")))))))
 
-(defun %get-accidental (representation fn)
-  "Retorna um acidente específico dentro da representação. Fn deve ser
-ou #'first ou #'second. Essa é uma função de baixo nível. As funções
-get-shap ou get-flat devem ser usadas no lugar."
-  (funcall fn (get-accidentals representation)))
-
-(defun get-sharp (representation)
-  "Returns a string with a sharp in representation.
-\\example{(get-sharp 'latin)}{#}."
-  (%get-accidental representation #'second))
-
-(defun get-flat (representation)
-  "Returns a string with a flat in representation.
-EXAMPLE: (get-flat 'lily) return es."
-  (%get-accidental representation #'first))
+(defun get-octave (octave representation)
+  "Returns a string with the octave in a specific
+    representation. \\example{(get-octave 'central 'lily)}{\"\"}"
+  (assoc-item octave
+              (assoc-item representation '((lily ((down ",")
+                                                  (up "'")))
+                                           (latin ((down "-1")
+                                                  (up "1")))))))
 
 (defun get-interval-name (short)
   "Retorna o nome completo representando um acorde dado uma representação abreviada.
@@ -159,10 +151,6 @@ acorde. EXEMPLO: (get-interval-quantity 3) retorna TRIPLE."
     get-system-module
     get-module
     get-system-intervals
-    get-accidentals
-    %get-accidental
-    get-sharp
-    get-flat
     get-interval-name
     get-interval-quantity
     my-position
@@ -170,6 +158,15 @@ acorde. EXEMPLO: (get-interval-quantity 3) retorna TRIPLE."
     %note->code
     )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun octave-from-string (string &optional (representation 'lily))
+  "Parse string \\texttt{string} and return the octave it implies."
+  ;;(+ 8 (symbol->number string '("," "'"))))
+  (let ((up (get-octave 'up representation))
+        (down (get-octave 'down representation)))
+    (+ 8 (cond ((search up string) (count-subseq up string))
+               ((search down string) (- (count-subseq down string)))
+               (t 0)))))
 
 (defun code->notename (number)
   "Retorna o nome da nota dado o seu código numérico."
@@ -181,13 +178,18 @@ representation. For instance, if acc-string is 'eseses' the function
 returns -3. Be careful not to pass a string representing a note as the
 first argument to this function, otherwise it could mistakenly return
 -2 for 'ees'."
-  (symbol->number acc-string (get-accidentals representation)))
+  (let ((sharp (get-accidental 'sharp representation))
+        (flat (get-accidental 'flat representation)))
+    (cond ((search sharp acc-string) (count-subseq sharp acc-string))
+          ((search flat acc-string) (- (count-subseq flat acc-string)))
+          (t 0))))
 
 (defun match-note-representation (note representation)
   "Returns non-nil if a note matches the representation.
 EXAMPLE: (match-note-representation \"cis\" 'latin) returns nil."
-  (or (search (get-flat representation) note)
-      (search (get-sharp representation) note)))
+  (or (search (get-accidental 'flat representation) note)
+      (search (get-accidental 'sharp representation) note)))
+
 (defun my-position (&rest args) (apply #'position args))
 
 (defun %parse-note (note representation system)
@@ -250,7 +252,7 @@ usa a representação do lilypond e 'd#' usa a representação 'latin'."
   "Return a string of a note according to the numeric value of an
 accidental and a representation. EXAMPLE: (print-accidentals 3 'lily)
 returns isisis."
-  (repeat-string acc (funcall (if (>= acc 0) #'get-sharp #'get-flat) repr)))
+  (repeat-string acc (get-accidental (if (>= acc 0) 'sharp 'flat) repr)))
 
 (defcached print-note (note-code &optional (representation 'latin))
   "Retuns a string of a note according to a note-code and representation.

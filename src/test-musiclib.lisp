@@ -1,5 +1,12 @@
 (in-package #:rameau)
+(use-package :lisp-unit)
 
+(define-test octave-from-string
+  (assert-equal 8  (octave-from-string ""))
+  (assert-equal 7  (octave-from-string ","))
+  (assert-equal 6  (octave-from-string ",,"))
+  (assert-equal 9  (octave-from-string "'"))
+  (assert-equal 10 (octave-from-string "''")))
 
 (define-test code->notename
   (assert-equal '(c 0) (code->notename 0))
@@ -10,7 +17,6 @@
   (assert-equal '(b 0) (with-system tempered (code->notename 95)))
   (assert-equal '(d 0) (with-system tempered (code->notename 14)))
   (assert-equal '(c 0) (with-system tempered (code->notename 96))))
-
 
 (define-test note?
   (assert-true (note? "cis"))
@@ -36,6 +42,16 @@
     (assert-equal nil (match-note-representation "c#" 'lily))
     (assert-equal 1 (match-note-representation "c#" 'latin))
     (assert-equal 1 (match-note-representation "cis" 'lily)))
+
+(define-test get-accidental
+    (assert-equal "#" (get-accidental 'sharp 'latin))
+  (assert-equal "is" (get-accidental 'sharp 'lily))
+  (assert-equal "b" (get-accidental 'flat 'latin))
+  (assert-equal "es" (get-accidental 'flat 'lily)))
+
+(define-test get-octave
+    (assert-equal "'" (get-octave 'up 'lily))
+  (assert-equal "," (get-octave 'down 'lily)))
 
 (define-test parse-note
   (assert-equal 0 (parse-note "c"))
