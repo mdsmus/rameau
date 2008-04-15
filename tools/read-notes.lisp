@@ -29,7 +29,7 @@
   (register-groups-bind (note acc octave dur)
       ("(a|b|c|d|e|f|g)(is|es)?(['|,]*)?([0-9.\\*]*)?" string)
     (declare (ignore octave dur))
-    (list note acc)))
+    (list note (if acc acc ""))))
 
 
 (defun clean (string)
@@ -49,12 +49,10 @@
        when (consp n) collect n)))
 
 (defun toca-nota (nota-list)
-  (flet ((play (nota)
-           (sb-ext:run-program "/usr/bin/play"
-                               (list (concat "/home/kroger/src/rameau/samples/" nota ".wav")))))
-    (destructuring-bind (nota acc) nota-list
-      (play nota)
-      (when acc (play acc)))))
+  (let ((nota (apply #'concatenate 'string nota-list)))
+    (format t "~a " nota)
+    (sb-ext:run-program "/usr/bin/play"
+                        (list (concat "/home/kroger/src/rameau/samples/" nota ".wav")))))
 
 (defun read-file-as-sexp (file)
   "Read file named \\texttt{file} as a single sexp"
@@ -69,20 +67,18 @@
 
 (defun toca (voz coral &optional (de 0) ate)
   (let ((string"~a/literatura/bach-corais/~a.lyi"))
-    (format t "~a~%"
-            (loop
-               for nota in
-                 (subseq (get-notes voz (format nil string *rameau-path* coral))
-                         de
-                         ate)
-               collect nota
-               do (toca-nota nota)))))
+    (loop
+       for nota in
+         (subseq (get-notes voz (format nil string *rameau-path* coral))
+                 de
+                 ate)
+       do (toca-nota nota))))
   
 (defun main ()
   (if (< (length sb-ext:*posix-argv*) 3)
       (format t "USO: checa-notas <voz> <coral> [de] [ate]")
       (destructuring-bind (prog voz coral &optional de ate) sb-ext:*posix-argv*
-        (print (list voz coral de ate))
+        (declare (ignore prog))
         (toca voz
               coral
               (if de
