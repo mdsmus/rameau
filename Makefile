@@ -71,6 +71,9 @@ deps:
 rameau: $(lisp-files) 
 	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" --eval "(load \"tools/make-image.lisp\")"
 
+checa-notas: tools/read-notes.lisp
+	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" --load "tools/make-image-read-notes.lisp"
+
 cmurameau: $(lisp-files)
 	${lisp} "(load \"tools/make-image.lisp\")" 
 

@@ -1,5 +1,5 @@
 (defpackage #:read-notes
-  ;;(:export #:)
+  (:export #:main)
   (:use #:cl #:cl-ppcre #:cl-fad))
 
 (in-package #:read-notes)
@@ -28,6 +28,7 @@
 (defun parse-note (string)
   (register-groups-bind (note acc octave dur)
       ("(a|b|c|d|e|f|g)(is|es)?(['|,]*)?([0-9.\\*]*)?" string)
+    (declare (ignore octave dur))
     (list note acc)))
 
 
@@ -67,10 +68,25 @@
 (read-user-config)
 
 (defun toca (voz coral &optional (de 0) ate)
-  (mapcar #'toca-nota
-          (subseq (get-notes voz
-                             (format nil "~a/literatura/bach-corais/~a.lyi" *rameau-path*  coral))
-                  de
-                  ate)))
-
-;;(toca "soprano" "001" 0 10)
+  (let ((string"~a/literatura/bach-corais/~a.lyi"))
+    (format t "~a~%"
+            (loop
+               for nota in
+                 (subseq (get-notes voz (format nil string *rameau-path* coral))
+                         de
+                         ate)
+               collect nota
+               do (toca-nota nota)))))
+  
+(defun main ()
+  (if (< (length sb-ext:*posix-argv*) 3)
+      (format t "USO: checa-notas <voz> <coral> [de] [ate]")
+      (destructuring-bind (prog voz coral &optional de ate) sb-ext:*posix-argv*
+        (print (list voz coral de ate))
+        (toca voz
+              coral
+              (if de
+                  (parse-integer de :junk-allowed t)
+                  0)
+              (when ate (parse-integer ate :junk-allowed t)))))
+  0)
