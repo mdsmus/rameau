@@ -55,7 +55,7 @@
 
 (defun read-user-config ()
   (aif (cl-fad:file-exists-p (concat (getenv "HOME") "/.rameaurc"))
-       (loop for (var value) in (read-file-as-sexp it) do (set var value))))
+       (loop for (var value) in (read-file-as-sexp it) do (setf (symbol-value var) value))))
 
 (read-user-config)
 

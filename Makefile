@@ -8,7 +8,7 @@ else
 	sbcl = /usr/bin/sbcl --disable-debugger
 endif
 
-lisp = /usr/bin/lisp -batch -quiet -eval
+lisp = /usr/bin/lisp -batch -quiet 
 lisp-files = $(wildcard src/*.lisp src/lib/*.lisp tools/*.lisp src/algoritmos/*.lisp)
 corais-lyi = $(wildcard literatura/bach-corais/*.lyi)
 corais-png = $(notdir $(patsubst %.lyi,%.png,$(corais-lyi)))
@@ -78,13 +78,13 @@ checa-notas: tools/read-notes.lisp
 	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" --load "tools/make-image-read-notes.lisp"
 
 cmurameau: $(lisp-files)
-	${lisp} "(load \"tools/make-image.lisp\")" 
+	${lisp} -eval  "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" -eval "(load \"tools/make-image.lisp\")" 
 
 eclrameau: $(lisp-files)
 	ecl -eval  "(load \"tools/make-image.lisp\")"
 
 clisprameau: $(lisp-files)
-	clisp -ansi -K full -x  "(load \"tools/make-image.lisp\")"
+	clisp -ansi -K full -x "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" -k "(load \"tools/make-image.lisp\")"
 
 doc:
 	cd docs ;\
