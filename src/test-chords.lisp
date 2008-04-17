@@ -20,19 +20,15 @@
   (assert-equal 2 (return-inversion "c" "g")))
 
 (define-test parse-chord
-  (assert-equalp (make-chord :fundamental "c" :7th "7") (parse-chord "c7"))
-  (assert-equalp (make-chord :fundamental "bb" :mode "m") (parse-chord "bbm"))
-  (assert-equalp (make-chord :fundamental "a") (parse-chord "a")))
-
-
+  (assert-equalp (make-chord :root "c" :7th "7") (parse-chord "c7"))
+  (assert-equalp (make-chord :root "bb" :mode "m") (parse-chord "bbm"))
+  (assert-equalp (make-chord :root "a") (parse-chord "a")))
 
 (define-test transpose-chords
   (assert-equalp 
                   (list (parse-chord "D") (parse-chord "E"))
                   (transpose-chords (list (parse-chord "c") (parse-chord "d")) 14)))
 
-(define-test compara-gabarito-temperado
-  (assert-true (compara-gabarito-temperado (parse-chord "ab") (parse-chord "g#"))))
-
-(define-test compara-gabarito-tonal
-  (assert-false (compara-gabarito-tonal (parse-chord "ab") (parse-chord "g#"))))
+(define-test compare-answer-sheet
+  (assert-true (compare-answer-sheet (parse-chord "ab") (parse-chord "g#") :tempered? t))
+  (assert-false (compare-answer-sheet (parse-chord "ab") (parse-chord "g#"))))

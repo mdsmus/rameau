@@ -26,8 +26,8 @@
      append
        (loop for setima in '(nil "7" "7-" "7+")
           append
-            (loop for fundamental from 0 to 95 collect
-                 (make-chord :fundamental (print-note (code->notename fundamental))
+            (loop for root from 0 to 95 collect
+                 (make-chord :root (print-note (code->notename root))
                              :mode modo
                              :7th setima)))))
 
@@ -42,7 +42,7 @@
      for n in *names* collect (cons n (evento-pitch nota))))
 
 (defun extract-class (acorde)
-  (if (and (chordp acorde)
+  (if (and (chord-p acorde)
            (or (equal nil (chord-mode acorde))
                (equal "m" (chord-mode acorde))
                (equal "°" (chord-mode acorde))
@@ -51,7 +51,7 @@
                (equal "ø" (chord-mode acorde))))
       (string->symbol
        (stringify
-        (make-chord :fundamental (chord-fundamental acorde)
+        (make-chord :root (chord-root acorde)
                     :7th (chord-7th acorde)
                     :mode (chord-mode acorde))))
       (if (melodic-note-p acorde)
@@ -89,9 +89,9 @@
 
 (defun do-classification (coral)
   (dbg 'rameau::mostra-arvore "Arvore: ~/rameau-tree-enarm::show-chord-tree/ ~%" *chord-tree*)
-  (coloca-inversoes coral (mapcar #'chord-tree-classify coral)))
+  (add-inversions coral (mapcar #'chord-tree-classify coral)))
 
-(register-algorithm "ES-tree" #'do-classification #'compara-gabarito-tonal)
+(register-algorithm "ES-tree" #'do-classification #'compare-answer-sheet)
 
 (defun do-train-chord-tree ()
   (multiple-value-bind (corais gabaritos)

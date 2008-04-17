@@ -25,14 +25,12 @@
    #:augmented-sixth-type
    #:augmented-sixth-template
    #:calcula-duracoes
-   #:chord-fundamental
+   #:chord-root
    #:chord-mode
    #:chord-7th
-   #:chordp
-   #:coloca-inversoes
-   #:compara-gabarito-fundamental
-   #:compara-gabarito-modo-setima
-   #:compara-gabarito-tonal
+   #:chord-p
+   #:add-inversions
+   #:compare-answer-sheet
    #:compara-notas
    #:do-not-test
    #:extract-diff

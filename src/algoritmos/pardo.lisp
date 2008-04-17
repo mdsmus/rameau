@@ -151,7 +151,7 @@
   (let ((pardo (pardo-grade-answer pardo)))
     (if (augmented-sixth-template? pardo)
         (make-augmented-sixth :type (second pardo))
-        (make-chord :fundamental (first pardo)
+        (make-chord :root (first pardo)
                     :mode (second pardo)
                     :7th (third pardo)))))
 
@@ -162,7 +162,7 @@
                     :from-end t :initial-value nil))))
      
 
-(register-algorithm "S-PB" #'pardo-classify #'compara-gabarito-tonal)
+(register-algorithm "S-PB" #'pardo-classify #'compare-answer-sheet)
 
 (deftemplates *incf-pardo-templates* 
   ((nil nil) (0 28 55))
@@ -184,10 +184,10 @@
   (pardo sonority *incf-pardo-templates*))
 
 (defun incf-pardo-classify (sonoritys)
-  (coloca-inversoes
+  (add-inversions
    sonoritys
    (mapcar #'pardo->chord
            (reduce #'tie-break (mapcar #'incf-pardo sonoritys)
                    :from-end t :initial-value nil))))
 
-(register-algorithm "ES-PB" #'incf-pardo-classify #'compara-gabarito-tonal)
+(register-algorithm "ES-PB" #'incf-pardo-classify #'compare-answer-sheet)

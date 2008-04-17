@@ -26,8 +26,8 @@
 
 (defun make-answer-pattern (gabarito diff)
   (let ((atual (make-list (+ *root-increment* (get-module)) :initial-element 0)))
-    (cond ((chordp gabarito)
-           (incf (nth (module (- (parse-note (stringify (chord-fundamental gabarito))) diff)) atual)))
+    (cond ((chord-p gabarito)
+           (incf (nth (module (- (parse-note (stringify (chord-root gabarito))) diff)) atual)))
           ((melodic-note-p gabarito)
            (incf (nth (get-module) atual)))
           ((equal 'it (augmented-sixth-type gabarito))
@@ -49,7 +49,7 @@
      finally (return (cond ((= (get-module) maxi)
                             (make-melodic-note))
                            ((> (get-module) maxi)
-                            (make-chord :fundamental (print-note (code->notename (module (+ diff maxi)))
+                            (make-chord :root (print-note (code->notename (module (+ diff maxi)))
                                                               'latin)))
                            ((= (+ 1 (get-module)) maxi)
                             (make-augmented-sixth :type "IT"))
@@ -129,7 +129,7 @@
                            ((= maxi 4) "!")))))
 
 (defun make-mode-answer-pattern (gabarito)
-  (if (chordp gabarito)
+  (if (chord-p gabarito)
       (append (make-mode-pattern (chord-mode gabarito))
               (make-pattern-7th (chord-7th gabarito)))
       (make-empty-pattern)))
@@ -141,18 +141,18 @@
 
 
 (defun get-class-chord-net (diff res)
-  (let ((fundamental (extract-root-result
+  (let ((root (extract-root-result
                       diff
                       (firstn res (+ *root-increment* (get-module)))))
         (resto (nthcdr (+ *root-increment* (get-module)) res)))
-    (if (chordp fundamental)
+    (if (chord-p root)
         (let* ((7th (extract-7th (nthcdr *mode-length* resto)))
                (mode (extract-mode (firstn resto *mode-length*) 7th)))
           
-          (make-chord :fundamental (chord-fundamental fundamental)
+          (make-chord :root (chord-root root)
                       :mode mode
                       :7th 7th))
-        fundamental)))
+        root)))
 
 
 
@@ -178,7 +178,7 @@
 
 (defun apply-e-chord-net (inputs)
   (load-e-chord-net)
-  (coloca-inversoes inputs (mapcar #'run-e-chord-net inputs)))
+  (add-inversions inputs (mapcar #'run-e-chord-net inputs)))
 
 (defun prepare-training-data-chord-net (coral gabarito &optional
                                         (diff-func #'extrai-diffs)
@@ -231,7 +231,7 @@
 (unless (cl-fad:file-exists-p *e-chord-net-file*)
   (train-e-chord-net))
 
-(register-algorithm "ES-net" #'apply-e-chord-net #'compara-gabarito-tonal)
+(register-algorithm "ES-net" #'apply-e-chord-net #'compare-answer-sheet)
 
 (defparameter *context-net* nil)
 
@@ -270,7 +270,7 @@
   (load-context-net)
   (let ((contexto (butlast (contextualize inputs *context-before* *context-after*)
                            *context-before*)))
-    (coloca-inversoes inputs (mapcar #'run-context-net contexto))))
+    (add-inversions inputs (mapcar #'run-context-net contexto))))
 
 (defun make-training-data-context-net ()
   (loop for i in *training-data*
@@ -313,4 +313,4 @@
 (unless (cl-fad:file-exists-p *context-net-file*)
   (train-context-net))
 
-(register-algorithm "EC-net" #'apply-context-net #'compara-gabarito-tonal)
+(register-algorithm "EC-net" #'apply-context-net #'compare-answer-sheet)

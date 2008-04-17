@@ -22,9 +22,9 @@
 (defparameter *k* 1)
 
 (defun process-chord (acorde diff)
-  (cond ((chordp acorde)
+  (cond ((chord-p acorde)
          (list 'chord
-               (- (parse-note (chord-fundamental acorde)) diff)
+               (- (parse-note (chord-root acorde)) diff)
                (chord-mode acorde)
                (chord-7th acorde)))
         ((melodic-note-p acorde)
@@ -36,7 +36,7 @@
   (cond ((eq (first lista) '-)
          (make-melodic-note))
         ((eq (first lista) 'chord)
-         (make-chord :fundamental (print-note (code->notename (+ (second lista) diff)))
+         (make-chord :root (print-note (code->notename (+ (second lista) diff)))
                      :mode (third lista)
                      :7th (fourth lista)))
         (t (make-augmented-sixth :type (first lista)))))
@@ -94,9 +94,9 @@
        finally (return (get-class diff (mapcar #'second nn) (mapcar #'third nn))))))
 
 (defun prepare-answers-k1 (coral)
-  (coloca-inversoes coral (mapcar #'classify-k1 coral)))
+  (add-inversions coral (mapcar #'classify-k1 coral)))
 
-(register-algorithm "ES-Knn" #'prepare-answers-k1 #'compara-gabarito-tonal)
+(register-algorithm "ES-Knn" #'prepare-answers-k1 #'compare-answer-sheet)
 
 (defun show-examples ()
   "Mostra em que corais estão que tipos de acorde."
@@ -154,6 +154,6 @@
 
 (defun prepare-answers-context (coral)
   (let ((c (contextualize coral *before-context* *after-context*)))
-    (coloca-inversoes coral (mapcar #'classify-context (butlast c *before-context*)))))
+    (add-inversions coral (mapcar #'classify-context (butlast c *before-context*)))))
 
-(register-algorithm "EC-Knn" #'prepare-answers-context #'compara-gabarito-tonal)
+(register-algorithm "EC-Knn" #'prepare-answers-context #'compare-answer-sheet)
