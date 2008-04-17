@@ -138,7 +138,7 @@
 
 (defun extract-feature-list (segmento diff)
   "Extract the feature list of a sonority givern its \\texttt{diff}."
-  (let ((segmento (mapcar2 (lambda (x) (module (- x diff))) #'evento-pitch segmento))
+  (let ((segmento (mapcar2 (lambda (x) (module (- x diff))) #'event-pitch segmento))
         (n (length segmento))
         (feature-list (repeat-list (get-module) 0)))
     (loop for nota in segmento
@@ -148,5 +148,5 @@
 (defun extract-diff (segmento)
   "Extract the diff of a sonority."
   (let ((segmento (sorted segmento #'compara-notas)))
-    (evento-pitch (first segmento))))
+    (event-pitch (first segmento))))
 

@@ -121,7 +121,7 @@
       (dolist (i chord)
         (setf (sequencia-de-notas-dur i) dur)
         (dolist (j (sequencia-de-notas-notas i))
-          (setf (evento-dur j) dur))))
+          (setf (event-dur j) dur))))
   (make-instance 'chord-lily :expr chord))
 
 (defun parse-simultaneous (a simultaneous b)
@@ -195,8 +195,8 @@
                             (read-from-string file))
                     (read-from-string file)))))
     (make-sequencia-de-notas :notas notas
-                             :inicio 0
-                             :dur (+ (evento-inicio (last1 notas)) (evento-dur (last1 notas))))))
+                             :start 0
+                             :dur (+ (event-start (last1 notas)) (event-dur (last1 notas))))))
 
 
 (defun parse-context-voice (a b c d block)
@@ -228,15 +228,15 @@
   (correct-durations (node-expr tree))
   tree)
 
-(defmethod correct-durations ((tree evento))
-  (if (evento-dur tree)
-      (setf *dur* (evento-dur tree))
-      (setf (evento-dur tree) *dur*))
+(defmethod correct-durations ((tree event))
+  (if (event-dur tree)
+      (setf *dur* (event-dur tree))
+      (setf (event-dur tree) *dur*))
   tree)
 
 (defmethod correct-durations ((tree sequencia-de-notas))
   (mapcar #'correct-durations (sequencia-de-notas-notas tree))
-  (setf (sequencia-de-notas-dur tree) (evento-dur (car (sequencia-de-notas-notas tree))))
+  (setf (sequencia-de-notas-dur tree) (event-dur (car (sequencia-de-notas-notas tree))))
   tree)
 
 (defmethod correct-durations ((tree list))
@@ -255,8 +255,8 @@
 (defmethod correct-times (times (tree ast-node))
   (correct-times times (node-expr tree)))
 
-(defmethod correct-times (times (e evento))
-  (setf (evento-dur e) (* times (evento-dur e))))
+(defmethod correct-times (times (e event))
+  (setf (event-dur e) (* times (event-dur e))))
 
 (defmethod correct-times (times (e sequencia-de-notas))
   (mapcar #'correct-times (sequencia-de-notas-notas e)))
@@ -313,7 +313,7 @@
         (*anacruz* 0))
     (declare (special *environment* *dur* *current-key* *current-sig*))
     (movimenta-sequencia
-     (remove-if (lambda (x) (null (evento-pitch x)))
+     (remove-if (lambda (x) (null (event-pitch x)))
                 (aif (yacc:parse-with-lexer (string-lexer str) *expression-parser*)
                      (sequencia-de-notas-notas it)
                      it))

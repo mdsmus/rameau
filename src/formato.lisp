@@ -1,85 +1,68 @@
-;; Formato interno:
-;; O formato interno é uma lista de eventos. Cada evento é uma nota
-;; que soa, e soa em uma altura (pitch), por um certo tempo (dur) a
-;; partir de um certo instante na música (inicio). Isso é representado
-;; na struct evento.
-
-;; Antes disso, no entanto, as notas são processadas pra se extrair a
-;; duração e a altura. Isso é feito usando a struct nota, que
-;; desaparece depois do primeiro passo de processamento, quando as
-;; notas são transformadas em eventos.
-
-;; As funções desse arquivo só fazem essa conversão, de notas pra
-;; eventos, e representam esses eventos, e os manipulam de forma
-;; básica.
-
-
-
 (in-package #:rameau)
 
 (defparameter *current-key* '("c" "\\major"))
 (defparameter *current-sig* "4/4")
 
-(defstruct evento
+(defstruct event
   (pitch)
   (octave)
   (dur)
-  (inicio)
+  (start)
   (key)
   (time-sig))
 
 (defstruct sequencia-de-notas
   (notas)
-  (inicio)
+  (start)
   (dur))
 
 (defun compara-notas (x y)
-  (let ((a (evento-octave x))
-        (b (evento-octave y)))
+  (let ((a (event-octave x))
+        (b (event-octave y)))
     (if (= a b)
-        (< (evento-pitch x) (evento-pitch y))
+        (< (event-pitch x) (event-pitch y))
         (< a b))))
 
 (defun lista-notas (segmento)
   (mapcar (lambda (x)
-            (print-note (code->notename (evento-pitch x)) 'latin))
+            (print-note (code->notename (event-pitch x)) 'latin))
           (sorted segmento #'compara-notas)))
 
 (defun pitches (segmento)
-  (mapcar #'evento-pitch segmento))
+  (mapcar #'event-pitch segmento))
 
 (defun calcula-duracoes (segmento)
-  (mapcar (lambda (x) (evento-dur (first x))) segmento))
+  (mapcar (lambda (x) (event-dur (first x))) segmento))
 
 (defun cria-nota (nota &optional (octave "") dur articulation dur2) 
   (declare (ignore articulation))
   (let ((dur (if dur2 dur2 dur)))
     (make-sequencia-de-notas
      :notas (list
-             (make-evento :pitch (parse-note nota)
+             (make-event :pitch (parse-note nota)
                           :octave (octave-from-string octave)
                           :dur dur
-                          :inicio 0
+                          :start 0
                           :key *current-key*
                           :time-sig *current-sig*))
-     :inicio 0
+     :start 0
      :dur dur)))
 
 (defun cria-skip (skip dur)
   (declare (ignore skip))
   (cria-nota "s" "" dur))
 
-(defun move-evento-no-tempo (evento tempo)
-  (setf (evento-inicio evento) (+ (evento-inicio evento) tempo))
-  evento)
+(defun move-event-no-tempo (event tempo)
+  (setf (event-start event) (+ (event-start event) tempo))
+  event)
 
 (defun movimenta-sequencia (seq tempo)
-  (mapcar (lambda (x) (move-evento-no-tempo x tempo))
+  (mapcar (lambda (x) (move-event-no-tempo x tempo))
           seq))
 
 
-(defun fim-evento (evento)
-  (+ (evento-inicio evento) (evento-dur evento)))
+(defun fim-event (event)
+  (+ (event-start event) (event-dur event)))
 
 (defun coloca-expressoes-em-sequencia (sequencias)
   "Leva uma lista de expressões musicais e as arruma em sequência"
@@ -104,8 +87,8 @@
                (sequencia-de-notas-notas exp1)
                (sequencia-de-notas-notas exp2)
                (lambda (x y)
-                 (< (evento-inicio x)
-                    (evento-inicio y)))))
+                 (< (event-start x)
+                    (event-start y)))))
   exp1)
 
 (defun merge-exprs (exprs)
@@ -120,17 +103,17 @@
 
 
 (defun menos-de-uma-quinta (a b)
-  (let ((a (evento-pitch a))
-        (b (evento-pitch b)))
+  (let ((a (event-pitch a))
+        (b (event-pitch b)))
     (< (module (- b a))
        (code->interval '(5 just)))))
 
 
 (defun modificador-oitava (a b)
-  (let ((pa (evento-pitch a))
-        (pb (evento-pitch b))
-        (oa (evento-octave a))
-        (ob (evento-octave b)))
+  (let ((pa (event-pitch a))
+        (pb (event-pitch b))
+        (oa (event-octave a))
+        (ob (event-octave b)))
     (cond ((null pa) ob)
           ((null pb) ob)
           (t
@@ -147,10 +130,10 @@
   (when expressao
     (let* ((prox-nota (first expressao))
            (oitava (if oitava oitava
-                       (evento-octave nota)))
+                       (event-octave nota)))
            (expressao (rest expressao)))
-      (setf (evento-octave prox-nota) (modificador-oitava nota prox-nota))
-      (%relativiza (if (null (evento-pitch prox-nota)) nota prox-nota)
+      (setf (event-octave prox-nota) (modificador-oitava nota prox-nota))
+      (%relativiza (if (null (event-pitch prox-nota)) nota prox-nota)
        ;prox-nota
        expressao oitava))))
 
@@ -161,24 +144,24 @@
 (defun transpose-segmentos (segmentos valor)
   (loop for notas in segmentos collect
        (loop for n in notas collect
-            (make-evento :pitch (module (+ (evento-pitch n) valor))
-                         :octave (evento-octave n)
-                         :dur (evento-dur n)
-                         :inicio (evento-inicio n)
-                         :key (evento-key n)
-                         :time-sig (evento-time-sig n)))))
+            (make-event :pitch (module (+ (event-pitch n) valor))
+                         :octave (event-octave n)
+                         :dur (event-dur n)
+                         :start (event-start n)
+                         :key (event-key n)
+                         :time-sig (event-time-sig n)))))
 
 (defun tempera (nota)
   (with-system tempered
-    (make-evento :pitch (module (evento-pitch nota))
-                 :octave (evento-octave nota)
-                 :dur (evento-dur nota)
-                 :inicio (evento-inicio nota)
-                 :key (evento-key nota)
-                 :time-sig (evento-time-sig nota))))
+    (make-event :pitch (module (event-pitch nota))
+                 :octave (event-octave nota)
+                 :dur (event-dur nota)
+                 :start (event-start nota)
+                 :key (event-key nota)
+                 :time-sig (event-time-sig nota))))
 
 (do-not-test tempera
-  move-evento-no-tempo
+  move-event-no-tempo
   movimenta-sequencia
   cria-skip
   coloca-expressoes-em-sequencia

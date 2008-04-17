@@ -18,7 +18,7 @@
 (defparameter *root-increment* 4)
 
 (defun extract-diffs (segmento)
-  (mapcar #'evento-pitch segmento))
+  (mapcar #'event-pitch segmento))
 
 (defun make-sonority-pattern (seg &optional diff)
   (let ((diff (or diff (extract-diff seg))))

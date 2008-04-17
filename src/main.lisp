@@ -6,7 +6,7 @@
 
 (defparameter max-print-error 10
   "Quando o numero de arquivos que não são parseados é maior que essa
-  constante, rameau mostra apenas o inicio da lista.")
+  constante, rameau mostra apenas o start da lista.")
 
 (defparameter *dados* '((teste ("unidade" "regressao" "lily"))
                         (analise ("corais" "kostka" "sonatas" "exemplos"))
@@ -57,8 +57,8 @@
   "Retorna o intervalo entre dois segmentos."
   (if (null s2)
       0
-      (- (evento-inicio (first s2))
-         (fim-evento (first s1)))))
+      (- (event-start (first s2))
+         (fim-event (first s1)))))
 
 (defun print-condition (status file expr)
   (format t "[~a] ~a: ~a~%" status (pathname-name file) expr))
@@ -174,11 +174,11 @@ ponto nos corais de bach."
 (defun print-duracoes (segmento)
   (values (loop for s = segmento then (rest s)
             unless s return res
-            collect (frac->dur-lily (evento-dur (first (first s)))) into res
+            collect (frac->dur-lily (event-dur (first (first s)))) into res
             unless (= 0 (intervalo (first s) (second s)))
             collect (frac->dur-lily (intervalo (first s) (second s))) into res)
-          (when (< 0 (evento-inicio (first (first segmento))))
-            (let ((n (frac->dur-lily (abs (evento-inicio (first (first segmento)))))))
+          (when (< 0 (event-start (first (first segmento))))
+            (let ((n (frac->dur-lily (abs (event-start (first (first segmento)))))))
               (if (listp n)
                   n
                   (list n))))))
@@ -603,7 +603,7 @@ ponto nos corais de bach."
       (run-regressao flags (parse-file-list item files))))
 
 (defun pitch-list (list)
-  (sorted (remove-duplicates (mapcar #'evento-pitch list)) #'<))
+  (sorted (remove-duplicates (mapcar #'event-pitch list)) #'<))
 
 (do-not-test pitch-list)
 

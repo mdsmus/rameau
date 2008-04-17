@@ -58,14 +58,14 @@
    #:read-user-config
    #:sonorities
    #:set-lang
-   #:evento-pitch
-   #:evento-dur
-   #:evento-octave
-   #:evento-inicio
-   #:evento-time-sig
-   #:evento-key
-   #:make-evento
-   #:fim-evento
+   #:event-pitch
+   #:event-dur
+   #:event-octave
+   #:event-start
+   #:event-time-sig
+   #:event-key
+   #:make-event
+   #:fim-event
    #:processa-cifras
    #:register-algorithm
    #:read-chords

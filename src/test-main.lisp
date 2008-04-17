@@ -7,8 +7,8 @@
   (assert-equal '(("-a" "b" "c") ("-d")) (arg->list '("-a" "b" "c" "-d"))))
 
 (define-test intervalo
-  (assert-equal 10 (intervalo (list (make-evento :pitch 10 :octave 0 :inicio 0 :dur 0))
-                              (list (make-evento :pitch 20 :octave 10 :inicio 10 :dur 2)))))
+  (assert-equal 10 (intervalo (list (make-event :pitch 10 :octave 0 :start 0 :dur 0))
+                              (list (make-event :pitch 20 :octave 10 :start 10 :dur 2)))))
 
 (define-test next-flag
   (assert-equal "-b" (next-flag '("a" "-b" "-c"))))

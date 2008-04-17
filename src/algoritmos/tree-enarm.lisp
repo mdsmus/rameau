@@ -39,7 +39,7 @@
 
 (defun prepare-sonority (segmento)
   (loop for nota in segmento
-     for n in *names* collect (cons n (evento-pitch nota))))
+     for n in *names* collect (cons n (event-pitch nota))))
 
 (defun extract-class (acorde)
   (if (and (chord-p acorde)

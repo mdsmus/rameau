@@ -2,11 +2,11 @@
 
 (in-package #:rameau)
 
-(defun group-by (inicio resto)
+(defun group-by (start resto)
   "Helper grouping function"
   (if resto
-      (if (= inicio (evento-inicio (car resto)))
-          (multiple-value-bind (segmento restante) (group-by inicio (cdr resto))
+      (if (= start (event-start (car resto)))
+          (multiple-value-bind (segmento restante) (group-by start (cdr resto))
             (values (cons (car resto) segmento)
                     restante))
           (values
@@ -18,9 +18,9 @@
   "Group \\texttt{music} by the on-set times of the notes."
   (when musica
     (let* ((primeiro (first musica))
-           (inicio (evento-inicio primeiro))
+           (start (event-start primeiro))
            (resto (cdr musica)))
-      (multiple-value-bind (grupo restante) (group-by inicio resto)
+      (multiple-value-bind (grupo restante) (group-by start resto)
         
         (cons (cons primeiro grupo)
               (group-with-start restante))))))
@@ -31,34 +31,34 @@
   sonority."
   (declare (list proximo))
   (let* ((sobras nil)
-         (proximo-evento (if proximo (evento-inicio (first proximo))))
-         (proximo-inicio (if proximo
-                             (min proximo-evento
-                                  (+ (smallest segmento #'evento-dur)
-                                     (evento-inicio (first segmento))))
-                             (+ (smallest segmento #'evento-dur)
-                                     (evento-inicio (first segmento)))))
-         (tamanho (- proximo-inicio (evento-inicio (first segmento)))))
-    (dbg 'segmento "Prox-ini: ~a, Tam: ~a ~%" proximo-inicio tamanho)
+         (proximo-event (if proximo (event-start (first proximo))))
+         (proximo-start (if proximo
+                             (min proximo-event
+                                  (+ (smallest segmento #'event-dur)
+                                     (event-start (first segmento))))
+                             (+ (smallest segmento #'event-dur)
+                                     (event-start (first segmento)))))
+         (tamanho (- proximo-start (event-start (first segmento)))))
+    (dbg 'segmento "Prox-ini: ~a, Tam: ~a ~%" proximo-start tamanho)
     (values (mapcar (lambda (nota)
-                      (if (= (evento-dur nota) tamanho)
+                      (if (= (event-dur nota) tamanho)
                           nota
                           (progn
-                            (push (make-evento
-                                   :pitch (evento-pitch nota)
-                                   :octave (evento-octave nota)
-                                   :dur (- (evento-dur nota) tamanho)
-                                   :inicio (+ tamanho (evento-inicio nota))
-                                   :key (evento-key nota)
-                                   :time-sig (evento-time-sig nota))
+                            (push (make-event
+                                   :pitch (event-pitch nota)
+                                   :octave (event-octave nota)
+                                   :dur (- (event-dur nota) tamanho)
+                                   :start (+ tamanho (event-start nota))
+                                   :key (event-key nota)
+                                   :time-sig (event-time-sig nota))
                                   sobras)
-                            (make-evento
-                             :pitch (evento-pitch nota)
-                             :octave(evento-octave nota)
+                            (make-event
+                             :pitch (event-pitch nota)
+                             :octave(event-octave nota)
                              :dur tamanho
-                             :inicio (evento-inicio nota)
-                             :key (evento-key nota)
-                             :time-sig (evento-time-sig nota)))))
+                             :start (event-start nota)
+                             :key (event-key nota)
+                             :time-sig (event-time-sig nota)))))
                     segmento)
             sobras)))
 
@@ -76,8 +76,8 @@
         (let* ((sobras-acumuladas (nconc sobras (second musica)))
                (segmentos (nconc (group-with-start (sort sobras-acumuladas
                                                        (lambda (x y)
-                                                         (< (evento-inicio x)
-                                                            (evento-inicio y)))))
+                                                         (< (event-start x)
+                                                            (event-start y)))))
                                  (cddr musica))))
           (cons segmento (resplit-segments segmentos))))
       musica))

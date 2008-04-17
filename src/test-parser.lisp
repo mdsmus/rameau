@@ -3,23 +3,23 @@
 (lisp-unit:define-test parse-string
   (lisp-unit:assert-equalp
    (list
-    (make-evento :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 8 :DUR 1/4 :INICIO 0)
-    (make-evento :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 8 :DUR 1/4 :INICIO 0)
-    (make-evento :key '(C MAJOR) :time-sig 1 :PITCH 14 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)
-    (make-evento :key '(C MAJOR) :time-sig 1 :PITCH 14 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)
-    (make-evento :key '(C MAJOR) :time-sig 1 :PITCH 28 :OCTAVE 8 :DUR 1/4 :INICIO 1/2)
-    (make-evento :key '(C MAJOR) :time-sig 1 :PITCH 28 :OCTAVE 8 :DUR 1/4 :INICIO 1/2)
-    (make-evento :key '(C MAJOR) :time-sig 1 :PITCH 41 :OCTAVE 8 :DUR 1/4 :INICIO 3/4)
-    (make-evento :key '(C MAJOR) :time-sig 1 :PITCH 41 :OCTAVE 8 :DUR 1/4 :INICIO 3/4))
+    (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 8 :DUR 1/4 :start 0)
+    (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 8 :DUR 1/4 :start 0)
+    (make-event :key '(C MAJOR) :time-sig 1 :PITCH 14 :OCTAVE 8 :DUR 1/4 :start 1/4)
+    (make-event :key '(C MAJOR) :time-sig 1 :PITCH 14 :OCTAVE 8 :DUR 1/4 :start 1/4)
+    (make-event :key '(C MAJOR) :time-sig 1 :PITCH 28 :OCTAVE 8 :DUR 1/4 :start 1/2)
+    (make-event :key '(C MAJOR) :time-sig 1 :PITCH 28 :OCTAVE 8 :DUR 1/4 :start 1/2)
+    (make-event :key '(C MAJOR) :time-sig 1 :PITCH 41 :OCTAVE 8 :DUR 1/4 :start 3/4)
+    (make-event :key '(C MAJOR) :time-sig 1 :PITCH 41 :OCTAVE 8 :DUR 1/4 :start 3/4))
    (parse-string "\\score { <<
 \\new Staff { c d e f }
 \\new Staff { c d e f }
 >> }"))
   (lisp-unit:assert-equalp
    (list
-    (make-evento :key '(C MAJOR) :time-sig 1 :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-    (make-evento :key '(C MAJOR) :time-sig 1 :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-    (make-evento :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0))
+    (make-event :key '(C MAJOR) :time-sig 1 :PITCH 55 :OCTAVE 9 :DUR 1/4 :start 0)
+    (make-event :key '(C MAJOR) :time-sig 1 :PITCH 28 :OCTAVE 9 :DUR 1/4 :start 0)
+    (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 9 :DUR 1/4 :start 0))
    (parse-string "<<
   \\new Staff \\relative c'' {
     g
@@ -33,9 +33,9 @@
 >>"))
   (lisp-unit:assert-equalp
    (list
-    (make-evento :key '(C MAJOR) :time-sig 1 :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-    (make-evento :key '(C MAJOR) :time-sig 1 :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-    (make-evento :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0))
+    (make-event :key '(C MAJOR) :time-sig 1 :PITCH 55 :OCTAVE 9 :DUR 1/4 :start 0)
+    (make-event :key '(C MAJOR) :time-sig 1 :PITCH 28 :OCTAVE 9 :DUR 1/4 :start 0)
+    (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 9 :DUR 1/4 :start 0))
    (parse-string
     "<<
   \\new Staff <<
@@ -87,66 +87,66 @@
     }
   >>
 }")
-   (list (make-evento :key '(C MAJOR) :time-sig "3/4" :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 0)
-         (make-evento :key '(C MAJOR) :time-sig "3/4" :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-         (make-evento :key '(C MAJOR) :time-sig "3/4" :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-         (make-evento :key '(C MAJOR) :time-sig "3/4" :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 0)
-         (make-evento :key '(C MAJOR) :time-sig "3/4" :PITCH 83 :OCTAVE 9 :DUR 1/4 :INICIO 1/4)
-         (make-evento :key '(C MAJOR) :time-sig "3/4" :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 1/4)
-         (make-evento :key '(C MAJOR) :time-sig "3/4" :PITCH 14 :OCTAVE 9 :DUR 1/4 :INICIO 1/4)
-         (make-evento :key '(C MAJOR) :time-sig "3/4" :PITCH 55 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)
-         (make-evento :key '(C MAJOR) :time-sig "3/4" :PITCH 0 :OCTAVE 10 :DUR 1/4 :INICIO 1/2)
-         (make-evento :key '(C MAJOR) :time-sig "3/4" :PITCH 55 :OCTAVE 9 :DUR 1/4 :INICIO 1/2)
-         (make-evento :key '(C MAJOR) :time-sig "3/4" :PITCH 28 :OCTAVE 9 :DUR 1/4 :INICIO 1/2)
-         (make-evento :key '(C MAJOR) :time-sig "3/4" :PITCH 0 :OCTAVE 9 :DUR 1/4 :INICIO 1/2)))
+   (list (make-event :key '(C MAJOR) :time-sig "3/4" :PITCH 0 :OCTAVE 10 :DUR 1/4 :start 0)
+         (make-event :key '(C MAJOR) :time-sig "3/4" :PITCH 55 :OCTAVE 9 :DUR 1/4 :start 0)
+         (make-event :key '(C MAJOR) :time-sig "3/4" :PITCH 28 :OCTAVE 9 :DUR 1/4 :start 0)
+         (make-event :key '(C MAJOR) :time-sig "3/4" :PITCH 0 :OCTAVE 9 :DUR 1/4 :start 0)
+         (make-event :key '(C MAJOR) :time-sig "3/4" :PITCH 83 :OCTAVE 9 :DUR 1/4 :start 1/4)
+         (make-event :key '(C MAJOR) :time-sig "3/4" :PITCH 55 :OCTAVE 9 :DUR 1/4 :start 1/4)
+         (make-event :key '(C MAJOR) :time-sig "3/4" :PITCH 14 :OCTAVE 9 :DUR 1/4 :start 1/4)
+         (make-event :key '(C MAJOR) :time-sig "3/4" :PITCH 55 :OCTAVE 8 :DUR 1/4 :start 1/4)
+         (make-event :key '(C MAJOR) :time-sig "3/4" :PITCH 0 :OCTAVE 10 :DUR 1/4 :start 1/2)
+         (make-event :key '(C MAJOR) :time-sig "3/4" :PITCH 55 :OCTAVE 9 :DUR 1/4 :start 1/2)
+         (make-event :key '(C MAJOR) :time-sig "3/4" :PITCH 28 :OCTAVE 9 :DUR 1/4 :start 1/2)
+         (make-event :key '(C MAJOR) :time-sig "3/4" :PITCH 0 :OCTAVE 9 :DUR 1/4 :start 1/2)))
   (lisp-unit:assert-equalp
    (parse-string "{ foo = { c d e} \\foo }")
    (list
-    (make-evento :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 8 :DUR 1/4 :INICIO 0)
-    (make-evento :key '(C MAJOR) :time-sig 1 :PITCH 14 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)
-    (make-evento :key '(C MAJOR) :time-sig 1 :PITCH 28 :OCTAVE 8 :DUR 1/4 :INICIO 1/2)))
+    (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 8 :DUR 1/4 :start 0)
+    (make-event :key '(C MAJOR) :time-sig 1 :PITCH 14 :OCTAVE 8 :DUR 1/4 :start 1/4)
+    (make-event :key '(C MAJOR) :time-sig 1 :PITCH 28 :OCTAVE 8 :DUR 1/4 :start 1/2)))
   (lisp-unit:assert-equalp
    (parse-string "{ foo = { c } \\foo foo = { d } \\foo }")
    (list
-    (make-evento :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 8 :DUR 1/4 :INICIO 0)
-    (make-evento :key '(C MAJOR) :time-sig 1 :PITCH 14 :OCTAVE 8 :DUR 1/4 :INICIO 1/4)))
+    (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 8 :DUR 1/4 :start 0)
+    (make-event :key '(C MAJOR) :time-sig 1 :PITCH 14 :OCTAVE 8 :DUR 1/4 :start 1/4)))
   )
 
 
 (lisp-unit:define-test acerta-times
   (lisp-unit:assert-equal
-   (evento-dur (make-evento :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 8 :DUR 9/2 :INICIO 0))
-   (let ((nota (make-evento :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 8 :DUR 3 :INICIO 0)))
+   (event-dur (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 8 :DUR 9/2 :start 0))
+   (let ((nota (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 8 :DUR 3 :start 0)))
      (acerta-times 3/2 nota)
-     (evento-dur nota))))
+     (event-dur nota))))
 
 (lisp-unit:define-test ajusta-duracao
   (lisp-unit:assert-equal
    '(4 4 4 8 8)
    (let ((notas
           (list
-           (make-evento :key '(C MAJOR) :time-sig 1 :pitch 1
+           (make-event :key '(C MAJOR) :time-sig 1 :pitch 1
                         :octave 1
-                        :inicio 0
+                        :start 0
                         :dur 4)
-           (make-evento :key '(C MAJOR) :time-sig 1 :pitch 2
+           (make-event :key '(C MAJOR) :time-sig 1 :pitch 2
                         :octave 1
-                        :inicio 0
+                        :start 0
                         :dur nil)
-           (make-evento :key '(C MAJOR) :time-sig 1 :pitch 3
+           (make-event :key '(C MAJOR) :time-sig 1 :pitch 3
                         :octave 1
-                        :inicio 0
+                        :start 0
                         :dur nil)
-           (make-evento :key '(C MAJOR) :time-sig 1 :pitch 3
+           (make-event :key '(C MAJOR) :time-sig 1 :pitch 3
                         :octave 1
-                        :inicio 0
+                        :start 0
                         :dur 8)
-           (make-evento :key '(C MAJOR) :time-sig 1 :pitch 4
+           (make-event :key '(C MAJOR) :time-sig 1 :pitch 4
                         :octave 1
-                        :inicio 0
+                        :start 0
                         :dur nil))))
      (ajusta-duracao notas)
-     (mapcar #'evento-dur notas))))
+     (mapcar #'event-dur notas))))
 
 (lisp-unit:define-test do-nothing
   (lisp-unit:assert-false (do-nothing "vlA")))

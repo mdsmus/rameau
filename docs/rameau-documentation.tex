@@ -39,6 +39,24 @@ The following functions foo bar ....
 ;; interval-code is alist representing an interval
 
 
+\section{Events}
+\label{sec:events}
+
+;; Formato interno:
+;; O formato interno é uma lista de eventos. Cada evento é uma nota
+;; que soa, e soa em uma altura (pitch), por um certo tempo (dur) a
+;; partir de um certo instante na música (inicio). Isso é representado
+;; na struct evento.
+
+;; Antes disso, no entanto, as notas são processadas pra se extrair a
+;; duração e a altura. Isso é feito usando a struct nota, que
+;; desaparece depois do primeiro passo de processamento, quando as
+;; notas são transformadas em eventos.
+
+;; As funções desse arquivo só fazem essa conversão, de notas pra
+;; eventos, e representam esses eventos, e os manipulam de forma
+;; básica.
+
 
 \input{musiclib}
 
