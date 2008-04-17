@@ -96,7 +96,7 @@
 (defun prepare-answers-k1 (coral)
   (add-inversions coral (mapcar #'classify-k1 coral)))
 
-(register-algorithm "ES-Knn" #'prepare-answers-k1 #'compare-answer-sheet)
+(register-algorithm "ES-Knn" #'prepare-answers-k1)
 
 (defun show-examples ()
   "Mostra em que corais estão que tipos de acorde."
@@ -156,4 +156,4 @@
   (let ((c (contextualize coral *before-context* *after-context*)))
     (add-inversions coral (mapcar #'classify-context (butlast c *before-context*)))))
 
-(register-algorithm "EC-Knn" #'prepare-answers-context #'compare-answer-sheet)
+(register-algorithm "EC-Knn" #'prepare-answers-context)

@@ -91,7 +91,7 @@
   (dbg 'rameau::mostra-arvore "Arvore: ~/rameau-tree-enarm::show-chord-tree/ ~%" *chord-tree*)
   (add-inversions coral (mapcar #'chord-tree-classify coral)))
 
-(register-algorithm "ES-tree" #'do-classification #'compare-answer-sheet)
+(register-algorithm "ES-tree" #'do-classification)
 
 (defun do-train-chord-tree ()
   (multiple-value-bind (corais gabaritos)

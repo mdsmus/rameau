@@ -231,7 +231,7 @@
 (unless (cl-fad:file-exists-p *e-chord-net-file*)
   (train-e-chord-net))
 
-(register-algorithm "ES-net" #'apply-e-chord-net #'compare-answer-sheet)
+(register-algorithm "ES-net" #'apply-e-chord-net)
 
 (defparameter *context-net* nil)
 
@@ -313,4 +313,4 @@
 (unless (cl-fad:file-exists-p *context-net-file*)
   (train-context-net))
 
-(register-algorithm "EC-net" #'apply-context-net #'compare-answer-sheet)
+(register-algorithm "EC-net" #'apply-context-net)

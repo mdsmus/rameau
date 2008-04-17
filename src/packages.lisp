@@ -81,15 +81,15 @@
 
 
 (defstruct algorithm
-  (name)
-  (classify)
-  (compare)
-  (args))
+  name
+  classify
+  tempered?)
+
 
 (defparameter *algorithms* nil)
 
-(defun register-algorithm (nome processa compara &rest args)
-  (push (make-algorithm :name nome :classify processa :compare compara :args args)
+(defun register-algorithm (nome processa &optional tempered?)
+  (push (make-algorithm :name nome :classify processa :tempered? tempered?)
         *algorithms*))
 
 (defun filter-algorithms (algoritmos)

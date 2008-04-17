@@ -123,7 +123,7 @@
       (:no-error (&rest rest) (print-condition 'ok file rest)))))
 
 (defun run-algorithm (algorithm answer sheet)
-  (apply (algorithm-compare algorithm) (list* answer sheet (algorithm-args algorithm))))
+  (compare-answer-sheet answer sheet (algorithm-tempered? algorithm)))
 
 (do-not-test report
   print-condition

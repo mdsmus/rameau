@@ -162,7 +162,7 @@
                     :from-end t :initial-value nil))))
      
 
-(register-algorithm "S-PB" #'pardo-classify #'compare-answer-sheet)
+(register-algorithm "S-PB" #'pardo-classify)
 
 (deftemplates *incf-pardo-templates* 
   ((nil nil) (0 28 55))
@@ -190,4 +190,4 @@
            (reduce #'tie-break (mapcar #'incf-pardo sonoritys)
                    :from-end t :initial-value nil))))
 
-(register-algorithm "ES-PB" #'incf-pardo-classify #'compare-answer-sheet)
+(register-algorithm "ES-PB" #'incf-pardo-classify)
