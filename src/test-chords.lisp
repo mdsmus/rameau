@@ -30,5 +30,5 @@
                   (transpose-chords (list (parse-chord "c") (parse-chord "d")) 14)))
 
 (define-test compare-answer-sheet
-  (assert-true (compare-answer-sheet (parse-chord "ab") (parse-chord "g#") :tempered? t))
+  (assert-true (compare-answer-sheet (parse-chord "ab") (parse-chord "g#") 'tempered))
   (assert-false (compare-answer-sheet (parse-chord "ab") (parse-chord "g#"))))

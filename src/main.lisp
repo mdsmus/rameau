@@ -122,6 +122,9 @@
       (serious-condition (expr) (print-condition 'no file expr))
       (:no-error (&rest rest) (print-condition 'ok file rest)))))
 
+(defun run-algorithm (algorithm answer sheet)
+  (apply (algorithm-compare algorithm) (list* answer sheet (algorithm-args algorithm))))
+
 (do-not-test report
   print-condition
   print-ok/no-list
@@ -130,6 +133,7 @@
   maptrace
   get-comandos
   parse-verbose
+  run-algorithm
   )
 
 (defun percent (x total)
@@ -256,7 +260,7 @@ ponto nos corais de bach."
                 for gab = (first gab-lista) then (first gab-lista)
                 unless s return 0
                 unless alg-lista return 0
-                if (funcall (algorithm-compare a) res gab) do
+                if (run-algorithm a res gab) do
                   (format stream "\"~a\" " (if res res " "))
                 else do
                   (format stream
@@ -306,8 +310,8 @@ ponto nos corais de bach."
               for i from 0
               for r in res
               for alg = (first r) then (first r)
-              for certo? = (funcall (algorithm-compare a) alg gab)
-              then (funcall (algorithm-compare a) alg gab)
+              for certo? = (run-algorithm a alg gab)
+              then (run-algorithm a alg gab)
               do (print-res-alg alg certo? flags)
               when certo? do (incf (nth i counts)))
            (format t "~%"))
@@ -339,8 +343,8 @@ ponto nos corais de bach."
               for i from 0
               for r in res
               for alg = (first r) then (first r)
-              for certo? = (funcall (algorithm-compare a) alg gab)
-              then (funcall (algorithm-compare a) alg gab)
+              for certo? = (run-algorithm a alg gab)
+              then (run-algorithm a alg gab)
               when certo? do (incf (nth i counts)) (incf (nth i corretos))))
       (let ((l (loop
                   for i in counts
@@ -366,7 +370,7 @@ ponto nos corais de bach."
             for i from 0
             for r in res
             for alg = (first r) then (first r)
-            for certo? = (funcall (algorithm-compare a) alg gab)
+            for certo? = (run-algorithm a alg gab)
             do (if (or (and certo? (not erros?))
                        (and erros? (not certo?)))
                    (when (and

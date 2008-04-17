@@ -19,6 +19,7 @@
    #:*lily-dir-list*
    #:*gabarito-dir-list*
    #:*do-not-test*
+   #:algorithm-args
    #:algorithm-compare
    #:algorithm-name
    #:algorithm-classify
@@ -82,12 +83,13 @@
 (defstruct algorithm
   (name)
   (classify)
-  (compare))
+  (compare)
+  (args))
 
 (defparameter *algorithms* nil)
 
-(defun register-algorithm (nome processa compara)
-  (push (make-algorithm :name nome :classify processa :compare compara)
+(defun register-algorithm (nome processa compara &rest args)
+  (push (make-algorithm :name nome :classify processa :compare compara :args args)
         *algorithms*))
 
 (defun filter-algorithms (algoritmos)

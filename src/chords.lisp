@@ -170,7 +170,7 @@ position."
      collect (transpose-chord (if (listp c) (find-if #'chord-p c) c)
                               n)))
 
-(defun %compare-answer-sheet (result answer-sheet &key (tempered? nil))
+(defun %compare-answer-sheet (result answer-sheet &optional tempered?)
   (or (and (melodic-note-p result)
            (melodic-note-p answer-sheet))
       (and (augmented-sixth-p result)
@@ -184,10 +184,10 @@ position."
            (equalp (chord-mode result) (chord-mode answer-sheet))
            (equal (chord-7th result) (chord-7th answer-sheet)))))
 
-(defun compare-answer-sheet (answer answer-sheet &key (tempered? nil))
+(defun compare-answer-sheet (answer answer-sheet &optional tempered?)
   (if (atom answer-sheet)
-      (%compare-answer-sheet answer answer-sheet :tempered? tempered?)
-      (some (lambda (x) (%compare-answer-sheet answer x :tempered? tempered?)) answer-sheet)))
+      (%compare-answer-sheet answer answer-sheet tempered?)
+      (some (lambda (x) (%compare-answer-sheet answer x tempered?)) answer-sheet)))
 
 (defun add-inversion (segmento acorde)
   (let ((inv (first (lista-notas segmento))))
