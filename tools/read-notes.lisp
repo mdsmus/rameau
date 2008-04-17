@@ -50,7 +50,7 @@
 (defun toca-nota (nota-list)
   (flet ((play (nota)
            (sb-ext:run-program "/usr/bin/play"
-                               (list (concat "/home/kroger/src/rameau/samples/" nota ".wav")))))
+                               (list (concat *rameau-path* "samples/" nota ".wav")))))
     (destructuring-bind (nota acc) nota-list
       (play nota)
       (when acc (play acc)))))
