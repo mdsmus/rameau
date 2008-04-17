@@ -126,8 +126,8 @@ system."
                                                   (up "1")))))))
 
 (defun get-interval-name (short)
-  "Retorna o nome completo representando um acorde dado uma representação abreviada.
-Exemplo: (get-interval-name 'dim) retorna diminished."
+  "Returns the full name of a chord for the abbreviated
+representation. \\example{(get-interval-name 'dim)}{diminished}"
   (assoc-item short '((min minor)
                       (maj major)
                       (just just)
@@ -135,8 +135,8 @@ Exemplo: (get-interval-name 'dim) retorna diminished."
                       (dim diminished))))
 
 (defun get-interval-quantity (num)
-  "Retorna uma palavra que representa a quantidade numérica de um
-acorde. EXEMPLO: (get-interval-quantity 3) retorna TRIPLE."
+  "Returns a word representing the numeric quantity of a chord.
+\\example{(get-interval-quantity 3)}{triple}"
   (assoc-item num '((2 double)
                     (3 triple)
                     (4 quadruple)
@@ -155,21 +155,20 @@ acorde. EXEMPLO: (get-interval-quantity 3) retorna TRIPLE."
     get-interval-quantity
     %my-position
     %parse-note
-    %note->code
     )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun octave-from-string (string &optional (representation 'lily))
-  "Parse string \\texttt{string} and return the octave it implies."
-  ;;(+ 8 (symbol->number string '("," "'"))))
+(defun octave-from-string (octave &optional (representation 'lily))
+  "Returns the numeric representation of a octave represented as
+string. The central octave has the value 8."
   (let ((up (get-octave 'up representation))
         (down (get-octave 'down representation)))
-    (+ 8 (cond ((search up string) (count-subseq up string))
-               ((search down string) (- (count-subseq down string)))
+    (+ 8 (cond ((search up octave) (count-subseq up octave))
+               ((search down octave) (- (count-subseq down octave)))
                (t 0)))))
 
 (defun code->notename (number)
-  "Return a note nome given its numeric code."
+  "Returns a note nome given its numeric code."
   (nth (module number) (get-system-notes *system*)))
 
 (defun number-of-accidentals (acc-string representation)
@@ -211,39 +210,40 @@ level function, you should use parse-note instead."
       (tonal note-code-tonal)
       (tempered note-code-tempered))))
 
-(defun %note->code (note)
-  "Aceita um símbolo representando uma nota e retorna seu código
-numérico. Essa é uma função auxiliar que funciona apenas para notas
-sem acidentes, como 'd', 'e', etc. EXEMPLO: (%note->code \"d\")
-retorna 14."
-  (case *system*
-    (tonal (position (list note 0) (get-system-notes *system*) :test #'equal))
-    (tempered (position (list note 0) (get-system-notes *system*) :test #'equal))))
-
-(let ((testa-nota (cl-ppcre:create-scanner "^[a-g]((es)*|(is)*|#*|b*)$"
-                                           :case-insensitive-mode t)))
+(let ((test-note (cl-ppcre:create-scanner "^[a-g]((es)*|(is)*|#*|b*)$" :case-insensitive-mode t)))
   (defun note? (string)
-    "Testa se uma dada string pode representar uma nota"
-    (cl-ppcre:scan testa-nota string)))
+    "Test if a string can represent a note."
+    (cl-ppcre:scan test-note string)))
 
 (defun rest? (string)
   "Testa se uma string pode representar um silêncio"
   (cl-ppcre:scan "^[sSRr]$" string))
 
 (defun parse-note (note)
-  "Retorna o código numérico da nota, dada sua representação em
-string. Essa função é inteligente o suficiente para saber que 'aes'
-usa a representação do lilypond e 'd#' usa a representação 'latin'."
-  (when (note? note)
-    (let ((note (string-downcase note)))
-      (module 
-       (cond ((eql (length note) 1) (%note->code (string->symbol note)))
-             ((match-note-representation note 'lily) (%parse-note note 'lily *system*))
-             ((match-note-representation note 'latin) (%parse-note note 'latin *system*))
-             (t (error "tipo de nota não conhecida")))))))
+  "Returns the numeric code of a pitch, given its representation as a
+string. This function is smart enought to know that 'aes' is
+lilypond's representation and 'd#' is latin's representation."
+  (flet ((%note->code (note)
+           "Aceita um símbolo representando uma nota e retorna seu
+código numérico. Essa é uma função auxiliar que funciona apenas para
+notas sem acidentes, como 'd', 'e', etc. EXEMPLO: (%note->code \"d\")
+retorna 14."
+           (case *system*
+             (tonal (position (list note 0)
+                              (get-system-notes *system*) :test #'equal))
+             (tempered (position (list note 0)
+                                 (get-system-notes *system*) :test #'equal)))))
+    (when (note? note)
+      (let ((note (string-downcase note)))
+        (module 
+         (cond ((eql (length note) 1) (%note->code (string->symbol note)))
+               ((match-note-representation note 'lily) (%parse-note note 'lily *system*))
+               ((match-note-representation note 'latin) (%parse-note note 'latin *system*))
+               (t (error "type of note is unknown"))))))))
 
 (defun notename->code (note)
-  "R"
+  "Returns the numeric code of a note represented as a list of (note
+accidental) as code->notename would return."
   (position note (get-notes) :test #'equal))
 
 (defun enharmonicaly-equal-p (notea noteb)
@@ -253,7 +253,7 @@ shoulbe be represented as strings."
     (equal (parse-note notea) (parse-note noteb))))
 
 (defun print-accidentals (acc repr)
-  "Return a string of a note according to the numeric value of an
+  "Returns a string of a note according to the numeric value of an
 accidental and a representation. EXAMPLE: (print-accidentals 3 'lily)
 returns isisis."
   (repeat-string acc (get-accidental (if (>= acc 0) 'sharp 'flat) repr)))
@@ -263,15 +263,15 @@ returns isisis."
 Example: (print-note '(c 1) 'lily) return cis."
   (format nil "~(~a~)~a" (first note-code) (print-accidentals (second note-code) representation)))
 
-(defun latin->lily (nota)
-  "Aceita uma string com o nome da nota em latin e retorna a
-representação do lilypond. Exemplo: (latin->lily \"Eb\") => \"ees\""
-  (print-note (code->notename (parse-note (stringify nota))) 'lily))
+(defun latin->lily (note)
+  "Accepts a string with a note in latin representation and returns a
+note using lilypond's representation."
+  (print-note (code->notename (parse-note (stringify note))) 'lily))
 
-(defun lily->latin (nota)
-  "Aceita uma string com o nome da nota em lily e retorna a
-representação em latin. Exemplo: (lily->latin \"cis\") => \"C#\""
-  (print-note (code->notename (parse-note nota)) 'latin))
+(defun lily->latin (note)
+  "Accepts a string with a note in lilypond representation and returns
+a note using latin representation."
+  (print-note (code->notename (parse-note note)) 'latin))
 
 (defun module (n)
   "Returns the module according to a system.
@@ -333,7 +333,6 @@ rotation, and so on. This function is cyclic."
 
 (defun set-transpose-to-0 (set)
   "Transpose a set so it begins with 0. Only on a tempered system."
-  (assert (eq *system* 'tempered))
   (set-transpose set (- (first set))))
   
 (defun set-intervals (set)
