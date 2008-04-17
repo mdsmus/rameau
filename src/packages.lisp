@@ -19,7 +19,7 @@
    #:*lily-dir-list*
    #:*gabarito-dir-list*
    #:*do-not-test*
-   #:algorithm-args
+   #:algorithm-tempered?
    #:algorithm-compare
    #:algorithm-name
    #:algorithm-classify
