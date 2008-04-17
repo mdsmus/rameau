@@ -143,6 +143,7 @@ clean:
 	rm -f rameau
 	rm -f *.data *.fann
 	find -name *.fasl -exec rm {} \;
+	find -name *.fas -exec rm {} \;
 	find -name *.x86f -exec rm {} \;
 
 clean-lisp-cache:
