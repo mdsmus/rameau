@@ -4,11 +4,12 @@ maindir = $(shell pwd)
 
 ifeq ($(RAMEAUDEPS),t)
 	sbcl = /usr/bin/sbcl --no-userinit --disable-debugger
+	lisp = /usr/bin/lisp -batch -quiet -noinit 
 else
 	sbcl = /usr/bin/sbcl --disable-debugger
+	lisp = /usr/bin/lisp -batch -quiet 
 endif
 
-lisp = /usr/bin/lisp -batch -quiet 
 lisp-files = $(wildcard src/*.lisp src/lib/*.lisp tools/*.lisp src/algoritmos/*.lisp)
 corais-lyi = $(wildcard literatura/bach-corais/*.lyi)
 corais-png = $(notdir $(patsubst %.lyi,%.png,$(corais-lyi)))
@@ -84,7 +85,7 @@ eclrameau: $(lisp-files)
 	ecl -eval  "(load \"tools/make-image.lisp\")"
 
 clisprameau: $(lisp-files)
-	clisp -ansi -K full -x "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" -k "(load \"tools/make-image.lisp\")"
+	clisp -ansi -K full -x "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" -x "(load \"tools/make-image.lisp\")"
 
 doc:
 	cd docs ;\
