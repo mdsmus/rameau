@@ -180,6 +180,23 @@
   (load-e-chord-net)
   (coloca-inversoes inputs (mapcar #'run-e-chord-net inputs)))
 
+(defun prepare-training-data-chord-net (coral gabarito &optional
+                                        (diff-func #'extrai-diffs)
+                                        (feature #'cria-pattern-segmento))
+  (loop for c in coral
+     for gab in gabarito
+     for ds = (funcall diff-func c)
+     if (listp gab)
+       nconc (prepare-training-data-chord-net (repeat-list (length gab) c)
+                                              gab diff-func feature)
+     else
+       nconc (loop for d in ds
+                nconc (list (list (funcall feature c d)
+                                  (cria-pattern-saida-acorde gab d))))))
+
+
+
+
 (defun make-training-data-e-chord-net ()
   (loop for i in *training-data*
      nconc (prepare-training-data-chord-net (first i) (second i))))
