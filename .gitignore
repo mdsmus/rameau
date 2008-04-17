@@ -27,3 +27,11 @@ resultados/*log
 out
 rameau-deps
 foo
+book-corais.dvi
+book-corais.tex
+checa-notas
+docs/musiclib.tex
+docs/rameau-documentation.dvi
+samples/bak/*
+samples/new/*
+samples/old/*
