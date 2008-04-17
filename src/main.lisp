@@ -1,5 +1,5 @@
 (defpackage :rameau-main
-  (:use :rameau :cl :arnesi :cl-ppcre :lisp-unit)
+  (:use :rameau :cl :cl-ppcre :lisp-unit :ltk)
   (:export :main :check))
 
 (in-package :rameau-main)
@@ -14,6 +14,7 @@
                         (tamanhos ("corais" "exemplos"))
                         (enarmonia ("corais"))
                         (check nil)
+                        (gui)
                         (erros ("corais" "exemplos"))
                         (acertos ("corais" "exemplos"))
                         (resultados ("corais" "exemplos"))
@@ -99,7 +100,8 @@
            (return x))))
 
 (defun pos (list)
-  (aif (position (next-flag list) list :test #'string=) it 0))
+  (let ((pos (position (next-flag list) list :test #'string=)))
+    (if pos pos 0)))
 
 (defun get-lone-flags (list)
   (remove-duplicates
@@ -649,6 +651,15 @@ ponto nos corais de bach."
                             (funcall (algorithm-classify a) segmento))))
       (print-lily file item gabarito resultados flags segmento))))
 
+(defun run-gui (&rest args)
+  (with-ltk ()
+   (let ((b (make-instance 'button 
+                           :master nil
+                           :text "Press Me"
+                           :command (lambda ()
+                                      (format t "Hello World!~&")))))
+     (pack b))))
+
 (defun remove-test (list)
   "Remove test files from list of files."
   (remove-if (lambda (f) (search "test-" (pathname-name f))) list))
@@ -724,6 +735,7 @@ ponto nos corais de bach."
 (defcommand resultados run-gera-resultados regexps)
 (defcommand tamanhos run-compara-tamanhos)
 (defcommand check run-check)
+(defcommand gui run-gui)
 
 (do-not-test main
   run-testes
