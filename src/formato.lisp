@@ -52,12 +52,12 @@
   (declare (ignore skip))
   (make-note "s" "" dur))
 
-(defun move-event-no-tempo (event tempo)
+(defun move-event (event tempo)
   (setf (event-start event) (+ (event-start event) tempo))
   event)
 
-(defun movimenta-sequencia (seq tempo)
-  (mapcar (lambda (x) (move-event-no-tempo x tempo))
+(defun move-sequence (seq tempo)
+  (mapcar (lambda (x) (move-event x tempo))
           seq))
 
 
@@ -73,7 +73,7 @@
            (movimentador (sequencia-de-notas-dur primeiro)))
       (setf (sequencia-de-notas-notas primeiro)
             (nconc (sequencia-de-notas-notas primeiro)
-                   (movimenta-sequencia (sequencia-de-notas-notas segundo)
+                   (move-sequence (sequencia-de-notas-notas segundo)
                                         (sequencia-de-notas-dur primeiro))))
       (incf (sequencia-de-notas-dur primeiro) (sequencia-de-notas-dur segundo))
       (coloca-expressoes-em-sequencia (cons primeiro resto)))
@@ -161,8 +161,8 @@
                  :time-sig (event-time-sig nota))))
 
 (do-not-test tempera
-  move-event-no-tempo
-  movimenta-sequencia
+  move-event
+  move-sequence
   cria-skip
   coloca-expressoes-em-sequencia
   %expmerge

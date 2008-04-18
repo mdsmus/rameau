@@ -312,7 +312,7 @@
         (*current-sig* 4/4)
         (*anacruz* 0))
     (declare (special *environment* *dur* *current-key* *current-sig*))
-    (movimenta-sequencia
+    (move-sequence
      (remove-if (lambda (x) (null (event-pitch x)))
                 (aif (yacc:parse-with-lexer (string-lexer str) *expression-parser*)
                      (sequencia-de-notas-notas it)
