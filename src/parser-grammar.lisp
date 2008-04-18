@@ -132,8 +132,8 @@
    (note-expr notes #'cons))
   
   (note-expr
-   (NOTE octave-expr dur-expr  #'cria-nota)
-   (SKIP dur-expr #'cria-skip)
+   (NOTE octave-expr dur-expr  #'make-note)
+   (SKIP dur-expr #'make-skip)
    (PARTIAL dur-expr #'make-anacruz))
 
   (octave-expr

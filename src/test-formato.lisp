@@ -40,11 +40,11 @@
   }
 }"))))
 
-(lisp-unit:define-test cria-nota
-  (assert-equal 0 (event-pitch (car (sequencia-de-notas-notas (cria-nota "c")))))
-  (assert-equal nil (event-dur (car (sequencia-de-notas-notas (cria-nota "c")))))
-  (assert-equal 8 (event-octave (car (sequencia-de-notas-notas (cria-nota "c")))))
-  (assert-equal 0 (event-start (car (sequencia-de-notas-notas (cria-nota "c")))))
+(lisp-unit:define-test make-note
+  (assert-equal 0 (event-pitch (car (sequencia-de-notas-notas (make-note "c")))))
+  (assert-equal nil (event-dur (car (sequencia-de-notas-notas (make-note "c")))))
+  (assert-equal 8 (event-octave (car (sequencia-de-notas-notas (make-note "c")))))
+  (assert-equal 0 (event-start (car (sequencia-de-notas-notas (make-note "c")))))
   )
 
 

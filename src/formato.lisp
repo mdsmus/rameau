@@ -34,7 +34,7 @@
 (defun durations (segmento)
   (mapcar (lambda (x) (event-dur (first x))) segmento))
 
-(defun cria-nota (nota &optional (octave "") dur articulation dur2) 
+(defun make-note (nota &optional (octave "") dur articulation dur2) 
   (declare (ignore articulation))
   (let ((dur (if dur2 dur2 dur)))
     (make-sequencia-de-notas
@@ -48,9 +48,9 @@
      :start 0
      :dur dur)))
 
-(defun cria-skip (skip dur)
+(defun make-skip (skip dur)
   (declare (ignore skip))
-  (cria-nota "s" "" dur))
+  (make-note "s" "" dur))
 
 (defun move-event-no-tempo (event tempo)
   (setf (event-start event) (+ (event-start event) tempo))
