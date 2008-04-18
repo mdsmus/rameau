@@ -1,9 +1,9 @@
 (in-package :rameau)
 
-(define-test fim-event
+(define-test event-end
   (assert-equal
    1
-   (fim-event (make-event :key '(C MAJOR) :time-sig 1 :start 1/2 :dur 1/2))))
+   (event-end (make-event :key '(C MAJOR) :time-sig 1 :start 1/2 :dur 1/2))))
 
 (define-test menos-de-uma-quinta
   (assert-true

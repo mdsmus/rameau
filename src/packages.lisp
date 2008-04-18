@@ -33,6 +33,7 @@
    #:add-inversions
    #:compare-answer-sheet
    #:do-not-test
+   #:event-end
    #:extract-diff
    #:extract-feature-list
    #:event-<
@@ -65,7 +66,6 @@
    #:event-time-sig
    #:event-key
    #:make-event
-   #:fim-event
    #:processa-cifras
    #:register-algorithm
    #:read-chords

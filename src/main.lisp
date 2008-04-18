@@ -58,7 +58,7 @@
   (if (null s2)
       0
       (- (event-start (first s2))
-         (fim-event (first s1)))))
+         (event-end (first s1)))))
 
 (defun print-condition (status file expr)
   (format t "[~a] ~a: ~a~%" status (pathname-name file) expr))

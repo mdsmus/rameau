@@ -61,7 +61,7 @@
           seq))
 
 
-(defun fim-event (event)
+(defun event-end (event)
   (+ (event-start event) (event-dur event)))
 
 (defun coloca-expressoes-em-sequencia (sequencias)
