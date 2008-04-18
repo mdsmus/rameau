@@ -29,9 +29,9 @@
 
 #+sbcl(sb-ext:save-lisp-and-die "rameau" :executable t :toplevel #'rameau-main:main)
 
-#+cmu(extensions:save-lisp "cmurameau" :init-function #'rameau-main3:main)
+#+cmu(extensions:save-lisp "cmurameau" :init-function #'rameau-main:main)
 
-#+clisp(ext:saveinitmem "clisprameau" :script t :quiet t :executable t :init-function #'rameau-main:main)
+#+clisp(ext:saveinitmem "clisprameau" :script t :quiet t :verbose t :executable t :init-function #'rameau-main:main)
 
 #+ecl(progn (loop for file in '("src/rameau.lisp"
                                 "src/cifras.lisp"

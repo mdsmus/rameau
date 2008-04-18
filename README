@@ -15,6 +15,10 @@ Se você usa Arch, instale fann desse pacote:
 
 http://www.genos.mus.br/arch/fann-2.0.0-1-i686.pkg.tar.gz
 
+Outras dependências incluem:
+
+  tcl tk lilypond
+
 Depois de instalar as dependências, rode o comando:
 
   make cl-fann rameau
