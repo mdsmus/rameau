@@ -122,7 +122,7 @@ position."
              (first poplist) :sharedp t)
           (make-chord :root root
                       ;; mode = nil é maior
-                      :mode mode
+                      :mode (if mode mode "")
                       :bass bass-note
                       :inversion (return-inversion root bass-note)
                       :7th (if (and (string= 7th "7") (string= mode "°"))
