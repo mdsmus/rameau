@@ -113,14 +113,14 @@
   )
 
 
-(lisp-unit:define-test acerta-times
+(lisp-unit:define-test correct-times
   (lisp-unit:assert-equal
    (event-dur (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 8 :DUR 9/2 :start 0))
    (let ((nota (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 8 :DUR 3 :start 0)))
-     (acerta-times 3/2 nota)
+     (correct-times 3/2 nota)
      (event-dur nota))))
 
-(lisp-unit:define-test ajusta-duracao
+(lisp-unit:define-test correct-durations
   (lisp-unit:assert-equal
    '(4 4 4 8 8)
    (let ((notas
@@ -145,7 +145,7 @@
                         :octave 1
                         :start 0
                         :dur nil))))
-     (ajusta-duracao notas)
+     (correct-durations notas)
      (mapcar #'event-dur notas))))
 
 (lisp-unit:define-test do-nothing

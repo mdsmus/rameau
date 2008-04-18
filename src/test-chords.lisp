@@ -20,9 +20,9 @@
   (assert-equal 2 (return-inversion "c" "g")))
 
 (define-test parse-chord
-  (assert-equalp (make-chord :root "c" :7th "7") (parse-chord "c7"))
-  (assert-equalp (make-chord :root "bb" :mode "m") (parse-chord "bbm"))
-  (assert-equalp (make-chord :root "a") (parse-chord "a")))
+  (assert-equalp (make-chord :root "c" :mode "" :7th "7") (parse-chord "c7"))
+  (assert-equalp (make-chord :root "bb" :mode "m" :7th "") (parse-chord "bbm"))
+  (assert-equalp (make-chord :root "a" :mode "" :7th "") (parse-chord "a")))
 
 (define-test transpose-chords
   (assert-equalp 

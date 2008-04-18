@@ -91,7 +91,7 @@
      when (< maxl l) do (setf maxi i maxl l)
      finally (return
                (case maxi
-                 (0 nil)
+                 (0 "")
                  (1 "7")
                  (2 "7-")
                  (3 "7+")
@@ -117,7 +117,7 @@
      when (< maxm m) do (setf maxm m maxi i)
      finally (return
                (case maxi
-                 (0 nil)
+                 (0 "")
                  (1 "m")
                  (2 "+")
                  (3 (if (equal "7" 7th) "ø" "°"))

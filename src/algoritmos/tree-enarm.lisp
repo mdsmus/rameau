@@ -22,9 +22,9 @@
 (defparameter *names* '(pitch1 pitch2 pitch3 pitch4))
 
 (defparameter *chords*
-  (loop for modo in '(nil "m" "+" "°" "ø" "!")
+  (loop for modo in '("" "m" "+" "°" "ø" "!")
      append
-       (loop for setima in '(nil "7" "7-" "7+")
+       (loop for setima in '("" "7" "7-" "7+")
           append
             (loop for root from 0 to 95 collect
                  (make-chord :root (print-note (code->notename root))
@@ -43,7 +43,7 @@
 
 (defun extract-class (acorde)
   (if (and (chord-p acorde)
-           (or (equal nil (chord-mode acorde))
+           (or (equal "" (chord-mode acorde))
                (equal "m" (chord-mode acorde))
                (equal "°" (chord-mode acorde))
                (equal "!" (chord-mode acorde))
