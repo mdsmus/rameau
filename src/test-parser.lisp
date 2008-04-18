@@ -14,7 +14,7 @@
    (parse-string "\\score { <<
 \\new Staff { c d e f }
 \\new Staff { c d e f }
->> }"))
+>> }"))) #|
   (lisp-unit:assert-equalp
    (list
     (make-event :key '(C MAJOR) :time-sig 1 :PITCH 55 :OCTAVE 9 :DUR 1/4 :start 0)
@@ -155,3 +155,4 @@
   (lisp-unit:assert-equal
    ""
    (empty-octave)))
+|#

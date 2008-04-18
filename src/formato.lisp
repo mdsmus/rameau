@@ -3,7 +3,14 @@
 (defparameter *current-key* '("c" "\\major"))
 (defparameter *current-sig* "4/4")
 
+
+;; The atomic structures returned by the parser are \\texttt{event}s,
+;; \\texttt{note-sequence}s and \\texttt{note-simultaneous}. These are
+;; distinct from their AST counterparts defined in parser.lisp.
+;;
+
 (defstruct event
+  (text-repr)
   (pitch)
   (octave)
   (dur)
@@ -12,7 +19,14 @@
   (time-sig))
 
 (defstruct note-sequence
+  (text-repr)
   (notas)
+  (start)
+  (dur))
+
+(defstruct note-simultaneous
+  (text-repr)
+  (notes)
   (start)
   (dur))
 
@@ -34,22 +48,21 @@
 (defun durations (segmento)
   (mapcar (lambda (x) (event-dur (first x))) segmento))
 
-(defun make-note (nota &optional (octave "") dur articulation dur2) 
-  (declare (ignore articulation))
-  (let ((dur (if dur2 dur2 dur)))
-    (make-note-sequence
-     :notas (list
-             (make-event :pitch (parse-note nota)
-                          :octave (octave-from-string octave)
-                          :dur dur
-                          :start 0
-                          :key *current-key*
-                          :time-sig *current-sig*))
-     :start 0
-     :dur dur)))
+(defun make-note (nota &optional (octave "") dur  &rest ignore) 
+  (declare (ignore ignore))
+  (make-note-sequence
+   :notas (list
+           (make-event :pitch (parse-note nota)
+                       :octave (octave-from-string octave)
+                       :dur dur
+                       :start 0
+                       :key *current-key*
+                       :time-sig *current-sig*))
+   :start 0
+   :dur dur))
 
-(defun make-skip (skip dur)
-  (declare (ignore skip))
+(defun make-skip (skip dur ignore)
+  (declare (ignore skip ignore))
   (make-note "s" "" dur))
 
 (defun move-event (event tempo)

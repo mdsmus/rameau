@@ -11,6 +11,7 @@
                DUR
                NOTE
                OCTAVE
+               IGNORE
                RELATIVE
                STRING
                PARTIAL
@@ -41,18 +42,25 @@
 
   (start
    ()
+   (ignorable start #'return-second)
    (lilypond #'identity))
   
   (lilypond
    (expression #'parse-lilypond))
 
+  (ignorable
+   ()
+   (IGNORE ignorable #'parser-ign))
+  
   (lilypond-header
-   (HEADER |{| expression |}|)
-   (HEADER |{| |}|))
+   (HEADER ignorable |{| expression |}|)
+   (HEADER ignorable |{| |}|))
 
   (expression
-   (expression-atom #'list)
-   (expression-atom expression #'cons))
+   (expression-atom #'parser-list)
+   (expression-atom expression #'parser-cons)
+   (expression ignorable #'return-first)
+   (ignorable expression #'return-second))
   
   (expression-atom
    (lilypond-header #'do-nothing)
@@ -72,20 +80,20 @@
    (relative-block #'identity)
    (chord-block #'identity)
    (scheme-code #'do-nothing)
-   (include STRING #'parse-include)
+   (include ignorable STRING #'parse-include)
    (|<<| expression |>>| #'parse-simultaneous)
-   (SIMULT |{| expression |}| #'parse-simult)
+   (SIMULT ignorable |{| expression |}| #'parse-simult)
    (note-expr #'identity))
 
   (assignment
-   (VARNAME = value #'parse-assignment))
+   (VARNAME ignorable = ignorable value #'parse-assignment))
 
   (value
    (STRING #'identity)
    (expression-atom #'identity))
 
   (repeat-block
-   (REPEAT varname dur-expr expression-atom #'parse-repeat-block))
+   (REPEAT ignorable varname ignorable dur-expr ignorable expression-atom #'parse-repeat-block))
 
   (variable-block
    (VARIABLE #'parse-variable-block))
@@ -97,44 +105,44 @@
    (|{| |}| #'do-nothing))
 
   (layout-block
-   (LAYOUT |{| |}|)
-   (LAYOUT |{| expression |}|))
+   (LAYOUT ignorable |{| |}|)
+   (LAYOUT ignorable |{| expression |}|))
 
   (staff-block
-   (NEW-STAFF expression-atom #'parse-staff-block)
-   (CONTEXT STAFF = VARNAME expression-atom #'parse-context-staff)
-   (CONTEXT STAFF = STRING expression-atom #'parse-context-staff)
-   (NEW-STAFF = VARNAME expression-atom #'parse-new-staff)
-   (NEW-STAFF = STRING expression-atom #'parse-new-staff))
+   (NEW-STAFF ignorable expression-atom #'parse-staff-block)
+   (CONTEXT ignorable STAFF ignorable = ignorable VARNAME ignorable expression-atom #'parse-context-staff)
+   (CONTEXT ignorable STAFF ignorable = ignorable STRING ignorable expression-atom #'parse-context-staff)
+   (NEW-STAFF ignorable = ignorable VARNAME ignorable expression-atom #'parse-new-staff)
+   (NEW-STAFF ignorable = ignorable STRING ignorable expression-atom #'parse-new-staff))
 
   (score-block
-   (NEW-SCORE expression-atom #'parse-score-block)
-   (CONTEXT SCORE = VARNAME expression-atom #'parse-context-score)
-   (CONTEXT SCORE = STRING expression-atom #'parse-context-score))
+   (NEW-SCORE ignorable expression-atom #'parse-score-block)
+   (CONTEXT ignorable SCORE ignorable = ignorable VARNAME ignorable expression-atom #'parse-context-score)
+   (CONTEXT ignorable SCORE ignorable = ignorable STRING ignorable expression-atom #'parse-context-score))
 
   (voice-block
-   (NEW-VOICE expression-atom #'parse-voice-block)
-   (NEW-VOICE = STRING expression-atom #'parse-voice-block-string)
-   (CONTEXT VOICE = VARNAME expression-atom #'parse-context-voice)
-   (CONTEXT VOICE = STRING expression-atom #'parse-context-voice))
+   (NEW-VOICE ignorable expression-atom #'parse-voice-block)
+   (NEW-VOICE ignorable = ignorable STRING ignorable expression-atom #'parse-voice-block-string)
+   (CONTEXT ignorable VOICE ignorable = ignorable VARNAME ignorable expression-atom #'parse-context-voice)
+   (CONTEXT ignorable VOICE ignorable = ignorable STRING ignorable expression-atom #'parse-context-voice))
   
   (relative-block
-   (RELATIVE note-expr expression-atom #'parse-relative-block))
+   (RELATIVE ignorable note-expr ignorable expression-atom #'parse-relative-block))
 
   (times-block
-   (TIMES NUMBER expression-atom #'parse-times-block))
+   (TIMES ignorable NUMBER ignorable expression-atom #'parse-times-block))
 
   (chord-block
-   (|<| notes |>| dur-expr  #'parse-chord-dur))
+   (|<| ignorable notes ignorable |>| ignorable dur-expr  #'parse-chord-dur))
 
   (notes
    (note-expr #'list)
-   (note-expr notes #'cons))
+   (note-expr ignorable notes #'ignore-middle))
   
   (note-expr
-   (NOTE octave-expr dur-expr  #'make-note)
-   (SKIP dur-expr #'make-skip)
-   (PARTIAL dur-expr #'make-anacruz))
+   (NOTE octave-expr dur-expr ignorable  #'make-note)
+   (SKIP dur-expr ignorable #'make-skip)
+   (PARTIAL dur-expr ignorable #'make-anacruz))
 
   (octave-expr
    (#'empty-octave)
@@ -151,7 +159,7 @@
    (HASH scheme-sexp))
 
   (markup-expr
-   (MARKUP |{| scheme-list |}|))
+   (MARKUP ignorable |{| scheme-list |}|))
 
   (scheme-sexp
    (OPEN-PAREN scheme-list CLOSE-PAREN))
@@ -163,6 +171,7 @@
   (scheme-atom
    VARNAME
    VARIABLE
+   ignorable
    STRING
    BOOL
    COLON
@@ -174,3 +183,6 @@
    NUMBER
    scheme-sexp)
 ) 
+
+(print (parse-string "<c d> <e f>"))
+(print (parse-string "\\score { <c d> <e f> }"))
