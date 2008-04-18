@@ -126,19 +126,19 @@
                       oa
                       (+ oa 1))))))))
 
-(defun %relativiza (nota expressao &optional oitava)
+(defun %do-relative (nota expressao &optional oitava)
   (when expressao
     (let* ((prox-nota (first expressao))
            (oitava (if oitava oitava
                        (event-octave nota)))
            (expressao (rest expressao)))
       (setf (event-octave prox-nota) (modificador-oitava nota prox-nota))
-      (%relativiza (if (null (event-pitch prox-nota)) nota prox-nota)
+      (%do-relative (if (null (event-pitch prox-nota)) nota prox-nota)
        ;prox-nota
        expressao oitava))))
 
-(defun relativiza (nota expressao)
-  (%relativiza (car (sequencia-de-notas-notas nota)) (sequencia-de-notas-notas expressao))
+(defun do-relative (nota expressao)
+  (%do-relative (car (sequencia-de-notas-notas nota)) (sequencia-de-notas-notas expressao))
   expressao)
 
 (defun transpose-segmentos (segmentos valor)
@@ -167,7 +167,7 @@
   %expmerge
   merge-exprs
   modificador-oitava
-  %relativiza
+  %do-relative
   transpose-segmentos
   )
 

@@ -291,7 +291,7 @@
     (process-ast expr)))
 
 (defmethod process-ast ((node relative))
-  (relativiza (node-start node) (process-ast (node-expr node))))
+  (do-relative (node-start node) (process-ast (node-expr node))))
 
 (defmethod process-ast ((node set-variable))
   (push (cons (node-varname node) (node-value node)) *environment*)

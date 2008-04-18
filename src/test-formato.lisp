@@ -24,7 +24,7 @@
      (but-a-fifth-apart (make-event :key '(C MAJOR) :time-sig 1 :pitch 0)
                           (make-event :key '(C MAJOR) :time-sig 1 :pitch 5)))))
 
-(define-test relativiza
+(define-test do-relative
   (assert-equalp (list (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 10 :DUR 1/4 :start 0)
                       (make-event :key '(C MAJOR) :time-sig 1 :PITCH 7 :OCTAVE 9 :DUR 1/4 :start 1/4)
                       (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 10 :DUR 1/4 :start 1/2)
