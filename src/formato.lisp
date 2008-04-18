@@ -64,7 +64,7 @@
 (defun event-end (event)
   (+ (event-start event) (event-dur event)))
 
-(defun coloca-expressoes-em-sequencia (sequencias)
+(defun sequence-expressions (sequencias)
   "Leva uma lista de expressões musicais e as arruma em sequência"
   (if (cdr sequencias)
     (let* ((primeiro (car sequencias))
@@ -76,7 +76,7 @@
                    (move-sequence (sequencia-de-notas-notas segundo)
                                         (sequencia-de-notas-dur primeiro))))
       (incf (sequencia-de-notas-dur primeiro) (sequencia-de-notas-dur segundo))
-      (coloca-expressoes-em-sequencia (cons primeiro resto)))
+      (sequence-expressions (cons primeiro resto)))
     (car sequencias)))
 
 (defun %expmerge (exp1 exp2)
@@ -164,7 +164,6 @@
   move-event
   move-sequence
   cria-skip
-  coloca-expressoes-em-sequencia
   %expmerge
   merge-exprs
   modificador-oitava

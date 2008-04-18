@@ -48,13 +48,13 @@
   )
 
 
-(lisp-unit:define-test coloca-expressoes-em-sequencia
+(lisp-unit:define-test sequence-expressions
   (lisp-unit:assert-equal
    '(0 0 0 0 1/4 1/4 1/4 1/4 1/2 1/2 1/2 1/2)
    (mapcar
     #'event-start
     (sequencia-de-notas-notas
-     (coloca-expressoes-em-sequencia
+     (sequence-expressions
       (list
        (make-sequencia-de-notas
         :notas

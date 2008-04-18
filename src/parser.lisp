@@ -279,7 +279,7 @@
 
 (defmethod process-ast ((node music-block))
   (let ((seq (process-trees (node-expr node))))
-    (coloca-expressoes-em-sequencia seq)))
+    (sequence-expressions seq)))
 
 (defmethod process-ast ((node simultaneous))
   (merge-exprs (process-trees (node-expr node))))
