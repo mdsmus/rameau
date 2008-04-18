@@ -127,7 +127,7 @@ position."
                       :inversion (return-inversion root bass-note)
                       :7th (if (and (string= 7th "7") (string= mode "°"))
                                "7-"
-                               7th)
+                               (if 7th 7th ""))
                   
                       :9th 9th
                       :11th 11th

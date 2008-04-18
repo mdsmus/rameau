@@ -2,10 +2,7 @@
   (asdf:oos 'asdf:load-op :fann))
 
 (defpackage :rameau-neural
-  (:use #:cl
-        #:fann
-        #:arnesi
-        #:rameau))
+  (:use #:cl #:fann #:arnesi #:rameau #:string-case))
 
 (in-package :rameau-neural)
 
@@ -76,15 +73,13 @@
   (repeat-list (+ *mode-length* *7th-length*) 0))
 
 (defun make-pattern-7th (7th)
-  (let ((pattern (repeat-list *7th-length* 0)))
-    (incf (nth (cond ((equal 7th nil)
-                      0)
-                     ((equal 7th "7")
-                      1)
-                     ((equal 7th "7-")
-                      2)
-                     ((equal 7th "7+")
-                      3))
+  (let ((pattern (repeat-list *7th-length* 0))
+        (*package* (find-package :rameau)))
+    (incf (nth (string-case (7th)
+                 ("" 0)
+                 ("7" 1)
+                 ("7-" 2)
+                 ("7+" 3))
                pattern))
     pattern))
 
@@ -94,25 +89,23 @@
      with maxi = 0
      with maxl = (first lista)
      when (< maxl l) do (setf maxi i maxl l)
-     finally (return (cond ((= maxi 0) nil)
-                           ((= maxi 1) "7")
-                           ((= maxi 2) "7-")
-                           ((= maxi 3) "7+")
-                           (t (error "Sétima não encontrada"))))))
+     finally (return
+               (case maxi
+                 (0 nil)
+                 (1 "7")
+                 (2 "7-")
+                 (3 "7+")
+                 (t (error "Sétima não encontrada"))))))
 
 (defun make-mode-pattern (modo)
   (let ((pattern (repeat-list *mode-length* 0)))
-    (incf (nth (cond ((equal modo nil)
-                      0)
-                     ((equal modo "m")
-                     1)
-                     ((equal modo "+")
-                     2)
-                     ((or (equal modo "°")
-                          (equal modo "ø"))
-                     3)
-                     ((equal modo "!")
-                     4))
+    (incf (nth (string-case (modo)
+                 ("" 0)
+                 ("m" 1)
+                 ("+" 2)
+                 ("°" 3)
+                 ("ø" 3)
+                 ("!" 4))
                pattern))
     pattern))
 
@@ -122,11 +115,13 @@
      with maxi = 0
      with maxm = (first modo)
      when (< maxm m) do (setf maxm m maxi i)
-     finally (return (cond ((= maxi 0) nil)
-                           ((= maxi 1) "m")
-                           ((= maxi 2) "+")
-                           ((= maxi 3) (if (equal "7" 7th) "ø" "°"))
-                           ((= maxi 4) "!")))))
+     finally (return
+               (case maxi
+                 (0 nil)
+                 (1 "m")
+                 (2 "+")
+                 (3 (if (equal "7" 7th) "ø" "°"))
+                 (4 "!")))))
 
 (defun make-mode-answer-pattern (gabarito)
   (if (chord-p gabarito)
@@ -137,8 +132,6 @@
 (defun make-chord-answer-pattern (gabarito diff)
   (append (make-answer-pattern gabarito diff)
           (make-mode-answer-pattern gabarito)))
-
-
 
 (defun get-class-chord-net (diff res)
   (let ((root (extract-root-result
@@ -153,7 +146,6 @@
                       :mode mode
                       :7th 7th))
         root)))
-
 
 
 (defvar *e-chord-net* nil)

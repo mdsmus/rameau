@@ -10,21 +10,19 @@
 
 #+(or sbcl ecl) (require 'asdf)
 
-(defparameter *packages* '("arnesi_dev-20080217" "cffi_0.9.2" "cl-fad-0.6.0"
-                           "cl-ppcre-1.3.2" "cl-yacc-0.2" "lexer" "regex"
-                           "lisp-unit" "machine-learning" "cl-fann"))
-
 (defun main-path ()
   (format nil "~a" (or #+ecl (si::getcwd)
                        #+sbcl *default-pathname-defaults*
                        #+cmu (first (ext:search-list "default:"))
                        #+clisp (ext:default-directory))))
 
+(defparameter *packages* (directory (concatenate 'string (main-path) "rameau-deps/*.*")))
+
 (push (concatenate 'string (main-path) "src/") asdf:*central-registry*)
 
 (when *use-rameau-deps*
   (loop for p in *packages* do
-       (push (concatenate 'string (main-path) "rameau-deps/" p "/") asdf:*central-registry*)))
+       (push (format nil "~a" p) asdf:*central-registry*)))
 
 #+(or sbcl ecl) (require 'rameau)
 #+(or clisp cmu) (asdf:oos 'asdf:load-op :rameau :verbose nil)
