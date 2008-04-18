@@ -468,7 +468,7 @@ ponto nos corais de bach."
            (gabarito (parse-answer-sheet (remove-ext file) item))
            (file-name (pathname-name file))
            (notas (mapcar #'list-events segmentos))
-           (duracoes (calcula-duracoes segmentos)))
+           (duracoes (durations segmentos)))
       (format t "tamanhos:~%  gabarito: ~a~%" (length gabarito))
       (loop for i in resultados
          for a in *algorithms*
@@ -496,7 +496,7 @@ ponto nos corais de bach."
                                 (funcall (algorithm-classify a) segmentos))))
              (file-name (pathname-name file))
              (notas (mapcar #'list-events segmentos))
-             (duracoes (calcula-duracoes segmentos)))
+             (duracoes (durations segmentos)))
         (cond
           ((and (not gabarito) (not (member 'i flags))))
           (t

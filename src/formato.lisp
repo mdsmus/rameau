@@ -31,7 +31,7 @@
 (defun pitches (segmento)
   (mapcar #'event-pitch segmento))
 
-(defun calcula-duracoes (segmento)
+(defun durations (segmento)
   (mapcar (lambda (x) (event-dur (first x))) segmento))
 
 (defun cria-nota (nota &optional (octave "") dur articulation dur2) 

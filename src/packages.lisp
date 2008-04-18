@@ -25,7 +25,7 @@
    #:algorithm-classify
    #:augmented-sixth-type
    #:augmented-sixth-template
-   #:calcula-duracoes
+   #:durations
    #:chord-root
    #:chord-mode
    #:chord-7th

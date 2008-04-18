@@ -117,8 +117,8 @@
                                (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 9 :DUR 1/4 :start 0)))))
 
 
-(define-test calcula-duracoes
-  (assert-equal '(1/4) (calcula-duracoes
+(define-test durations
+  (assert-equal '(1/4) (durations
                      (list (list
                             (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 10 :DUR 1/4 :start 0)
                             (make-event :key '(C MAJOR) :time-sig 1 :PITCH 55 :OCTAVE 9 :DUR 1/4 :start 0)
