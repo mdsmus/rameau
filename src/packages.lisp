@@ -32,14 +32,14 @@
    #:chord-p
    #:add-inversions
    #:compare-answer-sheet
-   #:compara-notas
    #:do-not-test
    #:extract-diff
    #:extract-feature-list
+   #:event-<
    #:filter-algorithms
    #:first-string
    #:get-comandos
-   #:lista-notas
+   #:list-events
    #:make-chord
    #:make-melodic-note
    #:make-augmented-sixth

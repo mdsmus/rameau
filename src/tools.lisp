@@ -147,6 +147,6 @@
 
 (defun extract-diff (segmento)
   "Extract the diff of a sonority."
-  (let ((segmento (sorted segmento #'compara-notas)))
+  (let ((segmento (sorted segmento #'event-<)))
     (event-pitch (first segmento))))
 

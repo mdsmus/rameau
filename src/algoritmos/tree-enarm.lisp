@@ -43,12 +43,7 @@
 
 (defun extract-class (acorde)
   (if (and (chord-p acorde)
-           (or (equal "" (chord-mode acorde))
-               (equal "m" (chord-mode acorde))
-               (equal "°" (chord-mode acorde))
-               (equal "!" (chord-mode acorde))
-               (equal "+" (chord-mode acorde))
-               (equal "ø" (chord-mode acorde))))
+           (member (chord-mode acorde) (list "" "m" "°" "!" "+" "ø") :test #'equal))
       (string->symbol
        (stringify
         (make-chord :root (chord-root acorde)
@@ -57,6 +52,7 @@
       (if (melodic-note-p acorde)
           (string->symbol "—")
           (string->symbol (stringify acorde)))))
+
 
 (defun prepare-training-sample (coral gabarito)
   (loop for s in coral
@@ -99,3 +95,5 @@
     (train-chord-tree corais gabaritos)))
 
 (do-train-chord-tree)
+
+

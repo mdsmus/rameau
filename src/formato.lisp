@@ -16,17 +16,17 @@
   (start)
   (dur))
 
-(defun compara-notas (x y)
+(defun event-< (x y)
   (let ((a (event-octave x))
         (b (event-octave y)))
     (if (= a b)
         (< (event-pitch x) (event-pitch y))
         (< a b))))
 
-(defun lista-notas (segmento)
+(defun list-events (segmento)
   (mapcar (lambda (x)
             (print-note (code->notename (event-pitch x)) 'latin))
-          (sorted segmento #'compara-notas)))
+          (sorted segmento #'event-<)))
 
 (defun pitches (segmento)
   (mapcar #'event-pitch segmento))

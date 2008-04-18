@@ -84,24 +84,24 @@
         :start 0
         :dur 1/4)))))))
 
-(define-test compara-notas
+(define-test event-<
   (assert-true
-   (compara-notas (make-event :key '(C MAJOR) :time-sig 1 :pitch 0 :octave 1)
+   (event-< (make-event :key '(C MAJOR) :time-sig 1 :pitch 0 :octave 1)
                   (make-event :key '(C MAJOR) :time-sig 1 :pitch 0 :octave 2)))
   (assert-false
-   (compara-notas (make-event :key '(C MAJOR) :time-sig 1 :pitch 0 :octave 2)
+   (event-< (make-event :key '(C MAJOR) :time-sig 1 :pitch 0 :octave 2)
                   (make-event :key '(C MAJOR) :time-sig 1 :pitch 0 :octave 1)))
   (assert-false
-   (compara-notas (make-event :key '(C MAJOR) :time-sig 1 :pitch 55 :octave 1)
+   (event-< (make-event :key '(C MAJOR) :time-sig 1 :pitch 55 :octave 1)
                   (make-event :key '(C MAJOR) :time-sig 1 :pitch 14 :octave 1)))
   (assert-true
-   (compara-notas (make-event :key '(C MAJOR) :time-sig 1 :pitch 55 :octave 1)
+   (event-< (make-event :key '(C MAJOR) :time-sig 1 :pitch 55 :octave 1)
                   (make-event :key '(C MAJOR) :time-sig 1 :pitch 14 :octave 2))))
 
-(define-test lista-notas
+(define-test list-events
   (assert-equal
    '("c" "e" "g" "c")
-   (lista-notas
+   (list-events
     (list
      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 10 :DUR 1/4 :start 0)
      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 55 :OCTAVE 9 :DUR 1/4 :start 0)

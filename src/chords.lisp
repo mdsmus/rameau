@@ -190,7 +190,7 @@ position."
       (some (lambda (x) (%compare-answer-sheet answer x tempered?)) answer-sheet)))
 
 (defun add-inversion (segmento acorde)
-  (let ((inv (first (lista-notas segmento))))
+  (let ((inv (first (list-events segmento))))
     (if (chord-p acorde)
         (make-chord :root (chord-root acorde)
                     :7th (chord-7th acorde)

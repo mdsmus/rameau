@@ -467,7 +467,7 @@ ponto nos corais de bach."
                             (funcall (algorithm-classify a) segmentos)))
            (gabarito (parse-answer-sheet (remove-ext file) item))
            (file-name (pathname-name file))
-           (notas (mapcar #'lista-notas segmentos))
+           (notas (mapcar #'list-events segmentos))
            (duracoes (calcula-duracoes segmentos)))
       (format t "tamanhos:~%  gabarito: ~a~%" (length gabarito))
       (loop for i in resultados
@@ -495,7 +495,7 @@ ponto nos corais de bach."
                            (loop for a in *algorithms* collect
                                 (funcall (algorithm-classify a) segmentos))))
              (file-name (pathname-name file))
-             (notas (mapcar #'lista-notas segmentos))
+             (notas (mapcar #'list-events segmentos))
              (duracoes (calcula-duracoes segmentos)))
         (cond
           ((and (not gabarito) (not (member 'i flags))))
@@ -536,7 +536,7 @@ ponto nos corais de bach."
                          (loop for a in *algorithms* collect
                               (funcall (algorithm-classify a) segmentos))))
            (file-name (pathname-name file))
-           (notas (mapcar #'lista-notas segmentos)))
+           (notas (mapcar #'list-events segmentos)))
       (cond
         ((< 2 (length regexps)) (format t "São duas as expressoes regulares"))
         ((and (not gabarito) (not (member 'i flags))))
@@ -562,7 +562,7 @@ ponto nos corais de bach."
                          (loop for a in *algorithms* collect
                               (funcall (algorithm-classify a) segmentos))))
            (file-name (pathname-name file))
-           (notas (mapcar #'lista-notas segmentos)))
+           (notas (mapcar #'list-events segmentos)))
       (cond
         ((< 2 (length regexps)) (format t "São duas as expressoes regulares"))
           ((and (not gabarito) (not (member 'i flags))))
@@ -630,13 +630,13 @@ ponto nos corais de bach."
 			(not (equal (sorted list #'< :key #'first)
 				    '((3 MIN) (5 DIM)))))
 	       (format t "~4a ~4a: ~{~(~a ~)~} ~13a~%"
-		       (pathname-name file) n aug (lista-notas s))))
+		       (pathname-name file) n aug (list-events s))))
 	   (when dim
 	     (when (and (/= (first dim) 5)
 			(not (equal (sorted list #'< :key #'first)
 				    '((3 MAJ) (3 MAJ) (4 DIM)))))
 	       (format t "~4a ~4a: ~{~(~a ~)~} ~13a~%"
-		       (pathname-name file) n dim (lista-notas s))))
+		       (pathname-name file) n dim (list-events s))))
 	   ))))
 
 (defun run-partitura (flags files item)
