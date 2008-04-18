@@ -5,23 +5,23 @@
    1
    (event-end (make-event :key '(C MAJOR) :time-sig 1 :start 1/2 :dur 1/2))))
 
-(define-test menos-de-uma-quinta
+(define-test but-a-fifth-apart
   (assert-true
-   (menos-de-uma-quinta (make-event :key '(C MAJOR) :time-sig 1 :pitch 0 :octave 0)
+   (but-a-fifth-apart (make-event :key '(C MAJOR) :time-sig 1 :pitch 0 :octave 0)
                         (make-event :key '(C MAJOR) :time-sig 1 :pitch 28 :octave 0)))
   (assert-true
-   (menos-de-uma-quinta (make-event :key '(C MAJOR) :time-sig 1 :pitch 0 :octave 0)
+   (but-a-fifth-apart (make-event :key '(C MAJOR) :time-sig 1 :pitch 0 :octave 0)
                         (make-event :key '(C MAJOR) :time-sig 1 :pitch 28 :octave 1)))
   (assert-false
-   (menos-de-uma-quinta (make-event :key '(C MAJOR) :time-sig 1 :pitch 55 :octave 1)
+   (but-a-fifth-apart (make-event :key '(C MAJOR) :time-sig 1 :pitch 55 :octave 1)
                         (make-event :key '(C MAJOR) :time-sig 1 :pitch 28 :octave 1)))
   (assert-true
    (with-system tempered
-     (menos-de-uma-quinta (make-event :key '(C MAJOR) :time-sig 1 :pitch 0)
+     (but-a-fifth-apart (make-event :key '(C MAJOR) :time-sig 1 :pitch 0)
                           (make-event :key '(C MAJOR) :time-sig 1 :pitch 5))))
   (assert-true
    (with-system tonal
-     (menos-de-uma-quinta (make-event :key '(C MAJOR) :time-sig 1 :pitch 0)
+     (but-a-fifth-apart (make-event :key '(C MAJOR) :time-sig 1 :pitch 0)
                           (make-event :key '(C MAJOR) :time-sig 1 :pitch 5)))))
 
 (define-test relativiza

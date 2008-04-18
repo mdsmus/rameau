@@ -102,7 +102,7 @@
 
 
 
-(defun menos-de-uma-quinta (a b)
+(defun but-a-fifth-apart (a b)
   (let ((a (event-pitch a))
         (b (event-pitch b)))
     (< (module (- b a))
@@ -119,10 +119,10 @@
           (t
            (+ (- ob 8)
               (if (< pa pb)
-                  (if (menos-de-uma-quinta a b)
+                  (if (but-a-fifth-apart a b)
                       oa
                       (- oa 1))
-                  (if (menos-de-uma-quinta b a)
+                  (if (but-a-fifth-apart b a)
                       oa
                       (+ oa 1))))))))
 
