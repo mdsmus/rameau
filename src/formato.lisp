@@ -11,7 +11,7 @@
   (key)
   (time-sig))
 
-(defstruct sequencia-de-notas
+(defstruct note-sequence
   (notas)
   (start)
   (dur))
@@ -37,7 +37,7 @@
 (defun make-note (nota &optional (octave "") dur articulation dur2) 
   (declare (ignore articulation))
   (let ((dur (if dur2 dur2 dur)))
-    (make-sequencia-de-notas
+    (make-note-sequence
      :notas (list
              (make-event :pitch (parse-note nota)
                           :octave (octave-from-string octave)
@@ -70,22 +70,22 @@
     (let* ((primeiro (car sequencias))
            (segundo (second sequencias))
            (resto (cddr sequencias))
-           (movimentador (sequencia-de-notas-dur primeiro)))
-      (setf (sequencia-de-notas-notas primeiro)
-            (nconc (sequencia-de-notas-notas primeiro)
-                   (move-sequence (sequencia-de-notas-notas segundo)
-                                        (sequencia-de-notas-dur primeiro))))
-      (incf (sequencia-de-notas-dur primeiro) (sequencia-de-notas-dur segundo))
+           (movimentador (note-sequence-dur primeiro)))
+      (setf (note-sequence-notas primeiro)
+            (nconc (note-sequence-notas primeiro)
+                   (move-sequence (note-sequence-notas segundo)
+                                        (note-sequence-dur primeiro))))
+      (incf (note-sequence-dur primeiro) (note-sequence-dur segundo))
       (sequence-expressions (cons primeiro resto)))
     (car sequencias)))
 
 (defun %expmerge (exp1 exp2)
-  (setf (sequencia-de-notas-dur exp1) (max (sequencia-de-notas-dur exp1)
-                                           (sequencia-de-notas-dur exp2)))
-  (setf (sequencia-de-notas-notas exp1)
+  (setf (note-sequence-dur exp1) (max (note-sequence-dur exp1)
+                                           (note-sequence-dur exp2)))
+  (setf (note-sequence-notas exp1)
         (merge 'list
-               (sequencia-de-notas-notas exp1)
-               (sequencia-de-notas-notas exp2)
+               (note-sequence-notas exp1)
+               (note-sequence-notas exp2)
                (lambda (x y)
                  (< (event-start x)
                     (event-start y)))))
@@ -138,7 +138,7 @@
        expressao oitava))))
 
 (defun do-relative (nota expressao)
-  (%do-relative (car (sequencia-de-notas-notas nota)) (sequencia-de-notas-notas expressao))
+  (%do-relative (car (note-sequence-notas nota)) (note-sequence-notas expressao))
   expressao)
 
 (defun transpose-segmentos (segmentos valor)

@@ -119,8 +119,8 @@
   (declare (ignore a b))
   (when dur
       (dolist (i chord)
-        (setf (sequencia-de-notas-dur i) dur)
-        (dolist (j (sequencia-de-notas-notas i))
+        (setf (note-sequence-dur i) dur)
+        (dolist (j (note-sequence-notas i))
           (setf (event-dur j) dur))))
   (make-instance 'chord-lily :expr chord))
 
@@ -194,7 +194,7 @@
                             "/"
                             (read-from-string file))
                     (read-from-string file)))))
-    (make-sequencia-de-notas :notas notas
+    (make-note-sequence :notas notas
                              :start 0
                              :dur (+ (event-start (last1 notas)) (event-dur (last1 notas))))))
 
@@ -234,9 +234,9 @@
       (setf (event-dur tree) *dur*))
   tree)
 
-(defmethod correct-durations ((tree sequencia-de-notas))
-  (mapcar #'correct-durations (sequencia-de-notas-notas tree))
-  (setf (sequencia-de-notas-dur tree) (event-dur (car (sequencia-de-notas-notas tree))))
+(defmethod correct-durations ((tree note-sequence))
+  (mapcar #'correct-durations (note-sequence-notas tree))
+  (setf (note-sequence-dur tree) (event-dur (car (note-sequence-notas tree))))
   tree)
 
 (defmethod correct-durations ((tree list))
@@ -258,8 +258,8 @@
 (defmethod correct-times (times (e event))
   (setf (event-dur e) (* times (event-dur e))))
 
-(defmethod correct-times (times (e sequencia-de-notas))
-  (mapcar #'correct-times (sequencia-de-notas-notas e)))
+(defmethod correct-times (times (e note-sequence))
+  (mapcar #'correct-times (note-sequence-notas e)))
 
 (defmethod correct-times (times (tree set-variable))
   (correct-times times (node-value tree)))
@@ -315,7 +315,7 @@
     (move-sequence
      (remove-if (lambda (x) (null (event-pitch x)))
                 (aif (yacc:parse-with-lexer (string-lexer str) *expression-parser*)
-                     (sequencia-de-notas-notas it)
+                     (note-sequence-notas it)
                      it))
      *anacruz*)))
 

@@ -41,10 +41,10 @@
 }"))))
 
 (lisp-unit:define-test make-note
-  (assert-equal 0 (event-pitch (car (sequencia-de-notas-notas (make-note "c")))))
-  (assert-equal nil (event-dur (car (sequencia-de-notas-notas (make-note "c")))))
-  (assert-equal 8 (event-octave (car (sequencia-de-notas-notas (make-note "c")))))
-  (assert-equal 0 (event-start (car (sequencia-de-notas-notas (make-note "c")))))
+  (assert-equal 0 (event-pitch (car (note-sequence-notas (make-note "c")))))
+  (assert-equal nil (event-dur (car (note-sequence-notas (make-note "c")))))
+  (assert-equal 8 (event-octave (car (note-sequence-notas (make-note "c")))))
+  (assert-equal 0 (event-start (car (note-sequence-notas (make-note "c")))))
   )
 
 
@@ -53,10 +53,10 @@
    '(0 0 0 0 1/4 1/4 1/4 1/4 1/2 1/2 1/2 1/2)
    (mapcar
     #'event-start
-    (sequencia-de-notas-notas
+    (note-sequence-notas
      (sequence-expressions
       (list
-       (make-sequencia-de-notas
+       (make-note-sequence
         :notas
         (list
          (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 10 :DUR 1/4 :start 0)
@@ -65,7 +65,7 @@
          (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 9 :DUR 1/4 :start 0))
         :start 0
         :dur 1/4)
-       (make-sequencia-de-notas
+       (make-note-sequence
         :notas
         (list
          (make-event :key '(C MAJOR) :time-sig 1 :PITCH 83 :OCTAVE 9 :DUR 1/4 :start 0)
@@ -74,7 +74,7 @@
          (make-event :key '(C MAJOR) :time-sig 1 :PITCH 55 :OCTAVE 8 :DUR 1/4 :start 0))
         :start 0
         :dur 1/4)
-       (make-sequencia-de-notas
+       (make-note-sequence
         :notas
         (list
          (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 10 :DUR 1/4 :start 0)
