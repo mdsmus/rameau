@@ -53,7 +53,6 @@
                 (arg->list (nthcdr p list))))
         (list list))))
 
-
 (defun intervalo (s1 s2)
   "Retorna o intervalo entre dois segmentos."
   (if (null s2)
@@ -126,10 +125,6 @@
 
 (defun run-algorithm (algorithm answer sheet)
   (compare-answer-sheet answer sheet (algorithm-tempered? algorithm)))
-
-(defun percent (x total)
-  (unless (= 0 total)
-    (/ (* x 100.0) total)))
 
 (defmacro with-profile (var &body body)
   `(progn
@@ -310,7 +305,7 @@ ponto nos corais de bach."
       (let ((l (loop
                   for i in counts
                   for a in *algorithms*
-                  collect (list (algorithm-name a) (percent i size-gab)))))
+                  collect (list (algorithm-name a) (% i size-gab)))))
         (loop for (name value) in (sort l #'> :key #'second) do
              (format t "  ~(~15a~) ~,2f%~%" name value))))))
 
@@ -340,10 +335,10 @@ ponto nos corais de bach."
       (let ((l (loop
                   for i in counts
                   for a in *algorithms*
-                  collect (list (algorithm-name a) (percent i size-gab) i))))
+                  collect (list (algorithm-name a) (% i size-gab) i))))
         (loop for (name perc correct) in (sort l #'> :key #'second) do
              (format t "~a  ~(~15a~) ~5a ~5a ~,2f%~%" item name correct (- size-gab correct) perc)))
-      (values total corretos (loop for i in counts collect (percent i size-gab))))))
+      (values total corretos (loop for i in counts collect (% i size-gab))))))
 
 (defun gera-erros (item notas gabarito resultados flags regab reres erros?)
   (declare (ignore flags))
@@ -491,7 +486,7 @@ ponto nos corais de bach."
                   collect (list (algorithm-name a)
                                 i
                                 (- total i)
-                                (percent i total)
+                                (% i total)
                                 (/ mx processados)
                                 (sqrt (- (/ mx² processados)
                                          (* (/ mx processados)

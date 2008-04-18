@@ -5,6 +5,8 @@
    "abracadabra"
    (concat "abra" "ca" "dabra")))
 
+(define-test %
+  (assert-equal 100.0 (% 1 1)))
 
 (define-test assoc-item
   (assert-equal

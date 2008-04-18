@@ -3,7 +3,7 @@
 
 (in-package :genoslib)
 
-(register-and-export-symbols '(
+(register-and-export-symbols '(%
                                add-lily-ext
                                add-pop-ext
                                assoc-item
@@ -53,6 +53,9 @@
                                unzip
                                ))
 
+(defun % (x total)
+  (unless (= 0 total)
+    (/ (* x 100.0) total)))
 
 (defun stringify (obj)
   "Convert \\texttt{obj} to a string according to predefined conventions."
