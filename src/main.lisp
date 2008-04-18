@@ -22,23 +22,36 @@
                         (dados ("corais" "exemplos"))))
 
 
-(defparameter *help* '((todos
-                        (("-h" "ajuda")
-                         ("-f" "arquivos")
-                         ("-p" "profile")
-                         ("-a <algoritmos>" "Usa <algoritmos> para fazer a análise")
-                         ("-d i" "ativa código de depuração para os itens i")
-                         ("-v" "verbose")
-                         ("-t <funções>" "mostra o trace de <funções>")
-                         ("-m n" "o número de testes errados para imprimir")))
-                       (análise
-                        (("-i" "ignora (não imprime) corais sem gabaritos")
-                         ("-v" "mostra notas dos segmentos")))
-                       (partitura
-                        (("-e <estilo>" "seleciona estilo de impressão dos acordes errados (bold ou red)")))))
+(defparameter *help*
+  '((todos
+     (("-h" "ajuda" help)
+      ("-f" "arquivos" files)
+      ("-p" "profile" profile)
+      ("-a <algoritmos>" "Usa <algoritmos> para fazer a análise" algorithms)
+      ("-d i" "ativa código de depuração para os itens i" debug)
+      ("-v" "verbose" verbose)
+      ("-t <funções>" "mostra o trace de <funções>" trace)
+      ("-q" "quiet" quiet)
+      ("-m n" "o número de testes errados para imprimir" wrong-number)))
+    (análise
+     (("-i" "ignora (não imprime) corais sem gabaritos" no-sheet)
+      ("-v" "mostra notas dos segmentos" verbose)))
+    (partitura
+     (("-e <estilo>" "seleciona estilo de impressão dos acordes errados (bold ou red)" style)))))
 
 (defparameter *singular* '(("corais" "coral")
                            ("exemplos" "exemplo")))
+
+;;; cria estrucura a partir de help
+(defmacro make-struct (name list)
+  (let ((slots (remove-duplicates
+                (loop for item in (mapcar #'first (symbol-value list))
+                   append (mapcar #'third (second (assoc item (symbol-value list))))))))
+    `(defstruct ,name (slots ',slots) ,@slots)))
+
+(make-struct options *help*)
+
+(defparameter *options* (make-options))
 
 (defun item-singular (item &optional (item-list *singular*))
   (if (equal (first (first item-list)) item)
@@ -155,7 +168,6 @@ ponto nos corais de bach."
           (declare (ignore rest))
           (push (pathname-name file) ok))))
     (list (reverse ok) (reverse no))))
-
 
 (defun print-duracoes (segmento)
   (values (loop for s = segmento then (rest s)
@@ -662,8 +674,6 @@ ponto nos corais de bach."
        (when list
          (format t "* ~(~a.lisp~) [~a]~%" key (length list))
          (format t "~{~(    ~a~%~)~}~%" list))))
-
-(do-not-test print-check check-for get-functions remove-tests)
 
 (defun run-check (&rest ignore)
   (declare (ignore ignore))
