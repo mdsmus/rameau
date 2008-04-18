@@ -65,7 +65,7 @@
   (+ (event-start event) (event-dur event)))
 
 (defun sequence-expressions (sequencias)
-  "Leva uma lista de expressões musicais e as arruma em sequência"
+  "Creates a single sequence from a list of \texttt{note-sequence}s"
   (if (cdr sequencias)
     (let* ((primeiro (car sequencias))
            (segundo (second sequencias))
