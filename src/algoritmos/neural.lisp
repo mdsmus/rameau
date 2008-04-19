@@ -6,7 +6,7 @@
 
 (in-package :rameau-neural)
 
-(defparameter *version* "-0003-")
+(defparameter *version* "-0005-")
 
 (defparameter *neural-path* (concat *rameau-path* "neural-nets/" "master" *version*))
 
@@ -174,7 +174,7 @@
 
 (defun prepare-training-data-chord-net (coral gabarito &optional
                                         (diff-func #'extract-diffs)
-                                        (feature #'cria-pattern-segmento))
+                                        (feature #'make-sonority-pattern))
   (loop for c in coral
      for gab in gabarito
      for ds = (funcall diff-func c)
@@ -184,7 +184,7 @@
      else
        nconc (loop for d in ds
                 nconc (list (list (funcall feature c d)
-                                  (cria-pattern-saida-acorde gab d))))))
+                                  (make-chord-answer-pattern gab d))))))
 
 
 
