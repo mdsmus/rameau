@@ -31,12 +31,16 @@
     (declare (ignore octave dur))
     (list note acc)))
 
+(defun clean-all (strings string)
+  (reduce #'(lambda (a b) (cl-ppcre:regex-replace-all b a "")) strings :initial-value string))
+
 (defun clean (string)
   (string-trim " "
                (cl-ppcre:regex-replace-all
                 "[ ]+"
-                (cl-ppcre:regex-replace-all
-                 "~|%[0-9]+|}|{|(soprano|alto|tenor|bass) = |\\\\relative c[']+ |\\\\repeat volta 2 {|\\\\partial [0-9]+" string "")
+                (clean-all '("~" "%[0-9]+" "}" "\\{" "(soprano|alto|tenor|bass|baixo)" " = "
+                             "\\\\relative c[']*" "\\\\repeat volta 2" "{" "\\\\partial [0-9]+")
+                           string)
                 " ")))
 
 (defun get-notes (name file)
