@@ -173,7 +173,7 @@
   (add-inversions inputs (mapcar #'run-e-chord-net inputs)))
 
 (defun prepare-training-data-chord-net (coral gabarito &optional
-                                        (diff-func #'extrai-diffs)
+                                        (diff-func #'extract-diffs)
                                         (feature #'cria-pattern-segmento))
   (loop for c in coral
      for gab in gabarito
