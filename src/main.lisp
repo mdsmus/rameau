@@ -4,60 +4,59 @@
 
 (in-package :rameau-main)
 
-(defparameter *dados*
-  '((teste ("unidade" "regressao" "lily"))
-    (analise ("corais" "kostka" "sonatas" "exemplos"))
-    (partitura ("corais" "exemplos"))
-    (tamanhos ("corais" "exemplos"))
-    (enarmonia ("corais"))
-    (check nil)
-    (gui)
-    (erros ("corais" "exemplos"))
-    (acertos ("corais" "exemplos"))
-    (resultados ("corais" "exemplos"))
-    (tipos ("corais" "exemplos"))
-    (dados ("corais" "exemplos"))))
+(defparameter *data*
+  '((:test unit regression lily)
+    (:analysis chorales kostka sonatas examples)
+    (:check)
+    (:gui)))
 
-(defparameter *help*
-  '((todos
-     (("-h" "ajuda" help)
-      ("-f" "arquivos" files)
-      ("-p" "profile" profile)
-      ("-a <algoritmos>" "Usa <algoritmos> para fazer a análise" algorithms)
-      ("-d i" "ativa código de depuração para os itens i" debug)
-      ("-v" "verbose" verbose)
-      ("-t <funções>" "mostra o trace de <funções>" trace)
-      ("-q" "quiet" quiet)
-      ("-m n" "o número de testes errados para imprimir" wrong-number)))
-    (análise
-     (("-i" "ignora (não imprime) corais sem gabaritos" no-sheet)
-      ("-v" "mostra notas dos segmentos" verbose)))
-    (partitura
-     (("-e <estilo>" "seleciona estilo de impressão dos acordes errados (bold ou red)" style)))))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defparameter *help*
+    '((common
+       (("-h" "--help" help "ajuda")
+        ("-f" "--files " files "arquivos")
+        ("-p" "--profile" profile "profile")
+        ("-a" "--algorithm" algorithms "Usa <algoritmos> para fazer a análise")
+        ("-d" "--debug" debug "ativa código de depuração para os itens i")
+        ("-v" "--verbose" verbose "verbose")
+        ("-t" "--trace" trace "mostra o trace de <funções>")
+        ("-q" "--quiet" quiet "quiet")
+        ("-m" "--test-number" test-number "o número de testes errados para imprimir")))
+      (analysis
+       (("-i" "" no-sheet "ignora (não imprime) corais sem gabaritos")
+        ("-e" "--style" style "seleciona estilo de impressão dos acordes errados (bold ou red)"))))))
 
-;;; cria estrucura a partir de help
-(defmacro make-struct (name list)
-  (let ((slots (remove-duplicates
-                (loop for item in (mapcar #'first (symbol-value list))
-                   append (mapcar #'third (second (assoc item (symbol-value list))))))))
-    `(defstruct ,name (slots ',slots) ,@slots)))
+(defmacro make-struct (name &optional class)
+  (let ((slots (remove-duplicates (mapcar #'third (second (assoc name *help*))))))
+    `(defstruct ,(list* name (if class `((:include ,class))))
+       ;;(slots ',slots)
+       ,@slots)))
 
-(make-struct options *help*)
+(make-struct common)
+(make-struct analysis common)
 
-(defparameter *options* (make-options))
+(defun split-command-list (command-list)
+  (let ((pos (position "and" command-list :test #'string=)))
+    (if pos
+        (append (list (subseq command-list 0 pos))
+                (split-command-list (subseq command-list (1+ pos))))
+        (list command-list))))
 
+(defstruct command
+  name data options)
+           
 (defun main ()
-  (let* ((args (rameau-args))
-;;;          (string (first args))
-;;;          (dados (second args))
-;;;          (comando (if string (first-string string (get-comandos))))
-;;;          (flags-list (if (> (length args) 2) (arg->list (subseq args 2))))
-;;;          (files (get-flag-list "-f" flags-list))
-;;;          (trace (get-flag-list "-t" flags-list))
-;;;          (algoritmos (get-flag-list "-a" flags-list))
-;;;          (regexps (get-flag-list "-r" flags-list))
-;;;          (debug (get-flag-list "-d" flags-list))
-;;;          (max-error (first (get-flag-list "-m" flags-list)))
-;;;          (flags (if flags-list (get-lone-flags flags-list))))
-         )
-    (print args)))
+  (let ((args '("analysis" "chorales" "--score" "simple" "-f" "001" "and" "test" "unit" "--verbose" "and" "check")))
+    (loop
+       for command-list in (split-command-list args)
+       for size = (length command-list) do
+         (if (= size 1)
+             (print (make-command :name (string->symbol (first command-list))))
+             (print (make-command :name (string->symbol (first command-list))
+                                  :data (string->symbol (second command-list))
+                                  :options (subseq command-list 2)))))
+    
+    0
+    ))
+
+(main)
