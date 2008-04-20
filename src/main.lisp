@@ -22,6 +22,9 @@
 
 ;;;; Functions to deal with commands (flags and data)
 
+(defun %assoc-item (item alist)
+  (second (assoc item alist)))
+
 (defun get-commands-assoc ()
   (remove 'common-flags (mapcar #'first *commands*)))
 
@@ -30,22 +33,20 @@
 
 (defun get-flag-assoc (item)
   "Works for commands only"
-  (assoc-item 'flags (assoc-item item *commands*)))
+  (%assoc-item 'flags (%assoc-item item *commands*)))
 
 (defun get-data-assoc (item)
   "Works for commands only"
-  (assoc-item 'data (assoc-item item *commands*)))
+  (%assoc-item 'data (%assoc-item item *commands*)))
 
 (defun get-common-flags ()
-  (assoc-item 'common-flags *commands*))
+  (%assoc-item 'common-flags *commands*))
 
 (defun make-structs ()
   (loop for name in (get-commands-assoc) do
        (eval `(defstruct ,name ,@(get-command-slots name)))))
 
 ;;; make structures for each item in *commands*
-
-(make-structs)
 
 (defstruct command
   name data options)
@@ -60,24 +61,43 @@
               (list (cond ((long-flag? flag)
                            (%string->symbol (get-long-flag-name flag) :keyword))
                           ((short-flag? flag)
-                           (%string->symbol (get-short-flag-name flag) :keyword))
-                          (t (error "wrong option ~a" flag)))
+                           (%string->symbol (get-short-flag-name flag) :keyword)))
                     (if value value t)))))
 
+(defun rameau-args ()
+  (let ((sbcl-args #+sbcl sb-ext:*posix-argv*)
+        (cmu-args #+cmu extensions:*command-line-strings*)
+        (clisp-args #+clisp *args*))
+    (cond (sbcl-args (rest sbcl-args))
+          (cmu-args (subseq cmu-args (1+ (position "cmurameau" cmu-args :test #'string=))))
+          (clisp-args clisp-args)
+          (t (error "algum problema com argumentos")))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+ (defun print-help ()
+   (let ((*package* (find-package :rameau-main)))
+     (print (get-commands-assoc))
+     (rameau-quit)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
 (defun main ()
-  (let ((args '("analysis" "chorales" "--profile" "--verbose" "-f" "001" "and" "test" "unit" "-v" "and" "check" "-v")))
+  (let ((*package* (find-package :rameau-main)))
+    (make-structs)
     (loop
-       for command-list in (split-command-list args)
+       for command-list in (split-command-list (rameau-args))
        for command = (%string->symbol (first command-list))
        for data = (%string->symbol (second command-list))
        for data-assoc = (get-data-assoc command) do
-       (defparameter *options*
-         (make-command :name command
-                       :data (when data-assoc data)
-                       :options (parse-options command
-                                               (if data-assoc
-                                                   (nthcdr 2 command-list)
-                                                   (rest command-list)))))))
+         (cond ((null command) (print-help))
+               (t (defparameter *options*
+                    (make-command :name command
+                                  :data (when data-assoc data)
+                                  :options (parse-options command
+                                                          (if data-assoc
+                                                              (nthcdr 2 command-list)
+                                                              (rest command-list))))))))
+    (print *options*))
   0)
-
-(main)

@@ -7,15 +7,6 @@
   (format nil "~a" (or #+sbcl *default-pathname-defaults*
 		       #+cmu (first (ext:search-list "default:"))
 		       #+clisp (ext:default-directory))))
-
-(defun rameau-args ()
-  (let ((sbcl-args #+sbcl sb-ext:*posix-argv*)
-        (cmu-args #+cmu extensions:*command-line-strings*)
-        (clisp-args #+clisp *args*))
-    (cond (sbcl-args (rest sbcl-args))
-          (cmu-args (subseq cmu-args (1+ (position "cmurameau" cmu-args :test #'string=))))
-          (clisp-args clisp-args)
-          (t (error "algum problema com argumentos")))))
   
 (defun rameau-profile ()
   #+sbcl(progn
