@@ -42,17 +42,6 @@
 (defparameter *singular* '(("corais" "coral")
                            ("exemplos" "exemplo")))
 
-;;; cria estrucura a partir de help
-(defmacro make-struct (name list)
-  (let ((slots (remove-duplicates
-                (loop for item in (mapcar #'first (symbol-value list))
-                   append (mapcar #'third (second (assoc item (symbol-value list))))))))
-    `(defstruct ,name (slots ',slots) ,@slots)))
-
-(make-struct options *help*)
-
-(defparameter *options* (make-options))
-
 (defun item-singular (item &optional (item-list *singular*))
   (if (equal (first (first item-list)) item)
       (second (first item-list))
