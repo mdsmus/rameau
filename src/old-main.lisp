@@ -47,14 +47,6 @@
       (second (first item-list))
       (item-singular item (rest item-list))))
 
-(defun arg->list (list)
-  (when list
-    (if (next-flag list)
-        (let ((p (pos list)))
-          (cons (subseq list 0 p)
-                (arg->list (nthcdr p list))))
-        (list list))))
-
 (defun intervalo (s1 s2)
   "Retorna o intervalo entre dois segmentos."
   (if (null s2)
@@ -95,14 +87,7 @@
     (format t "~A[0m" (code-char #x1b))
     (format t "|")))
 
-(defun next-flag (list)
-  (loop for x in (rest list) do
-       (if (and (< 0 (length x)) (equal #\- (aref x 0)))
-           (return x))))
 
-(defun pos (list)
-  (let ((pos (position (next-flag list) list :test #'string=)))
-    (if pos pos 0)))
 
 (defun get-lone-flags (list)
   (remove-duplicates
