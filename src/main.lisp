@@ -46,8 +46,6 @@
   (loop for name in (get-commands-assoc) do
        (eval `(defstruct ,name ,@(get-command-slots name)))))
 
-;;; make structures for each item in *commands*
-
 (defstruct command
   name data options)
 
@@ -57,12 +55,13 @@
 (defun parse-options (command list)
   "Parse the list of options to a structure."
   (apply (intern (concat "MAKE-" (symbol-name command)))
-         (loop for (flag value) in (sublist-of-args list) append
-              (list (cond ((long-flag? flag)
-                           (%string->symbol (get-long-flag-name flag) :keyword))
-                          ((short-flag? flag)
-                           (%string->symbol (get-short-flag-name flag) :keyword)))
-                    (if value value t)))))
+         (loop for item in (sublist-of-args list) append
+              (destructuring-bind (flag &rest value) item
+                (list (cond ((long-flag? flag)
+                             (%string->symbol (get-long-flag-name flag) :keyword))
+                            ((short-flag? flag)
+                             (%string->symbol (get-short-flag-name flag) :keyword)))
+                      (if value value t))))))
 
 (defun rameau-args ()
   (let ((sbcl-args #+sbcl sb-ext:*posix-argv*)
@@ -75,6 +74,25 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defun analysis (item options)
+  ;;; FIXME
+  (dolist (file (parse-file-list (stringify item) (analysis-files (command-options options))))
+    (let* ((musica (parse-file file))
+           (segmentos (sonorities musica))
+           (resultados (loop for a in *algorithms* collect
+                            (funcall (algorithm-classify a) segmentos)))
+           (gabarito (parse-answer-sheet (remove-ext file) item))
+           (file-name (pathname-name file))
+           (notas (mapcar #'list-events segmentos))
+           (duracoes (durations segmentos)))
+      (format t "tamanhos:~%  gabarito: ~a~%" (length gabarito))
+      (loop for i in resultados
+         for a in *algorithms*
+         do (format t "  ~a: ~a~%" (algorithm-name a) (length i)))
+      (print (list file-name gabarito resultados duracoes notas)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
  (defun print-help ()
    (let ((*package* (find-package :rameau-main)))
      (print (get-commands-assoc))
@@ -83,21 +101,26 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-(defun main ()
-  (let ((*package* (find-package :rameau-main)))
+(defun main (&optional args)
+  "You can run main from the REPL with all arguments as a
+  string: (main \"analysis chorales -v -f 001\")"
+  (let* ((*package* (find-package :rameau-main))
+         (rameau-args (rameau-args))
+         (arguments (if rameau-args rameau-args (cl-ppcre:split " " args))))
     (make-structs)
     (loop
-       for command-list in (split-command-list (rameau-args))
+       for command-list in (split-command-list arguments)
        for command = (%string->symbol (first command-list))
        for data = (%string->symbol (second command-list))
-       for data-assoc = (get-data-assoc command) do
+       for data-assoc = (get-data-assoc command)
+       for options =
          (cond ((null command) (print-help))
-               (t (defparameter *options*
-                    (make-command :name command
-                                  :data (when data-assoc data)
-                                  :options (parse-options command
-                                                          (if data-assoc
-                                                              (nthcdr 2 command-list)
-                                                              (rest command-list))))))))
-    (print *options*))
+               (t (make-command :name command
+                                :data (when data-assoc data)
+                                :options (parse-options command
+                                                        (if data-assoc
+                                                            (nthcdr 2 command-list)
+                                                            (rest command-list))))))
+       do (funcall command (stringify data) options)
+         ))
   0)

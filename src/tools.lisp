@@ -66,7 +66,7 @@
 
 
 (defparameter *lily-dir-list*
-  '(("corais" "corais/")
+  '(("chorales" "corais/")
     ("kostka" "literatura/kostka-payne/")
     ("sonatas" "literatura/beethoven-sonatas/")
     ("exemplos" "exemplos/")
@@ -76,7 +76,7 @@
     ("exemplos-include" "literatura/exemplos/")))
 
 (defparameter *gabarito-dir-list*
-  '(("corais" "gabaritos/bach-corais/")
+  '(("chorales" "gabaritos/bach-corais/")
     ("exemplos" "gabaritos/exemplos/")))
 
 
@@ -118,14 +118,13 @@
 (do-not-test parse-file-list parse-answer-sheet)
 
 (defparameter *training-data*
-  (nconc (loop for f in (parse-file-list "corais" '("001..6"))
-            for g = (parse-answer-sheet f "corais")
+  (nconc (loop for f in (parse-file-list "chorales" '("001..6"))
+            for g = (parse-answer-sheet f "chorales")
             collect (list (sonorities (parse-file f)) g))
          (loop for f in (mapcan (lambda (x) (parse-file-list "exemplos" (list x)))
                                 '("11..13" "23..28"))
             for g = (parse-answer-sheet f "exemplos")
             collect (list (sonorities (parse-file f)) g))))
-
 
 (defun extract-feature-list (segmento diff)
   "Extract the feature list of a sonority givern its \\texttt{diff}."
