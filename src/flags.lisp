@@ -4,9 +4,6 @@
 
 (in-package :rameau-main)
 
-(defun %assoc-item (item alist)
-  (second (assoc item alist)))
-
 (defun split-command-list (command-list)
   (let ((pos (position "and" command-list :test #'string=)))
     (if pos
@@ -34,14 +31,14 @@
   (second (find-flag command flag)))
 
 (defun get-long-flag-name (command flag)
-  (second (find-flag-by-name command (intern (string-upcase (subseq flag 2))))))
+  (second (find-flag-by-name command (subseq flag 2))))
 
 (defun find-flag-by-name (command name)
-  (or (find name (%assoc-item 'common-flags *commands*) :key #'second)
-      (find name (get-flag-assoc command) :key #'second)))
+  (or (find name (get-item "common-flags" *commands*) :key #'second :test #'string=)
+      (find name (get-flag-assoc command) :key #'second :test #'string=)))
 
 (defun find-flag (command flag)
-  (or (find flag (%assoc-item 'common-flags *commands*) :key #'first :test #'string=)
+  (or (find flag (get-item "common-flags" *commands*) :key #'first :test #'string=)
       (find flag (get-flag-assoc command) :key #'first :test #'string=)))
 
 (defun long-flag? (flag)

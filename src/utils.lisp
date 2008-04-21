@@ -241,8 +241,9 @@ returning two values: the string and the number of bytes read."
      nconc (list (second el)) into lista2
      finally (return (values lista1 lista2))))
 
-(defun get-item (item lista &optional (test #'eql))
-  "Get item keyed by \\texttt{item} in alist \\texttt{lista}."
+(defun get-item (item lista &optional (test #'equal))
+  "Get item keyed by \\texttt{item} in alist \\texttt{lista}. It uses
+equal by default, so it is good for getting string keys."
   (second (assoc item lista :test test)))
 
 (defun char->symbol (char)

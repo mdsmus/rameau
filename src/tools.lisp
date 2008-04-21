@@ -96,7 +96,7 @@
   "Parse the answer sheet for song \\texttt{file}."
   (let* ((*package* (find-package :rameau))
          (nome-pop (concat *rameau-path*
-                           (get-item item *gabarito-dir-list* #'equal)
+                           (get-item item *gabarito-dir-list*)
                            (add-pop-ext (pathname-name file)))))
     (when (cl-fad:file-exists-p nome-pop)
       (read-chords (read-file-as-sexp nome-pop)))))
@@ -104,7 +104,7 @@
 
 (defun parse-file-list (item f &optional (ext ".ly"))
   "Parse file list \\texttt{f} into a list of filenames."
-  (let* ((path (concat *rameau-path* (get-item item *lily-dir-list*  #'equal)))
+  (let* ((path (concat *rameau-path* (get-item item *lily-dir-list*)))
          (file-name (format nil "~a" (first f)))
          (files (if (search ".." file-name)
                     (files-range (cl-ppcre:split "\\.\\." file-name))

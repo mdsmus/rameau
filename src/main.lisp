@@ -1,46 +1,46 @@
 (in-package :rameau-main)
 
 (defparameter *commands*
-  '((common-flags
-     (("-h" help "ajuda")
-      ("-f" files "arquivos")
-      ("-p" profile "profile")
-      ("-a" algorithms "Usa <algoritmos> para fazer a análise")
-      ("-d" debug "ativa código de depuração para os itens i")
-      ("-v" verbose "verbose")
-      ("-t" trace "mostra o trace de <funções>")
-      ("-q" quiet "quiet")
-      ("-m" test-number "o número de testes errados para imprimir")))
-    (analysis
-     ((data (chorales kostka sonatas examples))
-      (flags (("-i" ignore "ignora (não imprime) corais sem gabaritos")
-              ("-e" style "seleciona estilo de impressão dos acordes errados (bold ou red)")))))
-    (test
+  '(("common-flags"
+     (("-h" "help" "ajuda")
+      ("-f" "files" "arquivos")
+      ("-p" "profile" "profile")
+      ("-a" "algorithms" "Usa <algoritmos> para fazer a análise")
+      ("-d" "debug" "ativa código de depuração para os itens i")
+      ("-v" "verbose" "verbose")
+      ("-t" "trace" "mostra o trace de <funções>")
+      ("-q" "quiet" "quiet")
+      ("-m" "test-number" "o número de testes errados para imprimir")))
+    ("analysis"
+     ((data ("chorales" "kostka" "sonatas" "examples"))
+      (flags (("-i" "ignore" "ignora (não imprime) corais sem gabaritos")
+              ("-e" "style" "seleciona estilo de impressão dos acordes errados (bold ou red)")))))
+    ("test"
      ((data (unit regression lily))))
-    (check)
-    (gui)))
+    ("check")
+    ("gui")))
 
 ;;;; Functions to deal with commands (flags and data)
 
+(defun %string->symbol (string &optional (package (sb-int:sane-package)))
+  (intern (string-upcase string) package))
+
 (defun get-commands-assoc ()
-  (remove 'common-flags (mapcar #'first *commands*)))
+  (remove "common-flags" (mapcar #'first *commands*)))
 
 (defun get-command-slots (command)
   (mapcar #'second (append (get-common-flags) (get-flag-assoc command))))
 
 (defun get-flag-assoc (item)
   "Works for commands only"
-  (%assoc-item 'flags (%assoc-item item *commands*)))
+  (get-item 'flags (get-item item *commands*)))
 
 (defun get-data-assoc (item)
   "Works for commands only"
-  (%assoc-item 'data (%assoc-item item *commands*)))
+  (get-item 'data (get-item item *commands*)))
 
 (defun get-common-flags ()
-  (%assoc-item 'common-flags *commands*))
-
-(defun %string->symbol (string &optional (package (sb-int:sane-package)))
-  (intern (string-upcase string) package))
+  (get-item "common-flags" *commands*))
 
 (defun parse-options (command list)
   "Parse the list of options to a structure."
@@ -103,11 +103,12 @@
          (arguments (if rameau-args rameau-args (cl-ppcre:split " " args))))
     (loop
        for command-list in (split-command-list arguments)
-       for command = (%string->symbol (first command-list))
-       for data = (%string->symbol (second command-list))
+       for command = (first command-list)
+       for data = (second command-list)
        for data-assoc = (get-data-assoc command) do
          ;;; create a structure dynamically to accomodate different slots
-         (eval `(defstruct args ,@(append '(name data) (get-command-slots command))))
+         (eval `(defstruct args ,@(append '(name data)
+                                          (mapcar #'%string->symbol (get-command-slots command)))))
          (let* ((options
                  (apply #'make-args
                         (append `(:name ,command :data ,(when data-assoc data))
@@ -119,6 +120,6 @@
            (setf (args-files options) files)
            (setf (args-algorithms options)
                  (filter-algorithms (args-algorithms options)))
-           (funcall command (stringify data) options)
-         )))
+           (funcall (%string->symbol command) (stringify data) options)
+           )))
   0)
