@@ -4,6 +4,9 @@
 
 (in-package :rameau-main)
 
+(defun %assoc-item (item alist)
+  (second (assoc item alist)))
+
 (defun split-command-list (command-list)
   (let ((pos (position "and" command-list :test #'string=)))
     (if pos
@@ -27,17 +30,19 @@
                   (sublist-of-args (nthcdr p list))))
           (list list)))))
 
-(defun get-short-flag-name (flag)
-  (second (find-flag flag)))
+(defun get-short-flag-name (command flag)
+  (second (find-flag command flag)))
 
-(defun get-long-flag-name (flag)
-  (second (find-flag-by-name (intern (string-upcase (subseq flag 2))))))
+(defun get-long-flag-name (command flag)
+  (second (find-flag-by-name command (intern (string-upcase (subseq flag 2))))))
 
-(defun find-flag-by-name (name)
-  (find name (assoc-item 'common-flags *commands*) :key #'second))
+(defun find-flag-by-name (command name)
+  (or (find name (%assoc-item 'common-flags *commands*) :key #'second)
+      (find name (get-flag-assoc command) :key #'second)))
 
-(defun find-flag (flag)
-  (find flag (assoc-item 'common-flags *commands*) :key #'first :test #'string=))
+(defun find-flag (command flag)
+  (or (find flag (%assoc-item 'common-flags *commands*) :key #'first :test #'string=)
+      (find flag (get-flag-assoc command) :key #'first :test #'string=)))
 
 (defun long-flag? (flag)
   (when (cl-ppcre:scan "^--[a-zA-Z]+" flag)

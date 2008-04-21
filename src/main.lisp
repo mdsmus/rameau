@@ -13,7 +13,7 @@
       ("-m" test-number "o número de testes errados para imprimir")))
     (analysis
      ((data (chorales kostka sonatas examples))
-      (flags (("-i" no-sheet "ignora (não imprime) corais sem gabaritos")
+      (flags (("-i" ignore "ignora (não imprime) corais sem gabaritos")
               ("-e" style "seleciona estilo de impressão dos acordes errados (bold ou red)")))))
     (test
      ((data (unit regression lily))))
@@ -21,9 +21,6 @@
     (gui)))
 
 ;;;; Functions to deal with commands (flags and data)
-
-(defun %assoc-item (item alist)
-  (second (assoc item alist)))
 
 (defun get-commands-assoc ()
   (remove 'common-flags (mapcar #'first *commands*)))
@@ -42,26 +39,18 @@
 (defun get-common-flags ()
   (%assoc-item 'common-flags *commands*))
 
-(defun make-structs ()
-  (loop for name in (get-commands-assoc) do
-       (eval `(defstruct ,name ,@(get-command-slots name)))))
-
-(defstruct command
-  name data options)
-
 (defun %string->symbol (string &optional (package (sb-int:sane-package)))
   (intern (string-upcase string) package))
 
 (defun parse-options (command list)
   "Parse the list of options to a structure."
-  (apply (intern (concat "MAKE-" (symbol-name command)))
-         (loop for item in (sublist-of-args list) append
-              (destructuring-bind (flag &rest value) item
-                (list (cond ((long-flag? flag)
-                             (%string->symbol (get-long-flag-name flag) :keyword))
-                            ((short-flag? flag)
-                             (%string->symbol (get-short-flag-name flag) :keyword)))
-                      (if value value t))))))
+  (loop for item in (sublist-of-args list) append
+       (destructuring-bind (flag &rest value) item
+         (list (cond ((long-flag? flag)
+                      (%string->symbol (get-long-flag-name command flag) :keyword))
+                     ((short-flag? flag)
+                      (%string->symbol (get-short-flag-name command flag) :keyword)))
+               (if value value t)))))
 
 (defun rameau-args ()
   (let ((sbcl-args #+sbcl sb-ext:*posix-argv*)
@@ -75,21 +64,23 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun analysis (item options)
-  ;;; FIXME
-  (dolist (file (parse-file-list (stringify item) (analysis-files (command-options options))))
+  (dolist (file (args-files options))
     (let* ((musica (parse-file file))
            (segmentos (sonorities musica))
-           (resultados (loop for a in *algorithms* collect
+           (resultados (loop for a in (args-algorithms options) collect
                             (funcall (algorithm-classify a) segmentos)))
            (gabarito (parse-answer-sheet (remove-ext file) item))
            (file-name (pathname-name file))
            (notas (mapcar #'list-events segmentos))
-           (duracoes (durations segmentos)))
-      (format t "tamanhos:~%  gabarito: ~a~%" (length gabarito))
+           (duracoes (durations segmentos))
+           (size-gab (length gabarito)))
       (loop for i in resultados
-         for a in *algorithms*
-         do (format t "  ~a: ~a~%" (algorithm-name a) (length i)))
-      (print (list file-name gabarito resultados duracoes notas)))))
+         for a in (args-algorithms options)
+         do
+           (when (/= size-gab (length i)) (print-warning "sizes don't match!"))
+           (if (and (not gabarito) (not (args-ignore options)))
+               (print-warning (concat "the answer sheet for " file-name " doesn't exist"))
+               (print (list file-name gabarito resultados duracoes notas)))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -97,6 +88,9 @@
    (let ((*package* (find-package :rameau-main)))
      (print (get-commands-assoc))
      (rameau-quit)))
+
+(defun print-warning (message)
+  (format t "WARNING: ~a~%" message))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -107,20 +101,24 @@
   (let* ((*package* (find-package :rameau-main))
          (rameau-args (rameau-args))
          (arguments (if rameau-args rameau-args (cl-ppcre:split " " args))))
-    (make-structs)
     (loop
        for command-list in (split-command-list arguments)
        for command = (%string->symbol (first command-list))
        for data = (%string->symbol (second command-list))
-       for data-assoc = (get-data-assoc command)
-       for options =
-         (cond ((null command) (print-help))
-               (t (make-command :name command
-                                :data (when data-assoc data)
-                                :options (parse-options command
-                                                        (if data-assoc
-                                                            (nthcdr 2 command-list)
-                                                            (rest command-list))))))
-       do (funcall command (stringify data) options)
-         ))
+       for data-assoc = (get-data-assoc command) do
+         ;;; create a structure dynamically to accomodate different slots
+         (eval `(defstruct args ,@(append '(name data) (get-command-slots command))))
+         (let* ((options
+                 (apply #'make-args
+                        (append `(:name ,command :data ,(when data-assoc data))
+                                (parse-options command
+                                               (if data-assoc
+                                                   (nthcdr 2 command-list)
+                                                   (rest command-list))))))
+                (files (parse-file-list (stringify data) (args-files options))))
+           (setf (args-files options) files)
+           (setf (args-algorithms options)
+                 (filter-algorithms (args-algorithms options)))
+           (funcall command (stringify data) options)
+         )))
   0)
