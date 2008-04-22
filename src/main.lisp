@@ -63,25 +63,28 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun analysis (item options)
-  (dolist (file (args-files options))
-    (let* ((musica (parse-file file))
-           (segmentos (sonorities musica))
-           (resultados (loop for a in (args-algorithms options) collect
-                            (funcall (algorithm-classify a) segmentos)))
-           (gabarito (parse-answer-sheet (remove-ext file) item))
-           (file-name (pathname-name file))
-           (notas (mapcar #'list-events segmentos))
-           (duracoes (durations segmentos))
-           (size-gab (length gabarito)))
-      (loop for i in resultados
-         for a in (args-algorithms options)
-         do
-           (when (/= size-gab (length i)) (print-warning "sizes don't match!"))
-           (if (and (not gabarito) (not (args-ignore options)))
-               (print-warning (concat "the answer sheet for " file-name " doesn't exist"))
-               (print (list file-name gabarito resultados duracoes notas)))))))
+(defmacro command-let (name &body body)
+  `(defun ,name (item options)
+     (dolist (file (args-files options))
+       (let* ((segments (sonorities (parse-file file)))
+              (results (loop for a in (args-algorithms options) collect
+                            (funcall (algorithm-classify a) segments)))
+              (answer-sheet (parse-answer-sheet (remove-ext file) item))
+              (file-name (pathname-name file))
+              (notes (mapcar #'list-events segments))
+              (dur (durations segments))
+              (size-gab (length answer-sheet)))
+         ,@body))))
 
+(command-let analysis
+  (loop for i in results
+     for a in (args-algorithms options)
+     do
+       (when (/= size-gab (length i)) (print-warning "sizes don't match!"))
+       (if (and (not answer-sheet) (not (args-ignore options)))
+           (print-warning (concat "the answer sheet for " file-name " doesn't exist"))
+           (print (list file-name answer-sheet results dur notes)))))
+      
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
  (defun print-help ()

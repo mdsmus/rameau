@@ -413,7 +413,7 @@ ponto nos corais de bach."
         (write-line string-result)
         (write-line (subseq (last1 (cl-ppcre:split "\\n" string-result)) 34)))))
 
-(defun run-compara-gabarito (flags files item)
+(defun __________run-compara-gabarito (flags files item)
   (dolist (file files)
     (let* ((musica (parse-file file))
            (segmentos (sonorities musica))
