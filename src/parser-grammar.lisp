@@ -42,24 +42,22 @@
 
   (start
    ()
-   (ignorable start #'return-second)
    (lilypond #'identity))
   
   (lilypond
-   (expression #'parse-lilypond))
+   (expression ignorable #'parse-lilypond))
 
   (ignorable
    ()
    (IGNORE ignorable #'parser-ign))
   
   (lilypond-header
-   (HEADER ignorable |{| expression |}|)
-   (HEADER ignorable |{| |}|))
+   (HEADER ignorable |{| expression ignorable |}|)
+   (HEADER ignorable |{| ignorable |}|))
 
   (expression
    (expression-atom #'parser-list)
    (expression-atom expression #'parser-cons)
-   (expression ignorable #'return-first)
    (ignorable expression #'return-second))
   
   (expression-atom
@@ -81,8 +79,8 @@
    (chord-block #'identity)
    (scheme-code #'do-nothing)
    (include ignorable STRING #'parse-include)
-   (|<<| expression |>>| #'parse-simultaneous)
-   (SIMULT ignorable |{| expression |}| #'parse-simult)
+   (|<<| expression ignorable |>>| #'parse-simultaneous)
+   (SIMULT ignorable |{| expression ignorable |}| #'parse-simult)
    (note-expr #'identity))
 
   (assignment
@@ -184,5 +182,5 @@
    scheme-sexp)
 ) 
 
-(print (parse-string "<c d> <e f>"))
-(print (parse-string "\\score { <c d> <e f> }"))
+(format t "~a~%" (parse-string "<c d> <e f>"))
+(format t "~a~%" (parse-string "\\score { <c d> <e f> }"))

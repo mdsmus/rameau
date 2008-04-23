@@ -139,12 +139,12 @@
           (setf (event-dur j) dur))))
   (make-instance 'chord-lily :expr chord))
 
-(defun parse-simultaneous (a simultaneous b)
-  (declare (ignore a b))
+(defun parse-simultaneous (a simultaneous ign b)
+  (declare (ignore a b ign))
   (make-instance 'simultaneous :expr simultaneous))
 
-(defun parse-simult (a i b simultaneous c)
-  (declare (ignore a i b c))
+(defun parse-simult (a i b simultaneous ign c)
+  (declare (ignore a i b c ign))
   (make-instance 'simultaneous :expr simultaneous))
 
 (defun parse-staff-block (a ign block)
@@ -223,7 +223,8 @@
   (declare (ignore a ign igno))
   (make-instance 'relative :expr block :start relative))
 
-(defun parse-lilypond (expression)
+(defun parse-lilypond (expression ign)
+  (declare (ignore ign))
   (process-ast (correct-durations (parse-music-block nil expression nil))))
 
 (defun empty-octave ()
@@ -232,7 +233,7 @@
 (defun do-nothing (&rest args)
   (declare (ignore args))
   (print 'doing-nothing-to)
-  (print args)
+  (format t "~a" args)
   nil)
 
 (defun parse-assignment (variable ign equal igna value)
