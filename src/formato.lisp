@@ -22,7 +22,8 @@
   (text-repr)
   (notas)
   (start)
-  (dur))
+  (dur)
+  (relativized))
 
 (defstruct note-simultaneous
   (text-repr)
@@ -56,10 +57,11 @@
                        :octave (octave-from-string octave)
                        :dur (node-dur dur)
                        :start 0
+                       :text-repr (list nota octave dur ignore)
                        :key *current-key*
                        :time-sig *current-sig*))
    :start 0
-   :text-repr (list nota (if (equal "" octave) nil octave) dur ignore)
+   :text-repr (list nota octave dur ignore)
    :dur (node-dur dur)))
 
 (defun make-skip (skip dur ignore)
@@ -79,18 +81,20 @@
 
 (defun sequence-expressions (sequencias)
   "Creates a single sequence from a list of \texttt{note-sequence}s"
-  (if (cdr sequencias)
-    (let* ((primeiro (car sequencias))
-           (segundo (second sequencias))
-           (resto (cddr sequencias))
-           (movimentador (note-sequence-dur primeiro)))
-      (setf (note-sequence-notas primeiro)
-            (nconc (note-sequence-notas primeiro)
+  (if (note-sequence-p sequencias)
+      sequencias
+      (if (cdr sequencias)
+          (let* ((primeiro (car sequencias))
+                 (segundo (second sequencias))
+                 (resto (cddr sequencias))
+                 (movimentador (note-sequence-dur primeiro)))
+            (setf (note-sequence-notas primeiro)
+                  (nconc (note-sequence-notas primeiro)
                    (move-sequence (note-sequence-notas segundo)
-                                        (note-sequence-dur primeiro))))
-      (incf (note-sequence-dur primeiro) (note-sequence-dur segundo))
-      (sequence-expressions (cons primeiro resto)))
-    (car sequencias)))
+                                  (note-sequence-dur primeiro))))
+            (incf (note-sequence-dur primeiro) (note-sequence-dur segundo))
+            (sequence-expressions (cons primeiro resto)))
+          (car sequencias))))
 
 (defun %expmerge (exp1 exp2)
   (setf (note-sequence-dur exp1) (max (note-sequence-dur exp1)
@@ -105,20 +109,22 @@
   exp1)
 
 (defun merge-exprs (exprs)
-  (if (cdr exprs)
-      (let* ((primeiro (car exprs))
-             (segundo (second exprs))
-             (resto (cddr exprs)))
-        (%expmerge primeiro segundo)
-        (merge-exprs (cons primeiro resto)))
-      (car exprs)))
+  (if (note-sequence-p exprs)
+      exprs
+      (if (cdr exprs)
+          (let* ((primeiro (car exprs))
+                 (segundo (second exprs))
+                 (resto (cddr exprs)))
+            (%expmerge primeiro segundo)
+            (merge-exprs (cons primeiro resto)))
+          (car exprs))))
 
 
 
 (defun but-a-fifth-apart (a b)
   (let ((a (event-pitch a))
         (b (event-pitch b)))
-    (< (module (- b a))
+    (<= (module (- b a))
        (code->interval '(5 just)))))
 
 
@@ -126,11 +132,11 @@
   (let ((pa (event-pitch a))
         (pb (event-pitch b))
         (oa (event-octave a))
-        (ob (event-octave b)))
+        (ob (octave-from-string (second (event-text-repr b)))))
     (cond ((null pa) ob)
           ((null pb) ob)
           (t
-           (+ (- ob 8)
+           (+ ob
               (if (< pa pb)
                   (if (but-a-fifth-apart a b)
                       oa
@@ -139,20 +145,25 @@
                       oa
                       (+ oa 1))))))))
 
-(defun %do-relative (nota expressao &optional oitava)
-  (when expressao
-    (let* ((prox-nota (first expressao))
-           (oitava (if oitava oitava
-                       (event-octave nota)))
-           (expressao (rest expressao)))
-      (setf (event-octave prox-nota) (modificador-oitava nota prox-nota))
-      (%do-relative (if (null (event-pitch prox-nota)) nota prox-nota)
-       ;prox-nota
-       expressao oitava))))
+
 
 (defun do-relative (nota expressao)
-  (%do-relative (car (note-sequence-notas nota)) (note-sequence-notas expressao))
-  expressao)
+  (declare (optimize (speed 3)))
+  (labels
+      ((%do-relative (nota expressao &optional oitava)
+         (when expressao
+           (let* ((prox-nota (first expressao))
+                  (oitava (if oitava oitava
+                              (event-octave nota)))
+                  (expressao (rest expressao)))
+             (setf (event-octave prox-nota) (modificador-oitava nota prox-nota))
+             (%do-relative (if (null (event-pitch prox-nota)) nota prox-nota)
+                           expressao oitava)))))
+    (unless (note-sequence-relativized expressao)
+      (setf (note-sequence-relativized nota) t
+            (note-sequence-relativized expressao) t)
+      (%do-relative (car (note-sequence-notas nota)) (note-sequence-notas expressao)))
+    expressao))
 
 (defun transpose-segmentos (segmentos valor)
   (loop for notas in segmentos collect

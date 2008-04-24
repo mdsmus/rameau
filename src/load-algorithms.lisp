@@ -8,6 +8,6 @@
        do (aif (compile-file alg)
                (load it)))))
 
-(load-algorithms)
+;(load-algorithms)
 
 (do-not-test load-algorithms)

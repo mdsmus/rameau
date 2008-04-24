@@ -56,7 +56,7 @@
   ("#" (return (values 'HASH lexer:%0)))
   ("\\\\[Vv]ersion[:space:]+\"[^\"]*\"" (return (values 'ignore lexer:%0)))
   ("\\\\clef[:space:]+\"?(treble|violin|G|G2|alto|C|tenor|bass|F|french|soprano|mezzosoprano|baritone|varbaritone|subbass)\"?" (return (values 'ignore lexer:%0)))
-  ("\\\\(T|t)ime[:space:]+\\d+/\\d+" (setf *current-sig* (last1 (cl-ppcre:split " " lexer:%0))) (return (values 'ignore lexer:%0)) )
+  ("\\\\(T|t)ime[:space:]+\\d+/\\d+" (setf *current-sig* (last1 (cl-ppcre:split " " lexer:%0))) (return (values 'ignore lexer:%0)))
   ("\\\\(T|t)empo[:space:]+\\d+[:space:]+=[:space:]+\\d+" (return (values 'ignore lexer:%0)))
   ("\\\\(T|t)ime[:space:]+\\d+[:space:]+=[:space:]+\\d+" (return (values 'ignore lexer:%0)))
   ("\\\\(B|b)ar[:space:]+\"[^\"]*\"" (return (values 'ignore lexer:%0)))
@@ -82,12 +82,12 @@
   ("\\\\(R|r)elative" (return (values 'RELATIVE lexer:%0)))
   ("\\\\(S|s)core" (return (values 'NEW-SCORE lexer:%0)))
   ("\\\\(S|s)imultaneous" (return (values 'SIMULT lexer:%0)))
-  ("<<" (return (values '|<<| lexer::start)))
+  ("<<" (return (values '|<<| lexer::%0)))
   (">>" (return (values '|>>| '|>>|)))
-  ("<" (return (values '|<| lexer::start)))
-  (">" (return (values '|>| lexer::start)))
+  ("<" (return (values '|<| lexer::%0)))
+  (">" (return (values '|>| lexer::%0)))
   ("\\{" (return (values '|{| '|{|)))
-  ("\\}" (return (values '|}| lexer::start)))
+  ("\\}" (return (values '|}| lexer::%0)))
   ("\\\\([:alpha:]+)" (return (values 'VARIABLE lexer:%0)))
   ("\\(" (return (values 'OPEN-PAREN lexer:%0)))
   ("\\)" (return (values 'CLOSE-PAREN lexer:%0)))
@@ -116,6 +116,8 @@
   ((dur :accessor node-dur :initarg :dur)))
 
 (defclass music-block (ast-node) ())
+
+(defclass music-list (ast-node) ())
 
 (defclass simultaneous (ast-node) ())
 
@@ -184,7 +186,7 @@
 
 (defun parse-repeat-block (a i b ig dur ign block)
   (declare (ignore a dur i ig ign b))
-  (make-instance 'music-block :expr (list block) :text (list a i b ig dur ign block)))
+  (make-instance 'music-block :expr block :text (list a i b ig dur ign block)))
 
 (defun parse-context-voice (a i b ig c ign d igno block)
   (let ((blck (parse-voice-block nil block)))
@@ -214,15 +216,11 @@
   (make-instance 'dur-node
                  :dur nil
                  :text nil))
-;; Funçoes problematicas:
-
 
 (defun make-anacruz (ign igno dur)
   (declare (ignore ign igno))
   (setf *anacruz* (- (node-dur dur) (read-from-string *current-sig*)))
   (make-instance 'no-op-node :text (list ign igno dur)))
-
-
 
 (defun parse-include (a b file)
   (declare (ignore a b))
@@ -237,40 +235,38 @@
                              :text-repr (list a b file)
                              :dur (+ (event-start (last1 notas)) (event-dur (last1 notas))))))
 
+(defun empty-octave ()
+  "")
 
+
+;; Funçoes problematicas:
 
 (defun parse-lilypond (expression)
   (let ((musica (parse-music-block nil expression nil)))
     (format t "ast: ~a~%" (print-ast musica))
-    (process-ast (correct-durations musica))))
-
-(defun empty-octave ()
-  "")
+    (sequence-expressions (process-ast (correct-durations musica)))))
 
 (defun do-nothing (&rest args)
-  (declare (ignore args))
-  nil)
+  (make-instance 'no-op-node :text args))
 
 (defun return-second (a b &rest rest)
   (declare (ignore a rest))
-  b)
+  (make-instance 'music-block :expr b :text (append (list a b) rest)))
+
 (defun return-first (a b)
-  (declare (ignore b))
-  a)
+  (make-instance 'music-block :expr (cons a (make-instance 'no-op-node)) :text (list a b)))
 
 (defun parser-list (b)
-  (list b))
+  (make-instance 'music-list :expr (cons b (make-instance 'no-op-node)) :text (list b)))
 
 (defun parser-cons (a i b)
-  (declare (ignore i))
-  (cons a b))
-(defun ignore-middle (a ignore b)
-  (declare (ignore ignore))
-  (cons a b))
+  (make-instance 'music-list :expr (cons a b) :text (list a i b)))
 
+(defun ignore-middle (a ignore b)
+  (make-instance 'music-list :expr (cons a b) :text (list a i b)))
 
 (defun parser-ign (a b)
-  nil)
+  (make-instance 'no-op-node :text (list a b)))
 
 
 ;; Metodos para processar a ast
@@ -294,7 +290,9 @@
   tree)
 
 (defmethod correct-durations ((tree list))
-  (mapcar #'correct-durations tree)
+  (when tree
+    (correct-durations (car tree))
+    (correct-durations (cdr tree)))
   tree)
 
 (defmethod correct-durations ((tree set-variable))
@@ -346,15 +344,36 @@
   (process-ast (node-expr node)))
 
 (defun process-trees (trees)
-  (remove-if
-   #'null
-   (mapcar #'process-ast trees)))
+  (if (listp trees)
+      (remove-if
+       #'null
+       (mapcar #'process-ast trees))
+      (list (process-ast trees))))
+
+(defmethod remove-music-list ((node music-list))
+  (cons (first (node-expr node))
+        (remove-music-list (rest (node-expr node)))))
+
+(defmethod remove-music-list (node)
+  node)
+
+(defmethod process-ast ((node music-list))
+  (process-ast (remove-music-list node)))
+
+(defmethod process-ast ((node list))
+  (when node
+    (cons (process-ast (first node))
+          (process-ast (rest node)))))
 
 (defmethod process-ast ((node music-block))
-  (let ((seq (process-trees (node-expr node))))
-    (sequence-expressions seq)))
-
+  (let ((seq (process-ast (node-expr node))))
+    (sequence-expressions
+     (if (listp seq)
+         (remove-if #'null seq)
+         seq))))
+    
 (defmethod process-ast ((node simultaneous))
+  (format t "parsing node-sim: ~a ~a ~a~%" node (node-expr node) (node-expr (node-expr node)))
   (merge-exprs (process-trees (node-expr node))))
 
 (defmethod process-ast ((node times))
