@@ -38,6 +38,26 @@
         (< (event-pitch x) (event-pitch y))
         (< a b))))
 
+(defun event-equal (x y)
+  (if 
+      (or
+       (and (event-p x)
+            (event-p y)
+            (equal (event-octave x)
+                   (event-octave y))
+            (equal (event-pitch x)
+                   (event-pitch y))
+            (equal (event-dur x)
+                   (event-dur y))
+            (equal (event-start x)
+                   (event-start y)))
+       (and (listp x)
+            (listp y)
+            (every #'event-equal x y)))
+      t
+      (progn (format t "Expected ~a,~% but saw ~a~%" x y)
+             nil)))
+       
 (defun list-events (segmento)
   (mapcar (lambda (x)
             (print-note (code->notename (event-pitch x)) 'latin))
