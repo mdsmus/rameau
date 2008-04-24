@@ -1,6 +1,6 @@
 (in-package #:rameau)
 
-(lisp-unit:define-test parse-string
+(lisp-unit:define-test get-parsed-notes-string
   (lisp-unit:assert-true
    (event-equal
     (list
@@ -12,7 +12,7 @@
      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 28 :OCTAVE 0 :DUR 1/4 :start 1/2)
      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 41 :OCTAVE 0 :DUR 1/4 :start 3/4)
      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 41 :OCTAVE 0 :DUR 1/4 :start 3/4))
-    (parse-string "\\score { <<
+    (get-parsed-notes-string "\\score { <<
 \\new Staff { c d e f }
 \\new Staff { c d e f }
 >> }")))
@@ -22,7 +22,7 @@
      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 55 :OCTAVE 1 :DUR 1/4 :start 0)
      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 28 :OCTAVE 1 :DUR 1/4 :start 0)
      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 1 :DUR 1/4 :start 0))
-    (parse-string "<<
+    (get-parsed-notes-string "<<
   \\new Staff \\relative c'' {
     g
   }
@@ -40,7 +40,7 @@
      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 55 :OCTAVE 1 :DUR 1/4 :start 0)
      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 28 :OCTAVE 1 :DUR 1/4 :start 0)
      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 1 :DUR 1/4 :start 0))
-   (parse-string
+   (get-parsed-notes-string
     "<<
   \\new Staff <<
     \\new Voice \\relative c'' {
@@ -60,7 +60,7 @@
   
   (lisp-unit:assert-true
    (event-equal
-    (parse-string "
+    (get-parsed-notes-string "
 \\header {
   file = \"ex001.ly\"
   objetivo = \"tonica dominante tônica\"
@@ -107,14 +107,14 @@
           (make-event :key '(C MAJOR) :time-sig "3/4" :PITCH 0 :OCTAVE 1 :DUR 1/4 :start 1/2))))
   (lisp-unit:assert-true
    (event-equal
-    (parse-string "{ foo = { c d e} \\foo }")
+    (get-parsed-notes-string "{ foo = { c d e} \\foo }")
    (list
     (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 0 :DUR 1/4 :start 0)
     (make-event :key '(C MAJOR) :time-sig 1 :PITCH 14 :OCTAVE 0 :DUR 1/4 :start 1/4)
     (make-event :key '(C MAJOR) :time-sig 1 :PITCH 28 :OCTAVE 0 :DUR 1/4 :start 1/2))))
   (lisp-unit:assert-true
    (event-equal
-    (parse-string "{ foo = { c } \\foo foo = { d } \\foo }")
+    (get-parsed-notes-string "{ foo = { c } \\foo foo = { d } \\foo }")
     (list
      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 0 :DUR 1/4 :start 0)
      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 14 :OCTAVE 0 :DUR 1/4 :start 1/4))))

@@ -243,15 +243,14 @@
 
 (defun parse-lilypond (expression)
   (let ((musica (parse-music-block nil expression nil)))
-    (format t "ast: ~a~%" (print-ast musica))
-    (sequence-expressions (process-ast (correct-durations musica)))))
+    (correct-durations musica)))
 
 (defun do-nothing (&rest args)
   (make-instance 'no-op-node :text args))
 
 (defun return-second (a b &rest rest)
   (declare (ignore a rest))
-  (make-instance 'music-block :expr b :text (append (list a b) rest)))
+  (make-instance 'music-list :expr (cons b (make-instance 'no-op-node)) :text (append (list a b) rest)))
 
 (defun return-first (a b)
   (make-instance 'music-block :expr (cons a (make-instance 'no-op-node)) :text (list a b)))
@@ -373,8 +372,7 @@
          seq))))
     
 (defmethod process-ast ((node simultaneous))
-  (format t "parsing node-sim: ~a ~a ~a~%" node (node-expr node) (node-expr (node-expr node)))
-  (merge-exprs (process-trees (node-expr node))))
+  (merge-exprs (remove-if #'null (flatten (process-trees (node-expr node))))))
 
 (defmethod process-ast ((node times))
   (let ((dur (node-times node))
@@ -397,26 +395,37 @@
       (remove-if #'null node)
       node))
 
-(defun parse-string (str)
+(defun get-ast-string (str)
   (let ((*environment* nil)
         (*dur* 1/4)
         (*current-key* '(c major))
         (*current-sig* 4/4)
         (*anacruz* 0))
-    (declare (special *environment* *dur* *current-key* *current-sig*))
-    (move-sequence
-     (remove-if (lambda (x) (null (event-pitch x)))
-                (aif (yacc:parse-with-lexer (string-lexer str) *expression-parser*)
-                     (note-sequence-notas it)
-                     it))
-     *anacruz*)))
+    (cons *anacruz* (yacc:parse-with-lexer (string-lexer str) *expression-parser*))))
 
+(defun get-notes (ast)
+  (let ((anacruz (first ast))
+         (ast (rest ast)))
+    (move-sequence (remove-if (lambda (x) (null (event-pitch x)))
+                              (aif (sequence-expressions (remove-if #'null (process-ast ast)))
+                                   (note-sequence-notas (first it))
+                                   it))
+                   *anacruz*)))
+
+(defun get-parsed-notes-string (str)
+  (get-notes (get-ast-string str)))
 
 (defun parse-file (filename)
   (when (cl-fad:file-exists-p filename)
     (let ((*filename* filename))
       (declare (special *filename*))
-      (parse-string (file-string filename)))))
+      (get-parsed-notes-string (file-string filename)))))
+
+(defun file-ast (filename)
+  (when (cl-fad:file-exists-p filename)
+    (let ((*filename* filename))
+      (declare (special *filename*))
+      (get-ast-string (file-string filename)))))
 
 
 (do-not-test

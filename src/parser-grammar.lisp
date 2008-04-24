@@ -185,13 +185,3 @@
    scheme-sexp)
 ) 
 
-;; (format t "~a~%" (parse-string " a b c "))
-;; (format t "~a~%" (parse-string "<c ||||| |||  d> <e f>"))
-;; (format t "~a~%" (parse-string "<<
-;; \\new Staff {  }
-;; >>"))
-;; (format t "~a~%" (parse-string "\\score { <c d> <e f> }"))
-;; (format t "~a~%" (parse-string "\\score { <<
-;; \\new Staff { c d e f }
-;; \\new Staff { c d e f }
-;; >> }"))

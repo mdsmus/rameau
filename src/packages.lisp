@@ -46,6 +46,7 @@
    #:make-augmented-sixth
    #:melodic-note-p
    #:parse-file
+   #:file-ast
    #:parse-file-list
    #:parse-answer-sheet
    #:parse-chord

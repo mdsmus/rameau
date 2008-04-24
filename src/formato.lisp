@@ -69,7 +69,7 @@
 (defun durations (segmento)
   (mapcar (lambda (x) (event-dur (first x))) segmento))
 
-(defun make-note (nota &optional (octave "") dur  &rest ignore) 
+(defun make-note (nota &optional (octave "") (dur (make-instance 'dur-node :dur nil))  &rest ignore) 
   (declare (ignore ignore))
   (make-note-sequence
    :notas (list
@@ -166,11 +166,7 @@
                       (+ oa 1))))))))
 
 
-
-(defun do-relative (nota expressao)
-  (declare (optimize (speed 3)))
-  (labels
-      ((%do-relative (nota expressao &optional oitava)
+(defun %do-relative (nota expressao &optional oitava)
          (when expressao
            (let* ((prox-nota (first expressao))
                   (oitava (if oitava oitava
@@ -178,11 +174,12 @@
                   (expressao (rest expressao)))
              (setf (event-octave prox-nota) (modificador-oitava nota prox-nota))
              (%do-relative (if (null (event-pitch prox-nota)) nota prox-nota)
-                           expressao oitava)))))
-    (unless (note-sequence-relativized expressao)
-      (setf (note-sequence-relativized nota) t
-            (note-sequence-relativized expressao) t)
-      (%do-relative (car (note-sequence-notas nota)) (note-sequence-notas expressao)))
+                           expressao oitava))))
+
+
+(defun do-relative (nota expressao)
+  (let ((expressao (if (listp expressao) (sequence-expressions (remove-if #'null expressao)) expressao)))
+    (%do-relative (car (note-sequence-notas nota)) (note-sequence-notas expressao))
     expressao))
 
 (defun transpose-segmentos (segmentos valor)
