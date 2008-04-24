@@ -56,7 +56,7 @@
   ("#" (return (values 'HASH lexer:%0)))
   ("\\\\[Vv]ersion[:space:]+\"[^\"]*\"" (return (values 'ignore lexer:%0)))
   ("\\\\clef[:space:]+\"?(treble|violin|G|G2|alto|C|tenor|bass|F|french|soprano|mezzosoprano|baritone|varbaritone|subbass)\"?" (return (values 'ignore lexer:%0)))
-  ("\\\\(T|t)ime[:space:]+\\d+/\\d+" (setf *current-sig* (last1 (cl-ppcre:split " " lexer:%0))) )
+  ("\\\\(T|t)ime[:space:]+\\d+/\\d+" (print (setf *current-sig* (last1 (cl-ppcre:split " " lexer:%0)))) (print 'sig) (return (values 'ignore lexer:%0)) )
   ("\\\\(T|t)empo[:space:]+\\d+[:space:]+=[:space:]+\\d+" (return (values 'ignore lexer:%0)))
   ("\\\\(T|t)ime[:space:]+\\d+[:space:]+=[:space:]+\\d+" (return (values 'ignore lexer:%0)))
   ("\\\\(B|b)ar[:space:]+\"[^\"]*\"" (return (values 'ignore lexer:%0)))
@@ -152,7 +152,6 @@
 
 (defun parse-staff-block (a ign block)
   (declare (ignore a ign))
-  (format t "~a~%" block)
   (make-instance 'staff :expr block))
 
 (defun parse-context-staff (a i b ig c ign d igno block)
@@ -190,8 +189,8 @@
   (declare (ignore a dur i ig ign b))
   block)
 
-(defun make-anacruz (ign dur)
-  (declare (ignore ign))
+(defun make-anacruz (ign igno dur)
+  (declare (ignore ign igno))
   (setf *anacruz* (- dur (read-from-string *current-sig*)))
   nil)
         
@@ -235,14 +234,10 @@
 
 (defun do-nothing (&rest args)
   (declare (ignore args))
-  (print 'doing-nothing-to)
-  (format t "~a" args)
   nil)
 
 (defun parse-assignment (variable ign equal igna value)
   (declare (ignore equal ign igna))
-  (print 'fiz-assign)
-  (print value)
   (make-instance 'set-variable :varname variable :value value))
 
 (defgeneric correct-durations (tree) 
@@ -359,12 +354,10 @@
   a)
 
 (defun parser-list (b)
-  (format t "pl~a~%" b)
   (list b))
 
 (defun parser-cons (a i b)
   (declare (ignore i))
-  (format t "pc~a~a~%" a b)
   (cons a b))
 
 (defun parser-ign (a b)
