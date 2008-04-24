@@ -407,8 +407,8 @@
   (let ((anacruz (first ast))
          (ast (rest ast)))
     (move-sequence (remove-if (lambda (x) (null (event-pitch x)))
-                              (aif (sequence-expressions (remove-if #'null (process-ast ast)))
-                                   (note-sequence-notas (first it))
+                              (aif (sequence-expressions (remove-if #'null (flatten (process-ast ast))))
+                                   (note-sequence-notas it)
                                    it))
                    *anacruz*)))
 
