@@ -25,25 +25,27 @@
                           (make-event :key '(C MAJOR) :time-sig 1 :pitch 5)))))
 
 (define-test do-relative
-  (assert-equalp (list (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 10 :DUR 1/4 :start 0)
-                      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 7 :OCTAVE 9 :DUR 1/4 :start 1/4)
-                      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 10 :DUR 1/4 :start 1/2)
-                      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 5 :OCTAVE 10 :DUR 1/4 :start 3/4)
-                      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 10 :DUR 1/4 :start 1)
-                      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 7 :OCTAVE 9 :DUR 1/4 :start 5/4)
-                      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 10 :DUR 1/4 :start 3/2))
-                
-                 (with-system tempered (parse-string "
+  (assert-true
+   (event-equal
+    (list (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 2 :DUR 1/4 :start 0)
+          (make-event :key '(C MAJOR) :time-sig 1 :PITCH 7 :OCTAVE 1 :DUR 1/4 :start 1/4)
+          (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 2 :DUR 1/4 :start 1/2)
+          (make-event :key '(C MAJOR) :time-sig 1 :PITCH 5 :OCTAVE 2 :DUR 1/4 :start 3/4)
+          (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 2 :DUR 1/4 :start 1)
+          (make-event :key '(C MAJOR) :time-sig 1 :PITCH 7 :OCTAVE 1 :DUR 1/4 :start 5/4)
+          (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 2 :DUR 1/4 :start 3/2))
+    
+    (with-system tempered (get-parsed-notes-string "
 \\score {
   \\new Staff \\relative c''{
     c g c f c g c
   }
-}"))))
+}")))))
 
 (lisp-unit:define-test make-note
   (assert-equal 0 (event-pitch (car (note-sequence-notas (make-note "c")))))
   (assert-equal nil (event-dur (car (note-sequence-notas (make-note "c")))))
-  (assert-equal 8 (event-octave (car (note-sequence-notas (make-note "c")))))
+  (assert-equal 0 (event-octave (car (note-sequence-notas (make-note "c")))))
   (assert-equal 0 (event-start (car (note-sequence-notas (make-note "c")))))
   )
 

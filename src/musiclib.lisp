@@ -163,9 +163,9 @@ representation. \\example{(get-interval-name 'dim)}{diminished}"
 string. The central octave has the value 8."
   (let ((up (get-octave 'up representation))
         (down (get-octave 'down representation)))
-    (+ 8 (cond ((search up octave) (count-subseq up octave))
-               ((search down octave) (- (count-subseq down octave)))
-               (t 0)))))
+    (cond ((search up octave) (count-subseq up octave))
+          ((search down octave) (- (count-subseq down octave)))
+          (t 0))))
 
 (defun code->notename (number)
   "Returns a note nome given its numeric code."

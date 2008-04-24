@@ -2,11 +2,11 @@
 (use-package :lisp-unit)
 
 (define-test octave-from-string
-  (assert-equal 8  (octave-from-string ""))
-  (assert-equal 7  (octave-from-string ","))
-  (assert-equal 6  (octave-from-string ",,"))
-  (assert-equal 9  (octave-from-string "'"))
-  (assert-equal 10 (octave-from-string "''")))
+  (assert-equal 0  (octave-from-string ""))
+  (assert-equal -1  (octave-from-string ","))
+  (assert-equal -2  (octave-from-string ",,"))
+  (assert-equal 1  (octave-from-string "'"))
+  (assert-equal 2 (octave-from-string "''")))
 
 (define-test code->notename
   (assert-equal '(c 0) (code->notename 0))
@@ -201,7 +201,7 @@
 (define-test notename->code
   (assert-equal 10 (notename->code (code->notename 10)))
   (assert-equal 10 (with-system tempered
-                     (notename->code (code->notename 10)))))
+                     (notename->code (code->notename 10))))) 
 
 (define-test enharmonicaly-equal-p
   (assert-true  (enharmonicaly-equal-p  "a#" "bb")))

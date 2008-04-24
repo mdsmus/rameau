@@ -3,7 +3,14 @@
 (defparameter *current-key* '("c" "\\major"))
 (defparameter *current-sig* "4/4")
 
+
+;; The atomic structures returned by the parser are \\texttt{event}s,
+;; \\texttt{note-sequence}s and \\texttt{note-simultaneous}. These are
+;; distinct from their AST counterparts defined in parser.lisp.
+;;
+
 (defstruct event
+  (text-repr)
   (pitch)
   (octave)
   (dur)
@@ -12,7 +19,15 @@
   (time-sig))
 
 (defstruct note-sequence
+  (text-repr)
   (notas)
+  (start)
+  (dur)
+  (relativized))
+
+(defstruct note-simultaneous
+  (text-repr)
+  (notes)
   (start)
   (dur))
 
@@ -23,6 +38,26 @@
         (< (event-pitch x) (event-pitch y))
         (< a b))))
 
+(defun event-equal (x y)
+  (if 
+      (or
+       (and (event-p x)
+            (event-p y)
+;            (equal (event-octave x)
+;                   (event-octave y))
+            (equal (event-pitch x)
+                   (event-pitch y))
+            (equal (event-dur x)
+                   (event-dur y))
+            (equal (event-start x)
+                   (event-start y)))
+       (and (listp x)
+            (listp y)
+            (every #'event-equal x y)))
+      t
+      (progn (format t "Expected ~a,~% but saw ~a~%" x y)
+             nil)))
+       
 (defun list-events (segmento)
   (mapcar (lambda (x)
             (print-note (code->notename (event-pitch x)) 'latin))
@@ -34,23 +69,23 @@
 (defun durations (segmento)
   (mapcar (lambda (x) (event-dur (first x))) segmento))
 
-(defun make-note (nota &optional (octave "") dur articulation dur2) 
-  (declare (ignore articulation))
-  (let ((dur (if dur2 dur2 dur)))
-    (make-note-sequence
-     :notas (list
-             (make-event :pitch (parse-note nota)
-                          :octave (octave-from-string octave)
-                          :dur dur
-                          :start 0
-                          :key *current-key*
-                          :time-sig *current-sig*))
-     :start 0
-     :dur dur)))
+(defun make-note (nota &optional (octave "") (dur (make-instance 'dur-node :dur nil))  &rest ignore) 
+  (declare (ignore ignore))
+  (make-note-sequence
+   :notas (list
+           (make-event :pitch (parse-note nota)
+                       :octave (octave-from-string octave)
+                       :dur (node-dur dur)
+                       :start 0
+                       :text-repr (list nota octave dur ignore)
+                       :key *current-key*
+                       :time-sig *current-sig*))
+   :start 0
+   :text-repr (list nota octave dur ignore)
+   :dur (node-dur dur)))
 
-(defun make-skip (skip dur)
-  (declare (ignore skip))
-  (make-note "s" "" dur))
+(defun make-skip (skip dur ignore)
+  (make-note "s" "" dur ignore))
 
 (defun move-event (event tempo)
   (setf (event-start event) (+ (event-start event) tempo))
@@ -66,18 +101,20 @@
 
 (defun sequence-expressions (sequencias)
   "Creates a single sequence from a list of \texttt{note-sequence}s"
-  (if (cdr sequencias)
-    (let* ((primeiro (car sequencias))
-           (segundo (second sequencias))
-           (resto (cddr sequencias))
-           (movimentador (note-sequence-dur primeiro)))
-      (setf (note-sequence-notas primeiro)
-            (nconc (note-sequence-notas primeiro)
+  (if (note-sequence-p sequencias)
+      sequencias
+      (if (cdr sequencias)
+          (let* ((primeiro (car sequencias))
+                 (segundo (second sequencias))
+                 (resto (cddr sequencias))
+                 (movimentador (note-sequence-dur primeiro)))
+            (setf (note-sequence-notas primeiro)
+                  (nconc (note-sequence-notas primeiro)
                    (move-sequence (note-sequence-notas segundo)
-                                        (note-sequence-dur primeiro))))
-      (incf (note-sequence-dur primeiro) (note-sequence-dur segundo))
-      (sequence-expressions (cons primeiro resto)))
-    (car sequencias)))
+                                  (note-sequence-dur primeiro))))
+            (incf (note-sequence-dur primeiro) (note-sequence-dur segundo))
+            (sequence-expressions (cons primeiro resto)))
+          (car sequencias))))
 
 (defun %expmerge (exp1 exp2)
   (setf (note-sequence-dur exp1) (max (note-sequence-dur exp1)
@@ -92,20 +129,22 @@
   exp1)
 
 (defun merge-exprs (exprs)
-  (if (cdr exprs)
-      (let* ((primeiro (car exprs))
-             (segundo (second exprs))
-             (resto (cddr exprs)))
-        (%expmerge primeiro segundo)
-        (merge-exprs (cons primeiro resto)))
-      (car exprs)))
+  (if (note-sequence-p exprs)
+      exprs
+      (if (cdr exprs)
+          (let* ((primeiro (car exprs))
+                 (segundo (second exprs))
+                 (resto (cddr exprs)))
+            (%expmerge primeiro segundo)
+            (merge-exprs (cons primeiro resto)))
+          (car exprs))))
 
 
 
 (defun but-a-fifth-apart (a b)
   (let ((a (event-pitch a))
         (b (event-pitch b)))
-    (< (module (- b a))
+    (<= (module (- b a))
        (code->interval '(5 just)))))
 
 
@@ -113,11 +152,11 @@
   (let ((pa (event-pitch a))
         (pb (event-pitch b))
         (oa (event-octave a))
-        (ob (event-octave b)))
+        (ob (octave-from-string (second (event-text-repr b)))))
     (cond ((null pa) ob)
           ((null pb) ob)
           (t
-           (+ (- ob 8)
+           (+ ob
               (if (< pa pb)
                   (if (but-a-fifth-apart a b)
                       oa
@@ -126,20 +165,22 @@
                       oa
                       (+ oa 1))))))))
 
+
 (defun %do-relative (nota expressao &optional oitava)
-  (when expressao
-    (let* ((prox-nota (first expressao))
-           (oitava (if oitava oitava
-                       (event-octave nota)))
-           (expressao (rest expressao)))
-      (setf (event-octave prox-nota) (modificador-oitava nota prox-nota))
-      (%do-relative (if (null (event-pitch prox-nota)) nota prox-nota)
-       ;prox-nota
-       expressao oitava))))
+         (when expressao
+           (let* ((prox-nota (first expressao))
+                  (oitava (if oitava oitava
+                              (event-octave nota)))
+                  (expressao (rest expressao)))
+             (setf (event-octave prox-nota) (modificador-oitava nota prox-nota))
+             (%do-relative (if (null (event-pitch prox-nota)) nota prox-nota)
+                           expressao oitava))))
+
 
 (defun do-relative (nota expressao)
-  (%do-relative (car (note-sequence-notas nota)) (note-sequence-notas expressao))
-  expressao)
+  (let ((expressao (if (listp expressao) (sequence-expressions (remove-if #'null expressao)) expressao)))
+    (%do-relative (car (note-sequence-notas nota)) (note-sequence-notas expressao))
+    expressao))
 
 (defun transpose-segmentos (segmentos valor)
   (loop for notas in segmentos collect
