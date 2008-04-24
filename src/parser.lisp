@@ -56,7 +56,7 @@
   ("#" (return (values 'HASH lexer:%0)))
   ("\\\\[Vv]ersion[:space:]+\"[^\"]*\"" (return (values 'ignore lexer:%0)))
   ("\\\\clef[:space:]+\"?(treble|violin|G|G2|alto|C|tenor|bass|F|french|soprano|mezzosoprano|baritone|varbaritone|subbass)\"?" (return (values 'ignore lexer:%0)))
-  ("\\\\(T|t)ime[:space:]+\\d+/\\d+" (print (setf *current-sig* (last1 (cl-ppcre:split " " lexer:%0)))) (print 'sig) (return (values 'ignore lexer:%0)) )
+  ("\\\\(T|t)ime[:space:]+\\d+/\\d+" (setf *current-sig* (last1 (cl-ppcre:split " " lexer:%0))) (return (values 'ignore lexer:%0)) )
   ("\\\\(T|t)empo[:space:]+\\d+[:space:]+=[:space:]+\\d+" (return (values 'ignore lexer:%0)))
   ("\\\\(T|t)ime[:space:]+\\d+[:space:]+=[:space:]+\\d+" (return (values 'ignore lexer:%0)))
   ("\\\\(B|b)ar[:space:]+\"[^\"]*\"" (return (values 'ignore lexer:%0)))
