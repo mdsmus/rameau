@@ -96,7 +96,8 @@
 
 
 (defclass ast-node ()
-  ((expr :accessor node-expr :initarg :expr :initform nil)))
+  ((expr :accessor node-expr :initarg :expr :initform nil)
+   (textual-representation :accessor node-text :initarg :text :initform nil)))
 
 (defclass times (ast-node)
   ((times :accessor node-times :initarg :times)))
@@ -126,68 +127,78 @@
 (defclass voice (no-op-node) ())
 
 (defun parse-music-block (a block b)
-  (declare (ignore a b))
-  (make-instance 'music-block :expr block))
-
-(defun ignore-middle (a ignore b)
-  (declare (ignore ignore))
-  (cons a b))
+  (make-instance 'music-block :expr block :text (list a block b)))
 
 (defun parse-chord-dur (a chord b igno dur)
-  (declare (ignore a b  igno))
   (when dur
       (dolist (i chord)
         (setf (note-sequence-dur i) dur)
         (dolist (j (note-sequence-notas i))
           (setf (event-dur j) dur))))
-  (make-instance 'chord-lily :expr chord))
+  (make-instance 'chord-lily :expr chord :text (list a chord b igno dur)))
 
 (defun parse-simultaneous (a simultaneous b)
-  (declare (ignore a b ))
-  (make-instance 'simultaneous :expr simultaneous))
+  (make-instance 'simultaneous :expr simultaneous :text (list a simultaneous b)))
 
 (defun parse-simult (a i b simultaneous  c)
-  (declare (ignore a i b c ))
-  (make-instance 'simultaneous :expr simultaneous))
+  (make-instance 'simultaneous :expr simultaneous :text (list a i b simultaneous c)))
 
 (defun parse-staff-block (a ign block)
-  (declare (ignore a ign))
-  (make-instance 'staff :expr block))
+  (make-instance 'staff :expr block :text (list a ign block)))
 
 (defun parse-context-staff (a i b ig c ign d igno block)
-  (declare (ignore a b c d i ig ign igno))
-  (parse-staff-block nil block))
+  (let ((blck (parse-staff-block nil block)))
+    (setf (node-text blck)
+          (list a i b ig c ign d igno block))
+    blck))
 
 (defun parse-new-staff (a i b ig c ign block)
-  (declare (ignore a b c i ig ign))
-  (parse-staff-block nil block))
+  (let ((blck (parse-staff-block nil block)))
+    (setf (node-text blck)
+          (list a i b ig c ign block))
+    blck))
 
 (defun parse-score-block (a ign block)
-  (declare (ignore a ign))
-  (make-instance 'score :expr block))
+  (make-instance 'score :expr block :text (list a ign block)))
 
 (defun parse-context-score (a i b ig c ign block)
-  (declare (ignore a b c i ig ign))
-  (parse-score-block nil block))
+  (let ((blck (parse-score-block nil block)))
+    (setf (node-text blck)
+          (list a i b ig c ign block))
+    blck))
 
 (defun parse-variable-block (variable)
-  (make-instance 'read-variable :varname variable))
+  (make-instance 'read-variable :varname variable :text variable))
 
 (defun parse-times-block (a i number ig expr)
-  (declare (ignore a i ig))
-  (make-instance 'times :times number :expr expr))
+  (make-instance 'times :times number :expr expr :text (list a i number ig expr)))
 
 (defun parse-voice-block (a ign block)
-  (declare (ignore a ign))
-  (make-instance 'voice :expr block))
+  (make-instance 'voice :expr block :text (list a ign block)))
 
 (defun parse-voice-block-string (a i b ig c ign block)
-  (declare (ignore a b c i ig ign))
-  (make-instance 'voice :expr block))
+  (make-instance 'voice :expr block :text (list a i b ig c ign block)))
 
 (defun parse-repeat-block (a i b ig dur ign block)
   (declare (ignore a dur i ig ign b))
-  block)
+  (make-instance 'music-block :expr (list block) :text (list a i b ig dur ign block)))
+
+(defun parse-context-voice (a i b ig c ign d igno block)
+  (let ((blck (parse-voice-block nil block)))
+    (setf (node-text blck)
+          (list a i b ig c ign d igno block))
+    blck))
+
+(defun parse-relative-block (a ign relative igno block)
+  (make-instance 'relative :expr block :start relative :text (list a ign relative igno block)))
+
+(defun parse-assignment (variable ign equal igna value)
+  (declare (ignore equal ign igna))
+  (make-instance 'set-variable :varname variable :value value :text (list variable ign equal igna value)))
+
+
+;; Funçoes problematicas:
+
 
 (defun make-anacruz (ign igno dur)
   (declare (ignore ign igno))
@@ -215,19 +226,16 @@
                     (read-from-string file)))))
     (make-note-sequence :notas notas
                              :start 0
+                             :text-repr (list a b file)
                              :dur (+ (event-start (last1 notas)) (event-dur (last1 notas))))))
 
 
-(defun parse-context-voice (a i b ig c ign d igno block)
-  (declare (ignore a b c d i ig ign igno))
-  (parse-voice-block nil block))
-
-(defun parse-relative-block (a ign relative igno block)
-  (declare (ignore a ign igno))
-  (make-instance 'relative :expr block :start relative))
 
 (defun parse-lilypond (expression)
-  (process-ast (correct-durations (parse-music-block nil expression nil))))
+;  (process-ast (correct-durations (parse-music-block nil expression nil))))
+  (let ((musica (parse-music-block nil expression nil)))
+    (format t "ast: ~a~%" (print-ast musica))
+    (process-ast (correct-durations musica))))
 
 (defun empty-octave ()
   "")
@@ -236,9 +244,29 @@
   (declare (ignore args))
   nil)
 
-(defun parse-assignment (variable ign equal igna value)
-  (declare (ignore equal ign igna))
-  (make-instance 'set-variable :varname variable :value value))
+(defun return-second (a b &rest rest)
+  (declare (ignore a rest))
+  b)
+(defun return-first (a b)
+  (declare (ignore b))
+  a)
+
+(defun parser-list (b)
+  (list b))
+
+(defun parser-cons (a i b)
+  (declare (ignore i))
+  (cons a b))
+(defun ignore-middle (a ignore b)
+  (declare (ignore ignore))
+  (cons a b))
+
+
+(defun parser-ign (a b)
+  nil)
+
+
+;; Metodos para processar a ast
 
 (defgeneric correct-durations (tree) 
     (:documentation "Acerta as durações das notas em uma música"))
@@ -285,8 +313,27 @@
 
 (defmethod correct-times (times tree))
 
+(defgeneric print-ast (astnode)
+  (:documentation "Print the file represented by the ast note \\texttt{astnode}."))
+
+(defmethod print-ast ((node string))
+  node)
+
+(defmethod print-ast ((node list))
+  (reduce #'concat node :key #'print-ast :from-end t))
+
+(defmethod print-ast ((node ast-node))
+  (print-ast (node-text node)))
+
+(defmethod print-ast ((node note-sequence))
+  (print-ast (note-sequence-text-repr node)))
+
+(defmethod print-ast (node)
+  (format nil "~a" node))
+
+
 (defgeneric process-ast (astnode)
-  (:documentation "Processa um nó na AST e retorna a parte correspondente"))
+  (:documentation "Process an AST node and extract the notes."))
 
 (defmethod process-ast ((node no-op-node))
   (process-ast (node-expr node)))
@@ -346,22 +393,6 @@
       (parse-string (file-string filename)))))
 
 
-(defun return-second (a b &rest rest)
-  (declare (ignore a rest))
-  b)
-(defun return-first (a b)
-  (declare (ignore b))
-  a)
-
-(defun parser-list (b)
-  (list b))
-
-(defun parser-cons (a i b)
-  (declare (ignore i))
-  (cons a b))
-
-(defun parser-ign (a b)
-  nil)
 (do-not-test
         parse-music-block
     parse-chord-dur

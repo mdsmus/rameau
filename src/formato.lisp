@@ -59,6 +59,7 @@
                        :key *current-key*
                        :time-sig *current-sig*))
    :start 0
+   :text-repr (list nota (if (equal "" octave) nil octave) (and dur (/ 1 dur)) ignore)
    :dur dur))
 
 (defun make-skip (skip dur ignore)
