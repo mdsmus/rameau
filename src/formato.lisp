@@ -43,8 +43,8 @@
       (or
        (and (event-p x)
             (event-p y)
-            (equal (event-octave x)
-                   (event-octave y))
+;            (equal (event-octave x)
+;                   (event-octave y))
             (equal (event-pitch x)
                    (event-pitch y))
             (equal (event-dur x)

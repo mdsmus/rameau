@@ -262,7 +262,7 @@
   (make-instance 'music-list :expr (cons a b) :text (list a i b)))
 
 (defun ignore-middle (a ignore b)
-  (make-instance 'music-list :expr (cons a b) :text (list a i b)))
+  (make-instance 'music-list :expr (cons a b) :text (list a ignore b)))
 
 (defun parser-ign (a b)
   (make-instance 'no-op-node :text (list a b)))
