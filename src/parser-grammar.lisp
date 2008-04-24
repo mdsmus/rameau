@@ -150,7 +150,7 @@
    (OCTAVE #'identity))
 
   (dur-expr
-   (#'do-nothing)
+   (#'empty-dur)
    (DUR #'parse-dur)
    (dur-expr PONTO #'parse-dur-ponto)
    (dur-expr MULTIPLICA #'parse-dur-multiplica))

@@ -54,17 +54,16 @@
    :notas (list
            (make-event :pitch (parse-note nota)
                        :octave (octave-from-string octave)
-                       :dur dur
+                       :dur (node-dur dur)
                        :start 0
                        :key *current-key*
                        :time-sig *current-sig*))
    :start 0
-   :text-repr (list nota (if (equal "" octave) nil octave) (and dur (/ 1 dur)) ignore)
-   :dur dur))
+   :text-repr (list nota (if (equal "" octave) nil octave) dur ignore)
+   :dur (node-dur dur)))
 
 (defun make-skip (skip dur ignore)
-  (declare (ignore skip ignore))
-  (make-note "s" "" dur))
+  (make-note "s" "" dur ignore))
 
 (defun move-event (event tempo)
   (setf (event-start event) (+ (event-start event) tempo))

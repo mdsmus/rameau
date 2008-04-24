@@ -112,6 +112,9 @@
 (defclass read-variable (ast-node)
   ((varname :accessor node-varname :initarg :varname)))
 
+(defclass dur-node (ast-node)
+  ((dur :accessor node-dur :initarg :dur)))
+
 (defclass music-block (ast-node) ())
 
 (defclass simultaneous (ast-node) ())
@@ -132,9 +135,9 @@
 (defun parse-chord-dur (a chord b igno dur)
   (when dur
       (dolist (i chord)
-        (setf (note-sequence-dur i) dur)
+        (setf (note-sequence-dur i) (node-dur dur))
         (dolist (j (note-sequence-notas i))
-          (setf (event-dur j) dur))))
+          (setf (event-dur j) (node-dur dur)))))
   (make-instance 'chord-lily :expr chord :text (list a chord b igno dur)))
 
 (defun parse-simultaneous (a simultaneous b)
@@ -196,25 +199,30 @@
   (declare (ignore equal ign igna))
   (make-instance 'set-variable :varname variable :value value :text (list variable ign equal igna value)))
 
+(defun parse-dur (dur)
+  (make-instance 'dur-node :dur (/ 1 (parse-integer dur)) :text (list dur)))
 
+(defun parse-dur-ponto (dur ponto)
+  (make-instance 'dur-node :dur (+ (node-dur dur) (/ (node-dur dur) 2)) :text (list dur ponto)))
+
+(defun parse-dur-multiplica (dur mult)
+  (make-instance 'dur-node
+                 :dur (* (node-dur dur) (eval (read-from-string (subseq mult 1))))
+                 :text (list dur mult)))
+
+(defun empty-dur ()
+  (make-instance 'dur-node
+                 :dur nil
+                 :text nil))
 ;; Funçoes problematicas:
 
 
 (defun make-anacruz (ign igno dur)
   (declare (ignore ign igno))
-  (setf *anacruz* (- dur (read-from-string *current-sig*)))
-  nil)
-        
+  (setf *anacruz* (- (node-dur dur) (read-from-string *current-sig*)))
+  (make-instance 'no-op-node :text (list ign igno dur)))
 
-(defun parse-dur (dur)
-  (/ 1 (parse-integer dur)))
 
-(defun parse-dur-ponto (dur ponto)
-  (declare (ignore ponto))
-    (+ dur (/ dur 2)))
-
-(defun parse-dur-multiplica (dur mult)
-  (* dur (eval (read-from-string (subseq mult 1)))))
 
 (defun parse-include (a b file)
   (declare (ignore a b))
@@ -232,7 +240,6 @@
 
 
 (defun parse-lilypond (expression)
-;  (process-ast (correct-durations (parse-music-block nil expression nil))))
   (let ((musica (parse-music-block nil expression nil)))
     (format t "ast: ~a~%" (print-ast musica))
     (process-ast (correct-durations musica))))
@@ -329,7 +336,7 @@
   (print-ast (note-sequence-text-repr node)))
 
 (defmethod print-ast (node)
-  (format nil "~a" node))
+  (format nil "~a" (or node "")))
 
 
 (defgeneric process-ast (astnode)
