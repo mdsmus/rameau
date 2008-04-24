@@ -529,5 +529,45 @@ elemento, e usar todos os elementos, por exemplo); ou então me chamar
 de besta por não usar um sistema especialista.
 
 
+\chapter{Parser round tripable}
+\label{chap:parser-novo}
+
+O parser do rameau, a partir da versão 5.0, foi projetado para poder
+reproduzir exatamente o arquivo de entrada a partir da árvore de
+sintaxe. Além disso ele permite adicionar e removes nós na árvore de
+sintaxe, efetivamente mudando a representação escrita do código em
+lilypond. Isso abre várias possibilidades interessantes, como, por
+exemplo, automatizar a colocação da análise na partitura e gerar
+lilyponds sem uma voz, etc.
+
+Para isso, algumas coisas são necessárias:
+\begin{itemize}
+\item o parser precisa de uma árvore sintática com a mesma estrutura
+  que o arquivo original;
+\item cada nó (ou tipo de nó) da árvore sintática deve ser
+  perfeitamente round-trippable;
+\item para isso, cada nó deve guardar todo o texto original, se existir;
+\item e, se não existir, cada nó deve ser capaz de se imprimir de
+  forma conveniente.
+\end{itemize}
+
+Isso cria algumas complicações interessantes no lexer e no parser. O
+lexer, por exemplo, deixa de poder simplesmente ignorar texto
+indesejado -- isso descartaria muita informação importante -- e se vê
+forçado a guardar até os espaços. O parser, por sua vez, tem que lidar
+com isso e guardar essa informação aparentemente inútil de modo a não
+perdê-la.
+
+Agora, enquanto eu escrevo isso, o lexer já foi modificado, mas o
+parser ainda não. Falta projetar uma estrutura geral para os nós da
+árvore sintática do parser que permita esse tipo de propriedade. As
+dificuldades são que a árvore deve, por um lado, aninhar, e, por
+outro, não desperdiçar a representação textual de nada. Por um lado,
+os espaços e newlines devem ser guardados e, por outro, eles devem ser
+automaticamente criados quando necessário na hora de criar novos
+nós. Isso faz com que a estrutura desejada seja ao mesmo tempo linear
+e hierárquica. Listas provavelmente servem bem para isso, mas não
+tenho certeza ainda.
+
 \end{document}
 
