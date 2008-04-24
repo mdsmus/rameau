@@ -38,19 +38,23 @@
    #:extract-feature-list
    #:event-<
    #:filter-algorithms
+   #:file-ast
    #:first-string
    #:get-comandos
+   #:get-parsed-notes
+   #:get-ast-string
    #:list-events
    #:make-chord
    #:make-melodic-note
    #:make-augmented-sixth
    #:melodic-note-p
+   #:node-text
    #:parse-file
-   #:file-ast
    #:parse-file-list
    #:parse-answer-sheet
    #:parse-chord
    #:pitches
+   #:print-ast
    #:rameau-args
    #:*rameau-path*
    #:rameau-profile
