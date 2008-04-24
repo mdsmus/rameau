@@ -125,11 +125,11 @@
 
 (defclass no-op-node (ast-node) ())
 
-(defclass staff (no-op-node) ())
+(defclass staff (music-block) ())
 
-(defclass score (no-op-node) ())
+(defclass score (music-block) ())
 
-(defclass voice (no-op-node) ())
+(defclass voice (music-block) ())
 
 (defun parse-music-block (a block b)
   (make-instance 'music-block :expr block :text (list a block b)))
@@ -152,13 +152,13 @@
   (make-instance 'staff :expr block :text (list a ign block)))
 
 (defun parse-context-staff (a i b ig c ign d igno block)
-  (let ((blck (parse-staff-block nil block)))
+  (let ((blck (parse-staff-block a nil block)))
     (setf (node-text blck)
           (list a i b ig c ign d igno block))
     blck))
 
 (defun parse-new-staff (a i b ig c ign block)
-  (let ((blck (parse-staff-block nil block)))
+  (let ((blck (parse-staff-block a nil block)))
     (setf (node-text blck)
           (list a i b ig c ign block))
     blck))
@@ -167,7 +167,7 @@
   (make-instance 'score :expr block :text (list a ign block)))
 
 (defun parse-context-score (a i b ig c ign block)
-  (let ((blck (parse-score-block nil block)))
+  (let ((blck (parse-score-block a nil block)))
     (setf (node-text blck)
           (list a i b ig c ign block))
     blck))
@@ -185,11 +185,10 @@
   (make-instance 'voice :expr block :text (list a i b ig c ign block)))
 
 (defun parse-repeat-block (a i b ig dur ign block)
-  (declare (ignore a dur i ig ign b))
   (make-instance 'music-block :expr block :text (list a i b ig dur ign block)))
 
 (defun parse-context-voice (a i b ig c ign d igno block)
-  (let ((blck (parse-voice-block nil block)))
+  (let ((blck (parse-voice-block a nil block)))
     (setf (node-text blck)
           (list a i b ig c ign d igno block))
     blck))
@@ -198,7 +197,6 @@
   (make-instance 'relative :expr block :start relative :text (list a ign relative igno block)))
 
 (defun parse-assignment (variable ign equal igna value)
-  (declare (ignore equal ign igna))
   (make-instance 'set-variable :varname variable :value value :text (list variable ign equal igna value)))
 
 (defun parse-dur (dur)
@@ -218,12 +216,10 @@
                  :text nil))
 
 (defun make-anacruz (ign igno dur)
-  (declare (ignore ign igno))
   (setf *anacruz* (- (node-dur dur) (read-from-string *current-sig*)))
   (make-instance 'no-op-node :text (list ign igno dur)))
 
 (defun parse-include (a b file)
-  (declare (ignore a b))
   (let ((notas (parse-file
                 (if *filename*
                     (concat (subseq *filename* 0 (search "/" *filename* :from-end t))
@@ -249,7 +245,6 @@
   (make-instance 'no-op-node :text args))
 
 (defun return-second (a b &rest rest)
-  (declare (ignore a rest))
   (make-instance 'music-list :expr (cons b (make-instance 'no-op-node)) :text (append (list a b) rest)))
 
 (defun return-first (a b)
@@ -310,7 +305,7 @@
   (setf (event-dur e) (* times (event-dur e))))
 
 (defmethod correct-times (times (e note-sequence))
-  (mapcar #'correct-times (note-sequence-notas e)))
+  (mapcar (lambda (x) (correct-times times x)) (note-sequence-notas e)))
 
 (defmethod correct-times (times (tree set-variable))
   (correct-times times (node-value tree)))
@@ -410,7 +405,7 @@
                               (aif (sequence-expressions (remove-if #'null (flatten (process-ast ast))))
                                    (note-sequence-notas it)
                                    it))
-                   *anacruz*)))
+                   anacruz)))
 
 (defun get-parsed-notes-string (str)
   (get-parsed-notes (get-ast-string str)))

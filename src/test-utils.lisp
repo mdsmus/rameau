@@ -138,4 +138,4 @@
   (assert-equal 100 (distance '(0) '(10))))
 
 (define-test flatten
-  (assert-equal '(0 1 2 3) (flatten '(((0 ) 1) (((((()))(2) 3)))))))
+  (assert-equal '(0 1 nil 2 3) (flatten '(((0 ) 1) (((((()))(2) 3)))))))

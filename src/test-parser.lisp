@@ -13,8 +13,8 @@
      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 41 :OCTAVE 0 :DUR 1/4 :start 3/4)
      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 41 :OCTAVE 0 :DUR 1/4 :start 3/4))
     (get-parsed-notes-string "\\score { <<
-\\new Staff { c d e f }
-\\new Staff { c d e f }
+\\new Staff {  c d e f }
+\\new Staff {  c d e f }
 >> }")))
   (lisp-unit:assert-true
    (event-equal
