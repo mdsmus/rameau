@@ -403,7 +403,7 @@
         (*anacruz* 0))
     (cons *anacruz* (yacc:parse-with-lexer (string-lexer str) *expression-parser*))))
 
-(defun get-notes (ast)
+(defun get-parsed-notes (ast)
   (let ((anacruz (first ast))
          (ast (rest ast)))
     (move-sequence (remove-if (lambda (x) (null (event-pitch x)))
@@ -413,7 +413,7 @@
                    *anacruz*)))
 
 (defun get-parsed-notes-string (str)
-  (get-notes (get-ast-string str)))
+  (get-parsed-notes (get-ast-string str)))
 
 (defun parse-file (filename)
   (when (cl-fad:file-exists-p filename)

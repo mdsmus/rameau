@@ -201,7 +201,7 @@
 (define-test notename->code
   (assert-equal 10 (notename->code (code->notename 10)))
   (assert-equal 10 (with-system tempered
-                     (notename->code (code->notename 10)))))
+                     (notename->code (code->notename 10))))) 
 
 (define-test enharmonicaly-equal-p
   (assert-true  (enharmonicaly-equal-p  "a#" "bb")))
