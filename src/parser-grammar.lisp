@@ -48,17 +48,20 @@
 
   (ignorable
    ()
-   (ignorable IGNORE #'parser-ign))
+   (ignorable-list))
+  
+  (ignorable-list
+   (IGNORE #'do-nothing)
+   (ignorable-list IGNORE #'parser-ign))
   
   (lilypond-header
    (HEADER ignorable |{| expression |}|))
 
   (expression
-   ()
    (ignorable expression-list ignorable #'return-second))
   
   (expression-list
-   (expression-atom #'parser-list)
+   ()
    (expression-atom ignorable expression-list #'parser-cons))
   
   (expression-atom
@@ -97,6 +100,7 @@
    (VARIABLE #'parse-variable-block))
    
   (music-block
+   (|{| ignorable |}| #'do-nothing)
    (|{| expression |}| #'parse-music-block))
 
   (layout-block
@@ -130,11 +134,10 @@
    (|<| notes |>| ignorable dur-expr  #'parse-chord-dur))
 
   (notes
-   ()
    (ignorable notes-list ignorable #'return-second))
   
   (notes-list
-   (note-expr #'parser-list)
+   ()
    (note-expr ignorable notes-list #'parser-cons))
   
   (note-expr
@@ -182,7 +185,7 @@
    scheme-sexp)
 ) 
 
-(format t "~a~%" (parse-string "a b c"))
+(format t "~a~%" (parse-string " a b c "))
 (format t "~a~%" (parse-string "<c ||||| |||  d> <e f>"))
 (format t "~a~%" (parse-string "<<
 \\new Staff {  }

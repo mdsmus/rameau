@@ -133,8 +133,8 @@
   (declare (ignore ignore))
   (cons a b))
 
-(defun parse-chord-dur (a ig chord ign b igno dur)
-  (declare (ignore a b ig ign igno))
+(defun parse-chord-dur (a chord b igno dur)
+  (declare (ignore a b  igno))
   (when dur
       (dolist (i chord)
         (setf (note-sequence-dur i) dur)
