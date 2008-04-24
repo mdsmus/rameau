@@ -3,8 +3,8 @@
 
 (yacc:define-parser *expression-parser*
   (:start-symbol start)
-  (:terminals (WHITESPACE
-               NEW-STAFF
+  (:precedence ((:left note-expr notes-list notes expression-atom expression-list expression ignorable)))
+  (:terminals (NEW-STAFF
                NEW-SCORE
                NEW-VOICE
                NEW
@@ -41,24 +41,25 @@
                = |{| |}| |<<| |>>| |<| |>|))
 
   (start
-   ()
    (lilypond #'identity))
   
   (lilypond
-   (expression ignorable #'parse-lilypond))
+   (expression #'parse-lilypond))
 
   (ignorable
    ()
-   (IGNORE ignorable #'parser-ign))
+   (ignorable IGNORE #'parser-ign))
   
   (lilypond-header
-   (HEADER ignorable |{| expression ignorable |}|)
-   (HEADER ignorable |{| ignorable |}|))
+   (HEADER ignorable |{| expression |}|))
 
   (expression
+   ()
+   (ignorable expression-list ignorable #'return-second))
+  
+  (expression-list
    (expression-atom #'parser-list)
-   (expression-atom expression #'parser-cons)
-   (ignorable expression #'return-second))
+   (expression-atom ignorable expression-list #'parser-cons))
   
   (expression-atom
    (lilypond-header #'do-nothing)
@@ -67,7 +68,6 @@
    (CLOSE-PAREN #'do-nothing)
    (layout-block #'do-nothing)
    (music-block #'identity)
-   (empty-block #'identity)
    (staff-block #'identity)
    (score-block #'identity)
    (voice-block #'identity)
@@ -79,8 +79,8 @@
    (chord-block #'identity)
    (scheme-code #'do-nothing)
    (include ignorable STRING #'parse-include)
-   (|<<| expression ignorable |>>| #'parse-simultaneous)
-   (SIMULT ignorable |{| expression ignorable |}| #'parse-simult)
+   (|<<| expression |>>| #'parse-simultaneous)
+   (SIMULT ignorable |{| expression |}| #'parse-simult)
    (note-expr #'identity))
 
   (assignment
@@ -99,11 +99,7 @@
   (music-block
    (|{| expression |}| #'parse-music-block))
 
-  (empty-block
-   (|{| |}| #'do-nothing))
-
   (layout-block
-   (LAYOUT ignorable |{| |}|)
    (LAYOUT ignorable |{| expression |}|))
 
   (staff-block
@@ -131,16 +127,20 @@
    (TIMES ignorable NUMBER ignorable expression-atom #'parse-times-block))
 
   (chord-block
-   (|<| ignorable notes ignorable |>| ignorable dur-expr  #'parse-chord-dur))
+   (|<| notes |>| ignorable dur-expr  #'parse-chord-dur))
 
   (notes
-   (note-expr #'list)
-   (note-expr ignorable notes #'ignore-middle))
+   ()
+   (ignorable notes-list ignorable #'return-second))
+  
+  (notes-list
+   (note-expr #'parser-list)
+   (note-expr ignorable notes-list #'parser-cons))
   
   (note-expr
-   (NOTE octave-expr dur-expr ignorable  #'make-note)
-   (SKIP dur-expr ignorable #'make-skip)
-   (PARTIAL dur-expr ignorable #'make-anacruz))
+   (NOTE octave-expr dur-expr  #'make-note)
+   (SKIP dur-expr #'make-skip)
+   (PARTIAL dur-expr #'make-anacruz))
 
   (octave-expr
    (#'empty-octave)
@@ -154,7 +154,7 @@
   
 
   (scheme-code
-   (HASH scheme-sexp))
+   (HASH ignorable scheme-sexp))
 
   (markup-expr
    (MARKUP ignorable |{| scheme-list |}|))
@@ -182,5 +182,13 @@
    scheme-sexp)
 ) 
 
-(format t "~a~%" (parse-string "<c d> <e f>"))
+(format t "~a~%" (parse-string "a b c"))
+(format t "~a~%" (parse-string "<c ||||| |||  d> <e f>"))
+(format t "~a~%" (parse-string "<<
+\\new Staff {  }
+>>"))
 (format t "~a~%" (parse-string "\\score { <c d> <e f> }"))
+(format t "~a~%" (parse-string "\\score { <<
+\\new Staff { c d e f }
+\\new Staff { c d e f }
+>> }"))

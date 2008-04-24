@@ -1,6 +1,9 @@
 (in-package #:rameau)
 (use-package :yacc)
 (defparameter *filename* nil)
+(defparameter *dur* 0)
+(defparameter *environment* nil)
+
 
 (defparameter *anacruz* 0)
 
@@ -139,16 +142,17 @@
           (setf (event-dur j) dur))))
   (make-instance 'chord-lily :expr chord))
 
-(defun parse-simultaneous (a simultaneous ign b)
-  (declare (ignore a b ign))
+(defun parse-simultaneous (a simultaneous b)
+  (declare (ignore a b ))
   (make-instance 'simultaneous :expr simultaneous))
 
-(defun parse-simult (a i b simultaneous ign c)
-  (declare (ignore a i b c ign))
+(defun parse-simult (a i b simultaneous  c)
+  (declare (ignore a i b c ))
   (make-instance 'simultaneous :expr simultaneous))
 
 (defun parse-staff-block (a ign block)
   (declare (ignore a ign))
+  (format t "~a~%" block)
   (make-instance 'staff :expr block))
 
 (defun parse-context-staff (a i b ig c ign d igno block)
@@ -186,8 +190,8 @@
   (declare (ignore a dur i ig ign b))
   block)
 
-(defun make-anacruz (ign dur igno)
-  (declare (ignore ign igno))
+(defun make-anacruz (ign dur)
+  (declare (ignore ign))
   (setf *anacruz* (- dur (read-from-string *current-sig*)))
   nil)
         
@@ -223,8 +227,7 @@
   (declare (ignore a ign igno))
   (make-instance 'relative :expr block :start relative))
 
-(defun parse-lilypond (expression ign)
-  (declare (ignore ign))
+(defun parse-lilypond (expression)
   (process-ast (correct-durations (parse-music-block nil expression nil))))
 
 (defun empty-octave ()
@@ -348,25 +351,23 @@
       (parse-string (file-string filename)))))
 
 
-(defun return-second (a b)
-  (declare (ignore a))
-  ;(print 'retornando-second)
+(defun return-second (a b &rest rest)
+  (declare (ignore a rest))
   b)
 (defun return-first (a b)
   (declare (ignore b))
-  ;(print 'retornando-first)
   a)
 
-(defun parser-list (a)
-  ;(print 'listing)
-  (list a))
+(defun parser-list (b)
+  (format t "pl~a~%" b)
+  (list b))
 
-(defun parser-cons (a b)
- ; (print 'consing)
+(defun parser-cons (a i b)
+  (declare (ignore i))
+  (format t "pc~a~a~%" a b)
   (cons a b))
 
 (defun parser-ign (a b)
-;  (print 'ignoring)
   nil)
 (do-not-test
         parse-music-block
