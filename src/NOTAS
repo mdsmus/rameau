@@ -1,0 +1,52 @@
+no slime:
+(setf *default-pathname-defaults* #p"/home/kroger/src/rameau")
+
+chora:001,002,003 chora:10..12 chora:132
+
+-f corais/00{1,2,3}.ly
+-f corais/00[1,2,3].ly
+-f */*corais/00{1,2,3}.lyi
+-f */*corais/00{[1-3],[7-9]}.lyi
+-f */*corais/{00[1-3],02[7-9]}.lyi
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+Bom, uma coisa chata (mas imutável) é não poder colocar --trace,
+--profile, --files, etc.
+
+   - permitir que algoritmos definam comandos (por exemplo,
+     mostrar o dicionário do knn, mostrar as árvores de decisão,
+     mostrar os pesos da rede neural, etc, sem ter que forçar
+     debug pra isso).  Algo como "./rameau algoritmo mostra-arvore"
+     ou algo assim.
+
+
+   - ter um jeito de encadear comandos (algo como "./rameau teste unit
+check all")
+
+   - poder configurar melhor a saída (escolher separador de
+     colunas, se mostra vermelho ou negrito/itálico, etc)
+
+   - unificar partitura, analise, resultados, erros e acertos
+     como opções pra analise.
+
+
+     TESTE        unidade,regressao,lily
+     ANALISE      corais,kostka,sonatas,exemplos
+     GUI          
+     CHECK        
+
+----------------------------------------------------------------------
+
+     TESTE        unidade,regressao,lily
+     ANALISE      corais,kostka,sonatas,exemplos
+     PARTITURA    corais,exemplos
+     TAMANHOS     corais,exemplos
+     ENARMONIA    corais
+     CHECK        
+     GUI          
+     ERROS        corais,exemplos
+     ACERTOS      corais,exemplos
+     RESULTADOS   corais,exemplos
+     TIPOS        corais,exemplos
+     DADOS        corais,exemplos
