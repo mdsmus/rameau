@@ -48,3 +48,24 @@
 (defun short-flag? (flag)
   (when (cl-ppcre:scan "^-[a-zA-Z]+" flag)
     t))
+
+(defun %string->symbol (string &optional (package (sb-int:sane-package)))
+  (intern (string-upcase string) package))
+
+(defun get-commands-assoc ()
+  (remove "common-flags" (mapcar #'first *commands*)))
+
+(defun get-command-slots (command)
+  (mapcar #'second (append (get-common-flags) (get-flag-assoc command))))
+
+(defun get-flag-assoc (item)
+  "Works for commands only"
+  (get-item 'flags (get-item item *commands*)))
+
+(defun get-data-assoc (item)
+  "Works for commands only"
+  (get-item 'data (get-item item *commands*)))
+
+(defun get-common-flags ()
+  (get-item "common-flags" *commands*))
+

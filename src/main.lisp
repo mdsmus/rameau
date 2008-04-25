@@ -20,28 +20,6 @@
     ("check")
     ("gui")))
 
-;;;; Functions to deal with commands (flags and data)
-
-(defun %string->symbol (string &optional (package (sb-int:sane-package)))
-  (intern (string-upcase string) package))
-
-(defun get-commands-assoc ()
-  (remove "common-flags" (mapcar #'first *commands*)))
-
-(defun get-command-slots (command)
-  (mapcar #'second (append (get-common-flags) (get-flag-assoc command))))
-
-(defun get-flag-assoc (item)
-  "Works for commands only"
-  (get-item 'flags (get-item item *commands*)))
-
-(defun get-data-assoc (item)
-  "Works for commands only"
-  (get-item 'data (get-item item *commands*)))
-
-(defun get-common-flags ()
-  (get-item "common-flags" *commands*))
-
 (defun parse-options (command list)
   "Parse the list of options to a structure."
   (loop for item in (sublist-of-args list) append
@@ -69,25 +47,24 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmacro command-let (name &body body)
-  `(defun ,name (item options)
-     (dolist (file (args-files options))
-       (let* ((segments (sonorities (parse-file file)))
-              (results (loop for a in (args-algorithms options) collect
-                            (funcall (algorithm-classify a) segments)))
-              (answer-sheet (parse-answer-sheet (remove-ext file) item))
-              (file-name (pathname-name file))
-              (notes (mapcar #'list-events segments))
-              (dur (durations segments))
-              (size-gab (length answer-sheet)))
-         ,@body))))
+(defstruct analysis
+  segments results answer-sheet file-name notes dur size-answer-sheet)
 
-(command-let analysis
-  ;;(when (/= size-gab (length i)) (print-warning "sizes don't match!"))
-  (if (and (not answer-sheet) (not (args-ignore options)))
-      (print-warning (concat "the answer sheet for " file-name " doesn't exist"))
-      (print-answer :file file-name :sheet answer-sheet :results results :dur dur :notes notes)))
-      
+
+(defun analyse-files (data options)
+    (loop
+       for file in (args-files options)
+       for segments = (sonorities (parse-file file))
+       collect
+         (make-analysis
+          :segments segments
+          :results (mapcar #'(lambda (algo) (funcall (algorithm-classify algo) segments))
+                           (args-algorithms options))
+          :answer-sheet (parse-answer-sheet (remove-ext file) data)
+          :file-name (pathname-name file)
+          :notes (mapcar #'list-events segments)
+          :dur (durations segments))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
  (defun print-help ()
@@ -100,6 +77,34 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; (command-let analysis
+;;   ;;(when (/= size-gab (length i)) (print-warning "sizes don't match!"))
+;;   (if (and (not answer-sheet) (not (args-ignore options)))
+;;       (print-warning (concat "the answer sheet for " file-name " doesn't exist"))
+;;       (print-answer :file file-name :sheet answer-sheet :results results :dur dur :notes notes)))
+      
+
+(defun analysis (analysis options)
+  (print (analysis-dur (first analysis))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun create-args-struct (command-list command data-assoc data)
+  ;; create a structure dynamically to accomodate different slots
+  (eval `(defstruct args ,@(append '(name data)
+                                   (mapcar #'%string->symbol (get-command-slots command)))))
+  (let* ((options
+          (apply #'make-args
+                 (append `(:name ,command :data ,(when data-assoc data))
+                         (parse-options command
+                                        (if data-assoc
+                                            (nthcdr 2 command-list)
+                                            (rest command-list))))))
+         (files (parse-file-list (stringify data) (args-files options))))
+    (setf (args-files options) files
+          (args-algorithms options) (filter-algorithms (args-algorithms options)))
+    options))
 
 (defun main (&optional args)
   "You can run main from the REPL with all arguments as a
@@ -111,21 +116,8 @@
        for command-list in (split-command-list arguments)
        for command = (first command-list)
        for data = (second command-list)
-       for data-assoc = (get-data-assoc command) do
-         ;;; create a structure dynamically to accomodate different slots
-         (eval `(defstruct args ,@(append '(name data)
-                                          (mapcar #'%string->symbol (get-command-slots command)))))
-         (let* ((options
-                 (apply #'make-args
-                        (append `(:name ,command :data ,(when data-assoc data))
-                                (parse-options command
-                                               (if data-assoc
-                                                   (nthcdr 2 command-list)
-                                                   (rest command-list))))))
-                (files (parse-file-list (stringify data) (args-files options))))
-           (setf (args-files options) files)
-           (setf (args-algorithms options)
-                 (filter-algorithms (args-algorithms options)))
-           (funcall (%string->symbol command) (stringify data) options)
-           )))
+       for data-assoc = (get-data-assoc command)
+       for options = (create-args-struct command-list command data-assoc data)
+       for analysis = (analyse-files data options) do
+         (funcall (%string->symbol command) analysis options)))
   0)
