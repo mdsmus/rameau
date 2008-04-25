@@ -58,14 +58,9 @@
 (defun get-command-slots (command)
   (mapcar #'second (append (get-common-flags) (get-flag-assoc command))))
 
-(defun get-flag-assoc (item)
-  "Works for commands only"
-  (get-item 'flags (get-item item *commands*)))
-
-(defun get-data-assoc (item)
-  "Works for commands only"
-  (get-item 'data (get-item item *commands*)))
-
 (defun get-common-flags ()
   (get-item "common-flags" *commands*))
 
+(defun get-flag-assoc (item)
+  "Works for commands only"
+  (get-item item *commands*))

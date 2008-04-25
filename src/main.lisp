@@ -12,11 +12,9 @@
       ("-q" "quiet" "quiet")
       ("-m" "test-number" "o número de testes errados para imprimir")))
     ("analysis"
-     ((data ("chorales" "kostka" "sonatas" "examples"))
-      (flags (("-i" "ignore" "ignora (não imprime) corais sem gabaritos")
-              ("-e" "style" "seleciona estilo de impressão dos acordes errados (bold ou red)")))))
-    ("test"
-     ((data (unit regression lily))))
+     (("-i" "ignore" "ignora (não imprime) corais sem gabaritos")
+      ("-e" "style" "seleciona estilo de impressão dos acordes errados (bold ou red)")))
+    ("test")
     ("check")
     ("gui")))
 
@@ -51,7 +49,7 @@
   segments results answer-sheet file-name notes dur size-answer-sheet)
 
 
-(defun analyse-files (data options)
+(defun analyse-files (options)
     (loop
        for file in (args-files options)
        for segments = (sonorities (parse-file file))
@@ -60,7 +58,7 @@
           :segments segments
           :results (mapcar #'(lambda (algo) (funcall (algorithm-classify algo) segments))
                            (args-algorithms options))
-          :answer-sheet (parse-answer-sheet (remove-ext file) data)
+          :answer-sheet (parse-answer-sheet (remove-ext file) 'foo)
           :file-name (pathname-name file)
           :notes (mapcar #'list-events segments)
           :dur (durations segments))))
@@ -93,7 +91,7 @@
 (defun search-music-dirs (substring)
   (first (remove-if-not (lambda (item) (search substring item :test #'equalp))
                         (mapcar #'namestring
-                                (directory (format nil "~a/literatura/*"
+                                (directory (format nil "~a/music/*"
                                                    *default-pathname-defaults*))))))
 
 (defun parse-file-name (exp)
@@ -117,17 +115,15 @@
            (list file)
            (parse-file-name file))))
   
-(defun create-args-struct (command-list command data-assoc data)
+(defun create-args-struct (command-list command)
   ;; create a structure dynamically to accomodate different slots
-  (eval `(defstruct args ,@(append '(name data)
+  (eval `(defstruct args ,@(append '(name)
                                    (mapcar #'%string->symbol (get-command-slots command)))))
   (let* ((options
           (apply #'make-args
-                 (append `(:name ,command :data ,(when data-assoc data))
+                 (append `(:name ,command)
                          (parse-options command
-                                        (if data-assoc
-                                            (nthcdr 2 command-list)
-                                            (rest command-list))))))
+                                        (rest command-list)))))
          (files (parse-files (args-files options))))
     (setf (args-files options) files
           (args-algorithms options) (filter-algorithms (args-algorithms options)))
@@ -142,9 +138,7 @@
     (loop
        for command-list in (split-command-list arguments)
        for command = (first command-list)
-       for data = (second command-list)
-       for data-assoc = (get-data-assoc command)
-       for options = (create-args-struct command-list command data-assoc data)
-       for analysis = (analyse-files data options) do
+       for options = (create-args-struct command-list command)
+       for analysis = (analyse-files options) do
          (funcall (%string->symbol command) analysis options)))
   0)
