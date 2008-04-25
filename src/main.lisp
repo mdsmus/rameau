@@ -63,6 +63,12 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defun print-answer (&key file sheet results dur notes)
+  (mapcar #'(lambda (s r d n) (format t "~10a ~10a ~10a ~10a~%" s r d n))
+          sheet (first results) dur notes))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defmacro command-let (name &body body)
   `(defun ,name (item options)
      (dolist (file (args-files options))
@@ -77,13 +83,10 @@
          ,@body))))
 
 (command-let analysis
-  (loop for i in results
-     for a in (args-algorithms options)
-     do
-       (when (/= size-gab (length i)) (print-warning "sizes don't match!"))
-       (if (and (not answer-sheet) (not (args-ignore options)))
-           (print-warning (concat "the answer sheet for " file-name " doesn't exist"))
-           (print (list file-name answer-sheet results dur notes)))))
+  ;;(when (/= size-gab (length i)) (print-warning "sizes don't match!"))
+  (if (and (not answer-sheet) (not (args-ignore options)))
+      (print-warning (concat "the answer sheet for " file-name " doesn't exist"))
+      (print-answer :file file-name :sheet answer-sheet :results results :dur dur :notes notes)))
       
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
