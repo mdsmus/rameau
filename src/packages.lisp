@@ -37,6 +37,7 @@
    #:extract-diff
    #:extract-feature-list
    #:event-<
+   #:files-range
    #:filter-algorithms
    #:file-ast
    #:first-string

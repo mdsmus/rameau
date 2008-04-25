@@ -85,11 +85,38 @@
       
 
 (defun analysis (analysis options)
-  (print (analysis-dur (first analysis))))
+  (print (mapcar #'analysis-dur analysis)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defun search-music-dirs (substring)
+  (first (remove-if-not (lambda (item) (search substring item :test #'equalp))
+                        (mapcar #'namestring
+                                (directory (format nil "~a/literatura/*"
+                                                   *default-pathname-defaults*))))))
+
+(defun parse-file-name (exp)
+  (unless (search ":" exp)
+    (error "expression should be in the format <substring>:<expression>"))
+  (let* ((tmp (cl-ppcre:split ":" exp))
+         (substring (first tmp))
+         (file-or-range (second tmp))
+         (dir (search-music-dirs substring)))
+    (mapcar (lambda (item) (concat dir item ".ly"))
+            (cond ((search ".." file-or-range)
+                   (files-range (cl-ppcre:split "\\.\\." file-or-range)))
+                  ((search "," file-or-range)
+                   (cl-ppcre:split "," file-or-range))
+                  (t (search " " file-or-range)
+                     (cl-ppcre:split " " file-or-range))))))
+
+(defun parse-files (files)
+  (loop for file in files append
+       (if (search "/" file)
+           (list file)
+           (parse-file-name file))))
+  
 (defun create-args-struct (command-list command data-assoc data)
   ;; create a structure dynamically to accomodate different slots
   (eval `(defstruct args ,@(append '(name data)
@@ -101,7 +128,7 @@
                                         (if data-assoc
                                             (nthcdr 2 command-list)
                                             (rest command-list))))))
-         (files (parse-file-list (stringify data) (args-files options))))
+         (files (parse-files (args-files options))))
     (setf (args-files options) files
           (args-algorithms options) (filter-algorithms (args-algorithms options)))
     options))
