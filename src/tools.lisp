@@ -69,15 +69,15 @@
   '(("chorales" "corais/")
     ("kostka" "literatura/kostka-payne/")
     ("sonatas" "literatura/beethoven-sonatas/")
-    ("exemplos" "exemplos/")
+    ("examples" "examples/")
     ("regressao" "regressao/")
     ("lily" "regressao-lily/")
     ("corais-include" "literatura/bach-corais/")
     ("exemplos-include" "literatura/exemplos/")))
 
 (defparameter *gabarito-dir-list*
-  '(("chorales" "gabaritos/bach-corais/")
-    ("examples" "gabaritos/exemplos/")))
+  '(("chorales" "answer-sheets/chorales-bach/")
+    ("examples" "answer-sheets/examples/")))
 
 
 (defun files-range (list)
@@ -133,9 +133,9 @@
   (nconc (loop for f in (parse-file-list "chorales" '("001..6"))
             for g = (parse-answer-sheet f "chorales")
             collect (list (sonorities (parse-file f)) g))
-         (loop for f in (mapcan (lambda (x) (parse-file-list "exemplos" (list x)))
+         (loop for f in (mapcan (lambda (x) (parse-file-list "examples" (list x)))
                                 '("11..13" "23..28"))
-            for g = (parse-answer-sheet f "exemplos")
+            for g = (parse-answer-sheet f "examples")
             collect (list (sonorities (parse-file f)) g))))
 
 (defun extract-feature-list (segmento diff)
