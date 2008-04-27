@@ -45,28 +45,23 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmacro make-anal-struct (list)
-  `(defstruct analysis
-     (algorithms ',(mapcar #'(lambda (name) (intern (concatenate 'string "ANALYSIS-" (string-upcase (algorithm-name name)))))
-                           list))
-     segments answer-sheet file-name notes dur size-answer-sheet
-     ,@(mapcar #'%string->symbol (mapcar #'algorithm-name list))))
+(defstruct analysis
+  segments results answer-sheet file-name notes dur size-answer-sheet)
+
 
 (defun analyse-files (options)
-  (loop
-     for file in (args-files options)
-     for segments = (sonorities (parse-file file))
-     collect
-       (apply #'make-analysis
-              (append `(:segments ,segments
-                        :answer-sheet ,(parse-answer-sheet (remove-ext file) 'foo)
-                        :file-name ,(pathname-name file)
-                        :notes ,(mapcar #'list-events segments)
-                        :dur ,(durations segments))
-                      (mapcan (lambda (algo)
-                                  (list (%string->symbol (algorithm-name algo) :keyword)
-                                        (funcall (algorithm-classify algo) segments)))
-                              (args-algorithms options))))))
+    (loop
+       for file in (args-files options)
+       for segments = (sonorities (parse-file file))
+       collect
+         (make-analysis
+          :segments segments
+          :results (mapcar #'(lambda (algo) (funcall (algorithm-classify algo) segments))
+                           (args-algorithms options))
+          :answer-sheet (parse-answer-sheet (remove-ext file) 'foo)
+          :file-name (pathname-name file)
+          :notes (mapcar #'list-events segments)
+          :dur (durations segments))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -124,10 +119,6 @@
   ;; create a structure dynamically to accomodate different slots
   (eval `(defstruct args ,@(append '(name)
                                    (mapcar #'%string->symbol (get-command-slots command)))))
-
-  ;;; create analysis structure
-  (make-anal-struct #.*algorithms*)
-
   (let* ((options
           (apply #'make-args
                  (append `(:name ,command)
