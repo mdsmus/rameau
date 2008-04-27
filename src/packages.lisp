@@ -53,6 +53,7 @@
    #:parse-file
    #:parse-file-list
    #:parse-answer-sheet
+   #:new-parse-answer-sheet
    #:parse-chord
    #:pitches
    #:print-ast
@@ -72,6 +73,7 @@
    #:event-time-sig
    #:event-key
    #:make-event
+   #:search-music-dirs
    #:processa-cifras
    #:register-algorithm
    #:read-chords

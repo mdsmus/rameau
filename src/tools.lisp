@@ -77,7 +77,7 @@
 
 (defparameter *gabarito-dir-list*
   '(("chorales" "gabaritos/bach-corais/")
-    ("exemplos" "gabaritos/exemplos/")))
+    ("examples" "gabaritos/exemplos/")))
 
 
 (defun files-range (list)
@@ -101,6 +101,18 @@
     (when (cl-fad:file-exists-p nome-pop)
       (read-chords (read-file-as-sexp nome-pop)))))
 
+(defun search-music-dirs (substring dir)
+  (first (remove-if-not (lambda (item) (search substring item :test #'equalp))
+                        (mapcar #'namestring
+                                (directory (format nil "~a/~a/*"
+                                                   *default-pathname-defaults*
+                                                   dir))))))
+
+(defun new-parse-answer-sheet (file substring)
+  (let* ((dir (search-music-dirs "chora" "answer-sheets"))
+         (full-file (concat dir (add-pop-ext "001"))))
+    (when (cl-fad:file-exists-p full-file)
+      (read-chords (read-file-as-sexp full-file)))))
 
 (defun parse-file-list (item f &optional (ext ".ly"))
   "Parse file list \\texttt{f} into a list of filenames."

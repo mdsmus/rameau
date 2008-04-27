@@ -58,7 +58,7 @@
         :segments segments
         :results (mapcar #'(lambda (algo) (funcall (algorithm-classify algo) segments))
                          (args-algorithms options))
-        :answer-sheet (parse-answer-sheet (remove-ext file) 'foo)
+        ;;:answer-sheet (parse-answer-sheet (remove-ext file) "chora") ;;==========================
         :file-name (pathname-name file)
         :notes (mapcar #'list-events segments)
         :dur (durations segments))))
@@ -86,35 +86,16 @@
         (for dur in (analysis-dur analysis))
         (for seg-number from 1)
         (for result in (apply #'mapcar #'list (analysis-results analysis)))
-        (print result)
+        ;;(print result)
         ;;(print (apply #'compare-answer-sheet result))
         ;;(format t "~&~3a | ~12a | ~4a |" seg-number note dur)
         ;;(apply #'format t " ~7a | ~7a |" result)
         ))
 
-(defmacro flatten (&rest list)
-
-    (flatten ((a b c) (d e f)))
-  
 (defun analysis (analysis options)
   (mapcar #'(lambda (anal) (analysis-terminal anal options)) analysis))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defun search-music-dirs (substring dir)
-  (first (remove-if-not (lambda (item) (search substring item :test #'equalp))
-                        (mapcar #'namestring
-                                (directory (format nil "~a/~a/*"
-                                                   dir
-                                                   *default-pathname-defaults*))))))
-
-(defun parse-answer-sheet (file item)
-  (let* ((dir (search-music-dirs substring "")))
-         (nome-pop (concat *rameau-path*
-                           (get-item item *gabarito-dir-list*)
-                           (add-pop-ext (pathname-name file)))))
-    (when (cl-fad:file-exists-p nome-pop)
-      (read-chords (read-file-as-sexp nome-pop)))))
 
 (defun parse-file-name (exp)
   (unless (search ":" exp)
