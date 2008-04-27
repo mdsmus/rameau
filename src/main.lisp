@@ -58,7 +58,7 @@
         :segments segments
         :results (mapcar #'(lambda (algo) (funcall (algorithm-classify algo) segments))
                          (args-algorithms options))
-        ;;:answer-sheet (parse-answer-sheet (remove-ext file) "chora") ;;==========================
+        :answer-sheet (new-parse-answer-sheet (remove-ext file) "chora") ;;==========================
         :file-name (pathname-name file)
         :notes (mapcar #'list-events segments)
         :dur (durations segments))))
@@ -85,11 +85,11 @@
   (iter (for note in (analysis-notes analysis))
         (for dur in (analysis-dur analysis))
         (for seg-number from 1)
+        (for answer in (analysis-answer-sheet analysis))
         (for result in (apply #'mapcar #'list (analysis-results analysis)))
-        ;;(print result)
-        ;;(print (apply #'compare-answer-sheet result))
-        ;;(format t "~&~3a | ~12a | ~4a |" seg-number note dur)
-        ;;(apply #'format t " ~7a | ~7a |" result)
+        (format t "~&~3a | ~12a | ~4a | ~7a |" seg-number note dur answer)
+        (apply #'format t " ~7a | ~7a |" result)
+        (format t "~a" (compare-answer-sheet answer (first result)))
         ))
 
 (defun analysis (analysis options)
