@@ -50,18 +50,18 @@
 
 
 (defun analyse-files (options)
-    (loop
-       for file in (args-files options)
-       for segments = (sonorities (parse-file file))
-       collect
-         (make-analysis
-          :segments segments
-          :results (mapcar #'(lambda (algo) (funcall (algorithm-classify algo) segments))
-                           (args-algorithms options))
-          :answer-sheet (parse-answer-sheet (remove-ext file) 'foo)
-          :file-name (pathname-name file)
-          :notes (mapcar #'list-events segments)
-          :dur (durations segments))))
+  (loop
+     for file in (args-files options)
+     for segments = (sonorities (parse-file file))
+     collect
+       (make-analysis
+        :segments segments
+        :results (mapcar #'(lambda (algo) (funcall (algorithm-classify algo) segments))
+                         (args-algorithms options))
+        :answer-sheet (parse-answer-sheet (remove-ext file) 'foo)
+        :file-name (pathname-name file)
+        :notes (mapcar #'list-events segments)
+        :dur (durations segments))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -80,19 +80,41 @@
 ;;   (if (and (not answer-sheet) (not (args-ignore options)))
 ;;       (print-warning (concat "the answer sheet for " file-name " doesn't exist"))
 ;;       (print-answer :file file-name :sheet answer-sheet :results results :dur dur :notes notes)))
-      
 
+(defun analysis-terminal (analysis options)
+  (iter (for note in (analysis-notes analysis))
+        (for dur in (analysis-dur analysis))
+        (for seg-number from 1)
+        (for result in (apply #'mapcar #'list (analysis-results analysis)))
+        (print result)
+        ;;(print (apply #'compare-answer-sheet result))
+        ;;(format t "~&~3a | ~12a | ~4a |" seg-number note dur)
+        ;;(apply #'format t " ~7a | ~7a |" result)
+        ))
+
+(defmacro flatten (&rest list)
+
+    (flatten ((a b c) (d e f)))
+  
 (defun analysis (analysis options)
-  (print (mapcar #'analysis-dur analysis)))
-
+  (mapcar #'(lambda (anal) (analysis-terminal anal options)) analysis))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun search-music-dirs (substring)
+(defun search-music-dirs (substring dir)
   (first (remove-if-not (lambda (item) (search substring item :test #'equalp))
                         (mapcar #'namestring
-                                (directory (format nil "~a/music/*"
+                                (directory (format nil "~a/~a/*"
+                                                   dir
                                                    *default-pathname-defaults*))))))
+
+(defun parse-answer-sheet (file item)
+  (let* ((dir (search-music-dirs substring "")))
+         (nome-pop (concat *rameau-path*
+                           (get-item item *gabarito-dir-list*)
+                           (add-pop-ext (pathname-name file)))))
+    (when (cl-fad:file-exists-p nome-pop)
+      (read-chords (read-file-as-sexp nome-pop)))))
 
 (defun parse-file-name (exp)
   (unless (search ":" exp)
@@ -100,7 +122,7 @@
   (let* ((tmp (cl-ppcre:split ":" exp))
          (substring (first tmp))
          (file-or-range (second tmp))
-         (dir (search-music-dirs substring)))
+         (dir (search-music-dirs substring "music")))
     (mapcar (lambda (item) (concat dir item ".ly"))
             (cond ((search ".." file-or-range)
                    (files-range (cl-ppcre:split "\\.\\." file-or-range)))
