@@ -1,3 +1,7 @@
+(defpackage :rameau-main
+  (:use :rameau :cl :cl-ppcre :lisp-unit :ltk :iterate)
+  (:export :main :check))
+
 (in-package :rameau-main)
 
 (defparameter *commands*
@@ -16,6 +20,8 @@
       ("" "column-number-size" "")
       ("" "column-notes-size" "")
       ("" "column-dur-size" "")
+      ("" "column-separator" "")
+      ("" "wrong-answer-color" "")
       ))
     ("analysis"
      (("-u" "show-dur" "")
@@ -59,8 +65,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defstruct analysis
-  segments results answer-sheet file-name notes dur size-answer-sheet number-algorithms)
-
+  segments results answer-sheet file-name notes dur size-answer-sheet
+  number-algorithms)
 
 (defun analyse-files (options)
   (loop
@@ -88,59 +94,6 @@
   (format t "WARNING: ~a~%" message))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; TERMINAL
-
-(defun print-color-terminal (result comparison options)
-  (let ((column (concat "~" (args-column-chord-size options) "a"))
-        (color (if comparison 21 31))
-        (string "~a[0;~Dm"))
-    (if (args-no-color options)
-        (format t (concat column "|") result)
-        (progn
-          (format t (concat string column) (code-char #x1b) color result)
-          (format t "~a[0m|" (code-char #x1b))))))
-
-(defun inc-bool-list (bool-list num-list)
-  (mapcar #'+ (mapcar #'(lambda (x) (if x 1 0)) bool-list) num-list))
-
-(defun print-line-term (options number note dur &optional answer)
-  (format t (concat "~&~"
-                    (args-column-number-size options)
-                    "a~@[|~"
-                    (args-column-notes-size options)
-                    "a~]~@[|~"
-                    (args-column-dur-size options)
-                    "a~]~@[|~"
-                    (args-column-chord-size options)
-                    "a~]|")
-          number
-          (when (args-show-notes options) note)
-          (when (args-show-dur options) dur)
-          (when answer answer)))
-
-(defun hline-size (number-algorithms options)
-  (+ (* (parse-integer (args-column-chord-size options)) (1+ number-algorithms))
-     (1+ number-algorithms)
-     (1+ (parse-integer (args-column-number-size options)))
-     (if (args-show-notes options)
-         (1+ (parse-integer (args-column-notes-size options)))
-         0)
-     (if (args-show-dur options)
-         (1+ (parse-integer (args-column-dur-size options)))
-         0)))
-
-(defun print-chord-column (options text)
-  (format t (concat "~" (args-column-chord-size options) "a|") text))
-
-(defun print-footer-term (text size-line number-algorithms options)
-  (let ((footer-size (- size-line
-                        (1+ (length text))
-                        number-algorithms
-                        (* number-algorithms (parse-integer (args-column-chord-size options))))))
-    (format t (concat "~&" text (repeat-string footer-size " ") "|"))))
-
-(defun print-hline-term (size)
-  (format t "~&~a" (repeat-string size "-")))
 
 (defun analysis-terminal (analysis options)
   (let* ((number-algorithms (analysis-number-algorithms analysis))
@@ -169,7 +122,7 @@
 
 (defun analysis-terminal-no-answer (analysis options)
   (let* ((number-algorithms (analysis-number-algorithms analysis))
-         (size-line (hline-size number-algorithms options)))
+         (size-line (hline-size number-algorithms options 'no-answer)))
     (print-line-term options "#" "notes" "dur")
     (iter (for algo in (args-algorithms options))
           (print-chord-column options (algorithm-name algo)))
@@ -180,7 +133,9 @@
           (for result in (apply #'mapcar #'list (analysis-results analysis)))
           (print-line-term options seg-number note dur)
           (iter (for res in result)
-                (format t "~7a|" res)))))
+                (print-chord-column options res))
+          (finally
+           (print-hline-term size-line)))))
 
 (defun analysis (analysis options)
   (iter (for anal in analysis)
@@ -233,6 +188,8 @@
     (set-user-opt args-column-number-size "3" options)
     (set-user-opt args-column-notes-size "12" options)
     (set-user-opt args-column-dur-size "4" options)
+    (set-user-opt args-column-separator "|" options)
+    (set-user-opt args-wrong-answer-color "red" options)
     options))
 
 (defun main (&optional args)

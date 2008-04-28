@@ -20,9 +20,9 @@
                (:file "tools")
                (:file "kern2lily")
                (:file "load-algorithms")
-               ;; flags has to be before main
-               (:file "flags")
                (:file "main")
+               (:file "flags")
+               (:file "terminal")
 ;;;                (:file "test-utils")
 ;;;                (:file "test-musiclib")
 ;;;                (:file "test-formato")

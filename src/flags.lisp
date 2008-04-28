@@ -1,7 +1,3 @@
-(defpackage :rameau-main
-  (:use :rameau :cl :cl-ppcre :lisp-unit :ltk :iterate)
-  (:export :main :check))
-
 (in-package :rameau-main)
 
 (defun split-command-list (command-list)
