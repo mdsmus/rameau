@@ -71,7 +71,7 @@
         :segments segments
         :results (mapcar #'(lambda (algo) (funcall (algorithm-classify algo) segments))
                          (args-algorithms options))
-        :answer-sheet (new-parse-answer-sheet (remove-ext file) "chora") ;;==========================
+        :answer-sheet (new-parse-answer-sheet (pathname-name file) "chora") ;;==========================
         :file-name (pathname-name file)
         :number-algorithms (length (args-algorithms options))
         :notes (mapcar #'list-events segments)
@@ -88,12 +88,7 @@
   (format t "WARNING: ~a~%" message))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; (command-let analysis
-;;   ;;(when (/= size-gab (length i)) (print-warning "sizes don't match!"))
-;;   (if (and (not answer-sheet) (not (args-ignore options)))
-;;       (print-warning (concat "the answer sheet for " file-name " doesn't exist"))
-;;       (print-answer :file file-name :sheet answer-sheet :results results :dur dur :notes notes)))
+;;; TERMINAL
 
 (defun print-color-terminal (result comparison options)
   (let ((column (concat "~" (args-column-chord-size options) "a"))
@@ -108,20 +103,20 @@
 (defun inc-bool-list (bool-list num-list)
   (mapcar #'+ (mapcar #'(lambda (x) (if x 1 0)) bool-list) num-list))
 
-(defun print-line-term (options number note dur answer)
+(defun print-line-term (options number note dur &optional answer)
   (format t (concat "~&~"
                     (args-column-number-size options)
                     "a~@[|~"
                     (args-column-notes-size options)
                     "a~]~@[|~"
                     (args-column-dur-size options)
-                    "a~]|~"
+                    "a~]~@[|~"
                     (args-column-chord-size options)
-                    "a|")
+                    "a~]|")
           number
           (when (args-show-notes options) note)
           (when (args-show-dur options) dur)
-          answer))
+          (when answer answer)))
 
 (defun hline-size (number-algorithms options)
   (+ (* (parse-integer (args-column-chord-size options)) (1+ number-algorithms))
@@ -170,10 +165,30 @@
            (print-hline-term size-line)
            (print-footer-term "CORRECT(%)" size-line number-algorithms options)
            (iter (for i in (mapcar (lambda (x) (% x seg-number)) right-answer-list))
-                 (print-chord-column options i))))))
+                 (print-chord-column options (format nil "~,2f" i)))))))
+
+(defun analysis-terminal-no-answer (analysis options)
+  (let* ((number-algorithms (analysis-number-algorithms analysis))
+         (size-line (hline-size number-algorithms options)))
+    (print-line-term options "#" "notes" "dur")
+    (iter (for algo in (args-algorithms options))
+          (print-chord-column options (algorithm-name algo)))
+    (print-hline-term size-line)
+    (iter (for note in (analysis-notes analysis))
+          (for dur in (analysis-dur analysis))
+          (for seg-number from 1)
+          (for result in (apply #'mapcar #'list (analysis-results analysis)))
+          (print-line-term options seg-number note dur)
+          (iter (for res in result)
+                (format t "~7a|" res)))))
 
 (defun analysis (analysis options)
-  (mapcar #'(lambda (anal) (analysis-terminal anal options)) analysis))
+  (iter (for anal in analysis)
+        (if (analysis-answer-sheet anal)
+            (analysis-terminal anal options)
+            (progn
+              (print-warning (concat "the answer sheet for " (analysis-file-name anal) " doesn't exist"))
+              (analysis-terminal-no-answer anal options)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

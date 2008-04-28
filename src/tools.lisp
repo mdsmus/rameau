@@ -110,7 +110,7 @@
 
 (defun new-parse-answer-sheet (file substring)
   (let* ((dir (search-music-dirs "chora" "answer-sheets"))
-         (full-file (concat dir (add-pop-ext "001"))))
+         (full-file (concat dir (add-pop-ext file))))
     (when (cl-fad:file-exists-p full-file)
       (read-chords (read-file-as-sexp full-file)))))
 
