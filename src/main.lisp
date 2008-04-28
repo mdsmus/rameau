@@ -3,20 +3,24 @@
 (defparameter *commands*
   '(("common-flags"
      (("-h" "help" "ajuda")
-      ("-f" "files" "arquivos")
-      ("-p" "profile" "profile")
-      ("-a" "algorithms" "Usa <algoritmos> para fazer a análise")
+      ("-f" "files" "arquivos" "*")
+      ("-p" "profile" "profile" "*")
+      ("-a" "algorithms" "Usa <algoritmos> para fazer a análise" "*")
       ("-d" "debug" "ativa código de depuração para os itens i")
       ("-v" "verbose" "verbose")
-      ("-t" "trace" "mostra o trace de <funções>")
+      ("-t" "trace" "mostra o trace de <funções>" "*")
       ("-q" "quiet" "quiet")
-      ("-m" "test-number" "o número de testes errados para imprimir")))
+      ("-m" "test-number" "o número de testes errados para imprimir")
+      ("-c" "no-color" "don't use color in the answer")
+      ("-s" "column-size" "")
+      ))
     ("analysis"
      (("-i" "ignore" "ignora (não imprime) corais sem gabaritos")
       ("-e" "style" "seleciona estilo de impressão dos acordes errados (bold ou red)")))
     ("test")
     ("check")
-    ("gui")))
+    ("gui"))
+  "The star at the end indicates that the flag accepts multiple values.")
 
 (defun parse-options (command list)
   "Parse the list of options to a structure."
@@ -26,7 +30,11 @@
                       (%string->symbol (get-long-flag-name command flag) :keyword))
                      ((short-flag? flag)
                       (%string->symbol (get-short-flag-name command flag) :keyword)))
-               (if value value t)))))
+               (if value
+                   (if (get-star-in-flag command flag)
+                       value
+                       (first value))
+                   t)))))
 
 (defun rameau-args ()
   (let ((sbcl-args #+sbcl sb-ext:*posix-argv*)
@@ -46,7 +54,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defstruct analysis
-  segments results answer-sheet file-name notes dur size-answer-sheet)
+  segments results answer-sheet file-name notes dur size-answer-sheet number-algorithms)
 
 
 (defun analyse-files (options)
@@ -60,6 +68,7 @@
                          (args-algorithms options))
         :answer-sheet (new-parse-answer-sheet (remove-ext file) "chora") ;;==========================
         :file-name (pathname-name file)
+        :number-algorithms (length (args-algorithms options))
         :notes (mapcar #'list-events segments)
         :dur (durations segments))))
 
@@ -81,15 +90,38 @@
 ;;       (print-warning (concat "the answer sheet for " file-name " doesn't exist"))
 ;;       (print-answer :file file-name :sheet answer-sheet :results results :dur dur :notes notes)))
 
+(defun print-color-terminal (result comparison options)
+  (let ((column (concat "~" (args-column-size options) "a"))
+        (color (if comparison 21 31))
+        (string "~a[0;~Dm"))
+    (if (args-no-color options)
+        (format t (concat column "|") result)
+        (progn
+          (format t (concat string column) (code-char #x1b) color result)
+          (format t "~a[0m|" (code-char #x1b))))))
+
+(defun inc-bool-list (bool-list num-list)
+  (mapcar #'+ (mapcar #'(lambda (x) (if x 1 0)) bool-list) num-list))
+
 (defun analysis-terminal (analysis options)
-  (iter (for note in (analysis-notes analysis))
+  (iter (with right-answer-list = (make-list (analysis-number-algorithms analysis) :initial-element 0))
+        (for note in (analysis-notes analysis))
         (for dur in (analysis-dur analysis))
         (for seg-number from 1)
         (for answer in (analysis-answer-sheet analysis))
         (for result in (apply #'mapcar #'list (analysis-results analysis)))
-        (format t "~&~3a | ~12a | ~4a | ~7a |" seg-number note dur answer)
-        (apply #'format t " ~7a | ~7a |" result)
-        (format t "~a" (compare-answer-sheet answer (first result)))
+        (for comparison = (mapcar (lambda (x) (compare-answer-sheet answer x)) result))
+        (setf right-answer-list (inc-bool-list comparison right-answer-list))
+        (format t (concat "~&~3a |~12a |~4a |~" (args-column-size options) "a |")
+                seg-number note dur answer)
+        (iter (for res in result)
+              (for comp in comparison)
+              (print-color-terminal res comp options))
+        (finally
+         (format t (concat "~&"(repeat-string 50 "-")))
+         (format t (concat "~&CORRECT (%)" (repeat-string 22 " ") "|"))
+         (iter (for i in (mapcar (lambda (x) (% x seg-number)) right-answer-list))
+               (format t "~7a|" i)))
         ))
 
 (defun analysis (analysis options)
@@ -130,6 +162,8 @@
          (files (parse-files (args-files options))))
     (setf (args-files options) files
           (args-algorithms options) (filter-algorithms (args-algorithms options)))
+    (unless (args-column-size options)
+      (setf (args-column-size options) "7"))
     options))
 
 (defun main (&optional args)
@@ -143,5 +177,6 @@
        for command = (first command-list)
        for options = (create-args-struct command-list command)
        for analysis = (analyse-files options) do
-         (funcall (%string->symbol command) analysis options)))
+         (funcall (%string->symbol command) analysis options)
+         ))
   0)

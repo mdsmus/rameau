@@ -33,6 +33,9 @@
 (defun get-long-flag-name (command flag)
   (second (find-flag-by-name command (subseq flag 2))))
 
+(defun get-star-in-flag (command flag)
+  (fourth (find-flag command flag)))
+
 (defun find-flag-by-name (command name)
   (or (find name (get-item "common-flags" *commands*) :key #'second :test #'string=)
       (find name (get-flag-assoc command) :key #'second :test #'string=)))
