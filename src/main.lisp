@@ -13,9 +13,9 @@
       ("-m" "test-number" "o número de testes errados para imprimir")
       ("-c" "no-color" "don't use color in the answer")
       ("-s" "column-chord-size" "")
-      ("-z" "column-number-size" "")
-      ("-y" "column-notes-size" "")
-      ("-k" "column-dur-size" "")
+      ("" "column-number-size" "")
+      ("" "column-notes-size" "")
+      ("" "column-dur-size" "")
       ))
     ("analysis"
      (("-u" "show-dur" "")
@@ -212,6 +212,10 @@
        (if (search "/" file)
            (list file)
            (parse-file-name file))))
+
+(defmacro set-user-opt (name value opt)
+  `(unless (,name ,opt)
+     (setf (,name ,opt) ,value)))
   
 (defun create-args-struct (command-list command)
   ;; create a structure dynamically to accomodate different slots
@@ -225,11 +229,10 @@
          (files (parse-files (args-files options))))
     (setf (args-files options) files
           (args-algorithms options) (filter-algorithms (args-algorithms options)))
-    (unless (args-column-chord-size options)
-      (setf (args-column-chord-size options) "7"))
-    (setf (args-column-number-size options) "3")
-    (setf (args-column-notes-size options) "12")
-    (setf (args-column-dur-size options) "4")
+    (set-user-opt args-column-chord-size "7" options)
+    (set-user-opt args-column-number-size "3" options)
+    (set-user-opt args-column-notes-size "12" options)
+    (set-user-opt args-column-dur-size "4" options)
     options))
 
 (defun main (&optional args)
