@@ -1,6 +1,6 @@
-
 (defpackage :kern2lily
-  (:use #:cl #:rameau #:it.bese.arnesi))
+  (:import-from #:it.bese.arnesi "AIF" "IT" "LAST1")
+  (:use #:cl #:rameau))
 
 (in-package #:kern2lily)
 

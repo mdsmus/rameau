@@ -1,5 +1,6 @@
 (defpackage :genoslib
-  (:use #:rameau-base #:cl #:it.bese.arnesi))
+  (:import-from #:it.bese.arnesi "AIF" "IT" "LAST1")
+  (:use #:rameau-base #:cl #:alexandria))
 
 (in-package :genoslib)
 

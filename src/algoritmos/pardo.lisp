@@ -1,7 +1,8 @@
 ;; Implementação do algoritmo de pardo.
 
 (defpackage :rameau-pardo
-  (:use #:rameau #:cl #:it.bese.arnesi))
+  (:import-from #:it.bese.arnesi "AIF" "IT" "LAST1")
+  (:use #:rameau #:cl))
 
 (in-package #:rameau-pardo)
 

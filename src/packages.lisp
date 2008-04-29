@@ -79,7 +79,8 @@
    #:transpose-segmentos
    #:transpose-chords
    )
-  (:use #:rameau-base #:genoslib  #:cl #:it.bese.arnesi #:lisp-unit))
+  (:import-from #:it.bese.arnesi "AIF" "IT" "LAST1")
+  (:use #:rameau-base #:genoslib  #:cl #:lisp-unit))
 
 (in-package :rameau)
 (export-rameau-symbols)

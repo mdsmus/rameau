@@ -1,5 +1,4 @@
 (in-package #:genoslib)
-(use-package :alexandria)
 
 (register-and-export-symbols '( a b c d e f g
                                a# b# c# d# e# f# g#
@@ -19,7 +18,7 @@
                                print-accidentals print-note module
                                lily->latin transpose inversion
                                interval interval->code code->interval
-                               print-interval rotate set-rotate
+                               print-interval %rotate set-rotate
                                set-inversion set-transpose
                                set-transpose-to-0 set-intervals
                                set-symmetric? set-form-list
@@ -314,9 +313,15 @@ returns double augmented second."
 
 ;;; SETS
 
+(defun %rotate (set &optional (n 1))
+  "Retuns the n rotation of a set. 0 means no rotation, 1 the first
+rotation, and so on. This function is cyclic."
+  (let ((mod-n (mod n (length set))))
+    (append (subseq set mod-n) (subseq set 0 mod-n))))
+
 (defun set-rotate (set)
   "Retuns a list with all rotations of a set."
-  (loop for x from 0 to (1- (length set)) collect (alexandria:rotate set x)))
+  (loop for x from 0 to (1- (length set)) collect (%rotate set x)))
 
 (defun set-inversion (set &optional (index 0))
   "Retuns a new set that is the invertion of the input set."
