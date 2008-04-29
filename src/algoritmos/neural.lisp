@@ -76,7 +76,7 @@
 (defun make-pattern-7th (7th)
   (let ((pattern (repeat-list *7th-length* 0))
         (*package* (find-package :rameau)))
-    (incf (nth (string-case (7th)
+    (incf (nth (switch (7th :test 'equal)
                  ("" 0)
                  ("7" 1)
                  ("7-" 2)
@@ -100,7 +100,7 @@
 
 (defun make-mode-pattern (modo)
   (let ((pattern (repeat-list *mode-length* 0)))
-    (incf (nth (string-case (modo)
+    (incf (nth (switch (modo :test 'equal)
                  ("" 0)
                  ("m" 1)
                  ("+" 2)
