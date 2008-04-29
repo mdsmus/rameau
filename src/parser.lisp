@@ -1,5 +1,6 @@
 (in-package #:rameau)
-(use-package :yacc)
+(use-package :yacc :alexandria)
+
 (defparameter *filename* nil)
 (defparameter *dur* 0)
 (defparameter *environment* nil)
@@ -367,7 +368,7 @@
          seq))))
     
 (defmethod process-ast ((node simultaneous))
-  (merge-exprs (remove-if #'null (flatten (process-trees (node-expr node))))))
+  (merge-exprs (alexandria:flatten (process-trees (node-expr node)))))
 
 (defmethod process-ast ((node times))
   (let ((dur (node-times node))
@@ -402,7 +403,7 @@
   (let ((anacruz (first ast))
          (ast (rest ast)))
     (move-sequence (remove-if (lambda (x) (null (event-pitch x)))
-                              (aif (sequence-expressions (remove-if #'null (flatten (process-ast ast))))
+                              (aif (sequence-expressions (alexandria:flatten (process-ast ast)))
                                    (note-sequence-notas it)
                                    it))
                    anacruz)))

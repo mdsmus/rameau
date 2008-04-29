@@ -2,7 +2,8 @@
   (asdf:oos 'asdf:load-op :fann))
 
 (defpackage :rameau-neural
-  (:use #:cl #:fann #:arnesi #:rameau #:string-case))
+  (:use #:cl #:fann #:arnesi #:rameau #:alexandria)
+  (:shadowing-import-from "ALEXANDRIA" "ESWITCH"))
 
 (in-package :rameau-neural)
 

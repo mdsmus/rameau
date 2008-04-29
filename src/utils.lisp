@@ -23,7 +23,6 @@
                                dbg
                                dbg-indent
                                file-string
-                               flatten
                                firstn
                                get-item
                                group
@@ -322,12 +321,6 @@ as its car."
   `(if (eq 'erro (aget ,key ,list 'erro))
        (aset ,key ,list ,amount)
        (incf (car (cdr (assoc ,key ,list :test #'equal))) ,amount)))
-
-(defun flatten (list)
-  (when list
-    (if (atom (first list))
-        (cons (first list) (flatten (rest list)))
-        (nconc (flatten (first list)) (flatten (rest list))))))
 
 (defmacro square (x)
   (let ((n (gensym)))

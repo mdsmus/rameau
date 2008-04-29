@@ -122,15 +122,6 @@
 (define-test print-interval
   (assert-equal "double augmented second" (print-interval 16)))
 
-(define-test rotate
-  (assert-equal '(0 3 4 7) (rotate '(0 3 4 7) 0))
-  (assert-equal '(3 4 7 0) (rotate '(0 3 4 7) 1))
-  (assert-equal '(4 7 0 3) (rotate '(0 3 4 7) 2))
-  (assert-equal '(7 0 3 4) (rotate '(0 3 4 7) 3))
-  (assert-equal '(0 3 4 7) (rotate '(0 3 4 7) 4))
-  (assert-equal '(3 4 7 0) (rotate '(0 3 4 7) 5))
-  (assert-equal '(7 0 3 4) (rotate '(0 3 4 7) -1)))
-
 (define-test set-rotate
   (assert-equal '((0 3 7) (3 7 0) (7 0 3)) (with-system tempered (set-rotate '(0 3 7)))))
 

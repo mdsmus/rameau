@@ -2,7 +2,7 @@
 
 (asdf:defsystem :rameau
   :name "rameau"
-  :version "0.2"
+  :version "4.0"
   :author "Alexandre Passos e Pedro Kroger"
   :serial t
   :depends-on (:yacc :lexer :cl-fad :cl-ppcre :lisp-unit :arnesi :cffi :string-case)
