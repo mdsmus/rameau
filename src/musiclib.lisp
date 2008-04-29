@@ -339,7 +339,7 @@ rotation, and so on. This function is cyclic."
   "Retuns a list with the intervals between the consecutive notes of a set.
 EXAMPLE: (set-intervals '(0 3 7)) returns (3 4 5). In this list 5 is
 the interval between the last and first note."
-  (mapcar (lambda (a b) (module (- b a))) set (rotate set)))
+  (mapcar (lambda (a b) (module (- b a))) set (%rotate set)))
 
 (defun set-symmetric? (set)
   "Test if a set is symmetric, i.e. if all its intervals are equal. (0

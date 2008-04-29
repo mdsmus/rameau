@@ -146,7 +146,7 @@
   (assert-equal '(0 10 8) (with-system tempered (set-transpose-to-0 '(9 7 5)))))
 
 (define-test set-intervals
-  (assert-equal '(3 4 5) (with-system tempered (set-intervals '(0 3 7)))))
+  (assert-equal '(3 4 5) (with-system tempered (set-intervals '(0 3 7)))
 
 (define-test set-symmetric?
   (assert-equal nil (with-system tempered (set-symmetric? '(0 4 7))))
