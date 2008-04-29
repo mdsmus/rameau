@@ -3,7 +3,7 @@
   (asdf:oos 'asdf:load-op :machine-learning))
 
 (defpackage :rameau-tree-enarm
-  (:import-from #:it.bese.arnesi "AIF" "IT" "LAST1")
+  (:import-from #:arnesi "AIF" "IT" "LAST1")
   (:use #:cl #:rameau #:machine-learning))
 
 (in-package :rameau-tree-enarm)

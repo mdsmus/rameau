@@ -1,5 +1,4 @@
 (in-package #:rameau)
-(use-package :yacc :alexandria)
 
 (defparameter *filename* nil)
 (defparameter *dur* 0)

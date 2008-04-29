@@ -4,11 +4,14 @@ maindir = $(shell pwd)
 
 ifeq ($(RAMEAUDEPS),t)
 	sbcl = /usr/bin/sbcl --no-userinit --disable-debugger
+	lisp = /usr/bin/lisp -noinit -batch -quiet
+	clisp = clisp -ansi -K full -norc
 else
 	sbcl = /usr/bin/sbcl --disable-debugger
+	lisp = /usr/bin/lisp -batch -quiet
+	clisp = clisp -ansi -K full
 endif
 
-lisp = /usr/bin/lisp -batch -quiet -eval
 lisp-files = $(wildcard src/*.lisp src/lib/*.lisp tools/*.lisp src/algoritmos/*.lisp)
 corais-lyi = $(wildcard literatura/bach-corais/*.lyi)
 corais-png = $(notdir $(patsubst %.lyi,%.png,$(corais-lyi)))
@@ -72,19 +75,19 @@ deps:
 	fi
 
 rameau: $(lisp-files) 
-	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" --eval "(load \"tools/make-image.lisp\")"
+	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" --load "tools/make-image.lisp"
 
 checa-notas: tools/read-notes.lisp
 	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" --load "tools/make-image-read-notes.lisp"
 
 cmurameau: $(lisp-files)
-	${lisp} "(load \"tools/make-image.lisp\")" 
+	${lisp} -eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" -load "tools/make-image.lisp"
 
 eclrameau: $(lisp-files)
 	ecl -eval  "(load \"tools/make-image.lisp\")"
 
 clisprameau: $(lisp-files)
-	clisp -ansi -K full -x  "(load \"tools/make-image.lisp\")"
+	${clisp} -x "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" -x "(load \"tools/make-image.lisp\")"
 
 doc:
 	cd docs ;\

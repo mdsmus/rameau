@@ -2,8 +2,9 @@
   (asdf:oos 'asdf:load-op :fann))
 
 (defpackage :rameau-neural
-  (:import-from #:it.bese.arnesi "AIF" "IT" "LAST1")
-  (:use #:cl #:fann #:rameau #:alexandria))
+  (:import-from #:arnesi "AIF" "IT" "LAST1")
+  (:import-from #:alexandria "SWITCH")
+  (:use #:cl #:fann #:rameau))
 
 (in-package :rameau-neural)
 
