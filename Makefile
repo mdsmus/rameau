@@ -5,7 +5,6 @@ maindir = $(shell pwd)
 ifeq ($(RAMEAUDEPS),t)
 	sbcl = /usr/bin/sbcl --no-userinit
 	lisp = /usr/bin/lisp -noinit 
-	#-batch -quiet
 	clisp = clisp -ansi -K full -norc
 else
 	sbcl = /usr/bin/sbcl --disable-debugger
@@ -161,5 +160,5 @@ lispclean: clean
 	rm -rf ~/lisp/fasl/* ;\
 	find ~/lisp -name *.fas -exec rm {} \; ;\
 	else \
-	rm -rf /var/cache/common-lisp-controller/$(id -u)/* ;\
+	rm -rf /var/cache/common-lisp-controller/$$UID/* ;\
 	fi 
