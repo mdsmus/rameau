@@ -56,7 +56,9 @@
              (:print-function
               (lambda (struct stream depth)
                 (declare (ignore struct depth))
-                (format stream (if (unicode-term stream)
+                (format stream
+                        #-sbcl "--"
+                        #+sbcl (if (unicode-term stream)
                                    "—"
                                    "--")))))
   notes)
@@ -65,12 +67,10 @@
   (declare (ignore depth))
   (format stream "~:(~a~)~@[~a~]~@[~:(~a~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[/~:(~a~)~]"
           (chord-root struct)
-          (if (unicode-term stream)
+          (if #+sbcl(unicode-term stream) #-sbcl t
               (chord-mode struct)
-              (cond ((equal "ø" (chord-mode struct))
-                     "hdim")
-                    ((equal "°" (chord-mode struct))
-                     "dim")
+              (cond ((equal "ø" (chord-mode struct)) "hdim")
+                    ((equal "°" (chord-mode struct)) "dim")
                     (t (chord-mode struct))))
                  ;;;%EXPMERGE possível bug em acordes que tenham a sétima diminuta mas não sejam X°7
           (if (string= (chord-7th struct) "7-") "7" (chord-7th struct))

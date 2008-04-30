@@ -51,11 +51,10 @@
 (defun rameau-args ()
   (let ((sbcl-args #+sbcl sb-ext:*posix-argv*)
         (cmu-args #+cmu extensions:*command-line-strings*)
-        (clisp-args #+clisp *args*))
+        (clisp-args #+clisp ext:*args*))
     (cond (sbcl-args (rest sbcl-args))
           (cmu-args (subseq cmu-args (1+ (position "cmurameau" cmu-args :test #'string=))))
-          (clisp-args clisp-args)
-          (t (error "algum problema com argumentos")))))
+          (clisp-args clisp-args))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -144,7 +143,8 @@
             (analysis-terminal anal options)
             (progn
               (print-warning (concat "the answer sheet for " (analysis-file-name anal) " doesn't exist"))
-              (analysis-terminal-no-answer anal options)))))
+              (analysis-terminal-no-answer anal options)
+              ))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -206,4 +206,5 @@
        for analysis = (analyse-files options) do
          (funcall (%string->symbol command) analysis options)
          ))
+  #+clisp(ext:exit)
   0)

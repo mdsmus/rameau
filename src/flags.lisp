@@ -48,7 +48,7 @@
   (when (cl-ppcre:scan "^-[a-zA-Z]+" flag)
     t))
 
-(defun %string->symbol (string &optional (package #+sbcl(sb-int:sane-package)))
+(defun %string->symbol (string &optional (package #+sbcl(sb-int:sane-package) #-sbcl *package*))
   (intern (string-upcase string) package))
 
 (defun get-commands-assoc ()

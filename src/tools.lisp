@@ -99,8 +99,8 @@ debugging)")
 (defun search-music-dirs (substring dir)
   (first (remove-if-not (lambda (item) (search substring item :test #'equalp))
                         (mapcar #'namestring
-                                (directory (format nil "~a/~a/*"
-                                                   *default-pathname-defaults*
+                                (directory (format nil "~a/~a/*/"
+                                                   *rameau-path*
                                                    dir))))))
 
 (defun new-parse-answer-sheet (file substring)

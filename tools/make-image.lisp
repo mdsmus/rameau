@@ -35,7 +35,7 @@
 
 #+cmu(extensions:save-lisp "cmurameau" :init-function #'rameau-main:main)
 
-#+clisp(ext:saveinitmem "clisprameau" :script t :quiet t :executable t :init-function #'rameau-main:main)
+#+clisp(ext:saveinitmem "clisprameau" :script nil :quiet t :executable t :init-function #'rameau-main:main)
 
 #+ecl(progn (loop for file in '("src/rameau.lisp"
                                 "src/cifras.lisp"
