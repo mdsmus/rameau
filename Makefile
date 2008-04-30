@@ -4,7 +4,8 @@ maindir = $(shell pwd)
 
 ifeq ($(RAMEAUDEPS),t)
 	sbcl = /usr/bin/sbcl --no-userinit
-	lisp = /usr/bin/lisp -noinit -batch -quiet
+	lisp = /usr/bin/lisp -noinit 
+	#-batch -quiet
 	clisp = clisp -ansi -K full -norc
 else
 	sbcl = /usr/bin/sbcl --disable-debugger
@@ -146,6 +147,7 @@ clean:
 	rm -f *.data *.fann
 	find -name *.fasl -exec rm {} \;
 	find -name *.fas -exec rm {} \;
+	find -name *.lib -exec rm {} \;
 	find -name *.x86f -exec rm {} \;
 
 clean-lisp-cache:
