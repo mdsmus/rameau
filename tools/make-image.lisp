@@ -1,4 +1,4 @@
-#+sbcl(declaim (sb-ext:muffle-conditions warning style-warning sb-ext:compiler-note))
+;;#+sbcl(declaim (sb-ext:muffle-conditions warning style-warning sb-ext:compiler-note))
 
 #+cmu(setf ext::*complain-about-illegal-switches* nil)
 
