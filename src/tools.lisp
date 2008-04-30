@@ -3,6 +3,9 @@
 ;;; As funções dependentes de implementação devem ficar aqui
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defparameter *ignore-algorithms-files* nil "Use non-nil value to not
+load the algorithm files. (useful for debugging)")
+
 (defparameter *rameau-path*
   (format nil "~a" (or #+sbcl *default-pathname-defaults*
 		       #+cmu (first (ext:search-list "default:"))
@@ -50,17 +53,9 @@
 
 (read-user-config)
 
-(do-not-test
-    rameau-args
-  rameau-profile
-  rameau-report
-  rameau-quit
-  getenv
-  remove-comma-if-needed
-  unicode-term
-  read-user-config
-  )
-
+(do-not-test getenv remove-comma-if-needed unicode-term
+             read-user-config rameau-args rameau-profile rameau-report
+             rameau-quit)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -69,7 +64,7 @@
   '(("chorales" "corais/")
     ("kostka" "literatura/kostka-payne/")
     ("sonatas" "literatura/beethoven-sonatas/")
-    ("examples" "exemplos/")
+    ("exemplos" "exemplos/")
     ("regressao" "regressao/")
     ("lily" "regressao-lily/")
     ("corais-include" "literatura/bach-corais/")
@@ -77,8 +72,7 @@
 
 (defparameter *gabarito-dir-list*
   '(("chorales" "answer-sheets/chorales-bach/")
-    ("examples" "answer-sheets/examples/")))
-
+    ("exemplos" "answer-sheets/examples/")))
 
 (defun files-range (list)
   (loop for x from (parse-integer (first list)) to (parse-integer (second list))
