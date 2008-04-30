@@ -1,4 +1,4 @@
-;; Implementação da segmentação
+(declaim (optimize (debug 3) (safety 3)))
 
 (in-package #:rameau)
 
@@ -29,7 +29,6 @@
   "Split the notes in segment to ensure they do not overflow the
   possible sonority. Any too long notes are bunked into the next
   sonority."
-  (declare (list proximo))
   (let* ((sobras nil)
          (proximo-event (if proximo (event-start (first proximo))))
          (proximo-start (if proximo
