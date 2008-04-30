@@ -2,11 +2,11 @@
 
 #+cmu(setf ext::*complain-about-illegal-switches* nil)
 
-(declaim (optimize (compilation-speed 0)
-                   (debug 3)
-                   (safety 3)
-                   (space 1)
-                   (speed 1)))
+#+sbcl(declaim (optimize (compilation-speed 0)
+                         (debug 3)
+                         (safety 3)
+                         (space 1)
+                         (speed 1)))
 
 #+(or sbcl ecl) (require 'asdf)
 
@@ -16,7 +16,11 @@
                        #+cmu (first (ext:search-list "default:"))
                        #+clisp (ext:default-directory))))
 
-(defparameter *packages* (directory (concatenate 'string (main-path) "rameau-deps/*.*")))
+(defparameter *packages* (directory (concatenate 'string (main-path) "rameau-deps/*/")))
+
+(defparameter *asdf-file* (concatenate 'string (main-path) "rameau-deps/asdf/asdf.lisp"))
+
+#+(or clisp cmu) (load *asdf-file*)
 
 (push (concatenate 'string (main-path) "src/") asdf:*central-registry*)
 
@@ -31,7 +35,7 @@
 
 #+cmu(extensions:save-lisp "cmurameau" :init-function #'rameau-main:main)
 
-#+clisp(ext:saveinitmem "clisprameau" :script t :quiet t :verbose t :executable t :init-function #'rameau-main:main)
+#+clisp(ext:saveinitmem "clisprameau" :script t :quiet t :executable t :init-function #'rameau-main:main)
 
 #+ecl(progn (loop for file in '("src/rameau.lisp"
                                 "src/cifras.lisp"

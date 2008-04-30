@@ -2,11 +2,9 @@
 (in-package :rameau)
 
 (defun load-algorithms ()
-  (let ((path (concat *rameau-path* "src/algoritmos/")))
-    (loop for alg in (cl-fad:list-directory path)
-       when (count-subseq "lisp" (pathname-name alg))
-       do (aif (compile-file alg)
-               (load it)))))
+  (loop
+     for file in (directory (concat *rameau-path* "src/algoritmos/*.lisp"))
+     do (load (compile-file file))))
 
 (load-algorithms)
 

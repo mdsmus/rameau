@@ -1,5 +1,6 @@
 (defpackage :rameau-main
-  (:use :rameau :cl :cl-ppcre :lisp-unit :ltk :iterate)
+  (:import-from #:arnesi "AIF" "IT" "LAST1")
+  (:use :rameau :cl :cl-ppcre :lisp-unit)
   (:export :main :check))
 
 (in-package :rameau-main)

@@ -27,7 +27,7 @@
 
 (defun rameau-quit ()
   #+clisp(ext:exit)
-  #+sbcl(quit))
+  #+sbcl(sb-ext:quit))
 
 (defun getenv (string)
   #+sbcl(sb-ext:posix-getenv string)

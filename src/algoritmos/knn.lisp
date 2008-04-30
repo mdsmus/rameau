@@ -1,5 +1,6 @@
 (defpackage :rameau-knn
-  (:use :arnesi :cl :rameau))
+  (:import-from #:arnesi "AIF" "IT" "LAST1")
+  (:use :cl :rameau))
 
 (in-package :rameau-knn)
 

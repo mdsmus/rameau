@@ -5,6 +5,7 @@ src/cpc
 rameau
 *.fasl
 *.fas
+*.lib
 cmurameau
 eclrameau
 clisprameau

@@ -18,7 +18,7 @@
                                print-accidentals print-note module
                                lily->latin transpose inversion
                                interval interval->code code->interval
-                               print-interval rotate set-rotate
+                               print-interval %rotate set-rotate
                                set-inversion set-transpose
                                set-transpose-to-0 set-intervals
                                set-symmetric? set-form-list
@@ -313,7 +313,7 @@ returns double augmented second."
 
 ;;; SETS
 
-(defun rotate (set &optional (n 1))
+(defun %rotate (set &optional (n 1))
   "Retuns the n rotation of a set. 0 means no rotation, 1 the first
 rotation, and so on. This function is cyclic."
   (let ((mod-n (mod n (length set))))
@@ -321,7 +321,7 @@ rotation, and so on. This function is cyclic."
 
 (defun set-rotate (set)
   "Retuns a list with all rotations of a set."
-  (loop for x from 0 to (1- (length set)) collect (rotate set x)))
+  (loop for x from 0 to (1- (length set)) collect (%rotate set x)))
 
 (defun set-inversion (set &optional (index 0))
   "Retuns a new set that is the invertion of the input set."
@@ -339,7 +339,7 @@ rotation, and so on. This function is cyclic."
   "Retuns a list with the intervals between the consecutive notes of a set.
 EXAMPLE: (set-intervals '(0 3 7)) returns (3 4 5). In this list 5 is
 the interval between the last and first note."
-  (mapcar (lambda (a b) (module (- b a))) set (rotate set)))
+  (mapcar (lambda (a b) (module (- b a))) set (%rotate set)))
 
 (defun set-symmetric? (set)
   "Test if a set is symmetric, i.e. if all its intervals are equal. (0
