@@ -158,5 +158,5 @@ lispclean: clean
 	rm -rf ~/lisp/fasl/* ;\
 	find ~/lisp -name *.fas -exec rm {} \; ;\
 	else \
-	rm -rf /var/cache/common-lisp-controller/$(id -u)/* ;\
+	rm -rf /var/cache/common-lisp-controller/$$UID/* ;\
 	fi 

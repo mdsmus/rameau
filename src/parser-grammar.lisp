@@ -4,6 +4,7 @@
 (yacc:define-parser *expression-parser*
   (:start-symbol start)
   (:precedence ((:left note-expr notes-list notes expression-atom expression-list expression ignorable)))
+  (:muffle-conflicts t)
   (:terminals (NEW-STAFF
                NEW-SCORE
                NEW-VOICE
