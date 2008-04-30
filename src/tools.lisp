@@ -3,8 +3,9 @@
 ;;; As funções dependentes de implementação devem ficar aqui
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defparameter *ignore-algorithms-files* nil "Use non-nil value to not
-load the algorithm files. (useful for debugging)")
+(defparameter *ignore-algorithms-files* nil
+  "Use non-nil value to not load the algorithm files. (useful for
+debugging)")
 
 (defparameter *rameau-path*
   (format nil "~a" (or #+sbcl *default-pathname-defaults*
