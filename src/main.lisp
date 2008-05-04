@@ -18,7 +18,6 @@
                         (erros ("corais" "exemplos"))
                         (acertos ("corais" "exemplos"))
                         (resultados ("corais" "exemplos"))
-                        (tipos ("corais" "exemplos"))
                         (dados ("corais" "exemplos"))))
 
 
