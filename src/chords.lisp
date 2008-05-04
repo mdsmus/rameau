@@ -72,7 +72,7 @@
               (cond ((equal "ø" (chord-mode struct)) "hdim")
                     ((equal "°" (chord-mode struct)) "dim")
                     (t (chord-mode struct))))
-                 ;;;%EXPMERGE possível bug em acordes que tenham a sétima diminuta mas não sejam X°7
+          ;; %EXPMERGE possível bug em acordes que tenham a sétima diminuta mas não sejam X°7
           (if (string= (chord-7th struct) "7-") "7" (chord-7th struct))
           (chord-9th struct)
           (chord-11th struct)

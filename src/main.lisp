@@ -1,5 +1,5 @@
 (defpackage :rameau-main
-  (:import-from #:arnesi "AIF" "IT" "LAST1")
+  (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1")
   (:use :rameau :cl :cl-ppcre :lisp-unit :iterate)
   (:export :main :check))
 
@@ -8,28 +8,30 @@
 (defparameter *commands*
   '(("common-flags"
      (("-h" "help" "ajuda")
-      ("-f" "files" "arquivos" "*")
-      ("-p" "profile" "profile" "*")
-      ("-a" "algorithms" "Usa <algoritmos> para fazer a análise" "*")
-      ("-d" "debug" "ativa código de depuração para os itens i")
+      ("-f" "files" "arquivos" list)
+      ("-p" "profile" "profile" list)
+      ("-a" "algorithms" "Usa <algoritmos> para fazer a análise" list)
+      ("-d" "debug" "ativa código de depuração para os itens i" list)
       ("-v" "verbose" "verbose")
-      ("-t" "trace" "mostra o trace de <funções>" "*")
-      ("-q" "quiet" "quiet")
-      ("-m" "test-number" "o número de testes errados para imprimir")
+      ("-t" "trace" "mostra o trace de <funções>" list)
+      ;;("-q" "quiet" "quiet")
+      ("-m" "max-print-error" "Quando o numero de arquivos que não são
+  parseados é maior que essa constante, rameau mostra apenas o start
+  da lista.")))
+    ("analysis"
+     (("-u" "show-dur" "")
+      ("-n" "show-notes" "")
+      ("-i" "ignore" "ignora (não imprime) corais sem gabaritos")
       ("-c" "no-color" "don't use color in the answer")
       ("-s" "column-chord-size" "")
       ("" "column-number-size" "")
       ("" "column-notes-size" "")
       ("" "column-dur-size" "")
       ("" "column-separator" "")
-      ("" "wrong-answer-color" "")
-      ))
-    ("analysis"
-     (("-u" "show-dur" "")
-      ("-n" "show-notes" "")
-      ("-i" "ignore" "ignora (não imprime) corais sem gabaritos")
-      ("-e" "style" "seleciona estilo de impressão dos acordes errados (bold ou red)")))
-    ("test")
+      ("" "wrong-answer-color" "")))
+    ("test"
+     (("-u" "unit" "")
+      ("-r" "regression" "")))
     ("check")
     ("gui"))
   "The star at the end indicates that the flag accepts multiple values.")
@@ -55,6 +57,17 @@
     (cond (sbcl-args (rest sbcl-args))
           (cmu-args (subseq cmu-args (1+ (position "cmurameau" cmu-args :test #'string=))))
           (clisp-args clisp-args))))
+
+(defmacro with-profile (args &body body)
+  `(progn
+     (when (args-profile ,args)
+       (rameau-profile))
+     ,@body
+     (when (args-profile ,args)
+       (rameau-report))))
+
+(defun maptrace (lista-string &optional (trace 'trace))
+  (eval (append (list trace) (mapcar2 #'read-from-string #'string-upcase lista-string))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -95,6 +108,61 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defun print-condition (status file expr)
+  (format t "[~a] ~a: ~a~%" status (pathname-name file) expr))
+
+(defun print-ok/no-list (list)
+  (destructuring-bind (ok no) list
+    (let* ((s2 (length no))
+           (no-string
+            (cond ((= max-print-error 0) no)                  ((> s2 max-print-error)
+                   (format nil "~a ..." (subseq no 0 max-print-error)))
+                  (t no))))
+      (format t "  [OK]: ~a [NO]: ~a ~@[~a ~]~%" (length ok) s2 no-string))))
+
+(defun parse-verbose (files)
+  (dolist (file files)
+    (handler-case (parse-file file)
+      (serious-condition (expr) (print-condition 'no file expr))
+      (:no-error (&rest rest) (print-condition 'ok file rest)))))
+
+(defun parse-summary (files)
+  (let (ok no)
+    (dolist (file files)
+      (handler-case (parse-file file)
+        (serious-condition (expr)
+          (declare (ignore expr))
+          (push (pathname-name file) no))
+        (:no-error (&rest rest)
+          (declare (ignore rest))
+          (push (pathname-name file) ok))))
+    (list (reverse ok) (reverse no))))
+
+(defun regression (options)
+  (if (args-verbose options)
+      (parse-verbose (args-files options))
+      (print-ok/no-list (parse-summary (args-files options)))))
+
+(defun unit (options)
+  (let ((string-result
+         (with-output-to-string (string)
+           (let ((*standard-output* string))
+             (lisp-unit:run-all-tests :rameau)
+             (format t "~%")))))    
+    (if (args-verbose options)
+        (write-line string-result)
+        ;;(write-line (subseq (last1 (cl-ppcre:split "\\n" string-result)) 34))
+        )))
+
+(defun test (analysis options)
+  (when (args-unit options) (unit options))
+  (when (args-regression options) (test options)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun make-result-list (analysis)
+  (apply #'mapcar #'list (analysis-results analysis)))
+
 (defun analysis-terminal (analysis options)
   (let* ((number-algorithms (analysis-number-algorithms analysis))
          (size-line (hline-size number-algorithms options)))
@@ -107,7 +175,7 @@
           (for dur in (analysis-dur analysis))
           (for seg-number from 1)
           (for answer in (analysis-answer-sheet analysis))
-          (for result in (apply #'mapcar #'list (analysis-results analysis)))
+          (for result in (make-result-list analysis))
           (for comparison = (mapcar (lambda (x) (compare-answer-sheet answer x)) result))
           (setf right-answer-list (inc-bool-list comparison right-answer-list))
           (print-line-term options seg-number note dur answer)
@@ -130,7 +198,7 @@
     (iter (for note in (analysis-notes analysis))
           (for dur in (analysis-dur analysis))
           (for seg-number from 1)
-          (for result in (apply #'mapcar #'list (analysis-results analysis)))
+          (for result in (make-result-list analysis))
           (print-line-term options seg-number note dur)
           (iter (for res in result)
                 (print-chord-column options res))
@@ -173,6 +241,13 @@
   `(unless (,name ,opt)
      (setf (,name ,opt) ,value)))
   
+(defmacro set-user-opt-num (name value opt)
+  `(unless (,name ,opt)
+     (typecase ,value
+       (nil (setf (,name ,opt) ,value))
+       (string (setf (,name ,opt) (parse-integer ,value)))
+       (number (setf (,name ,opt) ,value)))))
+  
 (defun create-args-struct (command-list command)
   ;; create a structure dynamically to accomodate different slots
   (eval `(defstruct args ,@(append '(name)
@@ -185,12 +260,14 @@
          (files (parse-files (args-files options))))
     (setf (args-files options) files
           (args-algorithms options) (filter-algorithms (args-algorithms options)))
-    (set-user-opt args-column-chord-size "7" options)
-    (set-user-opt args-column-number-size "3" options)
-    (set-user-opt args-column-notes-size "12" options)
-    (set-user-opt args-column-dur-size "4" options)
-    (set-user-opt args-column-separator "|" options)
-    (set-user-opt args-wrong-answer-color "red" options)
+    (when (string= command "analysis")
+      (set-user-opt-num args-max-print-error 10 options)
+      (set-user-opt args-column-chord-size "7" options)
+      (set-user-opt args-column-number-size "3" options)
+      (set-user-opt args-column-notes-size "12" options)
+      (set-user-opt args-column-dur-size "4" options)
+      (set-user-opt args-column-separator "|" options)
+      (set-user-opt args-wrong-answer-color "red" options))
     options))
 
 (defun main (&optional args)
@@ -204,7 +281,18 @@
        for command = (first command-list)
        for options = (create-args-struct command-list command)
        for analysis = (analyse-files options) do
-         (funcall (%string->symbol command) analysis options)
+         (aif (args-debug options)
+              (mapcar2 #'rameau-debug #'string->symbol it)
+              (rameau-undebug))
+         
+         (aif (args-trace options)
+              (maptrace it)
+              (maptrace it 'untrace))
+         
+         (with-profile options
+           (funcall (%string->symbol command) analysis options))
+
+       (dbg 'main "~a" options)
          ))
   #+clisp(ext:exit)
   0)

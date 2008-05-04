@@ -97,8 +97,6 @@
 (defun get-flag-list (flag list)
   (rest (assoc flag list :test #'string=)))
 
-(defun maptrace (lista-string)
-  (eval (append '(trace) (mapcar (compose #'read-from-string #'string-upcase) lista-string))))
 
 (defun get-comandos ()
   (mapcar #'(lambda (item) (format nil "~(~a~)" (first item))) *dados*))
@@ -700,9 +698,8 @@ ponto nos corais de bach."
          (debug (get-flag-list "-d" flags-list))
          (max-error (first (get-flag-list "-m" flags-list)))
          (flags (if flags-list (get-lone-flags flags-list))))
-    (when debug
-      (loop for item in debug do
-           (rameau-debug (intern (string-upcase item) :rameau))))
+    ;;(loop for item in debug do
+    ;;     (rameau-debug (intern (string-upcase item) :rameau))))
     (when trace (maptrace trace))
     (when max-error (setf max-print-error (read-from-string max-error)))
     (when (member 'h flags) (print-help))
