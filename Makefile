@@ -3,7 +3,7 @@ hostname = $(shell hostname)
 maindir = $(shell pwd)
 
 ifeq ($(RAMEAUDEPS),t)
-	sbcl = /usr/bin/sbcl --no-userinit
+	sbcl = /usr/bin/sbcl --no-userinit --disable-debugger
 	lisp = /usr/bin/lisp -noinit -batch -quiet
 	clisp = clisp -ansi -K full -norc
 else

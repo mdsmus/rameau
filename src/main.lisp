@@ -111,7 +111,7 @@
   (rest (assoc flag list :test #'string=)))
 
 (defun maptrace (lista-string)
-  (eval (append '(trace) (mapcar (compose #'read-from-string #'string-upcase) lista-string))))
+  (eval (append '(trace) (mapcar2 #'read-from-string #'string-upcase lista-string))))
 
 (defun get-comandos ()
   (mapcar #'(lambda (item) (format nil "~(~a~)" (first item))) *dados*))
@@ -498,9 +498,7 @@ ponto nos corais de bach."
              (file-name (pathname-name file))
              (notas (mapcar #'list-events segmentos))
              (duracoes (durations segmentos)))
-        (cond
-          ((and (not gabarito) (not (member 'i flags))))
-          (t
+        (when (or gabarito (member 'i flags))
            (multiple-value-bind (total1 corretos1 percentuais)
                (gera-dados file-name gabarito resultados flags)
              (incf total total1)
@@ -510,22 +508,23 @@ ponto nos corais de bach."
                   (incf (nth i media-x) (nth i percentuais))
                   (incf (nth i media-x²) (* (nth i percentuais) (nth i percentuais))))
              (loop for i from 0 to (1- (length corretos))
-                do (incf (nth i corretos) (nth i corretos1))))))))
-      (let ((l (loop
-                  for i in corretos
-                  for a in *algorithms*
-                  for mx in media-x
-                  for mx² in media-x²
-                  collect (list (algorithm-name a)
-                                i
-                                (- total i)
-                                (percent i total)
-                                (/ mx processados)
-                                (sqrt (- (/ mx² processados)
-                                         (* (/ mx processados)
-                                            (/ mx processados))))))))
-        (loop for r in (sort l #'> :key #'second)
-           do (apply #'format t "Total ~(~15a~):  ~5a ~5a ~,2f% (~,2f +- ~,2f)~%" r)))))
+                do (incf (nth i corretos) (nth i corretos1)))))))
+    (let ((l (loop
+                for i in corretos
+                for a in *algorithms*
+                for mx in media-x
+                for mx² in media-x²
+                collect (list (algorithm-name a)
+                              i
+                              (- total i)
+                              (percent i total)
+                              (or (= 0 processados) (/ mx processados))
+                              (or (= 0 processados)
+                                  (sqrt (- (/ mx² processados)
+                                           (* (/ mx processados)
+                                              (/ mx processados)))))))))
+      (loop for r in (sort l #'> :key #'second)
+         do (apply #'format t "Total ~(~15a~):  ~5a ~5a ~,2f% (~,2f +- ~,2f)~%" r)))))
 
 (defun run-gera-erros (flags files item regexps &optional erros?)
   (format t "Coral Algoritmo Segmento Resultado_esperado Resultado_obtido~%")
@@ -706,13 +705,13 @@ ponto nos corais de bach."
                   (loop
                      for i in comandos-lista
                      for item = (first-string i dados-list) do
+                       (format t "comando-lista: ~a~%" comandos-lista)
                        (if (member item dados-list :test #'string=)
                            (progn
                              (,fn flags (parse-file-list item files) item ,@args))
                            (progn
                              (format t "~a não é um comando de ~(~a~).~%" item ',nome)
-                             (format t "comandos possíveis são: all ~{~a ~}~%" dados-list)))))
-             (,fn flags nil nil ,@args))))))
+                             (format t "comandos possíveis são: all ~{~a ~}~%" dados-list))))))))))
 
 
 (defcommand teste run-testes)
