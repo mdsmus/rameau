@@ -379,7 +379,7 @@ ponto nos corais de bach."
                           (cl-ppcre:scan reres (format nil "~a" alg)))
                      (format t "~a| ~20a| ~4a| ~14a| ~12a| ~4a~%"
                              item
-                             (algorithmo-name a)
+                             (algorithm-name a)
                              numero-seg
                              s
                              gab
