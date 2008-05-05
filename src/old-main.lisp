@@ -1,58 +1,112 @@
 (defpackage :rameau-main
-  (:use :rameau :cl :cl-ppcre :lisp-unit :ltk)
+  (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1")
+  (:use :rameau :cl :cl-ppcre :lisp-unit :iterate)
   (:export :main :check))
 
 (in-package :rameau-main)
 
-(defparameter max-print-error 10
-  "Quando o numero de arquivos que não são parseados é maior que essa
-  constante, rameau mostra apenas o start da lista.")
+(defparameter *commands*
+  '(("common-flags"
+     (("-h" "help" "ajuda")
+      ("-f" "files" "arquivos" list)
+      ("-p" "profile" "profile" list)
+      ("-a" "algorithms" "Usa <algoritmos> para fazer a análise" list)
+      ("-d" "debug" "ativa código de depuração para os itens i" list)
+      ("-v" "verbose" "verbose")
+      ("-t" "trace" "mostra o trace de <funções>" list)
+      ;;("-q" "quiet" "quiet")
+      ("-m" "max-print-error" "Quando o numero de arquivos que não são
+  parseados é maior que essa constante, rameau mostra apenas o start
+  da lista.")))
+    ("analysis"
+     (("-u" "show-dur" "")
+      ("-n" "show-notes" "")
+      ("-i" "ignore" "ignora (não imprime) corais sem gabaritos")
+      ("-c" "no-color" "don't use color in the answer")
+      ("-s" "column-chord-size" "")
+      ("" "column-number-size" "")
+      ("" "column-notes-size" "")
+      ("" "column-dur-size" "")
+      ("" "column-separator" "")
+      ("" "wrong-answer-color" "")))
+    ("test"
+     (("-u" "unit" "")
+      ("-r" "regression" "")))
+    ("check")
+    ("gui"))
+  "The star at the end indicates that the flag accepts multiple values.")
 
-(defparameter *dados* '((teste ("unidade" "regressao" "lily"))
-                        (analise ("corais" "kostka" "sonatas" "exemplos"))
-                        (partitura ("corais" "exemplos"))
-                        (tamanhos ("corais" "exemplos"))
-                        (enarmonia ("corais"))
-                        (check nil)
-                        (gui)
-                        (erros ("corais" "exemplos"))
-                        (acertos ("corais" "exemplos"))
-                        (resultados ("corais" "exemplos"))
-                        (tipos ("corais" "exemplos"))
-                        (dados ("corais" "exemplos"))))
+(defun parse-options (command list)
+  "Parse the list of options to a structure."
+  (loop for item in (sublist-of-args list) append
+       (destructuring-bind (flag &rest value) item
+         (list (cond ((long-flag? flag)
+                      (%string->symbol (get-long-flag-name command flag) :keyword))
+                     ((short-flag? flag)
+                      (%string->symbol (get-short-flag-name command flag) :keyword)))
+               (if value
+                   (if (get-star-in-flag command flag)
+                       value
+                       (first value))
+                   t)))))
 
+(defun rameau-args ()
+  (let ((sbcl-args #+sbcl sb-ext:*posix-argv*)
+        (cmu-args #+cmu extensions:*command-line-strings*)
+        (clisp-args #+clisp ext:*args*))
+    (cond (sbcl-args (rest sbcl-args))
+          (cmu-args (subseq cmu-args (1+ (position "cmurameau" cmu-args :test #'string=))))
+          (clisp-args clisp-args))))
 
-(defparameter *help*
-  '((todos
-     (("-h" "ajuda" help)
-      ("-f" "arquivos" files)
-      ("-p" "profile" profile)
-      ("-a <algoritmos>" "Usa <algoritmos> para fazer a análise" algorithms)
-      ("-d i" "ativa código de depuração para os itens i" debug)
-      ("-v" "verbose" verbose)
-      ("-t <funções>" "mostra o trace de <funções>" trace)
-      ("-q" "quiet" quiet)
-      ("-m n" "o número de testes errados para imprimir" wrong-number)))
-    (análise
-     (("-i" "ignora (não imprime) corais sem gabaritos" no-sheet)
-      ("-v" "mostra notas dos segmentos" verbose)))
-    (partitura
-     (("-e <estilo>" "seleciona estilo de impressão dos acordes errados (bold ou red)" style)))))
+(defmacro with-profile (args &body body)
+  `(progn
+     (when (args-profile ,args)
+       (rameau-profile))
+     ,@body
+     (when (args-profile ,args)
+       (rameau-report))))
 
-(defparameter *singular* '(("corais" "coral")
-                           ("exemplos" "exemplo")))
+(defun maptrace (lista-string &optional (trace 'trace))
+  (eval (append (list trace) (mapcar2 #'read-from-string #'string-upcase lista-string))))
 
-(defun item-singular (item &optional (item-list *singular*))
-  (if (equal (first (first item-list)) item)
-      (second (first item-list))
-      (item-singular item (rest item-list))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun intervalo (s1 s2)
-  "Retorna o intervalo entre dois segmentos."
-  (if (null s2)
-      0
-      (- (event-start (first s2))
-         (event-end (first s1)))))
+(defun print-answer (&key file sheet results dur notes)
+  (mapcar #'(lambda (s r d n) (format t "~10a ~10a ~10a ~10a~%" s r d n))
+          sheet (first results) dur notes))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defstruct analysis
+  segments results answer-sheet file-name notes dur size-answer-sheet
+  number-algorithms)
+
+(defun analyse-files (options)
+  (loop
+     for file in (args-files options)
+     for segments = (sonorities (parse-file file))
+     collect
+       (make-analysis
+        :segments segments
+        :results (mapcar #'(lambda (algo) (funcall (algorithm-classify algo) segments))
+                         (args-algorithms options))
+        :answer-sheet (new-parse-answer-sheet (pathname-name file) "chora") ;;==========================
+        :file-name (pathname-name file)
+        :number-algorithms (length (args-algorithms options))
+        :notes (mapcar #'list-events segments)
+        :dur (durations segments))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+ (defun print-help ()
+   (let ((*package* (find-package :rameau-main)))
+     (print (get-commands-assoc))
+     (rameau-quit)))
+
+(defun print-warning (message)
+  (format t "WARNING: ~a~%" message))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun print-condition (status file expr)
   (format t "[~a] ~a: ~a~%" status (pathname-name file) expr))
@@ -61,46 +115,10 @@
   (destructuring-bind (ok no) list
     (let* ((s2 (length no))
            (no-string
-            (cond ((= max-print-error 0) no)
-                  ((> s2 max-print-error)
+            (cond ((= max-print-error 0) no)                  ((> s2 max-print-error)
                    (format nil "~a ..." (subseq no 0 max-print-error)))
                   (t no))))
       (format t "  [OK]: ~a [NO]: ~a ~@[~a ~]~%" (length ok) s2 no-string))))
-
-;; BUG: ok? não imprime por cause do (not f)
-(defun print-gab-columns (a b c d flags)
-  (let ((string (if (member 'l flags)
-                    "~4a~@[~15a~]~(~15a~)~@[~10a~]|"
-                    "~4a~@[~15a~]~10a~@[~10a~]|")))
-    (format t string
-            a
-            (when (member 'v flags) b)
-            c
-            (when (member 'v flags) (if (listp d) (second d) d)))))
-
-(defun print-res-alg (alg res flags)
-  (let ((color (if res 21 31))
-        (string (if (member 'l flags)
-                    "~A[0;~Dm~(~15a~)"
-                    "~A[0;~Dm~7a")))
-    (format t string (code-char #x1b) color alg)
-    (format t "~A[0m" (code-char #x1b))
-    (format t "|")))
-
-
-
-(defun get-lone-flags (list)
-  (remove-duplicates
-   (mapcan (lambda (item) (split-opts (first item)))
-           (remove-if-not (lambda (item) (= (length item) 1)) list))))
-
-(defun get-flag-list (flag list)
-  (rest (assoc flag list :test #'string=)))
-
-
-(defun get-comandos ()
-  (mapcar #'(lambda (item) (format nil "~(~a~)" (first item))) *dados*))
-
 
 (defun parse-verbose (files)
   (dolist (file files)
@@ -110,6 +128,10 @@
 
 (defun run-algorithm (algorithm answer sheet)
   (compare-answer-sheet answer sheet (algorithm-tempered? algorithm)))
+
+(defun percent (x total)
+  (unless (= 0 total)
+    (/ (* x 100.0) total)))
 
 (defmacro with-profile (var &body body)
   `(progn
@@ -140,6 +162,11 @@ ponto nos corais de bach."
           (declare (ignore rest))
           (push (pathname-name file) ok))))
     (list (reverse ok) (reverse no))))
+
+(defun regression (options)
+  (if (args-verbose options)
+      (parse-verbose (args-files options))
+      (print-ok/no-list (parse-summary (args-files options)))))
 
 (defun print-duracoes (segmento)
   (values (loop for s = segmento then (rest s)
@@ -198,6 +225,7 @@ ponto nos corais de bach."
      (format ,stream "~%}~%~%")))
 
 (defun print-lily (file item gabarito resultados flags notas)
+  "[DONTCHECK]"
   (declare (ignore flags))
   (let* ((*package* (find-package :rameau))
          (path (concat *rameau-path*
@@ -289,7 +317,7 @@ ponto nos corais de bach."
       (let ((l (loop
                   for i in counts
                   for a in *algorithms*
-                  collect (list (algorithm-name a) (% i size-gab)))))
+                  collect (list (algorithm-name a) (percent i size-gab)))))
         (loop for (name value) in (sort l #'> :key #'second) do
              (format t "  ~(~15a~) ~,2f%~%" name value))))))
 
@@ -319,10 +347,10 @@ ponto nos corais de bach."
       (let ((l (loop
                   for i in counts
                   for a in *algorithms*
-                  collect (list (algorithm-name a) (% i size-gab) i))))
+                  collect (list (algorithm-name a) (percent i size-gab) i))))
         (loop for (name perc correct) in (sort l #'> :key #'second) do
              (format t "~a  ~(~15a~) ~5a ~5a ~,2f%~%" item name correct (- size-gab correct) perc)))
-      (values total corretos (loop for i in counts collect (% i size-gab))))))
+      (values total corretos (loop for i in counts collect (percent i size-gab))))))
 
 (defun gera-erros (item notas gabarito resultados flags regab reres erros?)
   (declare (ignore flags))
@@ -348,7 +376,7 @@ ponto nos corais de bach."
                           (cl-ppcre:scan reres (format nil "~a" alg)))
                      (format t "~a| ~20a| ~4a| ~14a| ~12a| ~4a~%"
                              item
-                             (algorithmo-name a)
+                             (algorithm-name a)
                              numero-seg
                              s
                              gab
@@ -407,11 +435,12 @@ ponto nos corais de bach."
            (let ((*standard-output* string))
              (lisp-unit:run-all-tests :rameau)
              (format t "~%")))))    
-    (if (member 'v flags)
+    (if (args-verbose options)
         (write-line string-result)
         (write-line (subseq (last1 (cl-ppcre:split "\\n" string-result)) 34)))))
 
-(defun __________run-compara-gabarito (flags files item)
+
+(defun run-compara-gabarito (flags files item)
   (dolist (file files)
     (let* ((musica (parse-file file))
            (segmentos (sonorities musica))
@@ -449,9 +478,7 @@ ponto nos corais de bach."
              (file-name (pathname-name file))
              (notas (mapcar #'list-events segmentos))
              (duracoes (durations segmentos)))
-        (cond
-          ((and (not gabarito) (not (member 'i flags))))
-          (t
+        (when (or gabarito (member 'i flags))
            (multiple-value-bind (total1 corretos1 percentuais)
                (gera-dados file-name gabarito resultados flags)
              (incf total total1)
@@ -461,22 +488,23 @@ ponto nos corais de bach."
                   (incf (nth i media-x) (nth i percentuais))
                   (incf (nth i media-x²) (* (nth i percentuais) (nth i percentuais))))
              (loop for i from 0 to (1- (length corretos))
-                do (incf (nth i corretos) (nth i corretos1))))))))
-      (let ((l (loop
-                  for i in corretos
-                  for a in *algorithms*
-                  for mx in media-x
-                  for mx² in media-x²
-                  collect (list (algorithm-name a)
-                                i
-                                (- total i)
-                                (% i total)
-                                (/ mx processados)
-                                (sqrt (- (/ mx² processados)
-                                         (* (/ mx processados)
-                                            (/ mx processados))))))))
-        (loop for r in (sort l #'> :key #'second)
-           do (apply #'format t "Total ~(~15a~):  ~5a ~5a ~,2f% (~,2f +- ~,2f)~%" r)))))
+                do (incf (nth i corretos) (nth i corretos1)))))))
+    (let ((l (loop
+                for i in corretos
+                for a in *algorithms*
+                for mx in media-x
+                for mx² in media-x²
+                collect (list (algorithm-name a)
+                              i
+                              (- total i)
+                              (percent i total)
+                              (or (= 0 processados) (/ mx processados))
+                              (or (= 0 processados)
+                                  (sqrt (- (/ mx² processados)
+                                           (* (/ mx processados)
+                                              (/ mx processados)))))))))
+      (loop for r in (sort l #'> :key #'second)
+         do (apply #'format t "Total ~(~15a~):  ~5a ~5a ~,2f% (~,2f +- ~,2f)~%" r)))))
 
 (defun run-gera-erros (flags files item regexps &optional erros?)
   (format t "Coral Algoritmo Segmento Resultado_esperado Resultado_obtido~%")
@@ -557,8 +585,6 @@ ponto nos corais de bach."
 (defun pitch-list (list)
   (sorted (remove-duplicates (mapcar #'event-pitch list)) #'<))
 
-(do-not-test pitch-list)
-
 (defun run-enarmonia (flags files item)
   (declare (ignore flags))
   (format t "~a:~%" item)
@@ -601,22 +627,13 @@ ponto nos corais de bach."
                             (funcall (algorithm-classify a) segmento))))
       (print-lily file item gabarito resultados flags segmento))))
 
-(defun run-gui (&rest args)
-  (with-ltk ()
-   (let ((b (make-instance 'button 
-                           :master nil
-                           :text "Press Me"
-                           :command (lambda ()
-                                      (format t "Hello World!~&")))))
-     (pack b))))
-
 (defun remove-test (list)
   "Remove test files from list of files."
   (remove-if (lambda (f) (search "test-" (pathname-name f))) list))
 
 (defun get-functions (string &optional test)
   "Return an alist with the functions or testes of a file."
-  (let* ((regexp-def "(DEFINE-TEST|DEFUN|DEFMETHOD|DEFCACHED|DEFMACRO)[ ]+")
+  (let* ((regexp-def "(DEFINE-TEST|DEFUN|DEFCACHED|DEFMACRO|DEFGENERIC)[ ]+")
          (regexp-name "[0-9a-zA-Z><\!\$%&\*\?/-]+")
          (regexp (concat regexp-def regexp-name))
          (files-orig (directory (concat *rameau-path* string)))
@@ -628,18 +645,21 @@ ponto nos corais de bach."
                          (mapcar (lambda (x) (regex-replace-all regexp-def x ""))
                                  (all-matches-as-strings regexp (string-upcase (file-string s))))))))))
 
+(defun dont-check-p (symbol)
+  (search "[DONTCHECK]" (documentation symbol 'function)))
+  
 (defun check-for (a b)
   (loop
      for (key list) in a
-     collect
-       (list key
-             (remove-if (lambda (item) (or (string-member item *do-not-test*)
-                                           (string-member item (second (assoc key b)))))
-                        list))))
+     collect (list key (remove-if #'(lambda (item)
+                                      (or (dont-check-p item)
+                                          (string-member item (second (assoc key b)))))
+                                  list))))
+
+
 
 (defun print-check (alist text)
   (format t "~%~a:~%~%" text)
-  
   (loop
      for (key list) in alist
      do
@@ -664,13 +684,13 @@ ponto nos corais de bach."
                   (loop
                      for i in comandos-lista
                      for item = (first-string i dados-list) do
+                       (format t "comando-lista: ~a~%" comandos-lista)
                        (if (member item dados-list :test #'string=)
                            (progn
                              (,fn flags (parse-file-list item files) item ,@args))
                            (progn
                              (format t "~a não é um comando de ~(~a~).~%" item ',nome)
-                             (format t "comandos possíveis são: all ~{~a ~}~%" dados-list)))))
-             (,fn flags nil nil ,@args))))))
+                             (format t "comandos possíveis são: all ~{~a ~}~%" dados-list))))))))))
 
 
 (defcommand teste run-testes)
@@ -683,7 +703,6 @@ ponto nos corais de bach."
 (defcommand resultados run-gera-resultados regexps)
 (defcommand tamanhos run-compara-tamanhos)
 (defcommand check run-check)
-(defcommand gui run-gui)
 
 (defun main ()
   (let* ((args (rameau-args))
@@ -698,8 +717,9 @@ ponto nos corais de bach."
          (debug (get-flag-list "-d" flags-list))
          (max-error (first (get-flag-list "-m" flags-list)))
          (flags (if flags-list (get-lone-flags flags-list))))
-    ;;(loop for item in debug do
-    ;;     (rameau-debug (intern (string-upcase item) :rameau))))
+    (when debug
+      (loop for item in debug do
+           (rameau-debug (intern (string-upcase item) :rameau))))
     (when trace (maptrace trace))
     (when max-error (setf max-print-error (read-from-string max-error)))
     (when (member 'h flags) (print-help))
@@ -729,4 +749,3 @@ ponto nos corais de bach."
              (format t "você deve entrar um dos comandos: ~{~(~a~)~^ ~}~%"
                      (get-comandos)))))
   0)
-

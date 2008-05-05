@@ -1,8 +1,8 @@
 (in-package #:rameau)
 
-(define-test %chord-interval-code
-  (assert-equal '(7 min) (%chord-interval-code "c" "bes"))
-  (assert-equal '(2 maj) (%chord-interval-code "c" "d")))
+(define-test chord-interval-code
+  (assert-equal '(7 min) (chord-interval-code "c" "bes"))
+  (assert-equal '(2 maj) (chord-interval-code "c" "d")))
 
 (define-test expand-multiplications
   (assert-equal

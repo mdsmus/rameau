@@ -18,7 +18,6 @@
    #:*training-data*
    #:*lily-dir-list*
    #:*gabarito-dir-list*
-   #:*do-not-test*
    #:algorithm-tempered?
    #:algorithm-compare
    #:algorithm-name
@@ -32,7 +31,6 @@
    #:chord-p
    #:add-inversions
    #:compare-answer-sheet
-   #:do-not-test
    #:event-end
    #:extract-diff
    #:extract-feature-list
@@ -44,6 +42,7 @@
    #:get-comandos
    #:get-parsed-notes
    #:get-ast-string
+   #:getenv
    #:list-events
    #:make-chord
    #:make-melodic-note
@@ -99,10 +98,12 @@
 (defparameter *algorithms* nil)
 
 (defun register-algorithm (nome processa &optional tempered?)
+  "[DONTCHECK]"
   (push (make-algorithm :name nome :classify processa :tempered? tempered?)
         *algorithms*))
 
 (defun filter-algorithms (algoritmos)
+  "[DONTCHECK]"
   (if algoritmos
       (remove-duplicates
        (loop for alg in algoritmos
@@ -110,5 +111,3 @@
                     when (> (count-subseq alg (string-downcase (algorithm-name i))) 0)
                     collect i)))
     *algorithms*))
-
-(do-not-test register-algorithm filtra-algoritmos)

@@ -5,11 +5,13 @@
                                             (fr (0 28 42 70))))
 
 (defun expand-non-chord-tones (stream char)
+  "[DONTCHECK]"
   (declare (ignore char))
   (let ((*package* (find-package :rameau)))
     `(m! ,@(read-delimited-list #\] stream t))))
 
 (defun expand-repeat (stream char)
+  "[DONTCHECK]"
   (declare (ignore char))
   (let ((*package* (find-package :rameau)))
     `(* 1 ,@(read-delimited-list #\} stream t))))
@@ -19,8 +21,6 @@
 
 (set-macro-character #\{ #'expand-repeat)
 (set-macro-character #\} (get-macro-character #\)))
-
-(do-not-test expand-non-chord-tones expand-repeat)
 
 (defun parse-multiplication (chord)
   (if (listp chord)
@@ -48,9 +48,8 @@
           (cons atual (expand-multiplications resto))))))
 
 (defun expand-chords (list)
+  "[DONTCHECK]"
   (expand-multiplications (mapcar #'parse-multiplication list)))
-
-(do-not-test expand-chords)
 
 (defstruct (melodic-note
              (:print-function
@@ -94,20 +93,18 @@
   key
   template)
 
-(defun %chord-interval-code (root bass)
+(defun chord-interval-code (root bass)
   "Returns the interval-code of the interval between the root and
 root. Expects root and bass to be a string."
   (interval->code (interval (parse-note bass)
                             (parse-note root))))
-
-(do-not-test %chord-interval-code)
 
 (defun return-inversion (root bass)
   "Return the inversion number of the chord with root and bass (both
 as strings). If bass is nil the chord is suposed to be in root
 position."
   (when bass
-    (aif (first (%chord-interval-code root bass))
+    (aif (first (chord-interval-code root bass))
          (position it '(1 3 5 7))
          (error "don't know inversion ~a" it))))
 
@@ -133,8 +130,6 @@ position."
                       :11th 11th
                       :13th 13th)))))
 
-(do-not-test %parse-chord)
-
 (defun parse-chord (chord)
   (typecase chord
     (list (case (first chord)
@@ -143,11 +138,11 @@ position."
     (t (%parse-chord chord))))
 
 (defun read-chords (list)
+  "[DONTCHECK]"
   (mapcar #'parse-chord (expand-chords list)))
 
-(do-not-test read-chords)
-
 (defun transpose-chord (c n)
+  "[DONTCHECK]"
   (if (chord-p c)
       (make-chord :root (print-note (code->notename
                                              (+ n
@@ -162,8 +157,6 @@ position."
                   :11th (chord-11th c)
                   :13th (chord-13th c))
       c))
-
-(do-not-test transpose-chord)
 
 (defun transpose-chords (chords n)
   (loop for c in chords
@@ -190,6 +183,7 @@ position."
       (some (lambda (x) (%compare-answer-sheet answer x tempered?)) answer-sheet)))
 
 (defun add-inversion (segmento acorde)
+  "[DONTCHECK]"
   (let ((inv (first (list-events segmento))))
     (if (chord-p acorde)
         (make-chord :root (chord-root acorde)
@@ -200,6 +194,5 @@ position."
         acorde)))
 
 (defun add-inversions (segmentos acordes)
+  "[DONTCHECK]"
   (mapcar #'add-inversion segmentos acordes))
-
-(do-not-test add-inversion add-inversions)

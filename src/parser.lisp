@@ -132,9 +132,11 @@
 (defclass voice (music-block) ())
 
 (defun parse-music-block (a block b)
+  "[DONTCHECK]"
   (make-instance 'music-block :expr block :text (list a block b)))
 
 (defun parse-chord-dur (a chord b igno dur)
+  "[DONTCHECK]"
   (when dur
       (dolist (i chord)
         (setf (note-sequence-dur i) (node-dur dur))
@@ -143,83 +145,104 @@
   (make-instance 'chord-lily :expr chord :text (list a chord b igno dur)))
 
 (defun parse-simultaneous (a simultaneous b)
+  "[DONTCHECK]"
   (make-instance 'simultaneous :expr simultaneous :text (list a simultaneous b)))
 
 (defun parse-simult (a i b simultaneous  c)
+  "[DONTCHECK]"
   (make-instance 'simultaneous :expr simultaneous :text (list a i b simultaneous c)))
 
 (defun parse-staff-block (a ign block)
+  "[DONTCHECK]"
   (make-instance 'staff :expr block :text (list a ign block)))
 
 (defun parse-context-staff (a i b ig c ign d igno block)
+  "[DONTCHECK]"
   (let ((blck (parse-staff-block a nil block)))
     (setf (node-text blck)
           (list a i b ig c ign d igno block))
     blck))
 
 (defun parse-new-staff (a i b ig c ign block)
+  "[DONTCHECK]"
   (let ((blck (parse-staff-block a nil block)))
     (setf (node-text blck)
           (list a i b ig c ign block))
     blck))
 
 (defun parse-score-block (a ign block)
+  "[DONTCHECK]"
   (make-instance 'score :expr block :text (list a ign block)))
 
 (defun parse-context-score (a i b ig c ign block)
+  "[DONTCHECK]"
   (let ((blck (parse-score-block a nil block)))
     (setf (node-text blck)
           (list a i b ig c ign block))
     blck))
 
 (defun parse-variable-block (variable)
+  "[DONTCHECK]"
   (make-instance 'read-variable :varname variable :text variable))
 
 (defun parse-times-block (a i number ig expr)
+  "[DONTCHECK]"
   (make-instance 'times :times number :expr expr :text (list a i number ig expr)))
 
 (defun parse-voice-block (a ign block)
+  "[DONTCHECK]"
   (make-instance 'voice :expr block :text (list a ign block)))
 
 (defun parse-voice-block-string (a i b ig c ign block)
+  "[DONTCHECK]"
   (make-instance 'voice :expr block :text (list a i b ig c ign block)))
 
 (defun parse-repeat-block (a i b ig dur ign block)
+  "[DONTCHECK]"
   (make-instance 'music-block :expr block :text (list a i b ig dur ign block)))
 
 (defun parse-context-voice (a i b ig c ign d igno block)
+  "[DONTCHECK]"
   (let ((blck (parse-voice-block a nil block)))
     (setf (node-text blck)
           (list a i b ig c ign d igno block))
     blck))
 
 (defun parse-relative-block (a ign relative igno block)
+  "[DONTCHECK]"
   (make-instance 'relative :expr block :start relative :text (list a ign relative igno block)))
 
 (defun parse-assignment (variable ign equal igna value)
+  "[DONTCHECK]"
   (make-instance 'set-variable :varname variable :value value :text (list variable ign equal igna value)))
 
 (defun parse-dur (dur)
+  "[DONTCHECK]"
   (make-instance 'dur-node :dur (/ 1 (parse-integer dur)) :text (list dur)))
 
 (defun parse-dur-ponto (dur ponto)
+  "[DONTCHECK]"
   (make-instance 'dur-node :dur (+ (node-dur dur) (/ (node-dur dur) 2)) :text (list dur ponto)))
 
 (defun parse-dur-multiplica (dur mult)
+  "[DONTCHECK]"
   (make-instance 'dur-node
                  :dur (* (node-dur dur) (eval (read-from-string (subseq mult 1))))
                  :text (list dur mult)))
 
 (defun empty-dur ()
+  "[DONTCHECK]"
   (make-instance 'dur-node
                  :dur nil
                  :text nil))
 
 (defun make-anacruz (ign igno dur)
+  "[DONTCHECK]"
   (setf *anacruz* (- (node-dur dur) (read-from-string *current-sig*)))
   (make-instance 'no-op-node :text (list ign igno dur)))
 
 (defun parse-include (a b file)
+  "[DONTCHECK]"
   (let ((notas (parse-file
                 (if *filename*
                     (concat (subseq *filename* 0 (search "/" *filename* :from-end t))
@@ -232,34 +255,43 @@
                              :dur (+ (event-start (last1 notas)) (event-dur (last1 notas))))))
 
 (defun empty-octave ()
+  "[DONTCHECK]"
   "")
 
 
 ;; Funçoes problematicas:
 
 (defun parse-lilypond (expression)
+  "[DONTCHECK]"
   (let ((musica (parse-music-block nil expression nil)))
     (correct-durations musica)))
 
 (defun do-nothing (&rest args)
+  "[DONTCHECK]"
   (make-instance 'no-op-node :text args))
 
 (defun return-second (a b &rest rest)
+  "[DONTCHECK]"
   (make-instance 'music-list :expr (cons b (make-instance 'no-op-node)) :text (append (list a b) rest)))
 
 (defun return-first (a b)
+  "[DONTCHECK]"
   (make-instance 'music-block :expr (cons a (make-instance 'no-op-node)) :text (list a b)))
 
 (defun parser-list (b)
+  "[DONTCHECK]"
   (make-instance 'music-list :expr (cons b (make-instance 'no-op-node)) :text (list b)))
 
 (defun parser-cons (a i b)
+  "[DONTCHECK]"
   (make-instance 'music-list :expr (cons a b) :text (list a i b)))
 
 (defun ignore-middle (a ignore b)
+  "[DONTCHECK]"
   (make-instance 'music-list :expr (cons a b) :text (list a ignore b)))
 
 (defun parser-ign (a b)
+  "[DONTCHECK]"
   (make-instance 'no-op-node :text (list a b)))
 
 
@@ -332,7 +364,7 @@
 
 
 (defgeneric process-ast (astnode)
-  (:documentation "Process an AST node and extract the notes."))
+  (:documentation "Process an AST node and extract the notes. [DONTCHECK]"))
 
 (defmethod process-ast ((node no-op-node))
   (process-ast (node-expr node)))
@@ -411,52 +443,17 @@
   (get-parsed-notes (get-ast-string str)))
 
 (defun parse-file (filename)
+  "[DONTCHECK]"
   (when (cl-fad:file-exists-p filename)
     (let ((*filename* filename))
       (declare (special *filename*))
       (get-parsed-notes-string (file-string filename)))))
 
 (defun file-ast (filename)
+  "[DONTCHECK]"
   (when (cl-fad:file-exists-p filename)
     (let ((*filename* filename))
       (declare (special *filename*))
       (get-ast-string (file-string filename)))))
 
-
-(do-not-test
-        parse-music-block
-    parse-chord-dur
-    parse-simultaneous
-    parse-simult
-    parse-staff-block
-    parse-context-staff
-    parse-new-staff
-    parse-score-block
-    parse-context-score
-    parse-variable-block
-    parse-times-block
-    parse-voice-block
-    parse-voice-block-string
-    parse-repeat-block
-    make-anacruz
-    parse-dur
-    parse-dur-ponto
-    parse-dur-multiplica
-    parse-include
-    parse-context-voice
-    parse-relative-block
-    parse-lilypond
-    parse-assignment
-    process-ast
-    process-trees
-    process-ast
-    process-ast
-    process-ast
-    process-ast
-    process-ast
-    process-ast
-    process-ast
-    parse-file
-    return-second
-)
 

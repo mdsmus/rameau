@@ -83,30 +83,28 @@
 (setf *debug-io* *error-output*)
 
 (defun dbg (id format-string &rest args)
-  "Print debugging info if (DEBUG ID) has been specified."
+  "Print debugging info if (DEBUG ID) has been specified. [DONTCHECK]"
   (when (member id *dbg-ids* :test #'string=)
     (fresh-line *debug-io*)
     (apply #'format *debug-io* (concat " => DEBUG: " format-string) args)
     (force-output *debug-io*)))
 
 (defun dbg-indent (id indent format-string &rest args)
-  "Print indented debugging info if (DEBUG ID) has been specified."
+  "Print indented debugging info if (DEBUG ID) has been specified. [DONTCHECK]"
   (when (member id *dbg-ids*)
     (fresh-line *debug-io*)
     (dotimes (i indent) (princ " " *debug-io*))
     (apply #'format *debug-io* (concat " => DEBUG: " format-string) args)))
 
 (defun rameau-debug (&rest ids)
-  "Start dbg output on the given ids."
+  "Start dbg output on the given ids. [DONTCHECK]"
   (setf *dbg-ids* (union ids *dbg-ids*)))
 
 (defun rameau-undebug (&rest ids)
-  "Stop dbg on the ids. With no ids, stop dbg altogether."
+  "Stop dbg on the ids. With no ids, stop dbg altogether. [DONTCHECK]"
   (setf *dbg-ids* (if (null ids)
                       nil
                       (set-difference *dbg-ids* ids))))
-
-(do-not-test dbg rameau-debug rameau-undebug dbg-indent)
 
 (defun add-lily-ext (file)
   "Add a .ly extension to filename \\texttt{file} if nonexistent."
@@ -125,7 +123,7 @@
   (subseq file 0 (position #\. file)))
 
 (defmacro defcached (funcname args &body body)
-  "Defines \\texttt{funcname} just as defun, but with a cache around it."
+  "Defines \\texttt{funcname} just as defun, but with a cache around it. [DONTCHECK]"
   (labels ((varnames (symbols)
              (cons 'list
                    (loop for s in symbols unless (and (symbolp s)
@@ -137,8 +135,6 @@
            (aif (gethash ,(varnames args) ,cache)
                 it
                 (setf (gethash ,(varnames args) ,cache) (progn ,@body))))))))
-
-(do-not-test defcached)
 
 (defun concat (&rest strings)
   "Concatenate strings \\texttt{strings}."
@@ -209,14 +205,12 @@ that have the largest value according to \\texttt{pred}."
 
 (defun file-string (path)
   "Suck up an entire file from \\texttt{path} into a freshly-allocated string,
-returning two values: the string and the number of bytes read."
+returning two values: the string and the number of bytes read. [DONTCHECK]"
   (with-open-file (s path #+sbcl :external-format #+sbcl :utf-8 )
     (let* ((len (file-length s))
            (data (make-string len :initial-element #\Space))
            (*package* (find-package :rameau)))
       (values data (read-sequence data s)))))
-
-(do-not-test file-string)
 
 (defun firstn (list n)
   "Return the first \\texttt{n} elements of \\texttt{list}, or \\texttt{n} nulls."
@@ -229,10 +223,8 @@ returning two values: the string and the number of bytes read."
       (cons list (repeat-list (- n 1) list))))
 
 (defun read-file-as-sexp (file)
-  "Read file named \\texttt{file} as a single sexp"
+  "Read file named \\texttt{file} as a single sexp. [DONTCHECK]"
   (read-from-string (format nil "(~a)" (file-string file))))
-
-(do-not-test read-file-as-sexp)
 
 (defun unzip (lista)
   "Transform the list of pairs \\texttt{lista} in a pair of lists."
@@ -292,10 +284,8 @@ string representation as \\texttt{item}."
 ;; Alist helper functions
 
 (defun make-alist ()
-  "Makes a helped alist."
+  "Makes a helped alist. [DONTCHECK]"
   (list nil))
-
-(do-not-test make-alist)
 
 (defun apush (obj place)
   "Destructively modifies list \\texttt{place} and puts \\texttt{obj}
@@ -307,7 +297,9 @@ as its car."
   place)
 
 (defun aget (key list &optional default)
-  "Get element keyed by \\texttt{key} from alist \\texttt{list}. If it does not exist, insert and return \\texttt{default} unless default is null or 'erro."
+  "Get element keyed by \\texttt{key} from alist \\texttt{list}. If it
+does not exist, insert and return \\texttt{default} unless default is
+null or 'erro."
   (aif (assoc key list :test #'equal)
        (second it)
        (progn
