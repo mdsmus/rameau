@@ -364,7 +364,7 @@
 
 
 (defgeneric process-ast (astnode)
-  (:documentation "Process an AST node and extract the notes."))
+  (:documentation "Process an AST node and extract the notes. [DONTCHECK]"))
 
 (defmethod process-ast ((node no-op-node))
   (process-ast (node-expr node)))
@@ -384,17 +384,14 @@
   node)
 
 (defmethod process-ast ((node music-list))
-  "[DONTCHECK]"
   (process-ast (remove-music-list node)))
 
 (defmethod process-ast ((node list))
-  "[DONTCHECK]"
   (when node
     (cons (process-ast (first node))
           (process-ast (rest node)))))
 
 (defmethod process-ast ((node music-block))
-  "[DONTCHECK]"
   (let ((seq (process-ast (node-expr node))))
     (sequence-expressions
      (if (listp seq)
@@ -402,31 +399,25 @@
          seq))))
     
 (defmethod process-ast ((node simultaneous))
-  "[DONTCHECK]"
   (merge-exprs (alexandria:flatten (process-trees (node-expr node)))))
 
 (defmethod process-ast ((node times))
-  "[DONTCHECK]"
   (let ((dur (node-times node))
         (expr (node-expr node)))
     (correct-times dur expr)
     (process-ast expr)))
 
 (defmethod process-ast ((node relative))
-  "[DONTCHECK]"
   (do-relative (node-start node) (process-ast (node-expr node))))
 
 (defmethod process-ast ((node set-variable))
-  "[DONTCHECK]"
   (push (cons (node-varname node) (node-value node)) *environment*)
   nil)
 
 (defmethod process-ast ((node read-variable))
-  "[DONTCHECK]"
   (process-ast (rest (assoc (subseq (node-varname node) 1) *environment* :test #'equalp))))
 
 (defmethod process-ast (node)
-  "[DONTCHECK]"
   (if (listp node)
       (remove-if #'null node)
       node))
@@ -459,6 +450,7 @@
       (get-parsed-notes-string (file-string filename)))))
 
 (defun file-ast (filename)
+  "[DONTCHECK]"
   (when (cl-fad:file-exists-p filename)
     (let ((*filename* filename))
       (declare (special *filename*))

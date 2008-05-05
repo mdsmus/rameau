@@ -217,6 +217,7 @@ ponto nos corais de bach."
      (format ,stream "~%}~%~%")))
 
 (defun print-lily (file item gabarito resultados flags notas)
+  "[DONTCHECK]"
   (declare (ignore flags))
   (let* ((*package* (find-package :rameau))
          (path (concat *rameau-path*
@@ -624,7 +625,7 @@ ponto nos corais de bach."
 
 (defun get-functions (string &optional test)
   "Return an alist with the functions or testes of a file."
-  (let* ((regexp-def "(DEFINE-TEST|DEFUN|DEFMETHOD|DEFCACHED|DEFMACRO)[ ]+")
+  (let* ((regexp-def "(DEFINE-TEST|DEFUN|DEFCACHED|DEFMACRO|DEFGENERIC)[ ]+")
          (regexp-name "[0-9a-zA-Z><\!\$%&\*\?/-]+")
          (regexp (concat regexp-def regexp-name))
          (files-orig (directory (concat *rameau-path* string)))
@@ -636,18 +637,21 @@ ponto nos corais de bach."
                          (mapcar (lambda (x) (regex-replace-all regexp-def x ""))
                                  (all-matches-as-strings regexp (string-upcase (file-string s))))))))))
 
+(defun dont-check-p (symbol)
+  (search "[DONTCHECK]" (documentation symbol 'function)))
+  
 (defun check-for (a b)
   (loop
      for (key list) in a
-     collect
-       (list key
-             (remove-if (lambda (item) (or (string-member item *do-not-test*)
-                                           (string-member item (second (assoc key b)))))
-                        list))))
+     collect (list key (remove-if #'(lambda (item)
+                                      (or (dont-check-p item)
+                                          (string-member item (second (assoc key b)))))
+                                  list))))
+
+
 
 (defun print-check (alist text)
   (format t "~%~a:~%~%" text)
-  
   (loop
      for (key list) in alist
      do

@@ -41,6 +41,7 @@
    #:get-comandos
    #:get-parsed-notes
    #:get-ast-string
+   #:getenv
    #:list-events
    #:make-chord
    #:make-melodic-note
