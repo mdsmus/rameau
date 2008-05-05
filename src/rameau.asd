@@ -20,7 +20,7 @@
                (:file "tools")
                (:file "kern2lily")
                (:file "load-algorithms")
-               (:file "main")
+               (:file "old-main")
                (:file "test-utils")
                (:file "test-musiclib")
                (:file "test-formato")

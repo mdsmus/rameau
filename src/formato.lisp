@@ -3,12 +3,6 @@
 (defparameter *current-key* '("c" "\\major"))
 (defparameter *current-sig* "4/4")
 
-
-;; The atomic structures returned by the parser are \\texttt{event}s,
-;; \\texttt{note-sequence}s and \\texttt{note-simultaneous}. These are
-;; distinct from their AST counterparts defined in parser.lisp.
-;;
-
 (defstruct event
   (text-repr)
   (pitch)
@@ -88,10 +82,12 @@
   (make-note "s" "" dur ignore))
 
 (defun move-event (event tempo)
+  "[DONTCHECK]"
   (setf (event-start event) (+ (event-start event) tempo))
   event)
 
 (defun move-sequence (seq tempo)
+  "[DONTCHECK]"
   (mapcar (lambda (x) (move-event x tempo))
           seq))
 
@@ -129,6 +125,7 @@
   exp1)
 
 (defun merge-exprs (exprs)
+  "[DONTCHECK]"
   (if (note-sequence-p exprs)
       exprs
       (if (cdr exprs)
@@ -149,6 +146,7 @@
 
 
 (defun modificador-oitava (a b)
+  "[DONTCHECK]"
   (let ((pa (event-pitch a))
         (pb (event-pitch b))
         (oa (event-octave a))
@@ -183,6 +181,7 @@
     expressao))
 
 (defun transpose-segmentos (segmentos valor)
+  "[DONTCHECK]"
   (loop for notas in segmentos collect
        (loop for n in notas collect
             (make-event :pitch (module (+ (event-pitch n) valor))
@@ -193,6 +192,7 @@
                          :time-sig (event-time-sig n)))))
 
 (defun tempera (nota)
+  "[DONTCHECK]"
   (with-system tempered
     (make-event :pitch (module (event-pitch nota))
                  :octave (event-octave nota)
@@ -200,17 +200,6 @@
                  :start (event-start nota)
                  :key (event-key nota)
                  :time-sig (event-time-sig nota))))
-
-(do-not-test tempera
-  move-event
-  move-sequence
-  cria-skip
-  %expmerge
-  merge-exprs
-  modificador-oitava
-  %do-relative
-  transpose-segmentos
-  )
 
 (defun temperado (segmentos)
   (mapcar (lambda (x) (mapcar #'tempera x)) segmentos))

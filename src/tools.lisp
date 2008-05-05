@@ -9,6 +9,7 @@
 		       #+clisp (ext:default-directory))))
 
 (defun rameau-args ()
+  "[DONTCHECK]"
   (let ((sbcl-args #+sbcl sb-ext:*posix-argv*)
         (cmu-args #+cmu extensions:*command-line-strings*)
         (clisp-args #+clisp *args*))
@@ -18,6 +19,7 @@
           (t (error "algum problema com argumentos")))))
   
 (defun rameau-profile ()
+  "[DONTCHECK]"
   #+sbcl(progn
          (setf sb-profile::*print-functions-not-called* nil)
          (sb-profile:profile "RAMEAU")
@@ -31,45 +33,39 @@
           (profile:profile-all :package "GENOSLIB")))
 
 (defun rameau-report ()
+  "[DONTCHECK]"
   #+sbcl(sb-profile:report)
   #+cmu(profile:report-time))
 
 (defun rameau-quit ()
+  "[DONTCHECK]"
   #+clisp(ext:exit)
   #+sbcl(sb-ext:quit))
 
 (defun getenv (string)
+  "[DONTCHECK]"
   #+sbcl(sb-ext:posix-getenv string)
   #+cmu(cdr (assoc (intern string :keyword) ext:*environment-list*))
   #+clisp(ext:getenv string))
 
 (defun remove-comma-if-needed (text)
+  "[DONTCHECK]"
   (if (= 1 (count-subseq "pt" (getenv "LANG")))
       (substitute #\, #\. text)
       text))
   
 (defun unicode-term (f)
+  "[DONTCHECK]"
   (or (null f)
       (eq (stream-external-format f) nil)
       (eq (stream-external-format f) #+sbcl :utf-8 #-sbcl :default)))
 
 (defun read-user-config ()
+  "[DONTCHECK]"
   (aif (cl-fad:file-exists-p (concat (getenv "HOME") "/.rameaurc"))
        (loop for (var value) in (read-file-as-sexp it) do (set var value))))
 
 (read-user-config)
-
-(do-not-test
-    rameau-args
-  rameau-profile
-  rameau-report
-  rameau-quit
-  getenv
-  remove-comma-if-needed
-  unicode-term
-  read-user-config
-  )
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -102,7 +98,7 @@
     (if tmp tmp string)))
 
 (defun parse-answer-sheet (file item)
-  "Parse the answer sheet for song \\texttt{file}."
+  "Parse the answer sheet for song \\texttt{file}. [DONTCHECK]"
   (let* ((*package* (find-package :rameau))
          (nome-pop (concat *rameau-path*
                            (get-item item *gabarito-dir-list* #'equal)
@@ -112,7 +108,7 @@
 
 
 (defun parse-file-list (item f &optional (ext ".ly"))
-  "Parse file list \\texttt{f} into a list of filenames."
+  "Parse file list \\texttt{f} into a list of filenames. [DONTCHECK]"
   (let* ((path (concat *rameau-path* (get-item item *lily-dir-list*  #'equal)))
          (file-name (format nil "~a" (first f)))
          (files (if (search ".." file-name)
@@ -123,8 +119,6 @@
         (remove-if #'(lambda (x) (search "coral" x))
                    (mapcar (lambda (file) (format nil "~a" file))
                            (directory (concat path "*" ext)))))))
-
-(do-not-test parse-file-list parse-answer-sheet)
 
 (defparameter *training-data*
   (nconc (loop for f in (parse-file-list "corais" '("001..6"))

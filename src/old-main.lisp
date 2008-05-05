@@ -125,17 +125,6 @@
 (defun run-algorithm (algorithm answer sheet)
   (compare-answer-sheet answer sheet (algorithm-tempered? algorithm)))
 
-(do-not-test report
-  print-condition
-  print-ok/no-list
-  print-gab-columns
-  print-res-alg
-  maptrace
-  get-comandos
-  parse-verbose
-  run-algorithm
-  )
-
 (defun percent (x total)
   (unless (= 0 total)
     (/ (* x 100.0) total)))
@@ -442,23 +431,6 @@ ponto nos corais de bach."
         (write-line (subseq (last1 (cl-ppcre:split "\\n" string-result)) 34)))))
 
 
-(do-not-test parse-summary
-  print-duracoes
-  print-score
-  print-lyric
-  print-lily
-  print-gabarito
-  gera-dados
-  gera-erros
-  gera-resultados
-  print-help-item
-  print-help
-  run-regressao
-  run-unidade
-  nome-original
-  remove-test
-  )
-
 (defun run-compara-gabarito (flags files item)
   (dolist (file files)
     (let* ((musica (parse-file file))
@@ -604,8 +576,6 @@ ponto nos corais de bach."
 (defun pitch-list (list)
   (sorted (remove-duplicates (mapcar #'event-pitch list)) #'<))
 
-(do-not-test pitch-list)
-
 (defun run-enarmonia (flags files item)
   (declare (ignore flags))
   (format t "~a:~%" item)
@@ -685,8 +655,6 @@ ponto nos corais de bach."
          (format t "* ~(~a.lisp~) [~a]~%" key (length list))
          (format t "~{~(    ~a~%~)~}~%" list))))
 
-(do-not-test print-check check-for get-functions remove-tests)
-
 (defun run-check (&rest ignore)
   (declare (ignore ignore))
   (let ((tests (get-functions "src/test-*.lisp" 'test))
@@ -723,22 +691,6 @@ ponto nos corais de bach."
 (defcommand resultados run-gera-resultados regexps)
 (defcommand tamanhos run-compara-tamanhos)
 (defcommand check run-check)
-
-(do-not-test main
-  run-testes
-  run-check
-  run-gera-erros
-  run-compara-gabarito
-  run-gera-dados
-  run-enarmonia
-  run-partitura
-  run-gera-resultados
-  run-compara-tamanhos
-  run-check
-  with-profile
-  with-print-cifra
-  defcommand
-  )
 
 (defun main ()
   (let* ((args (rameau-args))
