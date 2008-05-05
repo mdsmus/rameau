@@ -19,7 +19,8 @@
   parseados é maior que essa constante, rameau mostra apenas o start
   da lista.")))
     ("analysis"
-     (("-u" "show-dur" "")
+     (("" "dont-compare" "don't compare the results with the answer sheet")
+      ("-u" "show-dur" "")
       ("-n" "show-notes" "")
       ("-i" "ignore" "ignora (não imprime) corais sem gabaritos")
       ("-c" "no-color" "don't use color in the answer")
@@ -85,6 +86,7 @@
   (loop
      for file in (args-files options)
      for segments = (sonorities (parse-file file))
+     do (print file)
      collect
        (make-analysis
         :segments segments
@@ -207,12 +209,12 @@
 
 (defun analysis (analysis options)
   (iter (for anal in analysis)
-        (if (analysis-answer-sheet anal)
-            (analysis-terminal anal options)
-            (progn
-              (print-warning (concat "the answer sheet for " (analysis-file-name anal) " doesn't exist"))
-              (analysis-terminal-no-answer anal options)
-              ))))
+        (cond ((args-dont-compare options) (analysis-terminal-no-answer anal options))
+              ((analysis-answer-sheet anal) (analysis-terminal anal options))
+              (t (print-warning (concat "the answer sheet for "
+                                        (analysis-file-name anal)
+                                        " doesn't exist"))
+                 (analysis-terminal-no-answer anal options)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
