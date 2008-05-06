@@ -676,7 +676,6 @@ ponto nos corais de bach."
                   (loop
                      for i in comandos-lista
                      for item = (first-string i dados-list) do
-                       (format t "comando-lista: ~a~%" comandos-lista)
                        (if (member item dados-list :test #'string=)
                            (progn
                              (,fn flags (parse-file-list item files) item ,@args))

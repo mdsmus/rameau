@@ -63,14 +63,6 @@
 (defparameter *mode-length* 5)
 (defparameter *7th-length* 4)
 
-(defun load-chord-net ()
-  (if (cl-fad:file-exists-p *chord-net-file*)
-      (setf *chord-net* (load-from-file *chord-net-file*))
-      (treina-chord-net)))
-
-(defun save-chord-net ()
-  (save-to-file *chord-net* *chord-net-file*))
-
 (defun make-empty-pattern ()
   (repeat-list (+ *mode-length* *7th-length*) 0))
 
