@@ -37,12 +37,15 @@
 
 (defmacro make-args-class ()
   `(defclass arguments ()
-     ,(iter (for item in (mapcan #'get-command-slots (get-commands-assoc)))
-            (collect (list (%string->symbol item)
-                           :writer (%string->symbol (concat "SET-" (string-upcase item)))
-                           :reader (%string->symbol (concat "GET-" (string-upcase item)))
-                           :initarg (%string->symbol item :keyword)
-                           :initform nil)))))
+     ,(append
+       (list '(substring :writer set-substring :reader get-substring
+         :initarg :substring :initform nil))
+       (iter (for item in (mapcan #'get-command-slots (get-commands-assoc)))
+             (collect (list (%string->symbol item)
+                            :writer (%string->symbol (concat "SET-" (string-upcase item)))
+                            :reader (%string->symbol (concat "GET-" (string-upcase item)))
+                            :initarg (%string->symbol item :keyword)
+                            :initform nil))))))
   
 (defun parse-options (command list)
   "Parse the list of options to a structure."
@@ -89,9 +92,9 @@
         :segments segments
         :results (mapcar #'(lambda (algo) (funcall (algorithm-classify algo) segments))
                          (get-algorithms options))
-        :answer-sheet (new-parse-answer-sheet (pathname-name file) "chora") ;;==========================
+        :answer-sheet (new-parse-answer-sheet (pathname-name file) (get-substring options))
         :file-name (pathname-name file)
-
+        :number-algorithms (length (get-algorithms options))
         :notes (mapcar #'list-events segments)
         :dur (durations segments))))
 
@@ -218,13 +221,14 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun parse-file-name (exp)
+(defun parse-file-name (exp options)
   (unless (search ":" exp)
     (error "expression should be in the format <substring>:<expression>"))
   (let* ((tmp (cl-ppcre:split ":" exp))
          (substring (first tmp))
          (file-or-range (second tmp))
          (dir (search-music-dirs substring "music")))
+    (set-substring substring options)
     (mapcar (lambda (item) (concat dir item ".ly"))
             (cond ((search ".." file-or-range)
                    (files-range (cl-ppcre:split "\\.\\." file-or-range)))
@@ -233,11 +237,11 @@
                   (t (search " " file-or-range)
                      (cl-ppcre:split " " file-or-range))))))
 
-(defun parse-files (files)
-  (loop for file in files append
+(defun parse-files (options)
+  (loop for file in (get-files options) append
        (if (search "/" file)
            (list file)
-           (parse-file-name file))))
+           (parse-file-name file options))))
 
 (defun print-slots (obj)
   (iter (for slot in (sb-mop:class-slots (class-of obj)))
@@ -270,7 +274,7 @@
               (for command = (first command-list))
               (iter (for (key value) in (parse-options command (rest command-list)))
                     (funcall key value options))
-              (set-files (parse-files (get-files options)) options)
+              (set-files (parse-files options) options)
               (set-algorithms (filter-algorithms (get-algorithms options)) options)
               (for analysis = (analyse-files options))
               ;; FIXME debug is not working
