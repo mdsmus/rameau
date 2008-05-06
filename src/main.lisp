@@ -101,9 +101,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
  (defun print-help ()
-   (let ((*package* (find-package :rameau-main)))
-     (print (get-commands-assoc))
-     (rameau-quit)))
+   (iter (for (key value) in *commands*)
+      (format t "~%~:@(* ~a~)~%" (substitute #\Space #\- key :test #'equal))
+      (iter (for (short long help) in value)
+            (format t "~4a--~25a~a~%" short long help)))
+   (rameau-quit))
 
 (defun print-warning (message)
   (format t "WARNING: ~a~%" message))
@@ -278,23 +280,20 @@
   (let* ((*package* (find-package :rameau-main))
          (rameau-args (rameau-args))
          (arguments (if rameau-args rameau-args (cl-ppcre:split " " args))))
-    (loop
-       for command-list in (split-command-list arguments)
-       for command = (first command-list)
-       for options = (create-args-struct command-list command)
-       for analysis = (analyse-files options) do
-         (aif (args-debug options)
-              (mapcar2 #'rameau-debug #'string->symbol it)
-              (rameau-undebug))
-         
-         (aif (args-trace options)
-              (maptrace it)
-              (maptrace it 'untrace))
-         
-         (with-profile options
-           (funcall (%string->symbol command) analysis options))
-
-       (dbg 'main "~a" options)
-         ))
+    (if arguments
+        (iter (for command-list in (split-command-list arguments))
+              (for command = (first command-list))
+              (for options = (create-args-struct command-list command))
+              (for analysis = (analyse-files options))
+              (aif (args-debug options)
+                   (mapcar2 #'rameau-debug #'string->symbol it)
+                   (rameau-undebug))
+              (aif (args-trace options)
+                   (maptrace it)
+                   (maptrace it 'untrace))
+              (with-profile options
+                (funcall (%string->symbol command) analysis options))
+              (dbg 'main "~a" options))
+        (print-help)))
   #+clisp(ext:exit)
   0)
