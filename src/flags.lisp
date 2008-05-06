@@ -1,3 +1,8 @@
+(defpackage :rameau-main
+  (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1")
+  (:use :rameau :cl :cl-ppcre :lisp-unit :iterate)
+  (:export :main :check))
+
 (in-package :rameau-main)
 
 (defun split-command-list (command-list)
@@ -55,7 +60,7 @@
   (remove "common-flags" (mapcar #'first *commands*)))
 
 (defun get-command-slots (command)
-  (mapcar #'second (append (get-common-flags) (get-flag-assoc command))))
+  (mapcar #'second (get-flag-assoc command)))
 
 (defun get-common-flags ()
   (get-item "common-flags" *commands*))

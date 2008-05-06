@@ -19,11 +19,11 @@
     ("white"         "1;37")))
 
 (defun print-color-terminal (result comparison options)
-  (let ((column (concat "~" (args-column-chord-size options) "a"))
-        (color (if comparison 21 (get-item (args-wrong-answer-color options) *colors* #'equalp)))
+  (let ((column (concat "~" (get-column-chord-size options) "a"))
+        (color (if comparison 21 (get-item (get-wrong-answer-color options) *colors* #'equalp)))
         (string "~a[~am")
-        (sep (args-column-separator options)))
-    (if (args-no-color options)
+        (sep (get-column-separator options)))
+    (if (get-no-color options)
         (format t (concat column sep) result)
         (progn
           (format t (concat string column) (code-char #x1b) color result)
@@ -33,45 +33,45 @@
   (mapcar #'+ (mapcar #'(lambda (x) (if x 1 0)) bool-list) num-list))
 
 (defun print-line-term (options number note dur &optional answer)
-  (let ((sep (args-column-separator options)))
+  (let ((sep (get-column-separator options)))
     (format t (concat "~&~"
-                      (args-column-number-size options)
+                      (get-column-number-size options)
                       "a~@[" sep "~"
-                      (args-column-notes-size options)
+                      (get-column-notes-size options)
                       "a~]~@[" sep "~"
-                      (args-column-dur-size options)
+                      (get-column-dur-size options)
                       "a~]~@[" sep "~"
-                      (args-column-chord-size options)
+                      (get-column-chord-size options)
                       "a~]" sep)
             number
-            (when (args-show-notes options) note)
-            (when (args-show-dur options) dur)
+            (when (get-show-notes options) note)
+            (when (get-show-dur options) dur)
             (when answer answer))))
 
 (defun hline-size (number-algorithms options &optional no-answer)
-  (+ (* (parse-integer (args-column-chord-size options)) number-algorithms)
+  (+ (* (parse-integer (get-column-chord-size options)) number-algorithms)
      number-algorithms
-     (1+ (parse-integer (args-column-number-size options)))
-     (if (args-show-notes options)
-         (1+ (parse-integer (args-column-notes-size options)))
+     (1+ (parse-integer (get-column-number-size options)))
+     (if (get-show-notes options)
+         (1+ (parse-integer (get-column-notes-size options)))
          0)
      (if no-answer
          0
-         (1+ (parse-integer (args-column-chord-size options))))
-     (if (args-show-dur options)
-         (1+ (parse-integer (args-column-dur-size options)))
+         (1+ (parse-integer (get-column-chord-size options))))
+     (if (get-show-dur options)
+         (1+ (parse-integer (get-column-dur-size options)))
          0)))
 
 (defun print-chord-column (options text)
-  (format t (concat "~" (args-column-chord-size options) "a" (args-column-separator options))
+  (format t (concat "~" (get-column-chord-size options) "a" (get-column-separator options))
           text))
 
 (defun print-footer-term (text size-line number-algorithms options)
   (let ((footer-size (- size-line
                         (1+ (length text))
                         number-algorithms
-                        (* number-algorithms (parse-integer (args-column-chord-size options))))))
-    (format t (concat "~&" text (repeat-string footer-size " ") (args-column-separator options)))))
+                        (* number-algorithms (parse-integer (get-column-chord-size options))))))
+    (format t (concat "~&" text (repeat-string footer-size " ") (get-column-separator options)))))
 
 (defun print-hline-term (size)
   (format t "~&~a" (repeat-string size "-")))
