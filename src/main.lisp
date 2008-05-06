@@ -84,7 +84,6 @@
   (loop
      for file in (get-files options)
      for segments = (sonorities (parse-file file))
-     do (print file)
      collect
        (make-analysis
         :segments segments
@@ -92,7 +91,7 @@
                          (get-algorithms options))
         :answer-sheet (new-parse-answer-sheet (pathname-name file) "chora") ;;==========================
         :file-name (pathname-name file)
-        :number-algorithms (length (get-algorithms options))
+
         :notes (mapcar #'list-events segments)
         :dur (durations segments))))
 
@@ -154,20 +153,19 @@
              (format t "~%")))))    
     (if (get-verbose options)
         (write-line string-result)
-        ;;(write-line (subseq (last1 (cl-ppcre:split "\\n" string-result)) 34))
-        )))
+        (write-line (subseq (last1 (cl-ppcre:split "\\n" string-result)) 34)))))
 
-(defun test (analysis options)
+(defun test (options analysis)
   (declare (ignorable analysis))
   (when (get-unit options) (unit options))
-  (when (get-regression options) (test analysis options)))
+  (when (get-regression options) (regression options)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun make-result-list (analysis)
   (apply #'mapcar #'list (analysis-results analysis)))
 
-(defun analysis-terminal (analysis options)
+(defun analysis-terminal (options analysis)
   (let* ((number-algorithms (analysis-number-algorithms analysis))
          (size-line (hline-size number-algorithms options)))
     (print-line-term options "#" "notes" "dur" "answer")
@@ -192,7 +190,7 @@
            (iter (for i in (mapcar (lambda (x) (% x seg-number)) right-answer-list))
                  (print-chord-column options (format nil "~,2f" i)))))))
 
-(defun analysis-terminal-no-answer (analysis options)
+(defun analysis-terminal-no-answer (options analysis)
   (let* ((number-algorithms (analysis-number-algorithms analysis))
          (size-line (hline-size number-algorithms options 'no-answer)))
     (print-line-term options "#" "notes" "dur")
@@ -209,10 +207,10 @@
           (finally
            (print-hline-term size-line)))))
 
-(defun analysis (analysis options)
+(defun analysis (options analysis)
   (iter (for anal in analysis)
-        (cond ((get-dont-compare options) (analysis-terminal-no-answer anal options))
-              ((analysis-answer-sheet anal) (analysis-terminal anal options))
+        (cond ((get-dont-compare options) (analysis-terminal-no-answer options anal))
+              ((analysis-answer-sheet anal) (analysis-terminal options anal))
               (t (print-warning (concat "the answer sheet for "
                                         (analysis-file-name anal)
                                         " doesn't exist"))
@@ -283,8 +281,9 @@
                    (maptrace it)
                    (maptrace it 'untrace))
               (with-profile options
-                (funcall (%string->symbol command) analysis options))
-              (dbg 'main "~a" (print-slots options)))
+                (funcall (%string->symbol command) options analysis))
+              ;;(dbg 'main "~a" (print-slots options))
+              )
         (print-help)))
   #+clisp(ext:exit)
   0)
