@@ -142,8 +142,8 @@
    (note-expr ignorable notes-list #'parser-cons))
   
   (note-expr
-   (NOTE octave-expr dur-expr  #'make-note)
-   (SKIP dur-expr #'make-skip)
+   (NOTE octave-expr ignorable dur-expr  #'make-note)
+   (SKIP ignorable dur-expr #'make-skip)
    (PARTIAL ignorable dur-expr #'make-anacruz))
 
   (octave-expr

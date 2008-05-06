@@ -63,23 +63,23 @@
 (defun durations (segmento)
   (mapcar (lambda (x) (event-dur (first x))) segmento))
 
-(defun make-note (nota &optional (octave "") (dur (make-instance 'dur-node :dur nil))  &rest ignore) 
-  (declare (ignore ignore))
+(defun make-note (nota &optional (octave "") igno (dur (make-instance 'dur-node :dur nil))  &rest ignore) 
+  (declare (ignore ignore igno))
   (make-note-sequence
    :notas (list
            (make-event :pitch (parse-note nota)
                        :octave (octave-from-string octave)
                        :dur (node-dur dur)
                        :start 0
-                       :text-repr (list nota octave dur ignore)
+                       :text-repr (list nota octave igno dur ignore)
                        :key *current-key*
                        :time-sig *current-sig*))
    :start 0
-   :text-repr (list nota octave dur ignore)
+   :text-repr (list nota octave igno dur ignore)
    :dur (node-dur dur)))
 
-(defun make-skip (skip dur ignore)
-  (make-note "s" "" dur ignore))
+(defun make-skip (skip igno dur ignore)
+  (make-note "s" "" igno dur ignore))
 
 (defun move-event (event tempo)
   "[DONTCHECK]"
