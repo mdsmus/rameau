@@ -104,7 +104,7 @@
    (iter (for (key value) in *commands*)
       (format t "~%~:@(* ~a~)~%" (substitute #\Space #\- key :test #'equal))
       (iter (for (short long help) in value)
-            (format t "~4a--~25a~a~%" short long help)))
+            (format t "~4T~4a--~25a ~a~%" short long (remove #\Newline help))))
    (rameau-quit))
 
 (defun print-warning (message)
