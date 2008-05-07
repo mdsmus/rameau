@@ -70,7 +70,7 @@
        for answer = (second exemplo)
        do (train-1nn coral answer n)))
 
-;(train-k1 *training-data*)
+;;(train-k1 *training-data*)
 
 (defun get-class (diff maxkey maxv)
   (declare (ignore maxkey))
@@ -94,7 +94,8 @@
            (setf nn (clip *k* (insert (list d key value) nn :key #'car))))
        finally (return (get-class diff (mapcar #'second nn) (mapcar #'third nn))))))
 
-(defun prepare-answers-k1 (coral)
+(defun prepare-answers-k1 (coral &rest ignore)
+  (declare (ignore ignore))
   (add-inversions coral (mapcar #'classify-k1 coral)))
 
 (register-algorithm "ES-Knn" #'prepare-answers-k1)
@@ -141,7 +142,7 @@
      for answer = (second exemplo)
      do (train-context-nn (contextualize coral *before-context* *after-context*) answer n)))
 
-;(train-context *training-data*)
+;;(train-context *training-data*)
 
 (defun classify-context (segmento)
   (let* ((diff (context-extract-diff segmento))
@@ -153,7 +154,8 @@
            (setf nn (clip *k-neighbors* (insert (list d key value) nn :key #'car))))
        finally (return (get-class diff (mapcar #'second nn) (mapcar #'third nn))))))
 
-(defun prepare-answers-context (coral)
+(defun prepare-answers-context (coral &rest ignore)
+  (declare (ignore ignore))
   (let ((c (contextualize coral *before-context* *after-context*)))
     (add-inversions coral (mapcar #'classify-context (butlast c *before-context*)))))
 

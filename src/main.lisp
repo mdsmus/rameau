@@ -281,20 +281,19 @@
               (iter (for (key value) in (parse-options command (rest command-list)))
                     (funcall key value options))
               (set-files (parse-files options) options)
-              ;;; bug em filter-algorithms
-              (print (filter-algorithms (get-algorithms options)))
               (set-algorithms (filter-algorithms (get-algorithms options)) options)
-              ;(for analysis = (analyse-files options))
+              (for analysis = (analyse-files options))
               ;; FIXME debug is not working
+              ;;; BUG: register-algorithm nao esta rodando na hora de carregar slime
               (aif (get-debug options)
                    (mapcar2 #'rameau-debug #'string->symbol it)
                    (rameau-undebug))
               (aif (get-trace options)
                    (maptrace it)
                    (maptrace it 'untrace))
-              ;(with-profile options
-              ;  (funcall (%string->symbol command) options analysis))
-              (dbg 'main "~a" (print-slots options))
+              (with-profile options
+                (funcall (%string->symbol command) options analysis))
+              ;;(dbg 'main "~a" (print-slots options))
               )
         (print-help)))
   #+clisp(ext:exit)

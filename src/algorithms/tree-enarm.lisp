@@ -81,7 +81,8 @@
   (declare (ignore args))
   (print-tree *chord-tree*))
 
-(defun do-classification (coral)
+(defun do-classification (coral &rest ignore)
+  (declare (ignore ignore))
   (dbg 'rameau::mostra-arvore "Arvore: ~/rameau-tree-enarm::show-chord-tree/ ~%" *chord-tree*)
   (add-inversions coral (mapcar #'chord-tree-classify coral)))
 
@@ -92,6 +93,6 @@
       (unzip *training-data*)
     (train-chord-tree corais gabaritos)))
 
-;;(do-train-chord-tree)
+(do-train-chord-tree)
 
 

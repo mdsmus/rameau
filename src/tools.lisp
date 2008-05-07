@@ -124,7 +124,6 @@ debugging)")
 (defun new-parse-answer-sheet (file substring)
   (let* ((dir (search-music-dirs substring "answer-sheets"))
          (full-file (concat dir (add-pop-ext file))))
-    (print full-file)
     (when (cl-fad:file-exists-p full-file)
       (read-chords (read-file-as-sexp full-file)))))
 

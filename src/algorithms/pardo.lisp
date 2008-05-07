@@ -156,7 +156,8 @@
                     :mode (second pardo)
                     :7th (third pardo)))))
 
-(defun pardo-classify (sonoritys)
+(defun pardo-classify (sonoritys &rest ignore)
+  (declare (ignore ignore))
   (with-system tempered
     (mapcar #'pardo->chord
             (reduce #'tie-break (mapcar #'pardo (temperado sonoritys))
@@ -184,11 +185,12 @@
 (defun incf-pardo (sonority)
   (pardo sonority *incf-pardo-templates*))
 
-(defun incf-pardo-classify (sonoritys)
+(defun incf-pardo-classify (sonorities &rest ignore)
+  (declare (ignore ignore))
   (add-inversions
-   sonoritys
+   sonorities
    (mapcar #'pardo->chord
-           (reduce #'tie-break (mapcar #'incf-pardo sonoritys)
+           (reduce #'tie-break (mapcar #'incf-pardo sonorities)
                    :from-end t :initial-value nil))))
 
 (register-algorithm "ES-PB" #'incf-pardo-classify)
