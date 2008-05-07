@@ -45,20 +45,20 @@
       ("gui"))
     "The 'list' at the end indicates that the flag accepts multiple values."))
 
-(defmacro make-args-class ()
-  `(defclass arguments ()
-     ,(append
-       (list '(substring :writer set-substring :reader get-substring
-         :initarg :substring :initform nil))
-       (iter (for item in (loop for (k v) in *commands* when v append (mapcar #'second v)))
-             (for writer = (intern (concat "SET-" (string-upcase item))))
-             (for reader = (intern (concat "GET-" (string-upcase item))))
-             (export (list writer reader))
-             (collect (list (intern (string-upcase item))
-                            :writer writer
-                            :reader reader
-                            :initarg (intern (string-upcase item) :keyword)
-                            :initform nil))))))
+(defun make-args-class ()
+  (eval `(defclass arguments ()
+           ,(append
+             (list '(substring :writer set-substring :reader get-substring
+                     :initarg :substring :initform nil))
+             (iter (for item in (loop for (k v) in *commands* when v append (mapcar #'second v)))
+                   (for writer = (intern (concat "SET-" (string-upcase item))))
+                   (for reader = (intern (concat "GET-" (string-upcase item))))
+                   (export (list writer reader))
+                   (collect (list (intern (string-upcase item))
+                                  :writer writer
+                                  :reader reader
+                                  :initarg (intern (string-upcase item) :keyword)
+                                  :initform nil)))))))
 
 
 (defun get-short-flag-name (command flag)
