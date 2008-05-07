@@ -8,11 +8,7 @@
 
 (in-package :rameau-neural)
 
-(defparameter *version* "-0005-")
-
-(defparameter *neural-path* (concat *rameau-path* "neural-nets/" "master" *version*))
-
-(defparameter *hidden-units* 22)
+(load "training")
 
 (defparameter *root-increment* 4)
 
@@ -142,87 +138,7 @@
         root)))
 
 
-(defvar *e-chord-net* nil)
-
-(defparameter *e-chord-net-file* (concat *neural-path* "e-chord-net.fann"))
-(defparameter *e-chord-net-train-data* (concat *neural-path* "e-chord-net-train.data"))
-
-(defun load-e-chord-net ()
-  (if (cl-fad:file-exists-p *e-chord-net-file*)
-      (setf *e-chord-net* (load-from-file *e-chord-net-file*))
-      (train-e-chord-net)))
-
-(defun save-e-chord-net ()
-  (save-to-file *e-chord-net* *e-chord-net-file*))
-
-(defun run-e-chord-net (x)
-  (let ((d (extract-diff x)))
-    (get-class-chord-net
-     d
-     (run-net *e-chord-net*
-              (make-sonority-pattern x d)))))
-
-(defun apply-e-chord-net (inputs)
-  (load-e-chord-net)
-  (add-inversions inputs (mapcar #'run-e-chord-net inputs)))
-
-(defun prepare-training-data-chord-net (coral gabarito &optional
-                                        (diff-func #'extract-diffs)
-                                        (feature #'make-sonority-pattern))
-  (loop for c in coral
-     for gab in gabarito
-     for ds = (funcall diff-func c)
-     if (listp gab)
-       nconc (prepare-training-data-chord-net (repeat-list (length gab) c)
-                                              gab diff-func feature)
-     else
-       nconc (loop for d in ds
-                nconc (list (list (funcall feature c d)
-                                  (make-chord-answer-pattern gab d))))))
-
-
-
-
-(defun make-training-data-e-chord-net ()
-  (loop for i in *training-data*
-     nconc (prepare-training-data-chord-net (first i) (second i))))
-
-(defun write-training-file-e-chord-net ()
-  (let* ((dados (make-training-data-e-chord-net))
-         (tamanho (length dados)))
-    (with-open-file (f *e-chord-net-train-data* :direction :output)
-      (format f "~a ~a ~a~%" tamanho 96 109)
-      (loop for d in dados
-         do
-           (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
-           (format f "~{~a ~}~%" (second d))))))
-
-(unless (cl-fad:file-exists-p *e-chord-net-train-data*)
-  (write-training-file-e-chord-net))
-
-(defun train-e-chord-net ()
-  (if (cl-fad:file-exists-p *e-chord-net-train-data*)
-      (progn
-        (setf *e-chord-net* (make-net 96 *hidden-units* 109))
-        (train-on-file *e-chord-net*
-                       *e-chord-net-train-data*
-                       1500
-                       100
-                       0.1)
-        (save-e-chord-net))
-      (progn
-        (write-training-file-e-chord-net)
-        (train-e-chord-net))))
-
-(unless (cl-fad:file-exists-p *e-chord-net-file*)
-  (train-e-chord-net))
-
 (register-algorithm "ES-net" #'apply-e-chord-net)
-
-(defparameter *context-net* nil)
-
-(defparameter *context-net-file* (concat *neural-path* "context-net.fann"))
-(defparameter *context-net-train-data* (concat *neural-path* "context-net-train.data"))
 
 (defparameter *context-before* 1)
 (defparameter *context-after* 1)
@@ -236,67 +152,5 @@
 (defun context-extrai-features (segmento &optional diff)
   (let ((diff (or diff (context-extract-diff segmento))))
     (loop for s in segmento nconc (make-sonority-pattern s diff))))
-
-(defun load-context-net ()
-  (if (cl-fad:file-exists-p *context-net-file*)
-      (setf *context-net* (load-from-file *context-net-file*))
-      (train-context-net)))
-
-(defun save-context-net ()
-  (save-to-file *context-net* *context-net-file*))
-
-(defun run-context-net (x)
-  (let ((d (context-extract-diff x)))
-    (get-class-chord-net
-     d
-     (run-net *context-net*
-              (context-extrai-features x d)))))
-
-(defun apply-context-net (inputs)
-  (load-context-net)
-  (let ((contexto (butlast (contextualize inputs *context-before* *context-after*)
-                           *context-before*)))
-    (add-inversions inputs (mapcar #'run-context-net contexto))))
-
-(defun make-training-data-context-net ()
-  (loop for i in *training-data*
-     nconc (prepare-training-data-chord-net (contextualize (first i)
-                                                                  *context-before*
-                                                                  *context-after*)
-                                                   (second i)
-                                                   #'context-extract-diffs
-                                                   #'context-extrai-features)))
-
-(defun write-training-file-context-net ()
-  (let* ((dados (make-training-data-context-net))
-         (tamanho (length dados)))
-    (with-open-file (f *context-net-train-data* :direction :output)
-      (format f "~a ~a ~a~%" tamanho (* (+ 1 *context-after* *context-before*) 96) 109)
-      (loop for d in dados
-         do
-           (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
-           (format f "~{~a ~}~%" (second d))))))
-
-(unless (cl-fad:file-exists-p *context-net-train-data*)
-  (write-training-file-context-net))
-
-(defun train-context-net ()
-  (if (cl-fad:file-exists-p *context-net-train-data*)
-      (progn
-        (setf *context-net* (make-net (* (+ 1 *context-after* *context-before*) 96)
-                                      *hidden-units*
-                                      109))
-        (train-on-file *context-net*
-                       *context-net-train-data*
-                       1500
-                       100
-                       0.1)
-        (save-context-net))
-      (progn
-        (write-training-file-context-net)
-        (train-context-net))))
-
-(unless (cl-fad:file-exists-p *context-net-file*)
-  (train-context-net))
 
 (register-algorithm "EC-net" #'apply-context-net)
