@@ -16,8 +16,8 @@
                #+sbcl(:file "sbcl")
                (:file "formato")
                (:file "segment")
-               ;;(:file "parser-grammar")
-               ;;(:file "parser")
+               (:file "parser")
+               (:file "parser-grammar")
                (:file "chords")
                (:file "tools")))
 

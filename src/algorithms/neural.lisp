@@ -4,8 +4,7 @@
 (defpackage :rameau-neural
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:import-from #:alexandria "SWITCH")
-  (:import-from #:rameau-options :get-e-chord-data :get-e-chord-fann :get-context-data :get-context-fann :get-hidden-units)
-  (:use #:cl #:fann #:rameau #:iterate))
+  (:use #:cl #:fann #:rameau #:iterate #:rameau-options))
 
 (in-package :rameau-neural)
 
