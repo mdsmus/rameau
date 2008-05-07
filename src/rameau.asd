@@ -49,5 +49,5 @@
   :version "4.0"
   :author "Alexandre Passos e Pedro Kroger"
   :depends-on (:rameau-pkg :algorithms :options)
-  :components ((:file "terminal" :depends-on ("main"))
-               (:file "main")))
+  :components ((:file "terminal")
+               (:file "main" :depends-on ("terminal"))))

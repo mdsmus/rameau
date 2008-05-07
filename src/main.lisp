@@ -1,6 +1,6 @@
 (defpackage :rameau-main
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
-  (:use :rameau :cl :cl-ppcre :lisp-unit :iterate :rameau-options)
+  (:use :rameau :cl :cl-ppcre :lisp-unit :iterate :rameau-options :rameau-terminal)
   (:export :main :check))
 
 (in-package :rameau-main)
