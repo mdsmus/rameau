@@ -169,7 +169,7 @@
     (get-class-chord-net d (run-net net (funcall fn x d)))))
 
 (defun write-training-file-net (data training-data value)
-  (with-open-file (f training-data :direction :output)
+  (with-open-file (f training-data :direction :output :if-exists :supersede)
     (iter (for size = (length data))
           (initially (format f "~a ~a ~a~%" size value 109))
           (for d in data)
@@ -209,14 +209,14 @@
   (loop for i in *training-data*
      nconc (prepare-training-data-net (first i) (second i))))
 
-(defun generate-e-chord-net (options)
+(defun generate-e-chord-net (options &optional force)
   (let ((data-file (get-e-chord-data options))
         (fann-file (get-e-chord-fann options)))
-    (unless (cl-fad:file-exists-p data-file)
+    (if (or force (not (cl-fad:file-exists-p data-file)))
       (write-training-file-net (e-chord-training-data)
                                data-file
                                96))
-    (unless (cl-fad:file-exists-p fann-file)
+    (if (or force (not (cl-fad:file-exists-p fann-file)))
       (train-e-chord-net options))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -250,14 +250,14 @@
     (add-inversions inputs (mapcar #L(run-my-net !1 *context-net* #'context-extract-features)
                                    context))))
 
-(defun generate-context-net (options)
+(defun generate-context-net (options &optional force)
   (let ((data-file (get-context-data options))
         (fann-file (get-context-fann options)))
-    (unless (cl-fad:file-exists-p data-file)
+    (if (or force (not (cl-fad:file-exists-p data-file)))
       (write-training-file-net (context-training-data)
                                data-file
                                (* (+ 1 *context-after* *context-before*) 96)))
-    (unless (cl-fad:file-exists-p fann-file)
+    (unless (or force (not (cl-fad:file-exists-p fann-file)))
       (train-context-net options))))
 
 (register-algorithm "ES-net" #'apply-e-chord-net)

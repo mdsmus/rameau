@@ -195,8 +195,8 @@
 
 (defcommand train-neural (options &rest ignore)
   (declare (ignore ignore))
-  (rameau-neural::generate-e-chord-net options)
-  (rameau-neural::generate-context-net options))
+  (rameau-neural::generate-e-chord-net options 'force)
+  (rameau-neural::generate-context-net options 'force))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -285,6 +285,7 @@
               (for analysis = (analyse-files options))
               ;; FIXME debug is not working
               ;;; BUG: register-algorithm nao esta rodando na hora de carregar slime
+              ;;; nem make-args macro
               (aif (get-debug options)
                    (mapcar2 #'rameau-debug #'string->symbol it)
                    (rameau-undebug))

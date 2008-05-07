@@ -27,17 +27,17 @@
         ("-i" "ignore" "ignora (não imprime) corais sem gabaritos")
         ("-c" "no-color" "don't use color in the answer")
         ("-s" "column-chord-size" "")
-        ("" "hidden-units" "" "")
-        ("" "context-data" "" "")
-        ("" "context-fann" "" "")
-        ("" "e-chord-data" "" "")
-        ("" "e-chord-fann" "" "")
         ("" "column-number-size" "")
         ("" "column-notes-size" "")
         ("" "column-dur-size" "")
         ("" "column-separator" "")
         ("" "wrong-answer-color" "")))
-      ("train-neural")
+      ("train-neural"
+       (("" "hidden-units" "" "")
+        ("" "context-data" "" "")
+        ("" "context-fann" "" "")
+        ("" "e-chord-data" "" "")
+        ("" "e-chord-fann" "" "")))
       ("test"
        (("-u" "unit" "")
         ("-r" "regression" "")))
@@ -99,5 +99,4 @@
   "Works for commands only"
   (get-item item *commands*))
 
-(eval-when (:compile-toplevel :load-toplevel)
-  (make-args-class))
+(make-args-class)
