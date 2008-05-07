@@ -141,14 +141,14 @@ debugging)")
                    (mapcar (lambda (file) (format nil "~a" file))
                            (directory (concat path "*" ext)))))))
 
-(defparameter *training-data* nil)
-;;;   (nconc (loop for f in (parse-file-list "chorales" '("001..6"))
-;;;             for g = (parse-answer-sheet f "chorales")
-;;;             collect (list (sonorities (parse-file f)) g))
-;;;          (loop for f in (mapcan (lambda (x) (parse-file-list "exemplos" (list x)))
-;;;                                 '("11..13" "23..28"))
-;;;             for g = (parse-answer-sheet f "exemplos")
-;;;             collect (list (sonorities (parse-file f)) g))))
+(defparameter *training-data*
+  (nconc (loop for f in (parse-file-list "chorales" '("001..6"))
+            for g = (parse-answer-sheet f "chorales")
+            collect (list (sonorities (parse-file f)) g))
+         (loop for f in (mapcan (lambda (x) (parse-file-list "exemplos" (list x)))
+                                '("11..13" "23..28"))
+            for g = (parse-answer-sheet f "exemplos")
+            collect (list (sonorities (parse-file f)) g))))
 
 (defun extract-feature-list (segmento diff)
   "Extract the feature list of a sonority givern its \\texttt{diff}."

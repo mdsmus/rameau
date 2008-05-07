@@ -2,7 +2,7 @@
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:use :rameau :cl :cl-ppcre :iterate)
   (:export :*commands* :get-long-flag-name :get-short-flag-name :get-star-in-flag
-           :get-substring :long-flag? :set-substring :short-flag? :arguments))
+           :get-substring :long-flag? :set-substring :short-flag? :arguments :make-args-class))
 
 (in-package :rameau-options)
 
@@ -99,5 +99,5 @@
   "Works for commands only"
   (get-item item *commands*))
 
-(make-args-class)
-
+(eval-when (:compile-toplevel :load-toplevel)
+  (make-args-class))
