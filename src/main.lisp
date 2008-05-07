@@ -80,7 +80,10 @@
    (rameau-quit))
 
 (defun print-warning (message)
-  (format t "WARNING: ~a~%" message))
+  (format t "~&WARNING: ~a~%" message))
+
+(defun print-fatal (message)
+  (format t "~&FATAL: ~a~%" message))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -143,6 +146,7 @@
 (defun analysis-terminal (options analysis)
   (let* ((number-algorithms (analysis-number-algorithms analysis))
          (size-line (hline-size number-algorithms options)))
+    (format t "~2%")
     (print-line-term options "#" "notes" "dur" "answer")
     (iter (for algo in (get-algorithms options))
           (print-chord-column options (algorithm-name algo)))
@@ -168,6 +172,7 @@
 (defun analysis-terminal-no-answer (options analysis)
   (let* ((number-algorithms (analysis-number-algorithms analysis))
          (size-line (hline-size number-algorithms options 'no-answer)))
+    (format t "~2%")
     (print-line-term options "#" "notes" "dur")
     (iter (for algo in (get-algorithms options))
           (print-chord-column options (algorithm-name algo)))
@@ -189,7 +194,7 @@
               (t (print-warning (concat "the answer sheet for "
                                         (analysis-file-name anal)
                                         " doesn't exist"))
-                 (analysis-terminal-no-answer anal options)))))
+                 (analysis-terminal-no-answer options anal)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -251,41 +256,40 @@
         (for s = (intern (concat "GET-" (symbol-name (sb-mop:slot-definition-name slot)))))
         (format t "~a: ~a~%" s (funcall s obj))))
 
-(defun main (&optional args)
-  "You can run main from the REPL with all arguments as a
-  string: (main \"analysis chorales -v -f 001\")"
-
-  (let* ((*package* (find-package :rameau-main))
-         (rameau-args (rameau-args))
-         (arguments (if rameau-args rameau-args (cl-ppcre:split " " args)))
-         (options (make-instance 'arguments))
-         (neural-path (concat *rameau-path* "neural-nets/" "master-0005-")))
-
+(defun default-arguments (options)
+  (let ((neural-path (concat *rameau-path* "neural-nets/master-0005-")))
+    (iter outer (for (k v) in *commands*)
+          (iter (for (short long doc init list) in v)
+                (for writer = (intern (concat "SET-" (string-upcase long))))
+                (funcall writer init options)))
     (set-context-fann (concat neural-path "context-net.fann") options)
     (set-context-data (concat neural-path "context-net-train.data") options)
     (set-e-chord-fann (concat neural-path "e-chord-net.fann") options)
-    (set-e-chord-data (concat neural-path "e-chord-net-train.data") options)
-    (set-hidden-units 22 options)
-    (set-max-print-error 10 options)
-    (set-column-chord-size "7" options)
-    (set-column-number-size "3" options)
-    (set-column-notes-size "12" options)
-    (set-column-dur-size "4" options)
-    (set-column-separator "|" options)
-    (set-wrong-answer-color "red" options)
+    (set-e-chord-data (concat neural-path "e-chord-net-train.data") options)))
 
+(defun main (&optional args)
+  "You can run main from the REPL with all arguments as a
+  string: (main \"analysis chorales -v -f 001\")"
+  (let* ((*package* (find-package :rameau-main))
+         (rameau-args (rameau-args))
+         (arguments (if rameau-args rameau-args (cl-ppcre:split " " args)))
+         (options (make-instance 'arguments)))
     (if arguments
         (iter (for command-list in (split-command-list arguments))
               (for cmd = (first command-list))
               (for command = (search-string-in-list cmd *command-names*))
+              ;;; revert to default arguments
+              (default-arguments options)
+              ;;; apply command-line options
               (iter (for (key value) in (parse-options command (rest command-list)))
                     (funcall key value options))
+              (when (or (get-help options) (string= cmd "-h")) (print-help))
+              ;;; parse file options
               (set-files (parse-files options) options)
+              ;;; parse algorithms options
               (set-algorithms (filter-algorithms (get-algorithms options)) options)
               (for analysis = (analyse-files options))
               ;; FIXME debug is not working
-              ;;; BUG: register-algorithm nao esta rodando na hora de carregar slime
-              ;;; nem make-args macro
               (aif (get-debug options)
                    (mapcar2 #'rameau-debug #'string->symbol it)
                    (rameau-undebug))
@@ -293,7 +297,12 @@
                    (maptrace it)
                    (maptrace it 'untrace))
               (with-profile options
-                (funcall (%string->symbol command) options analysis))
+                (if (and (string= command "analysis")
+                         (every #'null (mapcar #'analysis-segments analysis)))
+                    (progn
+                      (print-fatal "It seems I couldn't make the analysis. Check if your file is correct.")
+                      (rameau-quit))
+                    (funcall (%string->symbol command) options analysis)))
               ;;(dbg 'main "~a" (print-slots options))
               )
         (print-help)))

@@ -33,21 +33,19 @@
                                      (:file "knn")
                                      (:file "tree-enarm")))))
 
-(asdf:defsystem :tests
-  :depends-on (:rameau)
-  :components ((:file "test-utils")
-               (:file "test-musiclib")
-               (:file "test-formato")
-               (:file "test-parser")
-               (:file "test-segment")
-               (:file "test-chords")
-               (:file "test-tools")
-               (:file "test-main")))
-
 (asdf:defsystem :rameau
   :name "rameau"
   :version "4.0"
   :author "Alexandre Passos e Pedro Kroger"
   :depends-on (:rameau-pkg :algorithms :options)
   :components ((:file "terminal")
-               (:file "main" :depends-on ("terminal"))))
+               (:file "main" :depends-on ("terminal"))
+               (:module tests
+                        :components ((:file "test-utils")
+                                     (:file "test-musiclib")
+                                     (:file "test-formato")
+                                     (:file "test-parser")
+                                     (:file "test-segment")
+                                     (:file "test-chords")
+                                     (:file "test-tools")
+                                     (:file "test-main")))))

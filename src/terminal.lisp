@@ -77,7 +77,7 @@
                         (1+ (length text))
                         number-algorithms
                         (* number-algorithms (parse-integer (get-column-chord-size options))))))
-    (format t (concat "~&" text (repeat-string footer-size " ") (get-column-separator options)))))
+    (format t (concat "~&" text (repeat-string footer-size " ") (get-column-separator options)) "~%")))
 
 (defun print-hline-term (size)
   (format t "~&~a" (repeat-string size "-")))
