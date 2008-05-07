@@ -1,4 +1,3 @@
-
 (defpackage :rameau-base
   (:use #:cl)
   (:export #:*simbolos* #:export-rameau-symbols #:register-and-export-symbols))

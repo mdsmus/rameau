@@ -70,7 +70,7 @@
        for answer = (second exemplo)
        do (train-1nn coral answer n)))
 
-(train-k1 *training-data*)
+;(train-k1 *training-data*)
 
 (defun get-class (diff maxkey maxv)
   (declare (ignore maxkey))
@@ -141,7 +141,7 @@
      for answer = (second exemplo)
      do (train-context-nn (contextualize coral *before-context* *after-context*) answer n)))
 
-(train-context *training-data*)
+;(train-context *training-data*)
 
 (defun classify-context (segmento)
   (let* ((diff (context-extract-diff segmento))

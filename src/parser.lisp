@@ -94,7 +94,6 @@
   (":" (return (values 'COLON lexer:%0)))
   )
 
-
 (defclass ast-node ()
   ((expr :accessor node-expr :initarg :expr :initform nil)
    (textual-representation :accessor node-text :initarg :text :initform nil)))
@@ -293,7 +292,6 @@
 (defun parser-ign (a b)
   "[DONTCHECK]"
   (make-instance 'no-op-node :text (list a b)))
-
 
 ;; Metodos para processar a ast
 

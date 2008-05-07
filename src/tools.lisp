@@ -3,6 +3,8 @@
 ;;; As funções dependentes de implementação devem ficar aqui
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(enable-sharp-l-syntax)
+
 (defparameter *ignore-algorithms-files* nil
   "Use non-nil value to not load the algorithm files. (useful for
 debugging)")
@@ -108,12 +110,16 @@ debugging)")
     (when (cl-fad:file-exists-p nome-pop)
       (read-chords (read-file-as-sexp nome-pop)))))
 
+(defun search-string-in-list (substring list)
+  "Search for string in a list using a substring."
+  (first (remove-if-not #L(search substring !1 :test #'equalp) list)))
+
 (defun search-music-dirs (substring dir)
-  (first (remove-if-not (lambda (item) (search substring item :test #'equalp))
-                        (mapcar #'namestring
+  (search-string-in-list substring
+                         (mapcar #'namestring
                                 (directory (format nil "~a/~a/*/"
                                                    *rameau-path*
-                                                   dir))))))
+                                                   dir)))))
 
 (defun new-parse-answer-sheet (file substring)
   (let* ((dir (search-music-dirs substring "answer-sheets"))
@@ -135,14 +141,14 @@ debugging)")
                    (mapcar (lambda (file) (format nil "~a" file))
                            (directory (concat path "*" ext)))))))
 
-(defparameter *training-data*
-  (nconc (loop for f in (parse-file-list "chorales" '("001..6"))
-            for g = (parse-answer-sheet f "chorales")
-            collect (list (sonorities (parse-file f)) g))
-         (loop for f in (mapcan (lambda (x) (parse-file-list "exemplos" (list x)))
-                                '("11..13" "23..28"))
-            for g = (parse-answer-sheet f "exemplos")
-            collect (list (sonorities (parse-file f)) g))))
+(defparameter *training-data* nil)
+;;;   (nconc (loop for f in (parse-file-list "chorales" '("001..6"))
+;;;             for g = (parse-answer-sheet f "chorales")
+;;;             collect (list (sonorities (parse-file f)) g))
+;;;          (loop for f in (mapcan (lambda (x) (parse-file-list "exemplos" (list x)))
+;;;                                 '("11..13" "23..28"))
+;;;             for g = (parse-answer-sheet f "exemplos")
+;;;             collect (list (sonorities (parse-file f)) g))))
 
 (defun extract-feature-list (segmento diff)
   "Extract the feature list of a sonority givern its \\texttt{diff}."

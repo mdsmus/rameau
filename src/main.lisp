@@ -1,52 +1,24 @@
+(defpackage :rameau-main
+  (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
+  (:use :rameau :cl :cl-ppcre :lisp-unit :iterate :rameau-options)
+  (:export :main :check))
+
 (in-package :rameau-main)
 
-(eval-when (:compile-toplevel :load-toplevel)
-  (defparameter *commands*
-    '(("common-flags"
-       (("-h" "help" "ajuda")
-        ("-f" "files" "arquivos" list)
-        ("-p" "profile" "profile" list)
-        ("-a" "algorithms" "Usa <algoritmos> para fazer a análise" list)
-        ("-d" "debug" "ativa código de depuração para os itens i" list)
-        ("-v" "verbose" "verbose")
-        ("-t" "trace" "mostra o trace de <funções>" list)
-        ;;("-q" "quiet" "quiet")
-        ("-m" "max-print-error" "Quando o numero de arquivos que não são
-  parseados é maior que essa constante, rameau mostra apenas o start
-  da lista.")))
-      ("analysis"
-       (("" "dont-compare" "don't compare the results with the answer sheet")
-        ("-u" "show-dur" "")
-        ("-n" "show-notes" "")
-        ("-i" "ignore" "ignora (não imprime) corais sem gabaritos")
-        ("-c" "no-color" "don't use color in the answer")
-        ("-s" "column-chord-size" "")
-        ("" "column-number-size" "")
-        ("" "column-notes-size" "")
-        ("" "column-dur-size" "")
-        ("" "column-separator" "")
-        ("" "wrong-answer-color" "")))
-      ("test"
-       (("-u" "unit" "")
-        ("-r" "regression" "")))
-      ("check")
-      ("gui"))
-    "The 'list' at the end indicates that the flag accepts multiple values."))
+(enable-sharp-l-syntax)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defparameter *command-names* nil)
 
-(defmacro make-args-class ()
-  `(defclass arguments ()
-     ,(append
-       (list '(substring :writer set-substring :reader get-substring
-         :initarg :substring :initform nil))
-       (iter (for item in (mapcan #'get-command-slots (get-commands-assoc)))
-             (collect (list (%string->symbol item)
-                            :writer (%string->symbol (concat "SET-" (string-upcase item)))
-                            :reader (%string->symbol (concat "GET-" (string-upcase item)))
-                            :initarg (%string->symbol item :keyword)
-                            :initform nil))))))
-  
+(defmacro defcommand (name (&rest args) &body body)
+  "Wrapper to defun. Store the name of the command in *commands-names."
+  `(progn
+     (push (string-downcase (symbol-name ',name)) *command-names*)
+     (defun ,name ,args
+     ,@body)))
+
+(defun %string->symbol (string &optional (package #+sbcl(sb-int:sane-package) #-sbcl *package*))
+  (intern (string-upcase string) package))
+
 (defun parse-options (command list)
   "Parse the list of options to a structure."
   (loop for item in (sublist-of-args list) collect
@@ -90,7 +62,7 @@
      collect
        (make-analysis
         :segments segments
-        :results (mapcar #'(lambda (algo) (funcall (algorithm-classify algo) segments))
+        :results (mapcar #L(funcall (algorithm-classify !1) segments options)
                          (get-algorithms options))
         :answer-sheet (new-parse-answer-sheet (pathname-name file) (get-substring options))
         :file-name (pathname-name file)
@@ -158,7 +130,7 @@
         (write-line string-result)
         (write-line (subseq (last1 (cl-ppcre:split "\\n" string-result)) 34)))))
 
-(defun test (options analysis)
+(defcommand test (options analysis)
   (declare (ignorable analysis))
   (when (get-unit options) (unit options))
   (when (get-regression options) (regression options)))
@@ -210,7 +182,7 @@
           (finally
            (print-hline-term size-line)))))
 
-(defun analysis (options analysis)
+(defcommand analysis (options analysis)
   (iter (for anal in analysis)
         (cond ((get-dont-compare options) (analysis-terminal-no-answer options anal))
               ((analysis-answer-sheet anal) (analysis-terminal options anal))
@@ -220,6 +192,36 @@
                  (analysis-terminal-no-answer anal options)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defcommand train-neural (options &rest ignore)
+  (declare (ignore ignore))
+  (rameau-neural::generate-e-chord-net options)
+  (rameau-neural::generate-context-net options))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun split-command-list (command-list)
+  (let ((pos (position "and" command-list :test #'string=)))
+    (if pos
+        (append (list (subseq command-list 0 pos))
+                (split-command-list (subseq command-list (1+ pos))))
+        (list command-list))))
+
+(defun sublist-of-args (list)
+  "Separate the arguments in a list in sublist of arguments."
+  (labels ((next-flag (list)
+             (loop for x in (rest list) do
+                  (if (and (< 0 (length x)) (equal #\- (aref x 0)))
+                      (return x))))
+           (pos (list)
+             (let ((pos (position (next-flag list) list :test #'string=)))
+               (if pos pos 0))))
+    (when list
+      (if (next-flag list)
+          (let ((p (pos list)))
+            (cons (subseq list 0 p)
+                  (sublist-of-args (nthcdr p list))))
+          (list list)))))
 
 (defun parse-file-name (exp options)
   (unless (search ":" exp)
@@ -253,14 +255,17 @@
   "You can run main from the REPL with all arguments as a
   string: (main \"analysis chorales -v -f 001\")"
 
-  ;;; corrigir isso
-  (make-args-class)
-
   (let* ((*package* (find-package :rameau-main))
          (rameau-args (rameau-args))
          (arguments (if rameau-args rameau-args (cl-ppcre:split " " args)))
-         (options (make-instance 'arguments)))
-    ;; default values
+         (options (make-instance 'arguments))
+         (neural-path (concat *rameau-path* "neural-nets/" "master-0005-")))
+
+    (set-context-fann (concat neural-path "context-net.fann") options)
+    (set-context-data (concat neural-path "context-net-train.data") options)
+    (set-e-chord-fann (concat neural-path "e-chord-net.fann") options)
+    (set-e-chord-data (concat neural-path "e-chord-net-train.data") options)
+    (set-hidden-units 22 options)
     (set-max-print-error 10 options)
     (set-column-chord-size "7" options)
     (set-column-number-size "3" options)
@@ -271,12 +276,15 @@
 
     (if arguments
         (iter (for command-list in (split-command-list arguments))
-              (for command = (first command-list))
+              (for cmd = (first command-list))
+              (for command = (search-string-in-list cmd *command-names*))
               (iter (for (key value) in (parse-options command (rest command-list)))
                     (funcall key value options))
               (set-files (parse-files options) options)
+              ;;; bug em filter-algorithms
+              (print (filter-algorithms (get-algorithms options)))
               (set-algorithms (filter-algorithms (get-algorithms options)) options)
-              (for analysis = (analyse-files options))
+              ;(for analysis = (analyse-files options))
               ;; FIXME debug is not working
               (aif (get-debug options)
                    (mapcar2 #'rameau-debug #'string->symbol it)
@@ -284,9 +292,9 @@
               (aif (get-trace options)
                    (maptrace it)
                    (maptrace it 'untrace))
-              (with-profile options
-                (funcall (%string->symbol command) options analysis))
-              ;;(dbg 'main "~a" (print-slots options))
+              ;(with-profile options
+              ;  (funcall (%string->symbol command) options analysis))
+              (dbg 'main "~a" (print-slots options))
               )
         (print-help)))
   #+clisp(ext:exit)

@@ -72,6 +72,7 @@
    #:event-time-sig
    #:event-key
    #:make-event
+   #:search-string-in-list
    #:search-music-dirs
    #:processa-cifras
    #:register-algorithm
@@ -81,13 +82,12 @@
    #:transpose-segmentos
    #:transpose-chords
    )
-  (:import-from #:arnesi "AIF" "IT" "LAST1")
+  (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:import-from #:alexandria "SWITCH" "FLATTEN")
   (:use #:rameau-base #:genoslib  #:cl #:lisp-unit))
 
 (in-package :rameau)
 (export-rameau-symbols)
-
 
 (defstruct algorithm
   name

@@ -92,6 +92,6 @@
       (unzip *training-data*)
     (train-chord-tree corais gabaritos)))
 
-(do-train-chord-tree)
+;;(do-train-chord-tree)
 
 
