@@ -1,5 +1,5 @@
 (defpackage :rameau-main
-  (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1")
+  (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "SHARPL-READER" "ENABLE-SHARP-L-SYNTAX")
   (:use :rameau :cl :cl-ppcre :lisp-unit :iterate)
   (:export :main :check))
 

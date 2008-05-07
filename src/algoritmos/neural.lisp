@@ -2,7 +2,7 @@
   (asdf:oos 'asdf:load-op :fann))
 
 (defpackage :rameau-neural
-  (:import-from #:arnesi "AIF" "IT" "LAST1")
+    (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:import-from #:alexandria "SWITCH")
   (:use #:cl #:fann #:rameau))
 
