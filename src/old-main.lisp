@@ -11,7 +11,7 @@
 
 (defparameter *dados* '((teste ("unidade" "regressao" "lily"))
                         (analise ("corais" "kostka" "sonatas" "exemplos"))
-                        (partitura ("corais" "exemplos"))
+                        (partitura ("corais" "exemplos" "kostka"))
                         (tamanhos ("corais" "exemplos"))
                         (enarmonia ("corais"))
                         (check nil)
@@ -37,7 +37,8 @@
                         (("-e <estilo>" "seleciona estilo de impressão dos acordes errados (bold ou red)")))))
 
 (defparameter *singular* '(("corais" "coral")
-                           ("exemplos" "exemplo")))
+                           ("exemplos" "exemplo")
+                           ("kostka" "kostka")))
 
 (defun item-singular (item &optional (item-list *singular*))
   (if (equal (first (first item-list)) item)
@@ -239,7 +240,7 @@ ponto nos corais de bach."
       (format dentro-score "~a~%" (print-lyric "sonority"))
       (loop for a in *algorithms* collect
             (format dentro-score "~a~%" (print-lyric (algorithm-name a))))
-      (format dentro-score "~a~%" (print-lyric "Answer"))
+      (when gabarito (format dentro-score "~a~%" (print-lyric "Answer")))
       (let* ((ast (file-ast file))
              (score (first (get-children-by-type ast 'score)))
              (music (first-child (first-child (first (children score))))))

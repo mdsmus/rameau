@@ -138,7 +138,7 @@
 (defun parse-chord-dur (a chord b igno dur)
   "[DONTCHECK]"
   (when dur
-      (dolist (i chord)
+    (dolist (i (butlast (remove-if #'null (expand-if-list chord))))
         (setf (note-sequence-dur i) (node-dur dur))
         (dolist (j (note-sequence-notas i))
           (setf (event-dur j) (node-dur dur)))))
