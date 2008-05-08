@@ -78,8 +78,8 @@
    :text-repr (list nota octave igno dur ignore)
    :dur (node-dur dur)))
 
-(defun make-skip (skip igno dur ignore)
-  (make-note "s" "" igno dur ignore))
+(defun make-skip (skip igno dur)
+  (make-note "s" "" igno dur))
 
 (defun move-event (event tempo)
   "[DONTCHECK]"
@@ -100,9 +100,10 @@
   (if (note-sequence-p sequencias)
       sequencias
       (if (cdr sequencias)
-          (let* ((primeiro (car sequencias))
-                 (segundo (second sequencias))
+          (let* ((primeiro (sequence-expressions (car sequencias)))
+                 (segundo (sequence-expressions (second sequencias)))
                  (resto (cddr sequencias))
+                 ;(foo             (format t "pri: ~a~%" primeiro))
                  (movimentador (note-sequence-dur primeiro)))
             (setf (note-sequence-notas primeiro)
                   (nconc (note-sequence-notas primeiro)

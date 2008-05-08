@@ -5,108 +5,61 @@
 
 (in-package :rameau-main)
 
-(defparameter *commands*
-  '(("common-flags"
-     (("-h" "help" "ajuda")
-      ("-f" "files" "arquivos" list)
-      ("-p" "profile" "profile" list)
-      ("-a" "algorithms" "Usa <algoritmos> para fazer a análise" list)
-      ("-d" "debug" "ativa código de depuração para os itens i" list)
-      ("-v" "verbose" "verbose")
-      ("-t" "trace" "mostra o trace de <funções>" list)
-      ;;("-q" "quiet" "quiet")
-      ("-m" "max-print-error" "Quando o numero de arquivos que não são
-  parseados é maior que essa constante, rameau mostra apenas o start
-  da lista.")))
-    ("analysis"
-     (("-u" "show-dur" "")
-      ("-n" "show-notes" "")
-      ("-i" "ignore" "ignora (não imprime) corais sem gabaritos")
-      ("-c" "no-color" "don't use color in the answer")
-      ("-s" "column-chord-size" "")
-      ("" "column-number-size" "")
-      ("" "column-notes-size" "")
-      ("" "column-dur-size" "")
-      ("" "column-separator" "")
-      ("" "wrong-answer-color" "")))
-    ("test"
-     (("-u" "unit" "")
-      ("-r" "regression" "")))
-    ("check")
-    ("gui"))
-  "The star at the end indicates that the flag accepts multiple values.")
+(defparameter max-print-error 10
+  "Quando o numero de arquivos que não são parseados é maior que essa
+  constante, rameau mostra apenas o start da lista.")
 
-(defun parse-options (command list)
-  "Parse the list of options to a structure."
-  (loop for item in (sublist-of-args list) append
-       (destructuring-bind (flag &rest value) item
-         (list (cond ((long-flag? flag)
-                      (%string->symbol (get-long-flag-name command flag) :keyword))
-                     ((short-flag? flag)
-                      (%string->symbol (get-short-flag-name command flag) :keyword)))
-               (if value
-                   (if (get-star-in-flag command flag)
-                       value
-                       (first value))
-                   t)))))
+(defparameter *dados* '((teste ("unidade" "regressao" "lily"))
+                        (analise ("corais" "kostka" "sonatas" "exemplos"))
+                        (partitura ("corais" "exemplos" "kostka"))
+                        (tamanhos ("corais" "exemplos"))
+                        (enarmonia ("corais"))
+                        (check nil)
+                        (erros ("corais" "exemplos"))
+                        (acertos ("corais" "exemplos"))
+                        (resultados ("corais" "exemplos"))
+                        (dados ("corais" "exemplos"))))
 
-(defun rameau-args ()
-  (let ((sbcl-args #+sbcl sb-ext:*posix-argv*)
-        (cmu-args #+cmu extensions:*command-line-strings*)
-        (clisp-args #+clisp ext:*args*))
-    (cond (sbcl-args (rest sbcl-args))
-          (cmu-args (subseq cmu-args (1+ (position "cmurameau" cmu-args :test #'string=))))
-          (clisp-args clisp-args))))
 
-(defmacro with-profile (args &body body)
-  `(progn
-     (when (args-profile ,args)
-       (rameau-profile))
-     ,@body
-     (when (args-profile ,args)
-       (rameau-report))))
+(defparameter *help* '((todos
+                        (("-h" "ajuda")
+                         ("-f" "arquivos")
+                         ("-p" "profile")
+                         ("-a <algoritmos>" "Usa <algoritmos> para fazer a análise")
+                         ("-d i" "ativa código de depuração para os itens i")
+                         ("-v" "verbose")
+                         ("-t <funções>" "mostra o trace de <funções>")
+                         ("-m n" "o número de testes errados para imprimir")))
+                       (análise
+                        (("-i" "ignora (não imprime) corais sem gabaritos")
+                         ("-v" "mostra notas dos segmentos")))
+                       (partitura
+                        (("-e <estilo>" "seleciona estilo de impressão dos acordes errados (bold ou red)")))))
 
-(defun maptrace (lista-string &optional (trace 'trace))
-  (eval (append (list trace) (mapcar2 #'read-from-string #'string-upcase lista-string))))
+(defparameter *singular* '(("corais" "coral")
+                           ("exemplos" "exemplo")
+                           ("kostka" "kostka")))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun item-singular (item &optional (item-list *singular*))
+  (if (equal (first (first item-list)) item)
+      (second (first item-list))
+      (item-singular item (rest item-list))))
 
-(defun print-answer (&key file sheet results dur notes)
-  (mapcar #'(lambda (s r d n) (format t "~10a ~10a ~10a ~10a~%" s r d n))
-          sheet (first results) dur notes))
+(defun arg->list (list)
+  (when list
+    (if (next-flag list)
+        (let ((p (pos list)))
+          (cons (subseq list 0 p)
+                (arg->list (nthcdr p list))))
+        (list list))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defstruct analysis
-  segments results answer-sheet file-name notes dur size-answer-sheet
-  number-algorithms)
-
-(defun analyse-files (options)
-  (loop
-     for file in (args-files options)
-     for segments = (sonorities (parse-file file))
-     collect
-       (make-analysis
-        :segments segments
-        :results (mapcar #'(lambda (algo) (funcall (algorithm-classify algo) segments))
-                         (args-algorithms options))
-        :answer-sheet (new-parse-answer-sheet (pathname-name file) "chora") ;;==========================
-        :file-name (pathname-name file)
-        :number-algorithms (length (args-algorithms options))
-        :notes (mapcar #'list-events segments)
-        :dur (durations segments))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
- (defun print-help ()
-   (let ((*package* (find-package :rameau-main)))
-     (print (get-commands-assoc))
-     (rameau-quit)))
-
-(defun print-warning (message)
-  (format t "WARNING: ~a~%" message))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun intervalo (s1 s2)
+  "Retorna o intervalo entre dois segmentos."
+  (if (null s2)
+      0
+      (- (event-start (first s2))
+         (event-end (first s1)))))
 
 (defun print-condition (status file expr)
   (format t "[~a] ~a: ~a~%" status (pathname-name file) expr))
@@ -180,38 +133,6 @@ ponto nos corais de bach."
                   n
                   (list n))))))
 
-(defun print-score (stream lyric)
-  (format stream "\\score {
-  <<
-    \\new Staff {
-      <<
-        \\global
-        \\new Voice = \"soprano\" { \\voiceOne \\soprano }
-        \\new Voice = \"alto\" { \\voiceTwo \\alto }
-      >>
-    }
-    \\new Staff {
-      <<
-        \\global
-        \\clef \"bass\"
-        \\new Devnull= \"nowhere\" \\texto
-        \\new Voice = \"tenor\" {\\voiceOne \\tenor }
-        \\new Voice = \"baixo\" { \\voiceTwo \\baixo \\bar \"|.\"}
-      >>
-    }
-   ~a
-  >>
-
-  \\layout {
-    \\context {
-      \\Lyrics
-      \\override LyricSpace #'minimum-distance = #1.0
-      \\override LyricText #'font-size = #-1
-      \\override LyricText #'font-family = #'roman
-    }
-  }
-  \\midi {}
-}~%~%" lyric))
 
 (defun print-lyric (name)
   (format nil "\\new Lyrics \\lyricsto \"nowhere\" \\~a~%" (remove #\- name)))
@@ -232,24 +153,26 @@ ponto nos corais de bach."
                        (get-item (concat item "-include") *lily-dir-list*  #'equal)))
          (file-name (pathname-name file))
          (dir (get-item item *lily-dir-list* #'equal))
-         (out-file (format nil "~a/~a/~a-~a.ly" *rameau-path* dir (item-singular item) file-name)))
+         (out-file (format nil "~a/~a/~a-~a.ly" *rameau-path* dir (item-singular item) file-name))
+         (variaveis (make-string-output-stream))
+         (dentro-score (make-string-output-stream))
+         )
     (with-open-file (stream out-file :direction :output :if-exists :supersede)
-      (format stream "~a~%" (file-string (concat path file-name ".lyi")))
       (multiple-value-bind (durs first-rest) (print-duracoes notas)
         (if first-rest
-            (format stream "texto = {~{s~a ~} ~{c~a ~}}~%~%" first-rest durs)
-            (format stream "texto = {~{c~a ~}}~%~%" durs)))
+            (format variaveis "texto = {~{s~a ~} ~{c~a ~}}~%~%" first-rest durs)
+            (format variaveis "texto = {~{c~a ~}}~%~%" durs)))
       (when gabarito
-        (with-print-cifra (stream "Answer")
+        (with-print-cifra (variaveis "Answer")
           (loop for i in gabarito
              for s = notas then (rest s)
              unless s return it
-             do (format stream "\"~a\" ~%" i)
+             do (format variaveis "\"~a\" ~%" i)
              unless (= 0 (intervalo (first s) (second s)))
-             do (format stream "\" \" "))))
+             do (format variaveis "\" \" "))))
       (loop for a in *algorithms*
          for r in resultados do
-           (with-print-cifra (stream (algorithm-name a))
+           (with-print-cifra (variaveis (algorithm-name a))
              (loop
                 for alg-lista = r then (rest alg-lista)
                 for gab-lista = gabarito then (rest gab-lista)
@@ -259,29 +182,46 @@ ponto nos corais de bach."
                 unless s return 0
                 unless alg-lista return 0
                 if (run-algorithm a res gab) do
-                  (format stream "\"~a\" " (if res res " "))
+                  (format variaveis "\"~a\" ~%" (if res res " "))
                 else do
-                  (format stream
+                  (format variaveis
                           ;;"\\markup{\\roman \\italic \\bold \"~a\"}"
                           "\\markup{\\bold \\with-color #(x11-color 'red) \"~a\"}"
                           (if res res " "))
                 unless (= 0 (intervalo (first s) (second s))) do
-                  (format stream "\" \""))))
-      (with-print-cifra (stream "sonority")
+                  (format variaveis "\" \""))))
+      (with-print-cifra (variaveis "sonority")
         (loop for x from 1
            for s = notas then (rest s)
            unless s return 0
-           do (format stream "\"~a\" " x)
+           do (format variaveis "\"~a\" " x)
            unless (= 0 (intervalo (first s) (second s)))
-           do (format stream "\" \" ")))
-      (print-score stream (reduce #'concat
-                                  (append
-                                   (list (print-lyric "sonority"))
-                                   (loop for a in *algorithms* collect
-                                        (print-lyric (algorithm-name a)))
-                                   (list
-                                    (when gabarito
-                                      (print-lyric "Answer")))))))))
+           do (format variaveis "\" \" ")))
+      (format dentro-score "~a~%" (print-lyric "sonority"))
+      (loop for a in *algorithms* collect
+            (format dentro-score "~a~%" (print-lyric (algorithm-name a))))
+      (when gabarito (format dentro-score "~a~%" (print-lyric "Answer")))
+      (let* ((ast (file-ast file))
+             (score (first (get-children-by-type ast 'score)))
+             (music (first-child (first-child (first (children score))))))
+        (setf (node-text score) (append (list (get-output-stream-string variaveis))
+                                        (node-text score))
+              (node-text music) (append (list "<< \\new Devnull= \"nowhere\" \\texto  ")
+                                        (node-text music)
+                                        (list (get-output-stream-string dentro-score))
+                                        (list " >> 
+  \\layout {
+    \\context {
+      \\Lyrics
+      \\override LyricSpace #'minimum-distance = #1.0
+      \\override LyricText #'font-size = #-1
+      \\override LyricText #'font-family = #'roman
+    }
+  }
+  \\midi {}
+")))
+        (format stream "~a" (print-ast (cdr ast)))))))
+              
 
 (defun print-gabarito (arquivo gabarito resultados flags &key notas dur)
   (let ((*package* (find-package :rameau))

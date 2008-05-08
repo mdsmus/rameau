@@ -14,6 +14,12 @@
    #:al+6
    #:fr+6
    #:it+6
+   #:score
+   #:staff
+   #:music-block
+   #:music-list
+   #:no-op-node
+   #:simultaneous
    #:*algorithms*
    #:*training-data*
    #:*lily-dir-list*
@@ -25,6 +31,7 @@
    #:augmented-sixth-type
    #:augmented-sixth-template
    #:durations
+   #:children
    #:chord-root
    #:chord-mode
    #:chord-7th
@@ -39,8 +46,10 @@
    #:filter-algorithms
    #:file-ast
    #:first-string
+   #:first-child
    #:get-comandos
    #:get-parsed-notes
+   #:get-children-by-type
    #:get-ast-string
    #:getenv
    #:list-events

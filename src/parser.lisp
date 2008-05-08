@@ -137,7 +137,7 @@
 (defun parse-chord-dur (a chord b igno dur)
   "[DONTCHECK]"
   (when dur
-      (dolist (i chord)
+    (dolist (i (butlast (remove-if #'null (expand-if-list chord))))
         (setf (note-sequence-dur i) (node-dur dur))
         (dolist (j (note-sequence-notas i))
           (setf (event-dur j) (node-dur dur)))))
@@ -360,6 +360,71 @@
 (defmethod print-ast (node)
   (format nil "~a" (or node "")))
 
+(defgeneric first-child (node)
+  (:documentation "The first child of an AST node"))
+
+(defmethod first-child ((node ast-node))
+  (first-child (node-expr node)))
+
+(defmethod first-child ((node music-list))
+  (car (node-expr node)))
+
+(defmethod first-child ((node list))
+  (when node
+    (first node)))
+
+(defmethod first-child (node)
+  node)
+
+(defgeneric children (node)
+  (:documentation "List the immediate childs of \\texttt{node}"))
+
+(defmethod children ((node ast-node))
+  (expand-if-list (node-expr node)))
+   
+(defmethod children ((node music-list))
+  (cons (car (node-expr node)) (children (cdr (node-expr node)))))
+
+(defmethod children ((node list))
+  (when node
+    (cons (car node) (children (cdr node)))))
+
+(defmethod children (node)
+  node)
+
+(defgeneric expand-if-list (node)
+  (:documentation "Expand a music list if and only if it is a music list"))
+
+(defmethod expand-if-list (node) (list node))
+(defmethod expand-if-list ((node music-list))
+  (nconc (expand-if-list (car (node-expr node))) (expand-if-list (cdr (node-expr node)))))
+
+
+(defgeneric %get-children-by-type (node type)
+  (:documentation "List the childs of \\textt{node} that are of type \\texttt{type}"))
+
+(defmethod %get-children-by-type ((node ast-node) type)
+  (if (typep node type)
+      (list node)
+    (%get-children-by-type (node-expr node) type)))
+
+(defmethod %get-children-by-type ((node list) type)
+  (when node
+    (mapcan (lambda (x) (get-children-by-type x type)) node)))
+
+(defmethod %get-children-by-type ((node music-list) type)
+  (cons (%get-children-by-type (first (node-expr node)) type)
+        (%get-children-by-type (rest (node-expr node)) type)))
+
+(defmethod %get-children-by-type (node type))
+
+(defun get-children-by-type (ast type)
+  (if (and (listp ast) (numberp (car ast)))
+      (remove-if #'null (flatten (%get-children-by-type (cdr ast) type)))
+    (remove-if #'null (flatten (%get-children-by-type ast type)))))
+    
+    
+      
 
 (defgeneric process-ast (astnode)
   (:documentation "Process an AST node and extract the notes. [DONTCHECK]"))

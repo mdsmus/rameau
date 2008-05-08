@@ -55,10 +55,8 @@
              (:print-function
               (lambda (struct stream depth)
                 (declare (ignore struct depth))
-                (format stream
-                        #-sbcl "--"
-                        #+sbcl (if (unicode-term stream)
-                                   "—"
+                (format stream (if (unicode-term stream)
+                                   "--"
                                    "--")))))
   notes)
 
