@@ -33,7 +33,7 @@
         ("" "column-separator" "" "|")
         ("" "wrong-answer-color" "" "red")))
       ("train-neural"
-       (("" "hidden-units" "" "" 22)
+       (("" "hidden-units" "" 22)
         ("" "context-data" "" "")
         ("" "context-fann" "" "")
         ("" "e-chord-data" "" "")
