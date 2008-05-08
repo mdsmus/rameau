@@ -172,38 +172,6 @@ ponto nos corais de bach."
                   n
                   (list n))))))
 
-(defun print-score (stream lyric)
-  (format stream "\\score {
-  <<
-    \\new Staff {
-      <<
-        \\global
-        \\new Voice = \"soprano\" { \\voiceOne \\soprano }
-        \\new Voice = \"alto\" { \\voiceTwo \\alto }
-      >>
-    }
-    \\new Staff {
-      <<
-        \\global
-        \\clef \"bass\"
-        \\new Devnull= \"nowhere\" \\texto
-        \\new Voice = \"tenor\" {\\voiceOne \\tenor }
-        \\new Voice = \"baixo\" { \\voiceTwo \\baixo \\bar \"|.\"}
-      >>
-    }
-   ~a
-  >>
-
-  \\layout {
-    \\context {
-      \\Lyrics
-      \\override LyricSpace #'minimum-distance = #1.0
-      \\override LyricText #'font-size = #-1
-      \\override LyricText #'font-family = #'roman
-    }
-  }
-  \\midi {}
-}~%~%" lyric))
 
 (defun print-lyric (name)
   (format nil "\\new Lyrics \\lyricsto \"nowhere\" \\~a~%" (remove #\- name)))
