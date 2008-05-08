@@ -14,6 +14,12 @@
    #:al+6
    #:fr+6
    #:it+6
+   #:score
+   #:staff
+   #:music-block
+   #:music-list
+   #:no-op-node
+   #:simultaneous
    #:*algorithms*
    #:*training-data*
    #:*lily-dir-list*

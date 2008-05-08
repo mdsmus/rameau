@@ -56,7 +56,7 @@
               (lambda (struct stream depth)
                 (declare (ignore struct depth))
                 (format stream (if (unicode-term stream)
-                                   "—"
+                                   "--"
                                    "--")))))
   notes)
 

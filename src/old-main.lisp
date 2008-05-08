@@ -224,24 +224,26 @@ ponto nos corais de bach."
                        (get-item (concat item "-include") *lily-dir-list*  #'equal)))
          (file-name (pathname-name file))
          (dir (get-item item *lily-dir-list* #'equal))
-         (out-file (format nil "~a/~a/~a-~a.ly" *rameau-path* dir (item-singular item) file-name)))
+         (out-file (format nil "~a/~a/~a-~a.ly" *rameau-path* dir (item-singular item) file-name))
+         (variaveis (make-string-output-stream))
+         (dentro-score (make-string-output-stream))
+         )
     (with-open-file (stream out-file :direction :output :if-exists :supersede)
-      (format stream "~a~%" (file-string (concat path file-name ".lyi")))
       (multiple-value-bind (durs first-rest) (print-duracoes notas)
         (if first-rest
-            (format stream "texto = {~{s~a ~} ~{c~a ~}}~%~%" first-rest durs)
-            (format stream "texto = {~{c~a ~}}~%~%" durs)))
+            (format variaveis "texto = {~{s~a ~} ~{c~a ~}}~%~%" first-rest durs)
+            (format variaveis "texto = {~{c~a ~}}~%~%" durs)))
       (when gabarito
-        (with-print-cifra (stream "Answer")
+        (with-print-cifra (variaveis "Answer")
           (loop for i in gabarito
              for s = notas then (rest s)
              unless s return it
-             do (format stream "\"~a\" ~%" i)
+             do (format variaveis "\"~a\" ~%" i)
              unless (= 0 (intervalo (first s) (second s)))
-             do (format stream "\" \" "))))
+             do (format variaveis "\" \" "))))
       (loop for a in *algorithms*
          for r in resultados do
-           (with-print-cifra (stream (algorithm-name a))
+           (with-print-cifra (variaveis (algorithm-name a))
              (loop
                 for alg-lista = r then (rest alg-lista)
                 for gab-lista = gabarito then (rest gab-lista)
@@ -251,29 +253,46 @@ ponto nos corais de bach."
                 unless s return 0
                 unless alg-lista return 0
                 if (run-algorithm a res gab) do
-                  (format stream "\"~a\" " (if res res " "))
+                  (format variaveis "\"~a\" ~%" (if res res " "))
                 else do
-                  (format stream
+                  (format variaveis
                           ;;"\\markup{\\roman \\italic \\bold \"~a\"}"
                           "\\markup{\\bold \\with-color #(x11-color 'red) \"~a\"}"
                           (if res res " "))
                 unless (= 0 (intervalo (first s) (second s))) do
-                  (format stream "\" \""))))
-      (with-print-cifra (stream "sonority")
+                  (format variaveis "\" \""))))
+      (with-print-cifra (variaveis "sonority")
         (loop for x from 1
            for s = notas then (rest s)
            unless s return 0
-           do (format stream "\"~a\" " x)
+           do (format variaveis "\"~a\" " x)
            unless (= 0 (intervalo (first s) (second s)))
-           do (format stream "\" \" ")))
-      (print-score stream (reduce #'concat
-                                  (append
-                                   (list (print-lyric "sonority"))
-                                   (loop for a in *algorithms* collect
-                                        (print-lyric (algorithm-name a)))
-                                   (list
-                                    (when gabarito
-                                      (print-lyric "Answer")))))))))
+           do (format variaveis "\" \" ")))
+      (format dentro-score "~a~%" (print-lyric "sonority"))
+      (loop for a in *algorithms* collect
+            (format dentro-score "~a~%" (print-lyric (algorithm-name a))))
+      (format dentro-score "~a~%" (print-lyric "Answer"))
+      (let* ((ast (file-ast file))
+             (score (first (get-children-by-type ast 'score)))
+             (music (first-child (first-child (first (children score))))))
+        (setf (node-text score) (append (list (get-output-stream-string variaveis))
+                                        (node-text score))
+              (node-text music) (append (list "<< \\new Devnull= \"nowhere\" \\texto  ")
+                                        (node-text music)
+                                        (list (get-output-stream-string dentro-score))
+                                        (list " >> 
+  \\layout {
+    \\context {
+      \\Lyrics
+      \\override LyricSpace #'minimum-distance = #1.0
+      \\override LyricText #'font-size = #-1
+      \\override LyricText #'font-family = #'roman
+    }
+  }
+  \\midi {}
+")))
+        (format stream "~a" (print-ast (cdr ast)))))))
+              
 
 (defun print-gabarito (arquivo gabarito resultados flags &key notas dur)
   (let ((*package* (find-package :rameau))
