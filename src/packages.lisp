@@ -25,6 +25,7 @@
    #:augmented-sixth-type
    #:augmented-sixth-template
    #:durations
+   #:children
    #:chord-root
    #:chord-mode
    #:chord-7th
@@ -38,8 +39,10 @@
    #:filter-algorithms
    #:file-ast
    #:first-string
+   #:first-child
    #:get-comandos
    #:get-parsed-notes
+   #:get-children-by-type
    #:get-ast-string
    #:getenv
    #:list-events
