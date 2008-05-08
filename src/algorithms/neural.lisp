@@ -164,11 +164,12 @@
                 nconc (list (list (funcall feature c d)
                                   (make-chord-answer-pattern gab d))))))
 
-(defun run-my-net (x net fn)
-  (let ((d (extract-diff x)))
+(defun run-my-net (x net extract-diff-fn fn)
+  (let ((d (funcall extract-diff-fn x)))
     (get-class-chord-net d (run-net net (funcall fn x d)))))
 
 (defun write-training-file-net (data training-data value)
+  (format t "* writing training data ~a~%" training-data)
   (with-open-file (f training-data :direction :output :if-exists :supersede)
     (iter (for size = (length data))
           (initially (format f "~a ~a ~a~%" size value 109))
@@ -180,11 +181,13 @@
   (if (cl-fad:file-exists-p training-data)
       (progn
         (setf (symbol-value net) (make-net value hidden-units 109))
+        (format t "* training the network~%")
         (train-on-file (symbol-value net) training-data 1500 100 0.1)
+        (format t "* saving ~a~%" net-file)
         (save-to-file (symbol-value net) net-file))
       (progn
         (write-training-file-net data training-data value)
-        (train-net training-data value net net-file data hidden-units))))
+        (train-net net training-data value net-file data hidden-units))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -203,11 +206,11 @@
     (if (cl-fad:file-exists-p fann-file)
         (setf *e-chord-net* (load-from-file fann-file))
         (train-e-chord-net options))
-    (add-inversions inputs (mapcar #L(run-my-net !1 *e-chord-net* #'make-sonority-pattern) inputs))))
+    (add-inversions inputs (mapcar #L(run-my-net !1 *e-chord-net* #'extract-diff #'make-sonority-pattern)
+                                   inputs))))
 
 (defun e-chord-training-data ()
-  (loop for i in *training-data*
-     nconc (prepare-training-data-net (first i) (second i))))
+  (loop for (a b) in *training-data* nconc (prepare-training-data-net a b)))
 
 (defun generate-e-chord-net (options &optional force)
   (let ((data-file (get-e-chord-data options))
@@ -218,6 +221,8 @@
                                96))
     (if (or force (not (cl-fad:file-exists-p fann-file)))
       (train-e-chord-net options))))
+
+(register-algorithm "ES-net" #'apply-e-chord-net)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -232,11 +237,9 @@
                (get-hidden-units options))))
 
 (defun context-training-data ()
-  (loop for i in *training-data* nconc
-       (prepare-training-data-net (contextualize (first i)
-                                                 *context-before*
-                                                 *context-after*)
-                                  (second i)
+  (loop for (a b) in *training-data* nconc
+       (prepare-training-data-net (contextualize a *context-before* *context-after*)
+                                  b
                                   #'context-extract-diffs
                                   #'context-extract-features)))
 
@@ -247,7 +250,7 @@
     (if (cl-fad:file-exists-p fann-file)
         (setf *context-net* (load-from-file fann-file))
         (train-context-net options))
-    (add-inversions inputs (mapcar #L(run-my-net !1 *context-net* #'context-extract-features)
+    (add-inversions inputs (mapcar #L(run-my-net !1 *context-net* #'context-extract-diff #'context-extract-features)
                                    context))))
 
 (defun generate-context-net (options &optional force)
@@ -259,7 +262,5 @@
                                (* (+ 1 *context-after* *context-before*) 96)))
     (unless (or force (not (cl-fad:file-exists-p fann-file)))
       (train-context-net options))))
-
-(register-algorithm "ES-net" #'apply-e-chord-net)
 
 (register-algorithm "EC-net" #'apply-context-net)
