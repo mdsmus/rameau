@@ -28,9 +28,15 @@
                      ((short-flag? flag)
                       (%string->symbol (concat "SET-" (get-short-flag-name command flag)))))
                (if value
-                   (if (get-star-in-flag command flag)
-                       value
-                       (first value))
+                   (let ((type (cond ((long-flag? flag)
+                                      ;; FIXME: that's ugly
+                                      (get-type-by-name command (remove #\- flag :count 2)))
+                                     ((short-flag? flag)
+                                      (get-type-by-flag command flag)))))
+                     (case type
+                       (type-list value)
+                       (type-integer (parse-integer (first value)))
+                       (t (first value))))
                    t)))))
 
 (defun rameau-args ()

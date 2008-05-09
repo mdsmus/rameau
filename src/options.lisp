@@ -1,8 +1,9 @@
 (defpackage :rameau-options
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:use :rameau :cl :cl-ppcre :iterate)
-  (:export :*commands* :get-long-flag-name :get-short-flag-name :get-star-in-flag
-           :get-substring :long-flag? :set-substring :short-flag? :arguments :make-args-class))
+  (:export :*commands* :get-long-flag-name :get-short-flag-name :get-type-by-flag
+           :get-substring :long-flag? :set-substring :short-flag? :arguments
+           :make-args-class :type-list :type-integer :get-type-by-name))
 
 (in-package :rameau-options)
 
@@ -10,12 +11,12 @@
   (defparameter *commands*
     '(("common-flags"
        (("-h" "help" "ajuda")
-        ("-f" "files" "arquivos" nil list)
-        ("-p" "profile" "profile" nil list)
-        ("-a" "algorithms" "Usa <algoritmos> para fazer a análise" nil list)
-        ("-d" "debug" "ativa código de depuração para os itens i" nil list)
+        ("-f" "files" "arquivos" nil type-list)
+        ("-p" "profile" "profile" nil type-list)
+        ("-a" "algorithms" "Usa <algoritmos> para fazer a análise" nil type-list)
+        ("-d" "debug" "ativa código de depuração para os itens i" nil type-list)
         ("-v" "verbose" "verbose")
-        ("-t" "trace" "mostra o trace de <funções>" nil list)
+        ("-t" "trace" "mostra o trace de <funções>" nil type-list)
         ;;("-q" "quiet" "quiet")
         ("-m" "max-print-error" "Quando o numero de arquivos que não são
   parseados é maior que essa constante, rameau mostra apenas o start
@@ -33,7 +34,7 @@
         ("" "column-separator" "" "|")
         ("" "wrong-answer-color" "" "red")))
       ("train-neural"
-       (("" "hidden-units" "" 22)
+       (("" "hidden-units" "" 22 type-integer)
         ("" "context-data" "" "")
         ("" "context-fann" "" "")
         ("" "e-chord-data" "" "")
@@ -70,8 +71,11 @@
 (defun get-default-in-flag (command flag)
   (third (find-flag command flag)))
 
-(defun get-star-in-flag (command flag)
+(defun get-type-by-flag (command flag)
   (fifth (find-flag command flag)))
+
+(defun get-type-by-name (command name)
+  (fifth (find-flag-by-name command name)))
 
 (defun find-flag-by-name (command name)
   (or (find name (get-item "common-flags" *commands*) :key #'second :test #'string=)
