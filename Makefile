@@ -12,7 +12,7 @@ else
 	clisp = clisp -ansi -K full
 endif
 
-lisp-files = $(wildcard src/*asd src/*.lisp src/lib/*.lisp tools/*.lisp src/algoritmos/*.lisp)
+lisp-files = $(wildcard src/*asd src/*.lisp src/lib/*.lisp tools/*.lisp src/algorithms/*.lisp)
 corais-lyi = $(wildcard literatura/bach-corais/*.lyi)
 corais-png = $(notdir $(patsubst %.lyi,%.png,$(corais-lyi)))
 corais-png-partitura = $(addprefix coral-,$(notdir $(patsubst %.lyi,%.png,$(corais-lyi))))
