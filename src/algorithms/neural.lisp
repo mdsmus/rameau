@@ -169,13 +169,13 @@
     (get-class-chord-net d (run-net net (funcall fn x d)))))
 
 (defun write-training-file-net (data training-data value)
-  (format t "* writing training data ~a~%" training-data)
-  (with-open-file (f training-data :direction :output :if-exists :supersede)
-    (iter (for size = (length data))
-          (initially (format f "~a ~a ~a~%" size value 109))
-          (for d in data)
-          (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
-          (format f "~{~a ~}~%" (second d)))))
+  (let ((size (length data)))
+    (format t "* writing training data ~a~%" training-data)
+    (with-open-file (f training-data :direction :output :if-exists :supersede)
+      (iter (initially (format f "~a ~a ~a~%" size value 109))
+            (for d in data)
+            (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
+            (format f "~{~a ~}~%" (second d))))))
 
 (defun train-net (net training-data value net-file data hidden-units)
   (if (cl-fad:file-exists-p training-data)
@@ -216,9 +216,9 @@
   (let ((data-file (get-e-chord-data options))
         (fann-file (get-e-chord-fann options)))
     (if (or force (not (cl-fad:file-exists-p data-file)))
-      (write-training-file-net (e-chord-training-data)
-                               data-file
-                               96))
+        (write-training-file-net (e-chord-training-data)
+                                 data-file
+                                 96))
     (if (or force (not (cl-fad:file-exists-p fann-file)))
       (train-e-chord-net options))))
 
