@@ -1,9 +1,8 @@
 (defpackage :rameau-options
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
-  (:use :rameau :cl :cl-ppcre :iterate)
-  (:export :*commands* :get-long-flag-name :get-short-flag-name :get-type-by-flag
-           :get-substring :long-flag? :set-substring :short-flag? :arguments
-           :make-args-class :type-list :type-integer :get-type-by-name))
+  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct #:defclass)
+  (:use :rameau :genoslib :cl :cl-ppcre :iterate)
+  (:export :type-list :type-integer))
 
 (in-package :rameau-options)
 
@@ -55,6 +54,7 @@
                    (iter (for (short long doc init list) in v)
                          (for writer = (intern (concat "SET-" (string-upcase long))))
                          (for reader = (intern (concat "GET-" (string-upcase long))))
+                         (initially (export '(get-substring set-substring)))
                          (export (list writer reader))
                          (in outer (collect (list (intern (string-upcase long))
                                                   :writer writer

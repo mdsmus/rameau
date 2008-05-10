@@ -1,57 +1,9 @@
 (defpackage :genoslib
   (:import-from #:arnesi "AIF" "IT" "LAST1")
-  (:use #:rameau-base #:cl))
+  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
+  (:use #:cl))
 
 (in-package :genoslib)
-
-(register-and-export-symbols '(%
-                               add-lily-ext
-                               add-pop-ext
-                               assoc-item
-                               advance-all
-                               apush
-                               aget
-                               aset
-                               aincf
-                               clip
-                               char->symbol
-                               contextualize
-                               concat
-                               count-subseq
-                               defcached
-                               destringify
-                               distance
-                               dbg
-                               dbg-indent
-                               file-string
-                               firstn
-                               get-item
-                               group
-                               insert
-                               mapcar2
-                               make-alist
-                               mostn
-                               rameau-debug
-                               rameau-undebug
-                               read-file-as-sexp
-                               repeat-string
-                               repeat-list
-                               skip
-                               smallest
-                               split-word
-                               split-opts
-                               split-dados
-                               sorted
-                               sort-set
-                               square
-                               stringify
-                               string-member
-                               string->symbol
-                               symbol->number
-                               has-ext?
-                               remove-ext
-                               unzip
-                               ))
 
 (defun % (x total)
   (unless (= 0 total)

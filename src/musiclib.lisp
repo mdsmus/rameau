@@ -1,30 +1,10 @@
 (in-package #:genoslib)
 
-(register-and-export-symbols '( a b c d e f g
-                               a# b# c# d# e# f# g#
-                               ab bb cb db eb fb gb
-                               maj min dim aug just
-                               sharp flat up down lily latin prime with-system
-                               *notas-interessantes-tonal*
-                               number-of-accidentals
-                               match-note-representation
-                               sort-form-list tempered tonal
-                               get-system-notes get-notes code->notename parse-note
-                               notename->code
-                               enharmonicaly-equal-p
-                               get-module get-accidental get-octave
-                               octave-from-string
-                               note? rest? latin->lily
-                               print-accidentals print-note module
-                               lily->latin transpose inversion
-                               interval interval->code code->interval
-                               print-interval %rotate set-rotate
-                               set-inversion set-transpose
-                               set-transpose-to-0 set-intervals
-                               set-symmetric? set-form-list
-                               smaller-sets smaller-sets-comparisson
-                               smallest-set normal-form prime-form
-                               set-equal? deftemplates tempered tonal))
+(export '(a b c d e f g
+          a# b# c# d# e# f# g#
+          ab bb cb db eb fb gb
+          maj min dim aug just
+          sharp flat up down lily latin prime))
 
 (defvar *system* 'tonal)
 

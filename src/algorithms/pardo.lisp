@@ -1,8 +1,7 @@
-;; Implementação do algoritmo de pardo.
-
 (defpackage :rameau-pardo
   (:import-from #:arnesi "AIF" "IT" "LAST1")
-  (:use #:rameau #:cl))
+  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
+  (:use #:rameau #:cl #:genoslib))
 
 (in-package #:rameau-pardo)
 
@@ -14,7 +13,6 @@
   (("ø" "7") (0 3 6 10))
   (("°" "") (0 3 6))
   )
-
 
 (defstruct pardo-grade
   (root)

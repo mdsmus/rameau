@@ -1,10 +1,10 @@
-
 (eval-when (:compile-toplevel :load-toplevel)
   (asdf:oos 'asdf:load-op :machine-learning))
 
 (defpackage :rameau-tree-enarm
   (:import-from #:arnesi "AIF" "IT" "LAST1")
-  (:use #:cl #:rameau #:machine-learning))
+  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
+  (:use #:cl #:rameau #:machine-learning #:genoslib))
 
 (in-package :rameau-tree-enarm)
 

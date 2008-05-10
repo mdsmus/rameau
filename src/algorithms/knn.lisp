@@ -1,6 +1,7 @@
 (defpackage :rameau-knn
   (:import-from #:arnesi "AIF" "IT" "LAST1")
-  (:use :cl :rameau))
+  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
+  (:use #:cl #:rameau #:genoslib))
 
 (in-package :rameau-knn)
 

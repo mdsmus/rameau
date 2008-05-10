@@ -4,7 +4,8 @@
 (defpackage :rameau-neural
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:import-from #:alexandria "SWITCH")
-  (:use #:cl #:fann #:rameau #:iterate #:rameau-options))
+  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
+  (:use #:cl #:fann #:rameau #:iterate #:rameau-options #:genoslib))
 
 (in-package :rameau-neural)
 
