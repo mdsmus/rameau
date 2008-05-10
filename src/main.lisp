@@ -1,3 +1,5 @@
+;; Main
+;;; Define rameau-main package
 (defpackage :rameau-main
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
@@ -55,8 +57,7 @@
 (defun maptrace (lista-string &optional (trace 'trace))
   (eval (append (list trace) (mapcar2 #'read-from-string #'string-upcase lista-string))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+;;; Make analysis
 (defstruct analysis
   segments results answer-sheet file-name notes dur size-answer-sheet
   number-algorithms)
@@ -76,8 +77,7 @@
         :notes (mapcar #'list-events segments)
         :dur (durations segments))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+;;; Print messages
  (defun print-help ()
    (iter (for (key value) in *commands*)
       (format t "~%~:@(* ~a~)~%" (substitute #\Space #\- key :test #'equal))
@@ -91,8 +91,7 @@
 (defun print-fatal (message)
   (format t "~&FATAL: ~a~%" message))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+;;; Tests
 (defun print-condition (status file expr)
   (format t "[~a] ~a: ~a~%" status (pathname-name file) expr))
 
@@ -144,8 +143,7 @@
   (when (get-unit options) (unit options))
   (when (get-regression options) (regression options)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+;;; Analysis
 (defun make-result-list (analysis)
   (apply #'mapcar #'list (analysis-results analysis)))
 
@@ -202,15 +200,13 @@
                                         " doesn't exist"))
                  (analysis-terminal-no-answer options anal)))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+;;; Training
 (defcommand train-neural (options &rest ignore)
   (declare (ignore ignore))
   (rameau-neural::generate-e-chord-net options 'force)
   (rameau-neural::generate-context-net options 'force))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+;;; Main
 (defun split-command-list (command-list)
   (let ((pos (position "and" command-list :test #'string=)))
     (if pos
