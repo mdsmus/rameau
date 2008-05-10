@@ -39,8 +39,8 @@ alto = \relative c'' {
     e8 dis16 cis16 dis4 b4 } r4 
   b4 e4 e4. b8   %5
   b8 c16 d16 e4 dis4 fis4 
-  b4 a4 b8 gis8 cis4 
-  c8 b4 ais8 fis4 g4 
+  b4 a4 b8 gis8 cis4~ 
+  cis8 b4 ais8 fis4 g4 
   fis4 d4 d2 
   e4. d8 cis2   %10
   dis8 e8 e8 fis8 b,8 e4 dis8 
