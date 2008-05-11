@@ -162,16 +162,4 @@ debugging)")
   "Extract the diff of a sonority."
   (let ((segmento (sorted segmento #'event-<)))
     (event-pitch (first segmento))))
-(defun extract-diffs (segmento)
-  (mapcar #'event-pitch segmento))
-
-(defun context-extract-diffs (segmento)
-  (extract-diffs (nth *context-before* segmento)))
-
-(defun context-extract-diff (segmentos)
-  (extract-diff (nth *context-before* segmentos)))
-
-(defun context-extract-features (segmento &optional diff)
-  (let ((diff (or diff (context-extract-diff segmento))))
-    (loop for s in segmento nconc (make-sonority-pattern s diff))))
 

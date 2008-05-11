@@ -1,8 +1,6 @@
-;;; load fann
 (eval-when (:compile-toplevel :load-toplevel)
   (asdf:oos 'asdf:load-op :fann))
 
-;;; define rameau-neural package
 (defpackage :rameau-neural
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:import-from #:alexandria "SWITCH")
@@ -11,7 +9,6 @@
 
 (in-package :rameau-neural)
 
-;;; general config
 (enable-sharp-l-syntax)
 
 (defparameter *root-increment* 4)
@@ -22,7 +19,9 @@
 (defvar *e-chord-net* nil)
 (defvar *context-net* nil)
 
-;;; general functions (for all networks)
+(defun extract-diffs (segmento)
+  (mapcar #'event-pitch segmento))
+
 (defun make-sonority-pattern (seg &optional diff)
   (let ((diff (or diff (extract-diff seg))))
     (mapcar (lambda (x) (coerce x 'float)) (extract-feature-list seg diff))))
@@ -141,6 +140,17 @@
                       :7th 7th))
         root)))
 
+(defun context-extract-diffs (segmento)
+  (extract-diffs (nth *context-before* segmento)))
+
+(defun context-extract-diff (segmentos)
+  (extract-diff (nth *context-before* segmentos)))
+
+(defun context-extract-features (segmento &optional diff)
+  (let ((diff (or diff (context-extract-diff segmento))))
+    (loop for s in segmento nconc (make-sonority-pattern s diff))))
+
+
 (defun prepare-training-data-net (coral gabarito &optional
                                         (diff-func #'extract-diffs)
                                         (feature #'make-sonority-pattern))
@@ -182,7 +192,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; e-net
 (defun train-e-chord-net (options)
   (let ((fann-file (get-e-chord-fann options))
         (data-file (get-e-chord-data options)))
@@ -218,7 +227,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; context net
 (defun train-context-net (options)
   (let ((fann-file (get-context-fann options))
         (data-file (get-context-data options)))
