@@ -20,6 +20,8 @@ corais-ly-partitura = $(addprefix coral,$(notdir $(patsubst %.lyi,%.ly,$(corais-
 corais-ly = $(notdir $(patsubst %.lyi,%.ly,$(corais-lyi)))
 corais-dir = $(maindir)/corais
 
+neural-path = $(maindir)/neural-nets/
+
 lilypond = lilypond -I $(maindir)/literatura/bach-corais -I $(maindir)/lily
 
 vpath %.lyi literatura/bach-corais
@@ -27,10 +29,12 @@ vpath %.pop gabaritos/bach-corais
 vpath %.ly $(corais-dir)
 vpath %.log $(corais-dir)
 vpath %.png $(corais-dir)
+vpath %.fann neural-nets/
+vpath %.data neural-nets/
 
 .PHONY: update clean all doc update corais-ly corais corais-partitura resultados erros
 
-default: corais-ly rameau
+default: corais-ly rameau train-neural
 
 all-rameau: rameau cmurameau clisprameau
 
@@ -74,7 +78,21 @@ deps:
 	cd rameau-deps ; git pull ;\
 	fi
 
-rameau: $(lisp-files) 
+train-neural: context.fann e-chord.fann
+
+e-chord-train.data:
+	./rameau train --e-chord-data-set --e-chord-data $(neural-path)/$@
+
+context-train.data:
+	./rameau train --context-data-set --context-data $(neural-path)/$@
+
+context.fann: context-train.data
+	./rameau train --context-fann-file --context-data $(neural-path)/$< --context-fann $(neural-path)/$@
+
+e-chord.fann: e-chord-train.data
+	./rameau train --e-chord-fann-file --e-chord-data $(neural-path)/$< --e-chord-fann $(neural-path)/$@
+
+rameau: $(lisp-files)
 	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" --load "tools/make-image.lisp"
 
 checa-notas: tools/read-notes.lisp

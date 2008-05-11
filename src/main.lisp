@@ -203,12 +203,18 @@
 ;;; Training
 (defcommand train-neural (options &rest ignore)
   (declare (ignore ignore))
-  ;;(rameau-neural::generate-e-chord-net options 'force)
-  ;;(write-data-set (e-chord-training-data options) (get-e-chord-data options) (get-e-chord-value options))
-  ;;(train-e-chord-net options)
-  ;; (rameau-neural::generate-context-net options 'force))
-  (write-data-set (context-training-data options) (get-context-data options) (get-context-value options))
-  (train-context-net options)
+
+  (when (get-e-chord-data-set options)
+    (e-chord-data-set options))
+
+  (when (get-context-data-set options)
+    (context-data-set options))
+
+  (when (get-e-chord-fann-file options)
+    (train-e-chord-net options))
+  
+  (when (get-context-fann-file options)
+    (train-context-net options))
   )
 
 ;;; Main
@@ -264,7 +270,7 @@
         (format t "~a: ~a~%" s (funcall s obj))))
 
 (defun default-arguments (options)
-  (let ((neural-path (concat *rameau-path* "neural-nets/master-0005-")))
+  (let ((neural-path (concat *rameau-path* "neural-nets/")))
     (iter outer (for (k v) in *commands*)
           (iter (for (short long doc init list) in v)
                 (for writer = (intern (concat "SET-" (string-upcase long))))
@@ -274,10 +280,10 @@
     (set-context-value (* (+ 1 (get-context-after options) (get-context-before options))
                           96)
                        options)
-    (set-context-fann (concat neural-path "context-net.fann") options)
-    (set-context-data (concat neural-path "context-net-train.data") options)
-    (set-e-chord-fann (concat neural-path "e-chord-net.fann") options)
-    (set-e-chord-data (concat neural-path "e-chord-net-train.data") options)))
+    (set-context-fann (concat neural-path "context.fann") options)
+    (set-context-data (concat neural-path "context-train.data") options)
+    (set-e-chord-fann (concat neural-path "e-chord.fann") options)
+    (set-e-chord-data (concat neural-path "e-chord-train.data") options)))
 
 (defun main (&optional args)
   "You can run main from the REPL with all arguments as a

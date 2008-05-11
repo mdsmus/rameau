@@ -35,7 +35,11 @@
         ("" "column-separator" "" "|")
         ("" "wrong-answer-color" "" "red")))
       ("train-neural"
-       (("" "hidden-units" "" 22 type-integer)
+       (("" "e-chord-data-set" "generate the data set for the network")
+        ("" "e-chord-fann-file" "generate the reural network file")
+        ("" "context-data-set" "generate the data set for the network")
+        ("" "context-fann-file" "generate the reural network file")
+        ("" "hidden-units" "" 22 type-integer)
         ("" "context-before" "" 1 type-integer)
         ("" "context-after" "" 1 type-integer)
         ("" "context-value" "" 96 type-integer)

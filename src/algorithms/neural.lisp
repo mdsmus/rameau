@@ -171,7 +171,7 @@
             (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
             (format f "~{~a ~}~%" (second d))))))
 
-(defun train-net (net training-data value net-file data hidden-units)
+(defun train-net (net training-data value net-file hidden-units)
   (setf (symbol-value net) (make-net value hidden-units 109))
   (format t "* training the network~%")
   (train-on-file (symbol-value net) training-data 1500 100 0.1)
@@ -184,7 +184,6 @@
              (get-e-chord-data options)
              96
              (get-e-chord-fann options)
-             (e-chord-training-data)
              (get-hidden-units options)))
 
 (defun apply-e-chord-net (inputs options)
@@ -194,6 +193,9 @@
 
 (defun e-chord-training-data ()
   (loop for (a b) in *training-data* nconc (prepare-training-data-net a b)))
+
+(defun e-chord-data-set (options)
+  (write-data-set (e-chord-training-data) (get-e-chord-data options) (get-e-chord-value options)))
 
 (register-algorithm "ES-net" #'apply-e-chord-net)
 
@@ -215,7 +217,6 @@
                data-file
                (* (+ 1 *context-after* *context-before*) 96)
                fann-file
-               (context-training-data)
                (get-hidden-units options))))
 
 (defun context-training-data ()
@@ -234,3 +235,6 @@
                                    context))))
 
 (register-algorithm "EC-net" #'apply-context-net)
+
+(defun context-data-set (options)
+  (write-data-set (context-training-data) (get-context-data options) (get-context-value options)))
