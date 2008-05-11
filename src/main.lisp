@@ -203,8 +203,14 @@
 ;;; Training
 (defcommand train-neural (options &rest ignore)
   (declare (ignore ignore))
-  (rameau-neural::generate-e-chord-net options 'force)
-  (rameau-neural::generate-context-net options 'force))
+  ;;(rameau-neural::generate-e-chord-net options 'force)
+  (write-data-set (e-chord-training-data) data-file 96)
+  (train-e-chord-net options)
+  ;; (rameau-neural::generate-context-net options 'force))
+  (write-data-set (context-training-data)
+                  data-file
+                  (* (+ 1 *context-after* *context-before*) 96))
+  (train-context-net options)
 
 ;;; Main
 (defun split-command-list (command-list)

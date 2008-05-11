@@ -162,7 +162,7 @@
   (let ((d (funcall extract-diff-fn x)))
     (get-class-chord-net d (run-net net (funcall fn x d)))))
 
-(defun write-training-file-net (data training-data value)
+(defun write-data-set (data training-data value)
   (let ((size (length data)))
     (format t "* writing training data ~a~%" training-data)
     (with-open-file (f training-data :direction :output :if-exists :supersede)
@@ -172,48 +172,28 @@
             (format f "~{~a ~}~%" (second d))))))
 
 (defun train-net (net training-data value net-file data hidden-units)
-  (if (cl-fad:file-exists-p training-data)
-      (progn
-        (setf (symbol-value net) (make-net value hidden-units 109))
-        (format t "* training the network~%")
-        (train-on-file (symbol-value net) training-data 1500 100 0.1)
-        (format t "* saving ~a~%" net-file)
-        (save-to-file (symbol-value net) net-file))
-      (progn
-        (write-training-file-net data training-data value)
-        (train-net net training-data value net-file data hidden-units))))
+  (setf (symbol-value net) (make-net value hidden-units 109))
+  (format t "* training the network~%")
+  (train-on-file (symbol-value net) training-data 1500 100 0.1)
+  (format t "* saving ~a~%" net-file)
+  (save-to-file (symbol-value net) net-file))
 
 ;;; e-chord
 (defun train-e-chord-net (options)
-  (let ((fann-file (get-e-chord-fann options))
-        (data-file (get-e-chord-data options)))
-    (train-net '*e-chord-net*
-               data-file
-               96
-               fann-file
-               (e-chord-training-data)
-               (get-hidden-units options))))
+  (train-net '*e-chord-net* 
+             (get-e-chord-data options)
+             96
+             (get-e-chord-fann options)
+             (e-chord-training-data)
+             (get-hidden-units options)))
 
 (defun apply-e-chord-net (inputs options)
-  (let ((fann-file (get-e-chord-fann options)))
-    (if (cl-fad:file-exists-p fann-file)
-        (setf *e-chord-net* (load-from-file fann-file))
-        (train-e-chord-net options))
-    (add-inversions inputs (mapcar #L(run-my-net !1 *e-chord-net* #'extract-diff #'make-sonority-pattern)
-                                   inputs))))
+  (setf *e-chord-net* (load-from-file (get-e-chord-fann options)))
+  (add-inversions inputs (mapcar #L(run-my-net !1 *e-chord-net* #'extract-diff #'make-sonority-pattern)
+                                 inputs)))
 
 (defun e-chord-training-data ()
   (loop for (a b) in *training-data* nconc (prepare-training-data-net a b)))
-
-(defun generate-e-chord-net (options &optional force)
-  (let ((data-file (get-e-chord-data options))
-        (fann-file (get-e-chord-fann options)))
-    (if (or force (not (cl-fad:file-exists-p data-file)))
-        (write-training-file-net (e-chord-training-data)
-                                 data-file
-                                 96))
-    (if (or force (not (cl-fad:file-exists-p fann-file)))
-      (train-e-chord-net options))))
 
 (register-algorithm "ES-net" #'apply-e-chord-net)
 
@@ -249,20 +229,8 @@
   (let ((fann-file (get-context-fann options))
         (context (butlast (contextualize inputs *context-before* *context-after*)
                           *context-before*)))
-    (if (cl-fad:file-exists-p fann-file)
-        (setf *context-net* (load-from-file fann-file))
-        (train-context-net options))
+    (setf *context-net* (load-from-file fann-file))
     (add-inversions inputs (mapcar #L(run-my-net !1 *context-net* #'context-extract-diff #'context-extract-features)
                                    context))))
-
-(defun generate-context-net (options &optional force)
-  (let ((data-file (get-context-data options))
-        (fann-file (get-context-fann options)))
-    (if (or force (not (cl-fad:file-exists-p data-file)))
-      (write-training-file-net (context-training-data)
-                               data-file
-                               (* (+ 1 *context-after* *context-before*) 96)))
-    (unless (or force (not (cl-fad:file-exists-p fann-file)))
-      (train-context-net options))))
 
 (register-algorithm "EC-net" #'apply-context-net)
