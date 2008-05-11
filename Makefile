@@ -29,6 +29,8 @@ vpath %.pop gabaritos/bach-corais
 vpath %.ly $(corais-dir)
 vpath %.log $(corais-dir)
 vpath %.png $(corais-dir)
+vpath %.fann $(neural-path)
+vpath %.data $(neural-path)
 
 .PHONY: update clean all doc update corais-ly corais corais-partitura resultados erros
 
@@ -79,16 +81,16 @@ deps:
 train-neural: context.fann e-chord.fann
 
 e-chord-train.data:
-	./rameau train --e-chord-data-set --e-chord-data $(neural-path)/$@
+	./rameau train --e-chord-data-set --e-chord-data $@
 
 context-train.data:
-	./rameau train --context-data-set --context-data $(neural-path)/$@
+	./rameau train --context-data-set --context-data $@
 
 context.fann: context-train.data
-	./rameau train --context-fann-file --context-data $(neural-path)/$< --context-fann $(neural-path)/$@
+	./rameau train --context-fann-file --context-data $< --context-fann $@
 
 e-chord.fann: e-chord-train.data
-	./rameau train --e-chord-fann-file --e-chord-data $(neural-path)/$< --e-chord-fann $(neural-path)/$@
+	./rameau train --e-chord-fann-file --e-chord-data $< --e-chord-fann $@
 
 rameau: $(lisp-files)
 	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" --load "tools/make-image.lisp"
