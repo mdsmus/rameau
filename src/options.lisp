@@ -1,3 +1,4 @@
+;;; define package
 (defpackage :rameau-options
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct #:defclass)
@@ -6,6 +7,7 @@
 
 (in-package :rameau-options)
 
+;;; options
 (eval-when (:compile-toplevel :load-toplevel)
   (defparameter *commands*
     '(("common-flags"
