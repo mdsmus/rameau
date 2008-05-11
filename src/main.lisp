@@ -3,7 +3,7 @@
 (defpackage :rameau-main
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
-  (:use :rameau :cl :cl-ppcre :lisp-unit :iterate :rameau-options :rameau-terminal :genoslib))
+  (:use :rameau :cl :cl-ppcre :lisp-unit :iterate :rameau-options :rameau-terminal :genoslib :fann :rameau-neural))
 
 (in-package :rameau-main)
 
@@ -204,13 +204,12 @@
 (defcommand train-neural (options &rest ignore)
   (declare (ignore ignore))
   ;;(rameau-neural::generate-e-chord-net options 'force)
-  (write-data-set (e-chord-training-data) data-file 96)
-  (train-e-chord-net options)
+  ;;(write-data-set (e-chord-training-data options) (get-e-chord-data options) (get-e-chord-value options))
+  ;;(train-e-chord-net options)
   ;; (rameau-neural::generate-context-net options 'force))
-  (write-data-set (context-training-data)
-                  data-file
-                  (* (+ 1 *context-after* *context-before*) 96))
+  (write-data-set (context-training-data options) (get-context-data options) (get-context-value options))
   (train-context-net options)
+  )
 
 ;;; Main
 (defun split-command-list (command-list)
@@ -270,6 +269,11 @@
           (iter (for (short long doc init list) in v)
                 (for writer = (intern (concat "SET-" (string-upcase long))))
                 (funcall writer init options)))
+    (set-context-before 1 options)
+    (set-context-after 1 options)
+    (set-context-value (* (+ 1 (get-context-after options) (get-context-before options))
+                          96)
+                       options)
     (set-context-fann (concat neural-path "context-net.fann") options)
     (set-context-data (concat neural-path "context-net-train.data") options)
     (set-e-chord-fann (concat neural-path "e-chord-net.fann") options)

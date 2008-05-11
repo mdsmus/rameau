@@ -149,7 +149,7 @@ debugging)")
             for g = (parse-answer-sheet f "exemplos")
             collect (list (sonorities (parse-file f)) g))))
 
-(defun extract-feature-list (segmento diff)
+(defun extract-feature-list (segmento options diff)
   "Extract the feature list of a sonority givern its \\texttt{diff}."
   (let ((segmento (mapcar2 (lambda (x) (module (- x diff))) #'event-pitch segmento))
         (n (length segmento))
