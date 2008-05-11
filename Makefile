@@ -29,8 +29,6 @@ vpath %.pop gabaritos/bach-corais
 vpath %.ly $(corais-dir)
 vpath %.log $(corais-dir)
 vpath %.png $(corais-dir)
-vpath %.fann neural-nets/
-vpath %.data neural-nets/
 
 .PHONY: update clean all doc update corais-ly corais corais-partitura resultados erros
 
