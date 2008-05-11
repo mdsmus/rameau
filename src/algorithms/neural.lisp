@@ -187,9 +187,15 @@
              (get-hidden-units options)))
 
 (defun apply-e-chord-net (inputs options)
-  (setf *e-chord-net* (load-from-file (get-e-chord-fann options)))
-  (add-inversions inputs (mapcar #L(run-my-net !1 *e-chord-net* #'extract-diff #'make-sonority-pattern)
-                                 inputs)))
+  (let ((fann-file (get-e-chord-fann options)))
+    (if (cl-fad:file-exists-p fann-file)
+        (progn
+          (setf *e-chord-net* (load-from-file (get-e-chord-fann options)))
+          (add-inversions inputs (mapcar #L(run-my-net !1 *e-chord-net* #'extract-diff #'make-sonority-pattern)
+                                         inputs)))
+        (progn
+          (format t "I could not find ~a, please train the net.~%" fann-file)
+          (rameau-quit)))))
 
 (defun e-chord-training-data ()
   (loop for (a b) in *training-data* nconc (prepare-training-data-net a b)))
@@ -230,9 +236,14 @@
   (let ((fann-file (get-context-fann options))
         (context (butlast (contextualize inputs *context-before* *context-after*)
                           *context-before*)))
-    (setf *context-net* (load-from-file fann-file))
-    (add-inversions inputs (mapcar #L(run-my-net !1 *context-net* #'context-extract-diff #'context-extract-features)
-                                   context))))
+    (if (cl-fad:file-exists-p fann-file)
+        (progn
+          (setf *context-net* (load-from-file fann-file))
+          (add-inversions inputs (mapcar #L(run-my-net !1 *context-net* #'context-extract-diff #'context-extract-features)
+                                         context)))
+        (progn
+          (format t "I could not find ~a, please train the net.~%" fann-file)
+          (rameau-quit)))))
 
 (register-algorithm "EC-net" #'apply-context-net)
 
