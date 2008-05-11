@@ -1,6 +1,8 @@
+;;; load fann
 (eval-when (:compile-toplevel :load-toplevel)
   (asdf:oos 'asdf:load-op :fann))
 
+;;; define package
 (defpackage :rameau-neural
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:import-from #:alexandria "SWITCH")
@@ -9,6 +11,7 @@
 
 (in-package :rameau-neural)
 
+;;; general parameters
 (enable-sharp-l-syntax)
 
 (defparameter *root-increment* 4)
@@ -19,6 +22,7 @@
 (defvar *e-chord-net* nil)
 (defvar *context-net* nil)
 
+;;; general functions
 (defun extract-diffs (segmento)
   (mapcar #'event-pitch segmento))
 
@@ -140,17 +144,6 @@
                       :7th 7th))
         root)))
 
-(defun context-extract-diffs (segmento)
-  (extract-diffs (nth *context-before* segmento)))
-
-(defun context-extract-diff (segmentos)
-  (extract-diff (nth *context-before* segmentos)))
-
-(defun context-extract-features (segmento &optional diff)
-  (let ((diff (or diff (context-extract-diff segmento))))
-    (loop for s in segmento nconc (make-sonority-pattern s diff))))
-
-
 (defun prepare-training-data-net (coral gabarito &optional
                                         (diff-func #'extract-diffs)
                                         (feature #'make-sonority-pattern))
@@ -190,8 +183,7 @@
         (write-training-file-net data training-data value)
         (train-net net training-data value net-file data hidden-units))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+;;; e-chord
 (defun train-e-chord-net (options)
   (let ((fann-file (get-e-chord-fann options))
         (data-file (get-e-chord-data options)))
@@ -225,7 +217,16 @@
 
 (register-algorithm "ES-net" #'apply-e-chord-net)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; context
+(defun context-extract-diffs (segmento)
+  (extract-diffs (nth *context-before* segmento)))
+
+(defun context-extract-diff (segmentos)
+  (extract-diff (nth *context-before* segmentos)))
+
+(defun context-extract-features (segmento &optional diff)
+  (let ((diff (or diff (context-extract-diff segmento))))
+    (loop for s in segmento nconc (make-sonority-pattern s diff))))
 
 (defun train-context-net (options)
   (let ((fann-file (get-context-fann options))
