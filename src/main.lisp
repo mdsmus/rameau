@@ -326,3 +326,5 @@
         (print-help)))
   #+clisp(ext:exit)
   0)
+
+;(trace module genoslib::get-system-module)

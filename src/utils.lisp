@@ -1,7 +1,30 @@
 (defpackage :genoslib
   (:import-from #:arnesi "AIF" "IT" "LAST1")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
-  (:use #:cl))
+  (:use #:cl)
+  (:export #:defun #:defmacro #:defparameter #:defvar #:defstruct
+           #:defclass #:defgeneric #:tempered #:tonal #:a    #:a
+   #:b
+   #:c
+   #:d
+   #:e
+   #:f
+   #:g
+   #:aes
+   #:bes
+   #:ces
+   #:des
+   #:ees
+   #:fes
+   #:gis
+   #:ais
+   #:bis
+   #:cis
+   #:dis
+   #:eis
+   #:fis
+   #:gis
+))
 
 (in-package :genoslib)
 

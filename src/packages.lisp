@@ -3,6 +3,36 @@
 (defpackage #:rameau
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:import-from #:alexandria "SWITCH" "FLATTEN")
+  (:export
+   #:tonal
+   #:tempered
+   #:a
+   #:b
+   #:c
+   #:d
+   #:e
+   #:f
+   #:g
+   #:aes
+   #:bes
+   #:ces
+   #:des
+   #:ees
+   #:fes
+   #:gis
+   #:ais
+   #:bis
+   #:cis
+   #:dis
+   #:eis
+   #:fis
+   #:gis
+   #:staff
+   #:score
+   #:no-op-node
+   #:ast-node
+   #:layout
+   )
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defgeneric
                           #:defparameter #:defvar #:defstruct #:defclass)
   (:use #:genoslib  #:cl #:lisp-unit))

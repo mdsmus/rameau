@@ -1,8 +1,6 @@
 (defpackage :rameau-base
   (:shadow :defun :defmacro :defparameter :defvar :defstruct :defclass :defgeneric)
-  (:use #:cl)
-  (:export #:defun #:defmacro #:defparameter #:defvar #:defstruct
-           #:defclass #:defgeneric))
+  (:use #:cl))
 
 (in-package :rameau-base)
 
