@@ -2,8 +2,7 @@
   (:import-from #:arnesi "AIF" "IT" "LAST1")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
   (:use #:cl)
-  (:export #:defun #:defmacro #:defparameter #:defvar #:defstruct
-           #:defclass #:defgeneric #:tempered #:tonal #:a    #:a
+  (:export #:a
    #:b
    #:c
    #:d
