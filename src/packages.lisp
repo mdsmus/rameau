@@ -32,6 +32,8 @@
    #:no-op-node
    #:ast-node
    #:layout
+   #:node-text
+   #:node-expr
    )
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defgeneric
                           #:defparameter #:defvar #:defstruct #:defclass)

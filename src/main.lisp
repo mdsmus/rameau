@@ -60,7 +60,7 @@
 ;;; Make analysis
 (defstruct analysis
   segments results answer-sheet file-name notes dur size-answer-sheet
-  number-algorithms)
+  number-algorithms ast full-path)
 
 (defun analyse-files (options)
   (loop
@@ -75,6 +75,8 @@
         :file-name (pathname-name file)
         :number-algorithms (length (get-algorithms options))
         :notes (mapcar #'list-events segments)
+        :ast (file-ast file)
+        :full-path file
         :dur (durations segments))))
 
 ;;; Print messages
@@ -173,6 +175,52 @@
            (iter (for i in (mapcar (lambda (x) (% x seg-number)) right-answer-list))
                  (print-chord-column options (format nil "~,2f" i)))))))
 
+(defun analysis-lily (options analysis)
+  (let* ((ast (analysis-ast analysis))
+         (score (first (get-children-by-type ast 'rameau::score)))
+         (music (first-child (first-child (first (children score)))))
+         (variables (make-string-output-stream))
+         (in-score (make-string-output-stream)))
+    (format variables (make-devnull-var (analysis-segments analysis)))
+    (format variables (make-lily-sonorities (analysis-segments analysis)))
+    (format in-score (make-lyrics "sonorities"))
+    (loop for al in (get-algorithms options)
+       for re in (analysis-results analysis)
+       do (format variables (print-compare-answer-sheet re
+                                                        (analysis-answer-sheet analysis)
+                                                        (algorithm-name al)))
+         (format in-score (make-lyrics (algorithm-name al))))
+    (format variables (make-answer-sheet (analysis-answer-sheet analysis)))
+    (format in-score (make-lyrics "answer"))
+    ;(format t "score; ~a, music ~a, ast: ~a, full-path: ~%" score music ast (analysis-full-path analysis))
+    (setf (node-text score) (append (list (get-output-stream-string variables)
+                                          "\\score { "
+                                          "<< "
+                                          (make-devnull-voice)
+                                          "  ")
+                                    (node-text music)
+                                    (list (get-output-stream-string in-score)
+                                          " >>
+  \\layout {
+    \\context {
+      \\Lyrics
+      \\override LyricSpace #'minimum-distance = #1.0
+      \\override LyricText #'font-size = #-1
+      \\override LyricText #'font-family = #'roman
+    }
+  }
+  \\midi {}
+}
+")))
+    (with-open-file (f (make-pathname :directory (pathname-directory (analysis-full-path analysis))
+                                      :name (concat "analysis-" (pathname-name (analysis-full-path analysis)))
+                                      :type (pathname-type (analysis-full-path analysis)))
+                       :direction :output
+                       :if-exists :supersede)
+      (format f "~a" (print-ast (cdr ast))))))
+
+
+
 (defun analysis-terminal-no-answer (options analysis)
   (let* ((number-algorithms (analysis-number-algorithms analysis))
          (size-line (hline-size number-algorithms options 'no-answer)))
@@ -194,7 +242,9 @@
 (defcommand analysis (options analysis)
   (iter (for anal in analysis)
         (cond ((get-dont-compare options) (analysis-terminal-no-answer options anal))
-              ((analysis-answer-sheet anal) (analysis-terminal options anal))
+              ((analysis-answer-sheet anal)
+               (analysis-lily options anal)
+               (analysis-terminal options anal))
               (t (print-warning (concat "the answer sheet for "
                                         (analysis-file-name anal)
                                         " doesn't exist"))

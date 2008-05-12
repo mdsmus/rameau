@@ -39,7 +39,8 @@
   :author "Alexandre Passos e Pedro Kroger"
   :depends-on (:rameau-pkg :algorithms :options)
   :components ((:file "terminal")
-               (:file "main" :depends-on ("terminal"))
+               (:file "lily")
+               (:file "main" :depends-on ("terminal" "lily"))
                (:module tests
                         :components ((:file "test-utils")
                                      (:file "test-musiclib")
