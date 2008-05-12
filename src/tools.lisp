@@ -76,14 +76,11 @@ debugging)")
 
 
 (defparameter *lily-dir-list*
-  '(("chorales" "corais/")
-    ("kostka" "literatura/kostka-payne/")
-    ("sonatas" "literatura/beethoven-sonatas/")
-    ("exemplos" "exemplos/")
+  '(("chorales" "music/chorales-bach/")
+    ("kostka" "music/kostka-payne/")
+    ("exemplos" "music/examples/")
     ("regressao" "regressao/")
-    ("lily" "regressao-lily/")
-    ("corais-include" "literatura/bach-corais/")
-    ("exemplos-include" "literatura/exemplos/")))
+    ("lily" "regressao-lily/")))
 
 (defparameter *gabarito-dir-list*
   '(("chorales" "answer-sheets/chorales-bach/")

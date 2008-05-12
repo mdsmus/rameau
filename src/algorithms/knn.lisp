@@ -42,7 +42,7 @@
                      :mode (third lista)
                      :7th (fourth lista)))
         (t (make-augmented-sixth :type (first lista)))))
-
+;(trace extract-chord get-class)
 (defun hash-default (key table default)
   (aif (gethash key table nil)
        it
@@ -71,7 +71,7 @@
        for answer = (second exemplo)
        do (train-1nn coral answer n)))
 
-;;(train-k1 *training-data*)
+(train-k1 *training-data*)
 
 (defun get-class (diff maxkey maxv)
   (declare (ignore maxkey))
@@ -82,7 +82,8 @@
     (loop for k being the hash-keys in resultado
        with maxk = 0
        with maxv = 0
-       when (> (gethash k resultado) maxv) do (setf maxk k maxv (gethash k resultado))
+       when (> (gethash k resultado) maxv) do (setf maxk k
+                                                    maxv (gethash k resultado))
        finally (return (extract-chord maxk diff)))))
 
 (defun classify-k1 (segmento)
@@ -143,7 +144,7 @@
      for answer = (second exemplo)
      do (train-context-nn (contextualize coral *before-context* *after-context*) answer n)))
 
-;;(train-context *training-data*)
+(train-context *training-data*)
 
 (defun classify-context (segmento)
   (let* ((diff (context-extract-diff segmento))
