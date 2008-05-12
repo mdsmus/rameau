@@ -34,7 +34,7 @@ vpath %.data $(neural-path)
 
 .PHONY: update clean all doc update corais-ly corais corais-partitura resultados erros
 
-default: corais-ly rameau train-neural
+default: corais-ly rameau 
 
 all-rameau: rameau cmurameau clisprameau
 
@@ -78,18 +78,18 @@ deps:
 	cd rameau-deps ; git pull ;\
 	fi
 
-train-neural: context.fann e-chord.fann
+train-neural: neural-nets/context.fann neural-nets/e-chord.fann
 
-e-chord-train.data:
+neural-nets/e-chord-train.data:
 	./rameau train --e-chord-data-set --e-chord-data $@
 
-context-train.data:
+neural-nets/context-train.data:
 	./rameau train --context-data-set --context-data $@
 
-context.fann: context-train.data
+neural-nets/context.fann: neural-nets/context-train.data
 	./rameau train --context-fann-file --context-data $< --context-fann $@
 
-e-chord.fann: e-chord-train.data
+neural-nets/e-chord.fann: neural-nets/e-chord-train.data
 	./rameau train --e-chord-fann-file --e-chord-data $< --e-chord-fann $@
 
 rameau: $(lisp-files)

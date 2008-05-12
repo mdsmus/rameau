@@ -187,6 +187,7 @@
              (get-hidden-units options)))
 
 (defun apply-e-chord-net (inputs options)
+  (format t "opcoes: ~s~%" options)
   (let ((fann-file (get-e-chord-fann options)))
     (if (cl-fad:file-exists-p fann-file)
         (progn

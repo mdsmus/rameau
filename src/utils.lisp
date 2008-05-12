@@ -24,7 +24,10 @@
    #:eis
    #:fis
    #:gis
-))
+   #:al
+   #:fr
+   #:it
+   ))
 
 (in-package :genoslib)
 
