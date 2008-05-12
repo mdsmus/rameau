@@ -13,22 +13,10 @@ else
 endif
 
 lisp-files = $(wildcard src/*asd src/*.lisp src/lib/*.lisp tools/*.lisp src/algorithms/*.lisp)
-corais-lyi = $(wildcard literatura/bach-corais/*.lyi)
-corais-png = $(notdir $(patsubst %.lyi,%.png,$(corais-lyi)))
-corais-png-partitura = $(addprefix coral-,$(notdir $(patsubst %.lyi,%.png,$(corais-lyi))))
-corais-ly-partitura = $(addprefix coral,$(notdir $(patsubst %.lyi,%.ly,$(corais-lyi))))
-corais-ly = $(notdir $(patsubst %.lyi,%.ly,$(corais-lyi)))
-corais-dir = $(maindir)/corais
 
 neural-path = $(maindir)/neural-nets/
 
-lilypond = lilypond -I $(maindir)/literatura/bach-corais -I $(maindir)/lily
 
-vpath %.lyi literatura/bach-corais
-vpath %.pop gabaritos/bach-corais
-vpath %.ly $(corais-dir)
-vpath %.log $(corais-dir)
-vpath %.png $(corais-dir)
 vpath %.fann $(neural-path)
 vpath %.data $(neural-path)
 
@@ -124,9 +112,6 @@ book: book-stuff
 book-stuff: docs/corais.lytex corais-ly
 	lilypond-book -o out --psfonts -I corais/ docs/corais.lytex
 
-%.png: %.ly
-	cd $(corais-dir); \
-	$(lilypond) --png $< 2> $(corais-dir)/$(notdir $(basename $<)).log
 
 clean-nets:
 	rm -f neural-nets/*
@@ -145,7 +130,7 @@ clean-lisp-cache:
 	rm -rf /var/cache/common-lisp-controller/$$UID/sbcl/local
 
 cleanall: clean clean-nets clean-resultados lispclean
-	rm -rf rameau cmurameau eclrameau clisprameau $(corais-dir)
+	rm -rf rameau cmurameau eclrameau clisprameau 
 
 lispclean: clean
 	@if [ $(hostname) == "phoenix" ]; then \
