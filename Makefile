@@ -32,9 +32,9 @@ vpath %.png $(corais-dir)
 vpath %.fann $(neural-path)
 vpath %.data $(neural-path)
 
-.PHONY: update clean all doc update corais-ly corais corais-partitura resultados erros
+.PHONY: update clean all doc update  resultados erros
 
-default: corais-ly rameau 
+default: rameau 
 
 all-rameau: rameau cmurameau clisprameau
 
@@ -114,32 +114,6 @@ doc:
 update: cl-fann
 	git fetch && git rebase origin/master
 
-corais-ly: $(corais-ly)
-
-## BUG: regera os png quando não precisa (mas não faz isso sempre)
-corais: $(corais-png)
-
-corais-partitura: rameau $(corais-png-partitura)
-
-## BUG: regera os lyc quando não precisa (mas não faz isso sempre)
-corais-fast: $(corais-ly)
-	cd $(corais-dir); \
-	$(lilypond) --png $(notdir $(corais-ly))
-
-## BUG: gera dos os ly que tem no diretorio, inclusive coral-*.ly
-corais-partitura-fast: $(corais-ly)
-	./rameau partitura corais -vt
-	cd $(corais-dir); \
-	$(lilypond) --png $(notdir $(corais-ly-partitura))
-
-%.ly: %.lyi
-	@if [ ! -d $(corais-dir) ]; then mkdir -p $(corais-dir); fi;
-	@cat $< lily/score.lyi > $(corais-dir)/$(basename $(notdir $<)).ly
-
-coral-%.png: %.ly %.pop rameau
-	./rameau partitura corais -f $(notdir $(basename $<))
-	cd $(corais-dir); \
-	$(lilypond) --png coral-$(notdir $<) 2> $(corais-dir)/coral-$(notdir $(basename $<)).log
 
 book: book-stuff
 	sh gera-tex.sh
