@@ -78,19 +78,20 @@ deps:
 	cd rameau-deps ; git pull ;\
 	fi
 
-train-neural: neural-nets/context.fann neural-nets/e-chord.fann
+train-neural: context.fann e-chord.fann
 
-neural-nets/e-chord-train.data:
-	./rameau train --e-chord-data-set --e-chord-data $@
+e-chord-train.data:
+	echo $@
+	./rameau train --e-chord-data-set --e-chord-data $(neural-path)/$@
 
-neural-nets/context-train.data:
-	./rameau train --context-data-set --context-data $@
+context-train.data:
+	./rameau train --context-data-set --context-data $(neural-path)/$@
 
-neural-nets/context.fann: neural-nets/context-train.data
-	./rameau train --context-fann-file --context-data $< --context-fann $@
+context.fann: context-train.data
+	./rameau train --context-fann-file --context-data $(neural-path)/$< --context-fann $(neural-path)/$@
 
-neural-nets/e-chord.fann: neural-nets/e-chord-train.data
-	./rameau train --e-chord-fann-file --e-chord-data $< --e-chord-fann $@
+e-chord.fann: e-chord-train.data
+	./rameau train --e-chord-fann-file --e-chord-data $(neural-path)/$< --e-chord-fann $(neural-path)/$@
 
 rameau: $(lisp-files)
 	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" --load "tools/make-image.lisp"
