@@ -161,7 +161,6 @@ clean-resultados:
 
 clean:
 	rm -f rameau
-	rm -f *.data *.fann
 	find -name *.fasl -exec rm {} \;
 	find -name *.fas -exec rm {} \;
 	find -name *.lib -exec rm {} \;
@@ -170,7 +169,7 @@ clean:
 clean-lisp-cache:
 	rm -rf /var/cache/common-lisp-controller/$$UID/sbcl/local
 
-cleanall: clean clean-nets clean-resultados
+cleanall: clean clean-nets clean-resultados lispclean
 	rm -rf rameau cmurameau eclrameau clisprameau $(corais-dir)
 
 lispclean: clean
