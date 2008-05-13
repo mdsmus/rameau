@@ -67,7 +67,7 @@
 (defun make-devnull-voice ()
   "\\new Devnull = \"nowhere\" \\texto")
 
-(defun print-compare-answer-sheet (analysis answer name)
+(defun print-compare-answer-sheet (analysis answer name options)
   (make-variable (remove #\- name)
                  (concat " \\lyricmode {
  \\set stanza = \""
@@ -77,11 +77,18 @@
            (make-lily-list
             (loop for al in analysis
                for an in answer
-               collect (if (compare-answer-sheet al an)
+               collect (if (or (null answer) (compare-answer-sheet al an))
                            (concat "\"" (format nil "~a" al) "\"")
-                           (concat "\\markup { \\roman \\italic \\bold \""
-                                   (format nil "~a" al)
-                                   "\"}"))))
+                           (if (rameau-options:get-no-color options)
+                               (concat "\\markup { \\roman \\italic \\bold \""
+                                       (format nil "~a" al)
+                                       "\"}")
+                               (concat "\\markup { \\roman \\italic \\bold \\with-color #(x11-color '"
+                                       (substitute #\Space #\- (rameau-options:get-wrong-answer-color options))
+                                       ") "
+                                       "\""
+                                       (format nil "~a" al)
+                                       "\"}")))))
            "}
 ")))
 

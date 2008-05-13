@@ -188,11 +188,12 @@
        for re in (analysis-results analysis)
        do (format variables (print-compare-answer-sheet re
                                                         (analysis-answer-sheet analysis)
-                                                        (algorithm-name al)))
+                                                        (algorithm-name al)
+                                                        options))
          (format in-score (make-lyrics (algorithm-name al))))
-    (format variables (make-answer-sheet (analysis-answer-sheet analysis)))
-    (format in-score (make-lyrics "answer"))
-    ;(format t "score; ~a, music ~a, ast: ~a, full-path: ~%" score music ast (analysis-full-path analysis))
+    (when (analysis-answer-sheet analysis)
+      (format variables (make-answer-sheet (analysis-answer-sheet analysis)))
+      (format in-score (make-lyrics "answer")))
     (setf (node-text score) (append (list (get-output-stream-string variables)
                                           "\\score { "
                                           "<< "
