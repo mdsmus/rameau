@@ -76,7 +76,8 @@
 "
            (make-lily-list
             (loop for al in analysis
-               for an in answer
+               for answer =  answer then (rest answer)
+               for an = (first answer)
                collect (if (or (null answer) (compare-answer-sheet al an))
                            (concat "\"" (format nil "~a" al) "\"")
                            (if (rameau-options:get-no-color options)

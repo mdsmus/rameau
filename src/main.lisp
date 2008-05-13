@@ -244,12 +244,13 @@
   (iter (for anal in analysis)
         (cond ((get-dont-compare options) (analysis-terminal-no-answer options anal))
               ((analysis-answer-sheet anal)
-               (analysis-lily options anal)
                (analysis-terminal options anal))
               (t (print-warning (concat "the answer sheet for "
                                         (analysis-file-name anal)
                                         " doesn't exist"))
-                 (analysis-terminal-no-answer options anal)))))
+                 (analysis-terminal-no-answer options anal)))
+        (when (get-score options)
+          (analysis-lily options anal))))
 
 ;;; Training
 (defcommand train-neural (options &rest ignore)
