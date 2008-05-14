@@ -1,4 +1,4 @@
-(in-package #:rameau)
+(in-package #:rameau-test)
 
 (define-test chord-interval-code
   (assert-equal '(7 min) (chord-interval-code "c" "bes"))

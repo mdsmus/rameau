@@ -33,6 +33,18 @@
                                      (:file "knn")
                                      (:file "tree-enarm")))))
 
+(asdf:defsystem :rameau-test
+    :depends-on (:rameau)
+    :components ((:module tests
+                          :components ((:file "packages")
+                                       (:file "utils")
+                                       (:file "musiclib")
+                                       (:file "formato")
+                                       (:file "parser")
+                                       (:file "segment")
+                                       (:file "chords")
+                                       (:file "tools")
+                                       (:file "main")))))
 (asdf:defsystem :rameau
   :name "rameau"
   :version "4.0"
@@ -41,12 +53,4 @@
   :components ((:file "terminal")
                (:file "lily")
                (:file "main" :depends-on ("terminal" "lily"))
-               (:module tests
-                        :components ((:file "test-utils")
-                                     (:file "test-musiclib")
-                                     (:file "test-formato")
-                                     (:file "test-parser")
-                                     (:file "test-segment")
-                                     (:file "test-chords")
-                                     (:file "test-tools")
-                                     (:file "test-main")))))
+               ))

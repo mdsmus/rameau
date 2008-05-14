@@ -1,5 +1,4 @@
-(in-package #:rameau)
-(use-package :lisp-unit)
+(in-package #:rameau-test)
 
 (define-test octave-from-string
   (assert-equal 0  (octave-from-string ""))

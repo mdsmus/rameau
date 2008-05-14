@@ -1,9 +1,7 @@
-(in-package #:rameau)
-(use-package 'lisp-unit)
+(in-package #:rameau-test)
 
-
-(lisp-unit:define-test sonorities
-  (lisp-unit:assert-equalp
+(define-test sonorities
+  (assert-equalp
    (sonorities
     (list (make-event :PITCH 0 :OCTAVE 10 :DUR 1/4 :start 0)
           (make-event :PITCH 55 :OCTAVE 9 :DUR 1/4 :start 0)

@@ -1,4 +1,4 @@
-(in-package :rameau)
+(in-package :rameau-test)
 
 (define-test event-end
   (assert-equal

@@ -1,7 +1,7 @@
-(in-package #:rameau)
+(in-package #:rameau-test)
 
-(lisp-unit:define-test get-parsed-notes-string
-  (lisp-unit:assert-true
+(define-test get-parsed-notes-string
+  (assert-true
    (event-equal
     (list
      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 0 :DUR 1/4 :start 0)
@@ -16,7 +16,7 @@
 \\new Staff {  c d e f }
 \\new Staff {  c d e f }
 >> }")))
-  (lisp-unit:assert-true
+  (assert-true
    (event-equal
     (list
      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 55 :OCTAVE 1 :DUR 1/4 :start 0)
@@ -34,7 +34,7 @@
   }
 >>")))
   
-  (lisp-unit:assert-true
+  (assert-true
    (event-equal
     (list
      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 55 :OCTAVE 1 :DUR 1/4 :start 0)
@@ -58,7 +58,7 @@
   }
 >>")))
   
-  (lisp-unit:assert-true
+  (assert-true
    (event-equal
     (get-parsed-notes-string "
 \\header {
@@ -105,14 +105,14 @@
           (make-event :key '(C MAJOR) :time-sig "3/4" :PITCH 55 :OCTAVE 1 :DUR 1/4 :start 1/2)
           (make-event :key '(C MAJOR) :time-sig "3/4" :PITCH 28 :OCTAVE 1 :DUR 1/4 :start 1/2)
           (make-event :key '(C MAJOR) :time-sig "3/4" :PITCH 0 :OCTAVE 1 :DUR 1/4 :start 1/2))))
-  (lisp-unit:assert-true
+  (assert-true
    (event-equal
     (get-parsed-notes-string "{ foo = { c d e} \\foo }")
    (list
     (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 0 :DUR 1/4 :start 0)
     (make-event :key '(C MAJOR) :time-sig 1 :PITCH 14 :OCTAVE 0 :DUR 1/4 :start 1/4)
     (make-event :key '(C MAJOR) :time-sig 1 :PITCH 28 :OCTAVE 0 :DUR 1/4 :start 1/2))))
-  (lisp-unit:assert-true
+  (assert-true
    (event-equal
     (get-parsed-notes-string "{ foo = { c } \\foo foo = { d } \\foo }")
     (list
@@ -121,15 +121,15 @@
   )
 
 
-(lisp-unit:define-test correct-times
-  (lisp-unit:assert-equal
+(define-test correct-times
+  (assert-equal
    (event-dur (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 0 :DUR 9/2 :start 0))
    (let ((nota (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 0 :DUR 3 :start 0)))
      (correct-times 3/2 nota)
      (event-dur nota))))
 
-(lisp-unit:define-test correct-durations
-  (lisp-unit:assert-equal
+(define-test correct-durations
+  (assert-equal
    '(4 4 4 8 8)
    (let ((notas
           (list

@@ -1,5 +1,4 @@
-(in-package :rameau)
-(use-package :lisp-unit)
+(in-package :rameau-test)
 
 (define-test files-range
   (assert-equal '("001" "002" "003") (files-range '("1" "3"))))
