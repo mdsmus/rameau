@@ -113,6 +113,9 @@ book-stuff: docs/corais.lytex corais-ly
 	lilypond-book -o out --psfonts -I corais/ docs/corais.lytex
 
 
+pauta:
+	wget -O pauta.html "http://wiki.genos.mus.br/PautaReuniao"
+
 clean-nets:
 	rm -f neural-nets/*
 
