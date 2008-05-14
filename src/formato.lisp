@@ -144,7 +144,7 @@
   (let ((a (event-pitch a))
         (b (event-pitch b)))
     (<= (module (- b a))
-       (code->interval '(5 just)))))
+       (code->interval '(5 perfect)))))
 
 
 (defun modificador-oitava (a b)
