@@ -1,4 +1,4 @@
-TRAIN_VERSION = 005
+TRAIN_VERSION = $(shell grep -o '(neural-version "[0-9]\+")' src/main.lisp | sed 's/(neural-version "\([0-9]\+\)")/\1/')
 TRAIN_NAME = $(shell git branch | grep "*" | cut -f 2 -d ' ')-$(TRAIN_VERSION)
 RAMEAUDEPS = t
 hostname = $(shell hostname)

@@ -376,7 +376,8 @@
         (format t "~a: ~a~%" s (funcall s obj))))
 
 (defun default-arguments (options)
-  (let ((neural-path (concat *rameau-path* "neural-nets/")))
+  (let* ((neural-version "005")
+         (neural-path (concat *rameau-path* "neural-nets/master-" neural-version "-")))
     (iter outer (for (k v) in *commands*)
           (iter (for (short long doc init list) in v)
                 (for writer = (intern (concat "SET-" (string-upcase long))))
