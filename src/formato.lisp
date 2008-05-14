@@ -190,6 +190,7 @@
                          :octave (event-octave n)
                          :dur (event-dur n)
                          :start (event-start n)
+                         :voice-name (event-voice-name n)
                          :key (event-key n)
                          :time-sig (event-time-sig n)))))
 
@@ -200,6 +201,7 @@
                  :octave (event-octave nota)
                  :dur (event-dur nota)
                  :start (event-start nota)
+                 :voice-name (event-voice-name nota)
                  :key (event-key nota)
                  :time-sig (event-time-sig nota))))
 
