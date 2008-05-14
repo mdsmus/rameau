@@ -1,5 +1,5 @@
 TRAIN_VERSION = 005
-TRAIN_NAME = "$(shell git branch | grep "*" | cut -f 2 -d ' ')-$(TRAIN_VERSION)"
+TRAIN_NAME = $(shell git branch | grep "*" | cut -f 2 -d ' ')-$(TRAIN_VERSION)
 RAMEAUDEPS = t
 hostname = $(shell hostname)
 maindir = $(shell pwd)
