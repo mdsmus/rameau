@@ -285,6 +285,27 @@
                           chord))
                          ))))
 
+(defcommand jumps (options analysis)
+  (let ((jumps (make-hash-table :test #'equal)))
+    (iter (for anal in analysis)
+          (let ((notes (parse-file (analysis-full-path anal)))
+                (voices nil))
+            (iter (for note in notes)
+                  (setf voices (union voices (list (event-voice-name note)))))
+            (iter (for voice in voices)
+                  (let ((ns (iter (for note in notes)
+                                  (if (equal (event-voice-name note) voice)
+                                      (collect note)))))
+                    (iter (for n in ns)
+                          (for p previous n)
+                          (when (and n p)
+                            (incf (gethash (module (- (event-pitch n) (event-pitch p)))
+                                           jumps
+                                           0))))))))
+    (iter (for (k v) in-hashtable jumps)
+          (format t "     ~10a: ~3a~%" (interval->code k) v))))
+          
+
 ;;; Training
 (defcommand train-neural (options &rest ignore)
   (declare (ignore ignore))
