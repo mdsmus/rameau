@@ -261,30 +261,6 @@
         (iter (for chord in (first (analysis-results anal)))
               (format t "~a " chord))))
 
-(defcommand cadences (options analysis)
-  (iter (for anal in analysis)
-        (iter (for chord in (first (analysis-results anal)))
-              (for p previous chord)
-              (for sonority from 1)
-              ; detect cadences
-              ;perfect cadence
-              (when (and (chord-p chord)
-                         (chord-p p))
-                (when (= 55 (- (parse-note (chord-root chord))
-                               (parse-note (chord-root p))))
-                  (format t "  possibly authentic or half: chorale ~a sonority ~a from ~a to ~a ~%"
-                          (analysis-file-name anal)
-                          sonority
-                          p
-                          chord))
-                (when (= 41(- (parse-note (chord-root chord))
-                               (parse-note (chord-root p))))
-                  (format t "     possibly amen or plagal: chorale ~a sonority ~a from ~a to ~a ~%"
-                          (analysis-file-name anal)
-                          sonority
-                          p
-                          chord))
-                         ))))
 
 (defcommand jumps (options analysis)
   (let ((jumps (make-hash-table :test #'equal)))
