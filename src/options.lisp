@@ -39,6 +39,7 @@
       ("cadences")
       ("jumps")
       ("ambitos")
+      ("cruzamento")
       ("train-neural"
        (("" "e-chord-data-set" "generate the data set for the network")
         ("" "e-chord-fann-file" "generate the reural network file")

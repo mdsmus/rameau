@@ -332,6 +332,22 @@
                   )))))
 
 
+(defcommand cruzamento (options analysis)
+  (iter (for anal in analysis)
+        (let ((notes (analysis-segments anal)))
+          (iter (for segment in notes)
+                (for segno from 1)
+                (let ((segment (sorted segment #'event-<)))
+                  (when (= 4 (length segment))
+                    (unless (and (equal (event-voice-name (first segment)) "\"baixo\"")
+                                 (equal (event-voice-name (second segment)) "\"tenor\"")
+                                 (equal (event-voice-name (third segment)) "\"alto\"")
+                                 (equal (event-voice-name (fourth segment)) "\"soprano\""))
+                      (format t "Cruzamento coral ~a segmento ~a ordem ~a~%"
+                              (analysis-file-name anal)
+                              segno
+                              (mapcar #'event-voice-name segment)))))))))
+
 ;;; Training
 (defcommand train-neural (options &rest ignore)
   (declare (ignore ignore))
