@@ -1,3 +1,5 @@
+TRAIN_VERSION = 005
+TRAIN_NAME = "$(shell git branch | grep "*" | cut -f 2 -d ' ')-$(TRAIN_VERSION)"
 RAMEAUDEPS = t
 hostname = $(shell hostname)
 maindir = $(shell pwd)
@@ -66,20 +68,22 @@ deps:
 	cd rameau-deps ; git pull ;\
 	fi
 
-train-neural: context.fann e-chord.fann
+train-neural: $(TRAIN_NAME)-context.fann $(TRAIN_NAME)-e-chord.fann
 
-e-chord-train.data:
+$(TRAIN_NAME)-e-chord-train.data:
 	echo $@
 	./rameau train --e-chord-data-set --e-chord-data $(neural-path)/$@
 
-context-train.data:
+$(TRAIN_NAME)-context-train.data:
 	./rameau train --context-data-set --context-data $(neural-path)/$@
 
-context.fann: context-train.data
-	./rameau train --context-fann-file --context-data $(neural-path)/$< --context-fann $(neural-path)/$@
+$(TRAIN_NAME)-context.fann: $(TRAIN_NAME)-context-train.data
+	./rameau train --context-fann-file --context-data $(neural-path)/$< \
+	--context-fann $(neural-path)/$@
 
-e-chord.fann: e-chord-train.data
-	./rameau train --e-chord-fann-file --e-chord-data $(neural-path)/$< --e-chord-fann $(neural-path)/$@
+$(TRAIN_NAME)-e-chord.fann: $(TRAIN_NAME)-e-chord-train.data
+	./rameau train --e-chord-fann-file --e-chord-data $(neural-path)/$< \
+	--e-chord-fann $(neural-path)/$@
 
 rameau: $(lisp-files)
 	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" --load "tools/make-image.lisp"
