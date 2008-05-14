@@ -135,8 +135,8 @@
   (let ((string-result
          (with-output-to-string (string)
            (let ((*standard-output* string))
-             (lisp-unit:run-all-tests :rameau)
-             (format t "~%")))))    
+             (lisp-unit:run-all-tests :rameau-test)
+             (format t "~%")))))
     (if (get-verbose options)
         (write-line string-result)
         (write-line (subseq (last1 (cl-ppcre:split "\\n" string-result)) 34)))))

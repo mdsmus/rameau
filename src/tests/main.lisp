@@ -1,4 +1,4 @@
-(in-package :rameau-main-test)
+(in-package :rameau-test)
 
 (define-test item-singular
   (assert-equal "coral" (item-singular "corais")))
