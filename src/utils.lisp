@@ -26,6 +26,8 @@
    #:al
    #:fr
    #:it
+   #:tempered
+   #:tonal
    ))
 
 (in-package :genoslib)
