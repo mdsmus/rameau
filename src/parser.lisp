@@ -128,7 +128,8 @@
 
 (defclass score (music-block) ())
 
-(defclass voice (music-block) ())
+(defclass voice (music-block)
+  ((name :accessor voice-name :initarg :name)))
 
 (defun parse-music-block (a block b)
   "[DONTCHECK]"
@@ -190,11 +191,11 @@
 
 (defun parse-voice-block (a ign block)
   "[DONTCHECK]"
-  (make-instance 'voice :expr block :text (list a ign block)))
+  (make-instance 'voice :name "" :expr block :text (list a ign block)))
 
 (defun parse-voice-block-string (a i b ig c ign block)
   "[DONTCHECK]"
-  (make-instance 'voice :expr block :text (list a i b ig c ign block)))
+  (make-instance 'voice :name c :expr block :text (list a i b ig c ign block)))
 
 (defun parse-repeat-block (a i b ig dur ign block)
   "[DONTCHECK]"
@@ -202,7 +203,7 @@
 
 (defun parse-context-voice (a i b ig c ign d igno block)
   "[DONTCHECK]"
-  (let ((blck (parse-voice-block a nil block)))
+  (let ((blck (parse-voice-block-string a nil b nil d nil block)))
     (setf (node-text blck)
           (list a i b ig c ign d igno block))
     blck))
@@ -460,6 +461,12 @@
      (if (listp seq)
          (remove-if #'null seq)
          seq))))
+
+(defmethod process-ast :around ((node voice))
+  (let ((notes (call-next-method)))
+    (loop for n in (note-sequence-notas notes)
+       do (setf (event-voice-name n) (voice-name node)))
+    notes))
     
 (defmethod process-ast ((node simultaneous))
   (merge-exprs (alexandria:flatten (process-trees (node-expr node)))))

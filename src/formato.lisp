@@ -5,6 +5,7 @@
 
 (defstruct event
   (text-repr)
+  (voice-name)
   (pitch)
   (octave)
   (dur)
