@@ -37,7 +37,8 @@
         ("" "wrong-answer-color" "" "red")))
       ("all-chords")
       ("cadences")
-      ("jumps")
+      ("jumps"
+       (("-m" "max-number" "max number of jumps to be displayed" 10)))
       ("ambitos")
       ("cruzamento")
       ("train-neural"
