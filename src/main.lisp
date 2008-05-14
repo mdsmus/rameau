@@ -256,10 +256,39 @@
         (when (get-score options)
           (analysis-lily options anal))))
 
-(defcommand all-chords (options analysis)
+(defun all-chords (options analysis)
+  (declare (ignore options))
   (iter (for anal in analysis)
-        (iter (for chord in (first (analysis-results anal)))
-              (format t "~a " chord))))
+        (nconcing
+            (iter (for chord in (first (analysis-results anal)))
+                  (for segment in (analysis-segments anal))
+                  (for i from 0)
+                  (collect (list chord segment (analysis-file-name anal) i))))))
+
+
+(defcommand resolve-seventh (options analysis)
+  (iter (for next in (all-chords options analysis))
+        (for chord previous next)
+        (for prev previous chord)
+        (when (and chord next prev (chord-p (first chord)) (not (equal "" (chord-7th (first chord)))))
+          (let* ((pitch (7th-pitch (first chord)))
+                 (voices (remove-if-not #L(equal (event-pitch !1) pitch) (second chord))))
+            (iter (for voice in voices)
+                  (format t "  ~a ~a de ~a setima ~a resolve ~a~%"
+                          (third chord)
+                          (fourth chord)
+                          (print-event-note (first (remove-if-not
+                                                    #L(equal (event-voice-name !1)
+                                                             (event-voice-name voice))
+                                                    (second prev))))
+                          (print-event-note (first
+                                             (remove-if-not #L(equal (event-voice-name !1)
+                                                                     (event-voice-name voice))
+                                                            (second chord))))
+                          (print-event-note (first
+                                             (remove-if-not #L(equal (event-voice-name !1)
+                                                                     (event-voice-name voice))
+                                                            (second next))))))))))
 
 
 (defcommand jumps (options analysis)

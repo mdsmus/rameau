@@ -29,7 +29,7 @@
        (push (format nil "~a" p) asdf:*central-registry*)))
 
 (asdf:oos 'asdf:load-op :rameau :verbose nil)
-(asdf:oos 'asdf:load-op :rameau-test :verbose nil)
+;(asdf:oos 'asdf:load-op :rameau-test :verbose nil)
 
 #+sbcl(sb-ext:save-lisp-and-die "rameau" :executable t :toplevel #'rameau-main:main)
 

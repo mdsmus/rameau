@@ -2,7 +2,14 @@
   (:import-from #:arnesi "AIF" "IT" "LAST1")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
   (:use #:cl)
-  (:export #:a
+  (:export
+   #:maj
+   #:min
+   #:just
+   #:perfect
+   #:aug
+   #:dim
+   #:a
    #:b
    #:c
    #:d

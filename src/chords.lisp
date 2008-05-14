@@ -194,3 +194,15 @@ position."
 (defun add-inversions (segmentos acordes)
   "[DONTCHECK]"
   (mapcar #'add-inversion segmentos acordes))
+
+(defun 7th-pitch (chord)
+  (let ((root (parse-note (chord-root chord))))
+    (module
+     (cond ((equal "7+" (chord-7th chord))
+            (+ root (code->interval '(7 genoslib::maj))))
+           ((or (equal "7-" (chord-7th chord))
+                (and (equal "°" (chord-mode chord))
+                     (equal "7" (chord-7th chord))))
+            (+ root (code->interval '(7 dim))))
+           (t (+ root (code->interval '(7 min))))))))
+           

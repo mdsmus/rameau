@@ -35,12 +35,12 @@
         ("" "column-dur-size" "" "4")
         ("" "column-separator" "" "|")
         ("" "wrong-answer-color" "" "red")))
-      ("all-chords")
       ("cadences")
       ("jumps"
        (("-m" "max-number" "max number of jumps to be displayed" 10)))
       ("ambitos")
       ("cruzamento")
+      ("resolve-seventh")
       ("train-neural"
        (("" "e-chord-data-set" "generate the data set for the network")
         ("" "e-chord-fann-file" "generate the reural network file")

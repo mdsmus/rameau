@@ -33,6 +33,9 @@
         (< (event-pitch x) (event-pitch y))
         (< a b))))
 
+(defun print-event-note (e)
+  (when (event-p e)
+    (print-note (code->notename (event-pitch e)))))
 (defun event-equal (x y)
   (if 
       (or
