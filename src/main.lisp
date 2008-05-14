@@ -55,7 +55,8 @@
        (rameau-report))))
 
 (defun maptrace (lista-string &optional (trace 'trace))
-  (eval (append (list trace) (mapcar2 #'read-from-string #'string-upcase lista-string))))
+  (let ((expr (append (list trace) (mapcar2 #'read-from-string #'string-upcase lista-string))))
+    (eval expr)))
 
 ;;; Make analysis
 (defstruct analysis
@@ -343,7 +344,7 @@
                                  (equal (event-voice-name (second segment)) "\"tenor\"")
                                  (equal (event-voice-name (third segment)) "\"alto\"")
                                  (equal (event-voice-name (fourth segment)) "\"soprano\""))
-                      (format t "Cruzamento coral ~a segmento ~a ordem ~a~%"
+                      (format t "Cruzamento coral ~a segmento ~5a ordem ~a~%"
                               (analysis-file-name anal)
                               segno
                               (mapcar #'event-voice-name segment)))))))))
@@ -458,9 +459,11 @@
               (aif (get-debug options)
                    (mapcar2 #'rameau-debug #'string->symbol it)
                    (rameau-undebug))
-              (aif (get-trace options)
-                   (maptrace it)
-                   (maptrace it 'untrace))
+              (awhen (get-trace options)
+                (trace maptrace)
+                (trace %do-relative)
+                (maptrace it))
+                   ;(maptrace it 'untrace))
               (with-profile options
                 (if (and (string= command "analysis")
                          (every #'null (mapcar #'analysis-segments analysis)))

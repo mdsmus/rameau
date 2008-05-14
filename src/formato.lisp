@@ -143,7 +143,7 @@
 (defun but-a-fifth-apart (a b)
   (let ((a (event-pitch a))
         (b (event-pitch b)))
-    (<= (module (- b a))
+    (< (module (- b a))
        (code->interval '(5 perfect)))))
 
 
@@ -176,11 +176,11 @@
              (%do-relative (if (null (event-pitch prox-nota)) nota prox-nota)
                            expressao oitava))))
 
-
 (defun do-relative (nota expressao)
   (let ((expressao (if (listp expressao) (sequence-expressions (remove-if #'null expressao)) expressao)))
     (%do-relative (car (note-sequence-notas nota)) (note-sequence-notas expressao))
     expressao))
+
 
 (defun transpose-segmentos (segmentos valor)
   "[DONTCHECK]"
