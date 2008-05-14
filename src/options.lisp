@@ -35,7 +35,7 @@
         ("" "column-dur-size" "" "4")
         ("" "column-separator" "" "|")
         ("" "wrong-answer-color" "" "red")))
-      ("allchords")
+      ("all-chords")
       ("cadences")
       ("jumps")
       ("train-neural"

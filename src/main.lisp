@@ -255,7 +255,7 @@
         (when (get-score options)
           (analysis-lily options anal))))
 
-(defcommand allchords (options analysis)
+(defcommand all-chords (options analysis)
   (iter (for anal in analysis)
         (iter (for chord in (first (analysis-results anal)))
               (format t "~a " chord))))
@@ -303,7 +303,7 @@
                                            jumps
                                            0))))))))
     (iter (for (k v) in-hashtable jumps)
-          (format t "     ~10a: ~3a~%" (interval->code k) v))))
+          (format t "     ~15a: ~3a~%" (print-interval k) v))))
           
 
 ;;; Training
