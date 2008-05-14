@@ -40,5 +40,6 @@
   :depends-on (:rameau-pkg :algorithms :options)
   :components ((:file "terminal")
                (:file "lily")
+               (:file "cadence")
                (:file "main" :depends-on ("terminal" "lily"))
                ))

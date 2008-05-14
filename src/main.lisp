@@ -310,8 +310,8 @@
                             (push (list (analysis-file-name anal)
                                         (* 100.0 (/ i total))
                                         voice
-                                        (print-note (code->notename (event-pitch n)))
-                                        (print-note (code->notename (event-pitch p))))
+                                        (print-event-note n)
+                                        (print-event-note p))
                                   (gethash (module (- (event-pitch n) (event-pitch p)))
                                            jumps))))))))
     (if (get-verbose options)
@@ -358,9 +358,9 @@
                   (format t "Chorale ~a voice ~a min ~a~a max ~a~a~%"
                           (analysis-file-name anal)
                           voice
-                          (print-note (code->notename (event-pitch min)))
+                          (print-event-note min)
                           (show-octave (event-octave min))
-                          (print-note (code->notename (event-pitch max)))
+                          (print-event-note max)
                           (show-octave (event-octave max)))
                   )))))
 
