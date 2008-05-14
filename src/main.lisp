@@ -255,6 +255,11 @@
         (when (get-score options)
           (analysis-lily options anal))))
 
+(defcommand allchords (options analysis)
+  (iter (for anal in analysis)
+        (iter (for chord in (first (analysis-results anal)))
+              (format t "~a " chord))))
+
 ;;; Training
 (defcommand train-neural (options &rest ignore)
   (declare (ignore ignore))
