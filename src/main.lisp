@@ -304,7 +304,33 @@
                                            0))))))))
     (iter (for (k v) in-hashtable jumps)
           (format t "     ~15a: ~3a~%" (print-interval k) v))))
-          
+
+(defcommand ambito (options analysis)
+  (iter (for anal in analysis)
+        (let ((notes (parse-file (analysis-full-path anal)))
+              (voices nil))
+          (iter (for note in notes)
+                (setf voices (union voices (list (event-voice-name note)))))
+          (iter (for voice in voices)
+                (let ((ns (iter (for note in notes)
+                                (if (equal (event-voice-name note) voice)
+                                    (collect note))))
+                      (min (make-event :pitch 95 :octave 100))
+                      (max (make-event :pitch 0 :octave -100)))
+                  (iter (for note in ns)
+                        (when (event-< note min)
+                          (setf min note))
+                        (when (event-< max note)
+                          (setf max note)))
+                  (format t "Chorale ~a voice ~a min ~a octave ~a max ~a octave ~a~%"
+                          (analysis-file-name anal)
+                          voice
+                          (print-note (code->notename (event-pitch min)))
+                          (event-octave min)
+                          (print-note (code->notename (event-pitch max)))
+                          (event-octave max))
+                  )))))
+
 
 ;;; Training
 (defcommand train-neural (options &rest ignore)
