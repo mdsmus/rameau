@@ -294,7 +294,7 @@
                                                                      (event-voice-name voice))
                                                             (second next))))))))))
 
-
+;; É sempre mais aguda menos a mais grave
 (defcommand jumps (options analysis)
   (let ((jumps (make-hash-table :test #'equal)))
     (iter (for anal in analysis)
@@ -311,13 +311,15 @@
                           (for i from 0)
                           (for p previous n)
                           (when (and n p)
-                            (push (list (analysis-file-name anal)
-                                        (* 100.0 (/ i total))
-                                        voice
-                                        (print-event-note n)
-                                        (print-event-note p))
-                                  (gethash (module (- (event-pitch n) (event-pitch p)))
-                                           jumps))))))))
+                            (let ((a (if (event-< n p) n p))
+                                  (b (if (event-< n p) p n)))
+                              (push (list (analysis-file-name anal)
+                                          (* 100.0 (/ i total))
+                                          voice
+                                          (print-event-note n)
+                                          (print-event-note p))
+                                    (gethash (module (- (event-pitch b) (event-pitch a)))
+                                             jumps)))))))))
     (if (get-verbose options)
       (iter (for (k v) in-hashtable jumps)
             (format t "~20a: ~%" (print-interval k))
@@ -329,9 +331,7 @@
                               (second i)
                               (third i)
                               (fourth i)
-                              (fifth i))
-                      (when (= n 5)
-                        (setf n 0) (format t "~%                       ")))
+                              (fifth i)))
                 (format t "               ~a saltos" (length v)))
             (format t "~%~%"))
       (iter (for (k v) in-hashtable jumps)

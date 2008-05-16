@@ -37,7 +37,7 @@
         ("" "wrong-answer-color" "" "red")))
       ("cadences")
       ("jumps"
-       (("-m" "max-number" "max number of jumps to be displayed" 10)))
+       (("-m" "max-number" "max number of jumps to be displayed" 30)))
       ("ambitos")
       ("cruzamento")
       ("resolve-seventh")
