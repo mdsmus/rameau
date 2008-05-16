@@ -368,6 +368,10 @@
                           (+ 3 (event-octave max)))
                   )))))
 
+(defun repeated-notes (segmento)
+  (/= 4 (length (remove-duplicates (sorted segmento #'event-<)
+                                  :test #'equal
+                                  :key #L(cons (event-pitch !1) (event-octave !1))))))
 
 (defcommand cruzamento (options analysis)
   (iter (for anal in analysis)
@@ -376,10 +380,12 @@
                 (for segno from 1)
                 (let ((segment (sorted segment #'event-<)))
                   (when (= 4 (length segment))
-                    (unless (and (equal (event-voice-name (first segment)) "\"baixo\"")
-                                 (equal (event-voice-name (second segment)) "\"tenor\"")
-                                 (equal (event-voice-name (third segment)) "\"alto\"")
-                                 (equal (event-voice-name (fourth segment)) "\"soprano\""))
+                    (unless (or
+                             (and (equal (event-voice-name (first segment)) "\"baixo\"")
+                                  (equal (event-voice-name (second segment)) "\"tenor\"")
+                                  (equal (event-voice-name (third segment)) "\"alto\"")
+                                  (equal (event-voice-name (fourth segment)) "\"soprano\""))
+                             (repeated-notes segment))
                       (format t "Cruzamento coral ~a segmento ~5a ordem ~a~%"
                               (analysis-file-name anal)
                               segno
