@@ -274,9 +274,13 @@
           (let* ((pitch (7th-pitch (first chord)))
                  (voices (remove-if-not #L(equal (event-pitch !1) pitch) (second chord))))
             (iter (for voice in voices)
-                  (format t "  ~a ~a de ~a setima ~a resolve ~a~%"
+                  (format t "  ~a ~a ~a de ~a setima ~a resolve ~a~%"
                           (third chord)
                           (fourth chord)
+                          (event-voice-name (first (remove-if-not
+                                                    #L(equal (event-voice-name !1)
+                                                             (event-voice-name voice))
+                                                    (second prev))))
                           (print-event-note (first (remove-if-not
                                                     #L(equal (event-voice-name !1)
                                                              (event-voice-name voice))
