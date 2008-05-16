@@ -1,0 +1,86 @@
+Capítulo 8
+
+Tríades - Primeira Inversão
+
+Com dúvidas quanto ao crítério de idêntificação dos itens óbvios e não
+óbvios, por ser uma concepçao pessoal, resolvi extrair as regras e
+destacar as citações que mais me chamaram a atenção com um asterisco.
+
+ARPEJO DO BAIXO:
+
+- Uma maneira a qual as tríades em primeira inversão tem origem é
+ simplesmente através de arpejo do baixo... (cap.8,pág.125).
+
+TRÌADES EM PRIMEIRA INVERSÃO SUBSTITUTA:
+
+- Tríades em primeira inversão são frequentemente usadas como
+  substitutas de tríades em posição fundamental, em vez de surgirem
+  como arpejo do baixo. (cap.8, pag. 126).
+
+* - Usadas para melhorar o contorno da linha do baixo, sortir a linha
+  do baixo para maior variedade de notas ou enfraquecer a importância
+  dos acordes de V e I que não funcionam como metas do movimento
+  harmônico. (cap.8,pág. 126).
+
+* - Tríades diminutas (e algumas vezes tríades aumentadas) são usadas
+    exclusivamente em primeira inversão. (cap.8, pág.127 e 138).
+
+
+ACORDES DE SEXTA PARALELOS:
+
+* - Uma série de tríades em primeira inversão paralelas (ou acordes de
+    sexta, do símbolo de baixo cifrado) é frequentemente encontrada,
+    especialmente em Sequências. Acordes usados em movimento paralelo
+    desta forma geralmente não funcionam da maneira habitual. Eles
+    funcionam como acordes de passagem, conectando algum acorde ao
+    início da passagem com algum acorde ao fim. (cap.8,pág.128).
+
+* - A técnica comum para se evitar 5as paralelas em uma passagem de
+  acordes de sexta é a de se colocar as fundamentais de cada acorde na
+  melodia, produzindo então 4as paralelas aceitáveis em vez das 5as
+  paralelas censurávei. (cap.8, pág. 130).
+
+
+ENCADEAMENTOS COM TRÌADES EM PRIMEIRA INVERSÃO:
+
+Textura à duas partes:
+
+- Omite-se geralmente a quinta esteja o acorde em E.F ou
+  invertido. (cap. 8, pág. )
+
+Textura à quatro partes:
+
+- Em uma textura contrapontística o dobramenteo a usar é aquele que
+ resulte em uma melhor condução de vozes. (cap.8, pág. 130)
+
+- Em uma textura homofônica (acordes ou melodia acompanhada de
+ acordes) o dobramento selecionado deve ser aquele que resulte no
+ efeito musical desejado. (cap.8, pág. 131)
+
+- Em qualquer textura, é geralmente melhor não dobrar a
+ sensível. (cap. 8, pág. 131)
+
+- Uma sensível duplicada geralmente resultará ou implicará em 8as
+  paralelas por causa da forte tendência da 7a resolver na
+  tônica.(cap.8, pág. 131)
+
+Textura à três partes (cap.8, pág. 132)
+
+- Tríades invertidas estão geralmente completas numa textura a três
+  partes.
+
+- Tríades invertidas incompletas podem ocorrer mas não com a mesma
+  frequência que as tríades incompletas no estado fundamental.
+
+- A terça não poderá ser omitida pois esta estará obviamente no baixo
+  do acorde.
+
+- Se a tônica for omitida soará como uma tríade no estado fundamental
+  (relativa ou anti-relativa do acorde).
+
+Textura à duas partes:
+
+- Omite-se geralmente a quinta, esteja o acorde em E.F ou
+  invertido. (Kostka Traduzido - Biblioteca cap.6 pág. 37).
+
+
