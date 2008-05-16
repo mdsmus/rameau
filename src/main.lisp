@@ -359,13 +359,13 @@
                           (setf min note))
                         (when (event-< max note)
                           (setf max note)))
-                  (format t "Chorale ~a voice ~a min ~a~a max ~a~a~%"
+                  (format t "Chorale ~a voice ~10a min ~2a ~2a max ~2a ~2a~%"
                           (analysis-file-name anal)
                           voice
                           (print-event-note min)
-                          (show-octave (event-octave min))
+                          (+ 3 (event-octave min))
                           (print-event-note max)
-                          (show-octave (event-octave max)))
+                          (+ 3 (event-octave max)))
                   )))))
 
 
