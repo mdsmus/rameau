@@ -342,6 +342,8 @@
         ((< octave 0) (repeat-string (- octave) ","))
         (t (repeat-string octave "'"))))
 
+
+
 (defcommand ambito (options analysis)
   (iter (for anal in analysis)
         (let ((notes (parse-file (analysis-full-path anal)))
@@ -390,7 +392,16 @@
                               (analysis-file-name anal)
                               segno
                               (mapcar #'event-voice-name segment)))))))))
+#|
+(defun fifths (segment)
+  (iter (for s in (list (rota)))))
 
+(defcommand parallel-fifths (options analysis)
+  (iter (for anal in analysis)
+        (iter (for s in (analysis-segments anal))
+              (aif (fifths s)))))
+                   
+|#
 ;;; Training
 (defcommand train-neural (options &rest ignore)
   (declare (ignore ignore))
