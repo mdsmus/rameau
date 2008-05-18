@@ -392,16 +392,48 @@
                               (analysis-file-name anal)
                               segno
                               (mapcar #'event-voice-name segment)))))))))
-#|
-(defun fifths (segment)
-  (iter (for s in (list (rota)))))
+
+(defun intervals (segment number)
+  (iter (for s in segment)
+        (awhen
+          (iter (for n in segment)
+                (unless (eq s n)
+                  (when (= number
+                           (first (interval->code (module (- (event-pitch n) (event-pitch s))))))
+                    (return (list s n)))))
+          (return it))))
+
+(defun do-parallel (options analysis number name)
+  (iter (for anal in analysis)
+        (iter (for n in (analysis-segments anal))
+              (for s previous n)
+              (for i from 0)
+              (awhen (and n s (intervals s number))
+                (let* ((n1 (first it))
+                       (n2 (second it))
+                       (v1 (event-voice-name n1))
+                       (v2 (event-voice-name n2))
+                       (f1 (find-if #L(equal (event-voice-name !1) v1) n))
+                       (f2 (find-if #L(equal (event-voice-name !1) v2) n))
+                       (d1 (and f1 (- (event-pitch f1)
+                                      (event-pitch n1))))
+                       (d2 (and f2 (- (event-pitch f2)
+                                      (event-pitch n2)))))
+                  (when (and f1 f2 (= d1 d2) (not (= d1 0)))
+                    (format t " parallel ~a chorale ~a voices ~a and ~a sonority ~a~%"
+                            name
+                            (analysis-file-name anal)
+                            v1
+                            v2
+                            i)))))))
 
 (defcommand parallel-fifths (options analysis)
-  (iter (for anal in analysis)
-        (iter (for s in (analysis-segments anal))
-              (aif (fifths s)))))
-                   
-|#
+  (do-parallel options analysis 5 "fifths"))
+
+(defcommand parallel-octaves (options analysis)
+  (do-parallel options analysis 1 "unison")
+  (do-parallel options analysis 8 "octaves"))
+
 ;;; Training
 (defcommand train-neural (options &rest ignore)
   (declare (ignore ignore))

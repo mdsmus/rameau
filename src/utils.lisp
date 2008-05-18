@@ -1,7 +1,7 @@
 (defpackage :genoslib
   (:import-from #:arnesi "AIF" "IT" "LAST1")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
-  (:use #:cl)
+  (:use #:cl #:iterate)
   (:export
    #:maj
    #:min
@@ -129,6 +129,11 @@
 (defun sort-set (set)
   "Sort a set in crescent order. "
   (sorted set #'<))
+
+(defun rotations (list)
+  (iter (for i from 0 below (length list))
+        (collect (append (last list i)
+                         (butlast list i)))))
 
 (defun skip (element list &key (test #'equal))
   "Skip every initial occurence of \\texttt{element} in \\texttt{list}."
