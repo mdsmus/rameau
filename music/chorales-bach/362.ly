@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "362 - Nun freut euch, lieben Christen, g'mein 2"
+  title = "362 - Es ist gewißlich an der Zeit"
   composer = "J. S. Bach"
 }
 

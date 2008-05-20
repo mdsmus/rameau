@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "365 - Werde munter, mein Gemüte"
+  title = "365 - Jesu, mein Seelen Wonne"
   composer = "J. S. Bach"
 }
 

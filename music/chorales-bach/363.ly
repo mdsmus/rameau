@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "363 - O Welt, ich muß dich lassen"
+  title = "363 - O Welt, sieh hier dein Leben"
   composer = "J. S. Bach"
 }
 
