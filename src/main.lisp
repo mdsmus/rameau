@@ -394,14 +394,12 @@
                               (mapcar #'event-voice-name segment)))))))))
 
 (defun intervals (segment number)
-  (iter (for s in segment)
-        (awhen
-          (iter (for n in segment)
-                (unless (eq s n)
-                  (when (= number
-                           (first (interval->code (module (- (event-pitch n) (event-pitch s))))))
-                    (return (list s n)))))
-          (return it))))
+  (iter (for n in segment)
+        (for s previous n)
+        (when (and n s)
+          (when (= number
+                   (first (interval->code (module (- (event-pitch n) (event-pitch s))))))
+            (return (list s n))))))
 
 (defun do-parallel (options analysis number name)
   (iter (for anal in analysis)
@@ -420,12 +418,16 @@
                        (d2 (and f2 (- (event-pitch f2)
                                       (event-pitch n2)))))
                   (when (and f1 f2 (= d1 d2) (not (= d1 0)))
-                    (format t " parallel ~a chorale ~a voices ~a and ~a sonority ~a~%"
+                    (format t " parallel ~a chorale ~a voices ~a and ~a sonority ~a notes ~a and ~a to ~a and ~a~%"
                             name
                             (analysis-file-name anal)
                             v1
                             v2
-                            i)))))))
+                            i
+                            (print-event-note n1)
+                            (print-event-note n2)
+                            (print-event-note f1)
+                            (print-event-note f2))))))))
 
 (defcommand parallel-fifths (options analysis)
   (do-parallel options analysis 5 "fifths"))
