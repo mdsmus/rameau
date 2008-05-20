@@ -406,7 +406,7 @@
         (iter (for n in (analysis-segments anal))
               (for s previous n)
               (for i from 0)
-              (awhen (and n s (intervals s number))
+              (awhen (and n s (intervals (sorted s #'event-<) number))
                 (let* ((n1 (first it))
                        (n2 (second it))
                        (v1 (event-voice-name n1))
