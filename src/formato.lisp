@@ -146,27 +146,27 @@
 (defun but-a-fifth-apart (a b)
   (let ((a (event-pitch a))
         (b (event-pitch b)))
-    (< (module (- b a))
-       (code->interval '(5 perfect)))))
-
+    (< (first (interval->code (module (- b a))))
+       5)))
 
 (defun modificador-oitava (a b)
   "[DONTCHECK]"
   (let ((pa (event-pitch a))
         (pb (event-pitch b))
         (oa (event-octave a))
-        (ob (octave-from-string (second (event-text-repr b)))))
+        (ob (event-octave b)))
     (cond ((null pa) ob)
           ((null pb) ob)
+          ((= pa pb) (+ oa ob))
           (t
            (+ ob
               (if (< pa pb)
                   (if (but-a-fifth-apart a b)
                       oa
                       (- oa 1))
-                  (if (but-a-fifth-apart b a)
-                      oa
-                      (+ oa 1))))))))
+                  (if (but-a-fifth-apart a b)
+                      (+ oa 1)
+                      oa)))))))
 
 
 (defun %do-relative (nota expressao &optional oitava)

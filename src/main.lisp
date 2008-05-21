@@ -439,9 +439,13 @@
   (iter (for anal in analysis)
         (format t "Chorale ~a ~%" (analysis-file-name anal))
         (iter (for seg in (analysis-segments anal))
+              (for i from 0)
               (let ((s (sorted seg #'event-<)))
+                (format t "   ~3a ~3a      "
+                        i
+                        (event-dur (first seg)))
                 (iter (for note in s)
-                      (format t "   ~9a ~2a~2a, "
+                      (format t "~9a ~2a~2a, "
                               (event-voice-name note)
                               (print-event-note note)
                               (event-octave note)))
