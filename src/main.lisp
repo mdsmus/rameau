@@ -432,6 +432,18 @@
 (defcommand parallel-fifths (options analysis)
   (do-parallel options analysis 5 "fifths"))
 
+(defcommand print-segments (options analysis)
+  (iter (for anal in analysis)
+        (format t "Chorale ~a ~%" (analysis-file-name anal))
+        (iter (for seg in (analysis-segments anal))
+              (let ((s (sorted seg #'event-<)))
+                (iter (for note in s)
+                      (format t "   ~9a ~2a~2a, "
+                              (event-voice-name note)
+                              (print-event-note note)
+                              (event-octave note)))
+                (format t "~%")))))
+
 (defcommand parallel-octaves (options analysis)
   (do-parallel options analysis 1 "octaves")
   (do-parallel options analysis 8 "octaves"))
