@@ -433,7 +433,7 @@
   (do-parallel options analysis 5 "fifths"))
 
 (defcommand parallel-octaves (options analysis)
-  (do-parallel options analysis 1 "unison")
+  (do-parallel options analysis 1 "octaves")
   (do-parallel options analysis 8 "octaves"))
 
 ;;; Training

@@ -8,4 +8,6 @@
                                     (4 1)
                                     ; menores:
                                     (7 3 6 (4 2) (7 5) 1)))
-                                    
+
+
+;;; Listar todas e agrupar, estilo jumps.
