@@ -274,25 +274,28 @@
           (let* ((pitch (7th-pitch (first chord)))
                  (voices (remove-if-not #L(equal (event-pitch !1) pitch) (second chord))))
             (iter (for voice in voices)
-                  (format t "  ~a ~a ~a de ~a setima ~a resolve ~a~%"
-                          (third chord)
-                          (fourth chord)
-                          (event-voice-name (first (remove-if-not
-                                                    #L(equal (event-voice-name !1)
-                                                             (event-voice-name voice))
-                                                    (second prev))))
-                          (print-event-note (first (remove-if-not
-                                                    #L(equal (event-voice-name !1)
-                                                             (event-voice-name voice))
-                                                    (second prev))))
-                          (print-event-note (first
-                                             (remove-if-not #L(equal (event-voice-name !1)
-                                                                     (event-voice-name voice))
-                                                            (second chord))))
-                          (print-event-note (first
-                                             (remove-if-not #L(equal (event-voice-name !1)
-                                                                     (event-voice-name voice))
-                                                            (second next))))))))))
+                  (let* ((nota1 (first (remove-if-not
+                                        #L(equal (event-voice-name !1)
+                                                 (event-voice-name voice))
+                                        (second prev))))
+                         (nota2 (first
+                                 (remove-if-not #L(equal (event-voice-name !1)
+                                                         (event-voice-name voice))
+                                                (second chord))))
+                         (nota3 (first
+                                 (remove-if-not #L(equal (event-voice-name !1)
+                                                         (event-voice-name voice))
+                                                (second next))))
+                         (intervalo (interval->code (module (- (event-pitch nota2) (event-pitch nota3))))))
+                    
+                    (format t "  ~3a ~3a ~9a de ~2a setima ~2a resolve ~2a ~9a~%"
+                            (third chord)
+                            (fourth chord)
+                            (event-voice-name nota1)
+                            (print-event-note nota1)
+                          (print-event-note nota2)
+                          (print-event-note nota3)
+                          intervalo)))))))
 
 ;; É sempre mais aguda menos a mais grave
 (defcommand jumps (options analysis)
