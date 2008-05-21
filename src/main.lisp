@@ -265,6 +265,33 @@
                   (for i from 0)
                   (collect (list chord segment (analysis-file-name anal) i))))))
 
+(defun root-pitch (chord)
+  (parse-note (chord-root chord)))
+
+(defun chord-interval-number (a b)
+  (first (interval->code (module (- (root-pitch a) (root-pitch b))))))
+
+(defcommand cadences (options analysis)
+  (let ((cadences (make-hash-table :test #'equal)))
+    (iter (for (chord segment file-name segno) in (remove-if-not #L(chord-p (first !1))
+                                                                 (all-chords options analysis)))
+          (for prev previous chord)
+          (for pprev previous prev)
+          (when (and pprev prev chord)
+            (push (list file-name segno)
+                  (gethash (list (chord-interval-number pprev chord)
+                                 (chord-interval-number prev chord)
+                                 1)
+                           cadences))))
+    (iter (for (cadence places) in-hashtable cadences)
+          (if (< (get-max-print-error options)
+                 (length places))
+              (format t "  ~a found ~a times (max ~a)~%"
+                      cadence (length places) (get-max-print-error options))
+              (format t "  ~a found in: ~{~a ~}~%"
+                      cadence places)))))
+                  
+ 
 
 (defcommand resolve-seventh (options analysis)
   (iter (for next in (all-chords options analysis))
