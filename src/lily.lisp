@@ -31,9 +31,9 @@
                           (loop for x from 1
                              for s = notes then (rest s)
                              unless s return res
-                             collect (format nil "\"~a\" " x) into res
-                             unless (= 0 (intervalo (first s) (second s)))
-                             collect "\" \" " into res))
+                             collect (format nil "\"~a\" " x) into res))
+                             ;unless (= 0 (intervalo (first s) (second s)))
+                             ;collect "\" \" " into res))
                                
                          "}")))
 
@@ -48,9 +48,9 @@
 (defun print-duracoes :private (segmento)
   (values (loop for s = segmento then (rest s)
             unless s return res
-            collect (frac->dur-lily (event-dur (first (first s)))) into res
+            collect (concat "c" (frac->dur-lily (event-dur (first (first s))))) into res
             unless (= 0 (intervalo (first s) (second s)))
-            collect (frac->dur-lily (intervalo (first s) (second s))) into res)
+            collect (concat "r" (frac->dur-lily (intervalo (first s) (second s)))) into res)
           (when (< 0 (event-start (first (first segmento))))
             (let ((n (frac->dur-lily (abs (event-start (first (first segmento)))))))
               (if (listp n)
@@ -61,8 +61,8 @@
   (multiple-value-bind (durs first-rest) (print-duracoes sonorities)
         (make-variable "texto"
                        (if first-rest
-                           (format nil "{~{s~a ~} ~{c~a ~}}~%~%" first-rest durs)
-                           (format nil "{~{c~a ~}}~%~%" durs)))))
+                           (format nil "{~{s~a ~} ~{~a ~}}~%~%" first-rest durs)
+                           (format nil "{~{~a ~}}~%~%" durs)))))
 
 (defun make-devnull-voice ()
   "\\new Devnull = \"nowhere\" \\texto")
