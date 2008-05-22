@@ -431,9 +431,14 @@
                    (first (interval->code (module (- (event-pitch n) (event-pitch s))))))
             (return (list s n))))))
 
-(defun do-parallel (options analysis number name)
+(defun get-strong (strong? segments)
+  (if strong?
+      (remove-if-not #L(integerp (* 4 (event-dur (first !1)))) segments)
+      segments))
+
+(defun do-parallel (options analysis number name strong)
   (iter (for anal in analysis)
-        (iter (for n in (analysis-segments anal))
+        (iter (for n in (get-strong strong (analysis-segments anal)))
               (for s previous n)
               (for i from 0)
               (awhen (and n s (intervals (sorted s #'event-<) number))
@@ -460,7 +465,13 @@
                             (print-event-note f2))))))))
 
 (defcommand parallel-fifths (options analysis)
-  (do-parallel options analysis 5 "fifths"))
+  (do-parallel options analysis 5 "fifths" nil)
+  (do-parallel options analysis 5 "fifths" t))
+
+(defcommand parallel-octaves (options analysis)
+  (do-parallel options analysis 1 "octaves" nil)
+  (do-parallel options analysis 1 "octaves" t)
+  (do-parallel options analysis 8 "octaves"))
 
 (defcommand print-segments (options analysis)
   (iter (for anal in analysis)
@@ -477,10 +488,6 @@
                               (print-event-note note)
                               (event-octave note)))
                 (format t "~%")))))
-
-(defcommand parallel-octaves (options analysis)
-  (do-parallel options analysis 1 "octaves")
-  (do-parallel options analysis 8 "octaves"))
 
 ;;; Training
 (defcommand train-neural (options &rest ignore)
