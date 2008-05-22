@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "370 - Kommt her zu mir, spricht Gottes Söhn"
+  title = "370 - Kommt her zu mir, spricht Gottes Sohn"
   composer = "J. S. Bach"
 }
 

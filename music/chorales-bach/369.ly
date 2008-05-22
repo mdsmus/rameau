@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "369 - Wachet doch, erwacht, ihr Schläfer"
+  title = "369 - jesu, der du meine seele"
   composer = "J. S. Bach"
 }
 
