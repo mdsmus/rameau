@@ -2,7 +2,7 @@
 \version "2.10.33"
 
 \header {
-  title = "361 - Ermuntre dich, mein schwacher Geist"
+  title = "361 - Du Lebensfurrts, Herr Jesu Christ"
   composer = "J. S. Bach"
 }
 
@@ -57,7 +57,7 @@ tenor = \relative c' {
   fis e d4 e fis 
   b, e8 d c4 g8 a 
   b c d e c4 cis 
-  b b b d8 c 
+  b b b d4 
   d4 g g,8 a b4 
   e8 d e cis d4 d 
   d8 c c b b a g4 
