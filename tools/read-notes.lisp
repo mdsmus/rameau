@@ -71,7 +71,7 @@
 (read-user-config)
 
 (defun toca (voz coral &optional (de 0) ate)
-  (let ((string"~a/literatura/bach-corais/~a.lyi"))
+  (let ((string"~a/music/chorales-bach/~a.ly"))
     (format t "~a~%"
             (loop
                for nota in
