@@ -271,10 +271,19 @@
 (defun chord-interval-number (a b)
   (first (interval->code (module (- (root-pitch a) (root-pitch b))))))
 
+(defun prepare-cadence (options analysis)
+  (iter (for chord in (remove-if-not #L(chord-p (first !1))
+                                      (all-chords options analysis)))
+        (for prev previous chord)
+        (if prev
+            (unless (equal (chord-root (first chord))
+                           (chord-root (first prev)))
+                (collect chord))
+            (collect chord))))
+
 (defcommand cadences (options analysis)
   (let ((cadences (make-hash-table :test #'equal)))
-    (iter (for (chord segment file-name segno) in (remove-if-not #L(chord-p (first !1))
-                                                                 (all-chords options analysis)))
+    (iter (for (chord segment file-name segno) in (prepare-cadence options analysis))
           (for prev previous chord)
           (for pprev previous prev)
           (when (and pprev prev chord)
@@ -289,15 +298,16 @@
               (format t "  ~a found ~a times (max ~a)~%"
                       cadence (length places) (get-max-print-error options))
               (progn
-                (format t " ~@r ~@r ~@r found in:"
-                        (first cadence)
-                        (second cadence)
-                        (third cadence))
+                (format t " ~10a found in:"
+                        (format nil "~(~@r ~@r ~@r~)"
+                                (first cadence)
+                                (second cadence)
+                                (third cadence)))
                 (iter (for cad in places)
                       (format t "(~a ~a) " (first cad) (second cad)))
                 (format t "~%"))))))
 ;; mostrar modos, agrupar tirando repetidos
-
+;; no resolve mostrar - nos intervalos
 ;; ultima cadencia tambem
 
 (defcommand resolve-seventh (options analysis)
