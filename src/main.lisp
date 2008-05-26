@@ -313,16 +313,18 @@
                                  (remove-if-not #L(equal (event-voice-name !1)
                                                          (event-voice-name voice))
                                                 (second next))))
-                         (intervalo (interval->code (module (- (event-pitch nota2) (event-pitch nota3))))))
+                         (intervalo (and nota2 nota3
+                                         (interval->code (module (- (event-pitch nota2) (event-pitch nota3)))))))
                     
-                    (format t "  ~3a ~3a ~9a de ~2a setima ~2a resolve ~2a ~9a~%"
-                            (third chord)
-                            (fourth chord)
-                            (event-voice-name nota1)
-                            (print-event-note nota1)
-                          (print-event-note nota2)
-                          (print-event-note nota3)
-                          intervalo)))))))
+                    (and intervalo
+                         (format t "  ~3a ~3a ~9a de ~2a setima ~2a resolve ~2a ~9a~%"
+                                 (third chord)
+                                 (fourth chord)
+                                 (event-voice-name nota1)
+                                 (print-event-note nota1)
+                                 (print-event-note nota2)
+                                 (print-event-note nota3)
+                                 intervalo))))))))
 
 ;; É sempre mais aguda menos a mais grave
 (defcommand jumps (options analysis)
