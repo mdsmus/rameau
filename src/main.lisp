@@ -288,10 +288,17 @@
                  (length places))
               (format t "  ~a found ~a times (max ~a)~%"
                       cadence (length places) (get-max-print-error options))
-              (format t "  ~a found in: ~{~a ~}~%"
-                      cadence places)))))
-                  
- 
+              (progn
+                (format t " ~@r ~@r ~@r found in:"
+                        (first cadence)
+                        (second cadence)
+                        (third cadence))
+                (iter (for cad in places)
+                      (format t "(~a ~a) " (first cad) (second cad)))
+                (format t "~%"))))))
+;; mostrar modos, agrupar tirando repetidos
+
+;; ultima cadencia tambem
 
 (defcommand resolve-seventh (options analysis)
   (iter (for next in (all-chords options analysis))
@@ -467,13 +474,17 @@
                             (print-event-note f2))))))))
 
 (defcommand parallel-fifths (options analysis)
+  (format t "Quintas \"reais\":~%")
   (do-parallel options analysis 5 "fifths" nil)
+  (format t "Quintas nos tempos fortes:~%")
   (do-parallel options analysis 5 "fifths" t))
 
 (defcommand parallel-octaves (options analysis)
+  (format t "Oitavas reais:~%")
   (do-parallel options analysis 1 "octaves" nil)
+  (format t "Oitavas no compassos forte:~%")
   (do-parallel options analysis 1 "octaves" t)
-  (do-parallel options analysis 8 "octaves"))
+  )
 
 (defcommand print-segments (options analysis)
   (iter (for anal in analysis)
