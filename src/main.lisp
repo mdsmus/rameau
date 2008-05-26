@@ -214,17 +214,17 @@
   \\midi {}
 }
 ")))
-    (let ((result-file (make-pathname :directory (pathname-directory (analysis-full-path analysis))
+    (let* ((result-dir (concat *rameau-path* "/analysis/"))
+	   (result-file (make-pathname :directory result-dir
                                       :name (concat "analysis-" (pathname-name (analysis-full-path analysis)))
                                       :type (pathname-type (analysis-full-path analysis)))))
-      (with-open-file (f result-file
-                         :direction :output
-                         :if-exists :supersede)
+      (ensure-directories-exist result-dir)
+      (with-open-file (f result-file :direction :output :if-exists :supersede)
         (format f "~a" (print-ast (cdr ast))))
-      ;#+sbcl(sb-ext:run-program "/usr/bin/lilypond" (list (format nil "~a" result-file)))
-      )))
-
-
+      (when (get-lily options)
+	#+sbcl (progn
+		 (sb-posix:chdir result-dir)
+		 (sb-ext:run-program "/usr/bin/lilypond" (list (file-namestring result-file))))))))
 
 (defun analysis-terminal-no-answer (options analysis)
   (let* ((number-algorithms (analysis-number-algorithms analysis))

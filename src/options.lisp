@@ -34,7 +34,8 @@
         ("" "column-notes-size" "" "12")
         ("" "column-dur-size" "" "4")
         ("" "column-separator" "" "|")
-        ("" "wrong-answer-color" "" "red")))
+        ("" "wrong-answer-color" "" "red")
+	("" "lily" "roda lilypond")))
       ("cadences")
       ("jumps"
        (("-m" "max-number" "max number of jumps to be displayed" 30)))
