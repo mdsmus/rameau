@@ -186,12 +186,12 @@
     (format variables (make-lily-sonorities (analysis-segments analysis)))
     (format in-score (make-lyrics "sonorities"))
     (loop for al in (get-algorithms options)
-       for re in (analysis-results analysis)
-       do (format variables (print-compare-answer-sheet re
-                                                        (analysis-answer-sheet analysis)
-                                                        (algorithm-name al)
-                                                        options))
-         (format in-score (make-lyrics (algorithm-name al))))
+          for re in (analysis-results analysis)
+          do (format variables (print-compare-answer-sheet re
+                                                           (analysis-answer-sheet analysis)
+                                                           (algorithm-name al)
+                                                           options))
+          (format in-score (make-lyrics (algorithm-name al))))
     (when (analysis-answer-sheet analysis)
       (format variables (make-answer-sheet (analysis-answer-sheet analysis)))
       (format in-score (make-lyrics "answer")))
@@ -216,15 +216,21 @@
 ")))
     (let* ((result-dir (concat *rameau-path* "/analysis/"))
 	   (result-file (make-pathname :directory result-dir
-                                      :name (concat "analysis-" (pathname-name (analysis-full-path analysis)))
-                                      :type (pathname-type (analysis-full-path analysis)))))
+                                       :name (concat "analysis-" (pathname-name (analysis-full-path analysis)))
+                                       :type (pathname-type (analysis-full-path analysis))))
+           (ps-file (make-pathname :directory result-dir
+                                   :name (pathname-name result-file)
+                                   :type "ps")))
       (ensure-directories-exist result-dir)
       (with-open-file (f result-file :direction :output :if-exists :supersede)
         (format f "~a" (print-ast (cdr ast))))
-      (when (get-lily options)
+      (when (or (get-lily options) (get-view-score options))
 	#+sbcl (progn
 		 (sb-posix:chdir result-dir)
-		 (sb-ext:run-program "/usr/bin/lilypond" (list (file-namestring result-file))))))))
+		 (sb-ext:run-program "/usr/bin/lilypond" (list "-f" "ps" (file-namestring result-file)))))
+      (when (or (get-gv options) (get-view-score options))
+	#+sbcl (sb-ext:run-program "/usr/bin/gv" (list (file-namestring ps-file))))
+      )))
 
 (defun analysis-terminal-no-answer (options analysis)
   (let* ((number-algorithms (analysis-number-algorithms analysis))
@@ -253,7 +259,7 @@
                                         (analysis-file-name anal)
                                         " doesn't exist"))
                  (analysis-terminal-no-answer options anal)))
-        (when (get-score options)
+        (when (or (get-score options) (get-view-score options))
           (analysis-lily options anal))))
 
 (defun all-chords (options analysis)

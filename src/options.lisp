@@ -35,7 +35,9 @@
         ("" "column-dur-size" "" "4")
         ("" "column-separator" "" "|")
         ("" "wrong-answer-color" "" "red")
-	("" "lily" "roda lilypond")))
+	("" "lily" "roda lilypond")
+	("" "gv" "roda gv")
+	("-S" "view-score" "gera score, roda lily e gv")))
       ("cadences")
       ("jumps"
        (("-m" "max-number" "max number of jumps to be displayed" 30)))
