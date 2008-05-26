@@ -1,86 +1,127 @@
-CapÌtulo 8
+Cap√≠tulo 8
 
-TrÌades - Primeira Invers„o
+Tr√≠ades - Primeira Invers√£o
 
-Com d˙vidas quanto ao crÌtÈrio de idÍntificaÁ„o dos itens Ûbvios e n„o
-Ûbvios, por ser uma concepÁao pessoal, resolvi extrair as regras e
-destacar as citaÁıes que mais me chamaram a atenÁ„o com um asterisco.
+Com d√∫vidas quanto ao cr√≠t√©rio de id√™ntifica√ß√£o dos itens √≥bvios e n√£o
+√≥bvios, por ser uma concep√ßao pessoal, resolvi extrair as regras e
+destacar as cita√ß√µes que mais me chamaram a aten√ß√£o com um asterisco.
 
 ARPEJO DO BAIXO:
 
-- Uma maneira a qual as trÌades em primeira invers„o tem origem È
- simplesmente atravÈs de arpejo do baixo... (cap.8,p·g.125).
+- Uma maneira a qual as tr√≠ades em primeira invers√£o tem origem √©
+ simplesmente atrav√©s de arpejo do baixo... (cap.8,p√°g.125).
 
-TRÃADES EM PRIMEIRA INVERS√O SUBSTITUTA:
+TR√åADES EM PRIMEIRA INVERS√ÉO SUBSTITUTA:
 
-- TrÌades em primeira invers„o s„o frequentemente usadas como
-  substitutas de trÌades em posiÁ„o fundamental, em vez de surgirem
+- Tr√≠ades em primeira invers√£o s√£o frequentemente usadas como
+  substitutas de tr√≠ades em posi√ß√£o fundamental, em vez de surgirem
   como arpejo do baixo. (cap.8, pag. 126).
 
 * - Usadas para melhorar o contorno da linha do baixo, sortir a linha
-  do baixo para maior variedade de notas ou enfraquecer a import‚ncia
-  dos acordes de V e I que n„o funcionam como metas do movimento
-  harmÙnico. (cap.8,p·g. 126).
+  do baixo para maior variedade de notas ou enfraquecer a import√¢ncia
+  dos acordes de V e I que n√£o funcionam como metas do movimento
+  harm√¥nico. (cap.8,p√°g. 126).
 
-* - TrÌades diminutas (e algumas vezes trÌades aumentadas) s„o usadas
-    exclusivamente em primeira invers„o. (cap.8, p·g.127 e 138).
+* - Tr√≠ades diminutas (e algumas vezes tr√≠ades aumentadas) s√£o usadas
+    exclusivamente em primeira invers√£o. (cap.8, p√°g.127 e 138).
 
 
 ACORDES DE SEXTA PARALELOS:
 
-* - Uma sÈrie de trÌades em primeira invers„o paralelas (ou acordes de
-    sexta, do sÌmbolo de baixo cifrado) È frequentemente encontrada,
-    especialmente em SequÍncias. Acordes usados em movimento paralelo
-    desta forma geralmente n„o funcionam da maneira habitual. Eles
+* - Uma s√©rie de tr√≠ades em primeira invers√£o paralelas (ou acordes de
+    sexta, do s√≠mbolo de baixo cifrado) √© frequentemente encontrada,
+    especialmente em Sequ√™ncias. Acordes usados em movimento paralelo
+    desta forma geralmente n√£o funcionam da maneira habitual. Eles
     funcionam como acordes de passagem, conectando algum acorde ao
-    inÌcio da passagem com algum acorde ao fim. (cap.8,p·g.128).
+    in√≠cio da passagem com algum acorde ao fim. (cap.8,p√°g.128).
 
-* - A tÈcnica comum para se evitar 5as paralelas em uma passagem de
-  acordes de sexta È a de se colocar as fundamentais de cada acorde na
-  melodia, produzindo ent„o 4as paralelas aceit·veis em vez das 5as
-  paralelas censur·vei. (cap.8, p·g. 130).
+* - A t√©cnica comum para se evitar 5as paralelas em uma passagem de
+  acordes de sexta √© a de se colocar as fundamentais de cada acorde na
+  melodia, produzindo ent√£o 4as paralelas aceit√°veis em vez das 5as
+  paralelas censur√°vei. (cap.8, p√°g. 130).
 
 
-ENCADEAMENTOS COM TRÃADES EM PRIMEIRA INVERS√O:
+ENCADEAMENTOS COM TR√åADES EM PRIMEIRA INVERS√ÉO:
 
-Textura ‡ duas partes:
+Textura √† duas partes:
 
 - Omite-se geralmente a quinta esteja o acorde em E.F ou
-  invertido. (cap. 8, p·g. )
+  invertido. (cap. 8, p√°g. )
 
-Textura ‡ quatro partes:
+Textura √† quatro partes:
 
-- Em uma textura contrapontÌstica o dobramenteo a usar È aquele que
- resulte em uma melhor conduÁ„o de vozes. (cap.8, p·g. 130)
+- Em uma textura contrapont√≠stica o dobramenteo a usar √© aquele que
+ resulte em uma melhor condu√ß√£o de vozes. (cap.8, p√°g. 130)
 
-- Em uma textura homofÙnica (acordes ou melodia acompanhada de
+- Em uma textura homof√¥nica (acordes ou melodia acompanhada de
  acordes) o dobramento selecionado deve ser aquele que resulte no
- efeito musical desejado. (cap.8, p·g. 131)
+ efeito musical desejado. (cap.8, p√°g. 131)
 
-- Em qualquer textura, È geralmente melhor n„o dobrar a
- sensÌvel. (cap. 8, p·g. 131)
+- Em qualquer textura, √© geralmente melhor n√£o dobrar a
+ sens√≠vel. (cap. 8, p√°g. 131)
 
-- Uma sensÌvel duplicada geralmente resultar· ou implicar· em 8as
-  paralelas por causa da forte tendÍncia da 7a resolver na
-  tÙnica.(cap.8, p·g. 131)
+- Uma sens√≠vel duplicada geralmente resultar√° ou implicar√° em 8as
+  paralelas por causa da forte tend√™ncia da 7a resolver na
+  t√¥nica.(cap.8, p√°g. 131)
 
-Textura ‡ trÍs partes (cap.8, p·g. 132)
+Textura √† tr√™s partes (cap.8, p√°g. 132)
 
-- TrÌades invertidas est„o geralmente completas numa textura a trÍs
+- Tr√≠ades invertidas est√£o geralmente completas numa textura a tr√™s
   partes.
 
-- TrÌades invertidas incompletas podem ocorrer mas n„o com a mesma
-  frequÍncia que as trÌades incompletas no estado fundamental.
+- Tr√≠ades invertidas incompletas podem ocorrer mas n√£o com a mesma
+  frequ√™ncia que as tr√≠ades incompletas no estado fundamental.
 
-- A terÁa n„o poder· ser omitida pois esta estar· obviamente no baixo
+- A ter√ßa n√£o poder√° ser omitida pois esta estar√° obviamente no baixo
   do acorde.
 
-- Se a tÙnica for omitida soar· como uma trÌade no estado fundamental
+- Se a t√¥nica for omitida soar√° como uma tr√≠ade no estado fundamental
   (relativa ou anti-relativa do acorde).
 
-Textura ‡ duas partes:
+Textura √† duas partes:
 
 - Omite-se geralmente a quinta, esteja o acorde em E.F ou
-  invertido. (Kostka Traduzido - Biblioteca cap.6 p·g. 37).
+  invertido. (Kostka Traduzido - Biblioteca cap.6 p√°g. 37).
 
 
+
+
+Observa√ß√µes do Kostka 
+
+Root Position
+
+Four Part Texture
+
+- All members of the triad are usually presente The final chord is
+   sometime incomplete, consisting of a 3rd and a tripled root
+   (Chapter 6, page 91)
+
+- The root usually doubled. The leading tone (7) is almost never
+  doubled because it‚Äôs such a strong tendency tone. (Chapter 6, page
+  91)
+
+Three Part Texture
+
+- The 5th of the triad is often omitted. The final I chord may consist
+  only of a tripled root. (Chapter 6, page 91)
+
+- An incomplete triad will usually have the root doubled. The leading
+  tone (7) is almost never doubled (Chapter 6, page 91)
+
+- When a rrot position triad is repeated, the uper voices may be
+  arpeggiated freely. The bass may arpeggiate an octave. (Chapter 6,
+  page 91)
+
+- Two triads with roots a 2nd (or 7th) apart have no tones in commom,
+  so every part must move from the first chord to the second. (Chapter
+  6, page 97)
+
+Second Inversion
+
+- The six-four chord may come about througth as a bass arpeggiation
+  involving a root position triad, a first inversion triad, or
+  both. (Chapter 9, page 145)
+
+- Second inversion triads are frequently encountered harmonizing the
+  midlle note of a three-note sacalar figure in the bass. (Chapter 9,
+  page 149)
