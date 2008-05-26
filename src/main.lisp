@@ -315,8 +315,10 @@
                       (format t "(~a ~a) " (first cad) (second cad)))
                 (format t "~%"))))))
 
-;; no resolve mostrar - nos intervalos
 ;; ultima cadencia tambem
+
+(defun absolute-pitch (e1)
+  (+ (event-pitch e1) (* (get-module) (event-octave e1))))
 
 (defcommand resolve-seventh (options analysis)
   (iter (for next in (all-chords options analysis))
@@ -338,17 +340,20 @@
                                  (remove-if-not #L(equal (event-voice-name !1)
                                                          (event-voice-name voice))
                                                 (second next))))
-                         (intervalo (and nota2 nota3
-                                         (interval->code (module (- (event-pitch nota2) (event-pitch nota3)))))))
+                         (diferenca (and nota1 nota2 nota3
+                                          (- (absolute-pitch nota2) (absolute-pitch nota3))))
+                         (sinal (and diferenca (if (< diferenca 0) "+" "-")))
+                         (intervalo (and diferenca (interval->code (module diferenca)))))
                     
                     (and intervalo
-                         (format t "  ~3a ~3a ~9a de ~2a setima ~2a resolve ~2a ~9a~%"
+                         (format t "  ~3a ~3a ~9a de ~2a setima ~2a resolve ~2a ~a~9a~%"
                                  (third chord)
                                  (fourth chord)
                                  (event-voice-name nota1)
                                  (print-event-note nota1)
                                  (print-event-note nota2)
                                  (print-event-note nota3)
+                                 sinal
                                  intervalo))))))))
 
 ;; É sempre mais aguda menos a mais grave
