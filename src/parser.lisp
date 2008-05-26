@@ -66,7 +66,8 @@
   ;; acho que \minor está sendo pegado por VARIABLE abaixo (comentar e ver)
   ("\\\\key[:space:]+(a|b|c|d|e|f|g)(is|es)*[:space:]+\\\\(minor|major|dim)"
    (setf *current-key* (let ((l (remove-if (lambda (x) (equal x "")) (cl-ppcre:split " " lexer:%0))))
-                         (list (string->symbol (second l)) (string->symbol (subseq (third l) 1))))))
+                         (list (string->symbol (second l)) (string->symbol (subseq (third l) 1)))))
+   (return (values 'ignore lexer:%0)))
   ("%[^\\n]*" (return (values 'ignore lexer:%0)))
   ("\\\\(S|s)kip" (return (values 'SKIP lexer:%0)))
   ("\\\\(C|c)ontext" (return (values 'CONTEXT lexer:%0)))
