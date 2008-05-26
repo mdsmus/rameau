@@ -52,7 +52,7 @@ third. Quantity is optional when equal to 1. [DONTCHECK]"
            (6 min) (6 maj) (6 aug) (6 aug 2) (6 aug 3) (6 aug 4) (6 aug 5) (6 aug 6)
            (7 dim 6) (7 dim 5) (7 dim 4) (7 dim 3) (7 dim 2) (7 dim)
            (7 min) (7 maj) (7 aug) (7 aug 2) (7 aug 3) (7 aug 4) (7 aug 5) (7 aug 6)
-           (8 dim 6) (8 dim 5) (8 dim 4) (8 dim 3) (8 dim 2) (8 dim) (8 perfect)))
+           (1 dim 6) (1 dim 5) (1 dim 4) (1 dim 3) (1 dim 2) (1 dim) (8 perfect)))
         (tempered-intervals
          '((1 perfect) (2 min) (2 maj) (3 min) (3 maj) (4 perfect)
            (5 dim) (5 perfect) (6 min) (6 maj) (7 min) (7 maj) (8 perfect)))
