@@ -281,6 +281,13 @@
                 (collect chord))
             (collect chord))))
 
+(defun print-roman (number chord)
+  (let* ((mode (chord-mode chord))
+         (major? (equal "" mode)))
+    (if major?
+        (format nil "~@r" number)
+        (format nil "~(~@r~a~)" number (if (equal mode "m") "" mode)))))
+
 (defcommand cadences (options analysis)
   (let ((cadences (make-hash-table :test #'equal)))
     (iter (for (chord segment file-name segno) in (prepare-cadence options analysis))
@@ -288,25 +295,26 @@
           (for pprev previous prev)
           (when (and pprev prev chord)
             (push (list file-name segno)
-                  (gethash (list (chord-interval-number pprev chord)
-                                 (chord-interval-number prev chord)
-                                 1)
+                  (gethash (format nil "~4a ~4a ~4a"
+                                   (print-roman (chord-interval-number pprev chord) pprev)
+                                   (print-roman (chord-interval-number prev chord) prev)
+                                   (print-roman 1 chord))
                            cadences))))
-    (iter (for (cadence places) in-hashtable cadences)
+    (iter (for (cadence  places) in (sorted (iter (for (cadence places) in-hashtable cadences)
+                                                   (collect (list cadence places)))
+                                             #L(< (length (second !1))
+                                                  (length (second !2)))))
           (if (< (get-max-print-error options)
                  (length places))
               (format t "  ~a found ~a times (max ~a)~%"
                       cadence (length places) (get-max-print-error options))
               (progn
-                (format t " ~10a found in:"
-                        (format nil "~(~@r ~@r ~@r~)"
-                                (first cadence)
-                                (second cadence)
-                                (third cadence)))
+                (format t " ~a found in: "
+                        cadence)
                 (iter (for cad in places)
                       (format t "(~a ~a) " (first cad) (second cad)))
                 (format t "~%"))))))
-;; mostrar modos, agrupar tirando repetidos
+
 ;; no resolve mostrar - nos intervalos
 ;; ultima cadencia tambem
 
