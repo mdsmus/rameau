@@ -29,7 +29,7 @@ soprano = \relative c' {
   ees2 c4 
   a4 bes8 a8 g8 f8 
   f'4. bes,8 g'4~ 
-  g8 f8 \appoggiatura ees8 d4 c8 bes8   %15
+  g8 f8 ees8 d c8 bes8   %15
   bes2. 
   
 }
