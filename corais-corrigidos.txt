@@ -23,26 +23,26 @@
 [OK] 023.ly
 [OK] 024.ly
 [OK] 025.ly
-026.ly
-027.ly
-028.ly
+[OK] 026.ly
+[OK] 027.ly
+[OK] 028.ly
 [OK] 029.ly
 [OK] 030.ly
-031.ly
-032.ly
-033.ly
+[OK] 031.ly
+[OK] 032.ly
+[OK] 033.ly
 034.ly
 035.ly
 [OK] 036.ly
 037.ly
 038.ly
 039.ly
-040.ly
+[OK] 040.ly
 041.ly
 042.ly
 043.ly
 044.ly
-045.ly
+[OK] 045.ly
 046.ly
 047.ly
 048.ly
@@ -57,7 +57,7 @@
 057.ly
 058.ly
 059.ly
-060.ly
+[OK] 060.ly
 061.ly
 062.ly
 063.ly
@@ -68,7 +68,7 @@
 068.ly
 069.ly
 070.ly
-071.ly
+[espera] 071.ly
 072.ly
 073.ly
 074.ly
