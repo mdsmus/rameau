@@ -119,6 +119,23 @@ book: book-stuff
 book-stuff: docs/corais.lytex corais-ly
 	lilypond-book -o out --psfonts -I corais/ docs/corais.lytex
 
+.PHONY: anppom
+anppom:
+	./rameau cruz -f music/chorales-bach/*.ly -a es-net > anppom/cruzamentos.txt
+	./rameau seventh -f music/chorales-bach/*.ly -a es-net > anppom/setimas.txt
+	./rameau fifths  -f music/chorales-bach/*.ly -a es-net > anppom/quintas.txt
+	./rameau oitavas -f music/chorales-bach/*.ly -a es-net > anppom/oitavas.txt
+	./rameau ambitos -f music/chorales-bach/*.ly -a es-net > anppom/ambitos.txt
+	./rameau jumps -f music/chorales-bach/*.ly -a es-net > anppom/saltos.txt
+	./rameau cadences -f music/chorales-bach/*.ly -a es-net > anppom/cadencias.txt
+
+all-png:
+	./rameau anal -f music/chorales-bach/*.ly -a es-net -s > /dev/null
+	cd analysis ; lilypond --png *.ly 2> /dev/null
+
+sync:
+	rsync -v anppom/* rameau@genos.mus.br:
+	rsync -v analysis/*.png rameau@genos.mus.br:corais/
 
 pauta:
 	wget -O pauta.html "http://wiki.genos.mus.br/PautaReuniao"
