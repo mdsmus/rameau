@@ -37,6 +37,7 @@
         ("" "wrong-answer-color" "" "red")
 	("" "lily" "roda lilypond")
 	("" "gv" "roda gv")
+	("" "png" "gera png")
 	("-S" "view-score" "gera score, roda lily e gv")))
       ("cadences")
       ("jumps"

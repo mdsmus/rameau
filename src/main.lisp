@@ -227,7 +227,10 @@
       (when (or (get-lily options) (get-view-score options))
 	#+sbcl (progn
 		 (sb-posix:chdir result-dir)
-		 (sb-ext:run-program "/usr/bin/lilypond" (list "-f" "ps" (file-namestring result-file)))))
+		 (sb-ext:run-program "/usr/bin/lilypond" (list "-f"
+							       "ps"
+							       (when (get-png options) "--png")
+							       (file-namestring result-file)))))
       (when (or (get-gv options) (get-view-score options))
 	#+sbcl (sb-ext:run-program "/usr/bin/gv" (list (file-namestring ps-file))))
       )))
