@@ -655,7 +655,10 @@
                     (progn
                       (print-fatal "It seems I couldn't make the analysis. Check if your file is correct.")
                       (rameau-quit))
-                    (funcall (%string->symbol command) options analysis)))
+		    (let ((fn (%string->symbol command)))
+		      (if (fboundp fn)
+			  (funcall fn options analysis)
+			  (print-fatal (concat cmd " is not a rameau command."))))))
               ;;(dbg 'main "~a" (print-slots options))
               )
         (print-help)))
