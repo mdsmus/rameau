@@ -121,21 +121,21 @@ book-stuff: docs/corais.lytex corais-ly
 
 .PHONY: anppom
 anppom:
-	./rameau cruz -f music/chorales-bach/*.ly -a es-net > anppom/cruzamentos.txt
-	./rameau seventh -f music/chorales-bach/*.ly -a es-net > anppom/setimas.txt
-	./rameau fifths  -f music/chorales-bach/*.ly -a es-net > anppom/quintas.txt
-	./rameau octaves -f music/chorales-bach/*.ly -a es-net > anppom/oitavas.txt
-	./rameau ambito -f music/chorales-bach/*.ly -a es-net > anppom/ambitos.txt
-	./rameau jumps -f music/chorales-bach/*.ly -a es-net > anppom/saltos.txt
-	./rameau cadences -f music/chorales-bach/*.ly -a es-net > anppom/cadencias.txt
+	./rameau cruz -f music/chorales-bach/*.ly -a es-net -v > anppom/cruzamentos.txt
+	./rameau seventh -f music/chorales-bach/*.ly -a es-net -v > anppom/setimas.txt
+	./rameau fifths  -f music/chorales-bach/*.ly -a es-net -v > anppom/quintas.txt
+	./rameau octaves -f music/chorales-bach/*.ly -a es-net -v > anppom/oitavas.txt
+	./rameau ambito -f music/chorales-bach/*.ly -a es-net -v > anppom/ambitos.txt
+	./rameau jumps -f music/chorales-bach/*.ly -a es-net -v > anppom/saltos.txt
+	./rameau cadences -f music/chorales-bach/*.ly -a es-net -v > anppom/cadencias.txt
 
 all-png:
 	./rameau anal -f music/chorales-bach/*.ly -a es-net -s > /dev/null
 	cd analysis ; lilypond --png *.ly 2> /dev/null
 
 sync:
-	rsync -v anppom/* rameau@genos.mus.br:
-	rsync -v analysis/*.png rameau@genos.mus.br:corais/
+	rsync -v anppom/* rameau@genos.mus.br:public_html/
+	rsync -v analysis/*.png rameau@genos.mus.br:public_html/corais/
 
 pauta:
 	wget -O pauta.html "http://wiki.genos.mus.br/PautaReuniao"
