@@ -36,6 +36,10 @@
 (defun print-event-note (e)
   (when (event-p e)
     (print-note (code->notename (event-pitch e)))))
+
+(defun absolute-pitch (e1)
+  (+ (event-pitch e1) (* (get-module) (event-octave e1))))
+
 (defun event-equal (x y)
   (if 
       (or

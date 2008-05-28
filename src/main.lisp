@@ -326,8 +326,7 @@
 
 ;; ultima cadencia tambem
 
-(defun absolute-pitch (e1)
-  (+ (event-pitch e1) (* (get-module) (event-octave e1))))
+
 
 (defcommand resolve-seventh (options analysis)
   (iter (for next in (all-chords options analysis))
