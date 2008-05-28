@@ -40,6 +40,18 @@
 (defun absolute-pitch (e1)
   (+ (event-pitch e1) (* (get-module) (event-octave e1))))
 
+(defun absolute-interval (e1 e2)
+  (- (absolute-pitch e1)
+     (absolute-pitch e2)))
+
+(defun absolute-interval-code (e1 e2)
+  (let* ((i (absolute-interval e1 e2))
+         (sig (if (< i 0) '- '+)))
+    (cons sig (module (abs i)))))
+
+(defun print-absolute-interval (inter)
+  (format nil "~a ~a" (if (eq '+ (first inter)) "up" "down") (print-interval (cdr inter))))
+
 (defun event-equal (x y)
   (if 
       (or
