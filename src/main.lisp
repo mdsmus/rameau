@@ -384,8 +384,8 @@
                             (push (list (analysis-file-name anal)
                                         (* 100.0 (/ i total))
                                         voice
-                                        (print-event-note n)
-                                        (print-event-note p))
+                                        (print-event-note p)
+                                        (print-event-note n))
                                   (gethash (absolute-interval-code n p)
                                            jumps))))))))
     (if (get-verbose options)
