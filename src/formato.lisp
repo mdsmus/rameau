@@ -165,6 +165,9 @@
     (< (first (interval->code (module (- b a))))
        5)))
 
+(defun same-note (a b)
+  (< (abs (- a b)) (code->interval '(2 dim 6))))
+
 (defun modificador-oitava (a b)
   "[DONTCHECK]"
   (let ((pa (event-pitch a))
@@ -173,7 +176,7 @@
         (ob (event-octave b)))
     (cond ((null pa) ob)
           ((null pb) ob)
-          ((= pa pb) (+ oa ob))
+          ((same-note pa pb) (+ oa ob))
           (t
            (+ ob
               (if (< pa pb)
