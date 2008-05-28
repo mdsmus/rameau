@@ -50,7 +50,7 @@
     (cons sig (module (abs i)))))
 
 (defun print-absolute-interval (inter)
-  (format nil "~a ~a" (if (eq '+ (first inter)) "up" "down") (print-interval (cdr inter))))
+  (format nil "~a ~a" (if (eq '- (first inter)) "up" "down") (print-interval (cdr inter))))
 
 (defun event-equal (x y)
   (if 
