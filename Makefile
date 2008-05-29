@@ -133,9 +133,13 @@ all-png:
 	./rameau anal -f music/chorales-bach/*.ly -a es-net -s > /dev/null
 	cd analysis ; lilypond --png *.ly 2> /dev/null
 
-sync:
-	rsync -v anppom/* rameau@genos.mus.br:public_html/
-	rsync -v analysis/*.png rameau@genos.mus.br:public_html/corais/
+sync: anppom
+	rsync -v --progress --rsh=ssh anppom/* rameau@genos.mus.br:public_html/
+
+sync-png: all-png
+	rsync -v --progress --rsh=ssh analysis/*.png rameau@genos.mus.br:public_html/corais/
+
+sync-all: sync sync-png
 
 pauta:
 	wget -O pauta.html "http://wiki.genos.mus.br/PautaReuniao"
