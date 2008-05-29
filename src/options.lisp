@@ -40,8 +40,7 @@
 	("" "png" "gera png")
 	("-S" "view-score" "gera score, roda lily e gv")))
       ("cadences")
-      ("jumps"
-       (("-m" "max-number" "max number of jumps to be displayed" 30)))
+      ("jumps")
       ("ambitos")
       ("cruzamento")
       ("resolve-seventh")
