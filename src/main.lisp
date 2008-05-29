@@ -413,6 +413,7 @@
 
 
 (defcommand ambito (options analysis)
+  (declare (ignore options))
   (iter (for anal in analysis)
         (let ((notes (parse-file (analysis-full-path anal)))
               (voices nil))
@@ -444,6 +445,7 @@
                                   :key #L(cons (event-pitch !1) (event-octave !1))))))
 
 (defcommand cruzamento (options analysis)
+  (declare (ignore options))
   (iter (for anal in analysis)
         (let ((notes (analysis-segments anal)))
           (iter (for segment in notes)
@@ -475,6 +477,7 @@
       segments))
 
 (defun do-parallel (options analysis number name strong)
+  (declare (ignore options))
   (iter (for anal in analysis)
         (iter (for n in (get-strong strong (analysis-segments anal)))
               (for s previous n)
@@ -516,6 +519,7 @@
   )
 
 (defcommand print-segments (options analysis)
+  (declare (ignore options))
   (iter (for anal in analysis)
         (format t "Chorale ~a ~%" (analysis-file-name anal))
         (iter (for seg in (analysis-segments anal))

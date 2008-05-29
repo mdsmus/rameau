@@ -3,7 +3,7 @@
 (defparameter *filename* nil)
 (defparameter *dur* 0)
 (defparameter *environment* nil)
-
+(defparameter *expression-parser* nil)
 
 (defparameter *anacruz* 0)
 
