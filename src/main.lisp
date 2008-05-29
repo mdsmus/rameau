@@ -297,6 +297,30 @@
         (format nil "~@r" number)
         (format nil "~(~@r~a~)" number (if (equal mode "m") "" mode)))))
 
+(defun add-to-cadence-hash (hash chord prev pprev file-name segno)
+  (push (list file-name segno)
+        (gethash (format nil "~4a ~4a ~4a"
+                         (print-roman (chord-interval-number pprev chord) pprev)
+                         (print-roman (chord-interval-number prev chord) prev)
+                         (print-roman 1 chord))
+                 hash)))
+
+(defun show-cadence-hash (options cadences)
+  (iter (for (cadence  places) in (sorted (iter (for (cadence places) in-hashtable cadences)
+                                                (collect (list cadence places)))
+                                          #L(< (length (second !1))
+                                               (length (second !2)))))
+        (if (< (parse-integer (get-max-print-error options))
+               (length places))
+            (format t "  ~a found ~a times (max ~a)~%"
+                    cadence (length places) (get-max-print-error options))
+            (progn
+              (format t " ~a found in: "
+                      cadence)
+              (iter (for cad in places)
+                    (format t "(~a ~a) " (first cad) (second cad)))
+              (format t "~%")))))
+
 (defcommand cadences (options analysis)
   (let ((cadences (make-hash-table :test #'equal))
         (last-cadences (make-hash-table :test #'equal)))
@@ -306,48 +330,13 @@
           (for ppprev previous pprev)
           (for pf previous file-name)
           (when (and pprev prev chord)
-            (push (list file-name segno)
-                  (gethash (format nil "~4a ~4a ~4a"
-                                   (print-roman (chord-interval-number pprev chord) pprev)
-                                   (print-roman (chord-interval-number prev chord) prev)
-                                   (print-roman 1 chord))
-                           cadences)))
+            (add-to-cadence-hash cadences chord prev pprev file-name segno))
           (when (and ppprev pprev prev chord (not (equal pf file-name)))
-            (push (list pf)
-                  (gethash (format nil "~4a ~4a ~4a"
-                                   (print-roman (chord-interval-number pprev chord) ppprev)
-                                   (print-roman (chord-interval-number prev chord) pprev)
-                                   (print-roman 1 prev))
-                           last-cadences))))
-    (iter (for (cadence  places) in (sorted (iter (for (cadence places) in-hashtable cadences)
-                                                   (collect (list cadence places)))
-                                             #L(< (length (second !1))
-                                                  (length (second !2)))))
-          (if (< (parse-integer (get-max-print-error options))
-                 (length places))
-              (format t "  ~a found ~a times (max ~a)~%"
-                      cadence (length places) (get-max-print-error options))
-              (progn
-                (format t " ~a found in: "
-                        cadence)
-                (iter (for cad in places)
-                      (format t "(~a ~a) " (first cad) (second cad)))
-                (format t "~%"))))
+            (add-to-cadence-hash last-cadences ppprev pprev prev pf "end")))
+    (format t "All cadences:~%")
+    (show-cadence-hash options cadences)
     (format t "Cadences in the end:~%")
-    (iter (for (cadence  places) in (sorted (iter (for (cadence places) in-hashtable last-cadences)
-                                                   (collect (list cadence places)))
-                                             #L(< (length (second !1))
-                                                  (length (second !2)))))
-          (if (< (parse-integer (get-max-print-error options))
-                 (length places))
-              (format t "  ~a found ~a times (max ~a)~%"
-                      cadence (length places) (get-max-print-error options))
-              (progn
-                (format t " ~a found in: "
-                        cadence)
-                (iter (for cad in places)
-                      (format t "~a " (first cad)))
-                (format t "~%"))))))
+    (show-cadence-hash options last-cadences)))
 
 ;; ultima cadencia tambem
 
