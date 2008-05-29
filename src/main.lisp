@@ -338,10 +338,12 @@
     (format t "Cadences in the end:~%")
     (show-cadence-hash options last-cadences)))
 
-;; ultima cadencia tambem
-
-
-
+(defun extract-note (segment voice)
+  (first (remove-if-not
+          #L(equal (event-voice-name !1)
+                   (event-voice-name voice))
+          segment)))
+  
 (defcommand resolve-seventh (options analysis)
   (iter (for next in (all-chords options analysis))
         (for chord previous next)
@@ -350,18 +352,9 @@
           (let* ((pitch (7th-pitch (first chord)))
                  (voices (remove-if-not #L(equal (event-pitch !1) pitch) (second chord))))
             (iter (for voice in voices)
-                  (let* ((nota1 (first (remove-if-not
-                                        #L(equal (event-voice-name !1)
-                                                 (event-voice-name voice))
-                                        (second prev))))
-                         (nota2 (first
-                                 (remove-if-not #L(equal (event-voice-name !1)
-                                                         (event-voice-name voice))
-                                                (second chord))))
-                         (nota3 (first
-                                 (remove-if-not #L(equal (event-voice-name !1)
-                                                         (event-voice-name voice))
-                                                (second next))))
+                  (let* ((nota1 (extract-note (second prev) voice))
+                         (nota2 (extract-note (second chord) voice))
+                         (nota3 (extract-note (second next) voice))
                          (diferenca (and nota1 nota2 nota3
                                          (- (absolute-pitch nota2) (absolute-pitch nota3))))
                          (sinal (and diferenca (if (< diferenca 0) "+" "-")))
