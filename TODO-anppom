@@ -1,7 +1,7 @@
 * procurar cruzamento no kostka
 * ex. cruzamento: coral 003, seg. 40
 * ex. cruzamento: coral 020, seg. 20
-* corrige coral 13 seg 96, 200 seg 13, 359 seg 54
+* corrige coral 13 seg 96 e 53 (tudo errado no tenor), 200 seg 13, 359 seg 54
 * fazer ex: 244, 279 (oitava-unissono), 329
 * separar o que é na fermata e o que nao é, checar com edicao, corrigir coral
  parallel fifths chorale 004 voices "tenor" and "soprano" sonority 58 notes b and f# to f# and c#
