@@ -649,7 +649,9 @@
               (default-arguments options)
               ;;; apply command-line options
               (iter (for (key value) in (parse-options command (rest command-list)))
-                    (funcall key value options))
+                    (if key
+                        (funcall key value options)
+                        (return-from main  (progn (format t "ERROR: command not found. Exiting.~%") 1))))
               (when (or (get-help options) (string= cmd "-h")) (print-help))
               ;;; parse file options
               (set-files (parse-files options) options)
