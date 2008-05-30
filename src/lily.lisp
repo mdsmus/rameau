@@ -1,5 +1,6 @@
 (in-package :rameau)
 
+
 (enable-sharp-l-syntax)
 
 (defun make-variable (name content)
@@ -101,6 +102,65 @@
                          "}
 
 ")))
-                         
 
 
+
+(defun make-note-list (notes)
+  (let (notelist
+        (rest 0))
+    (iter (for note in notes)
+          (for i from 0)
+          (until (not (equal :piece (event-original-event note))))
+          (setf notelist (append notelist (list note)))
+          (setf rest i))
+    (iter (for note in (nthcdr rest notes))
+          (if (equal :self (event-original-event note))
+              (setf notelist (append notelist (list note)))
+              (if (not (equal :piece (event-original-event note)))
+                (setf notelist (append notelist (list (event-original-event note)))))))
+    notelist))
+
+(defun add-rests (notes)
+  (format nil " { ~{~a ~% ~} }"
+          (iter (for note in notes)
+                (for prev previous note)
+                (when (and note prev (not (= (event-end prev) (event-start note))))
+                  (collect (format nil "r~a " (frac->dur-lily (- (event-start note) (event-end prev))))))
+                (collect (format nil "~a~a~a "
+                                 (print-event-note note 'lily)
+                                 (show-octave (event-octave note))
+                                 (frac->dur-lily (event-dur note)))))))
+
+(defun make-lily-segments (segments)
+  (let ((baixos (add-rests (make-note-list (mapcar #L(extract-note !1 (make-event :voice-name "\"baixo\"")) segments))))
+        (tenores (add-rests (make-note-list (mapcar #L(extract-note !1 (make-event :voice-name "\"tenor\"")) segments))))
+        (altos (add-rests (make-note-list (mapcar #L(extract-note !1 (make-event :voice-name "\"alto\"")) segments))))
+        (sopranos (add-rests (make-note-list (mapcar #L(extract-note !1 (make-event :voice-name "\"soprano\"")) segments)))))
+    (format nil "\\score {
+  <<
+    \\new StaffGroup <<
+      \\override StaffGroup.SystemStartBracket #'style = #'line 
+      \\new Staff {
+        <<
+          \\new Voice = \"soprano\" { \\voiceOne ~a }
+          \\new Voice = \"alto\" { \\voiceTwo ~a }
+        >>
+      }
+      \\new Staff {
+        <<
+          \\clef \"bass\"
+          \\new Voice = \"tenor\" {\\voiceOne ~a }
+          \\new Voice = \"baixo\" { \\voiceTwo ~a \\bar \"|.\"}
+        >>
+      }
+    >>
+  >>
+  \\layout {}
+  \\midi {}
+}
+"
+            sopranos
+            altos
+            tenores
+            baixos)))
+    

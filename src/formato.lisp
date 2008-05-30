@@ -1,5 +1,7 @@
 (in-package #:rameau)
 
+(enable-sharp-l-syntax)
+
 (defparameter *current-key* '("c" "\\major"))
 (defparameter *current-sig* "4/4")
 
@@ -11,6 +13,7 @@
   (dur)
   (start)
   (key)
+  (original-event)
   (time-sig))
 
 (defstruct note-sequence
@@ -26,6 +29,17 @@
   (start)
   (dur))
 
+(defun extract-note (segment voice)
+  (first (remove-if-not
+          #L(equal (event-voice-name !1)
+                   (event-voice-name voice))
+          segment)))
+
+(defun show-octave (octave)
+  (cond ((= octave 0) "")
+        ((< octave 0) (repeat-string (- octave) ","))
+        (t (repeat-string octave "'"))))
+
 (defun event-< (x y)
   (let ((a (event-octave x))
         (b (event-octave y)))
@@ -33,9 +47,9 @@
         (< (event-pitch x) (event-pitch y))
         (< a b))))
 
-(defun print-event-note (e)
+(defun print-event-note (e &optional (style 'latin))
   (when (event-p e)
-    (print-note (code->notename (event-pitch e)))))
+    (print-note (code->notename (event-pitch e)) style)))
 
 (defun absolute-pitch (e1)
   (+ (event-pitch e1) (* (get-module) (event-octave e1))))
@@ -93,6 +107,7 @@
                        :start 0
                        :text-repr (list nota octave igno dur ignore)
                        :key *current-key*
+                       :original-event :self
                        :time-sig *current-sig*))
    :start 0
    :text-repr (list nota octave igno dur ignore)
@@ -214,6 +229,7 @@
                          :start (event-start n)
                          :voice-name (event-voice-name n)
                          :key (event-key n)
+                         :original-event (event-original-event n)
                          :time-sig (event-time-sig n)))))
 
 (defun tempera (nota)
@@ -225,6 +241,7 @@
                  :start (event-start nota)
                  :voice-name (event-voice-name nota)
                  :key (event-key nota)
+                 :original-event (event-original-event nota)
                  :time-sig (event-time-sig nota))))
 
 (defun temperado (segmentos)

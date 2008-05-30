@@ -1,4 +1,4 @@
-;; Main
+; Main
 ;;; Define rameau-main package
 (defpackage :rameau-main
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
@@ -346,11 +346,7 @@
     (format t "Cadences in the end:~%")
     (show-cadence-hash options last-cadences)))
 
-(defun extract-note (segment voice)
-  (first (remove-if-not
-          #L(equal (event-voice-name !1)
-                   (event-voice-name voice))
-          segment)))
+
   
 (defcommand resolve-seventh (options analysis)
   (iter (for next in (all-chords options analysis))
@@ -368,16 +364,24 @@
                          (sinal (and diferenca (if (< diferenca 0) "+" "-")))
                          (intervalo (and diferenca (interval->code (module diferenca)))))
                     
-                    (and intervalo
-                         (format t "  ~3a ~3a ~9a de ~2a setima ~2a resolve ~2a ~a~9a~%"
-                                 (third chord)
-                                 (fourth chord)
-                                 (event-voice-name nota1)
-                                 (print-event-note nota1)
-                                 (print-event-note nota2)
-                                 (print-event-note nota3)
-                                 sinal
-                                 intervalo))))))))
+                    (when intervalo
+                      (with-open-file (f (concat *rameau-path* (format nil "analysis/seventh-~a-~a.ly"
+                                                                       (third chord)
+                                                                       (fourth chord)))
+                                         :direction :output
+                                         :if-exists :supersede)
+                        (format f "~a" (make-lily-segments (list (second prev)
+                                                                 (second chord)
+                                                                 (second next)))))
+                      (format t "  ~3a ~3a ~9a de ~2a setima ~2a resolve ~2a ~a~9a~%"
+                              (third chord)
+                              (fourth chord)
+                              (event-voice-name nota1)
+                              (print-event-note nota1)
+                              (print-event-note nota2)
+                              (print-event-note nota3)
+                              sinal
+                              intervalo))))))))
 
 ;; É sempre mais aguda menos a mais grave
 (defcommand jumps (options analysis)
@@ -419,11 +423,6 @@
               (format t "~%~%"))
         (iter (for (k v) in-hashtable jumps)
               (format t "~20a: ~a~%" (print-absolute-interval k) (length v))))))
-
-(defun show-octave (octave)
-  (cond ((= octave 0) "")
-        ((< octave 0) (repeat-string (- octave) ","))
-        (t (repeat-string octave "'"))))
 
 
 

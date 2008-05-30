@@ -37,7 +37,7 @@
    )
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defgeneric
                           #:defparameter #:defvar #:defstruct #:defclass)
-  (:use #:genoslib  #:cl #:lisp-unit))
+  (:use #:genoslib  #:cl #:lisp-unit #:iterate))
 
 (in-package :rameau)
 

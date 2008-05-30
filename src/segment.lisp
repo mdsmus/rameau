@@ -49,6 +49,7 @@
                                    :dur (- (event-dur nota) tamanho)
                                    :start (+ tamanho (event-start nota))
                                    :key (event-key nota)
+                                   :original-event :piece
                                    :voice-name (event-voice-name nota)
                                    :time-sig (event-time-sig nota))
                                   sobras)
@@ -58,6 +59,7 @@
                              :dur tamanho
                              :start (event-start nota)
                              :voice-name (event-voice-name nota)
+                             :original-event nota
                              :key (event-key nota)
                              :time-sig (event-time-sig nota)))))
                     segmento)
