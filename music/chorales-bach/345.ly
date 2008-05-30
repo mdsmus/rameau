@@ -26,7 +26,7 @@ soprano = \relative c' {
   b8 c8 d4 c4 b4 
   a2 b4 e,4   %10
   f4 e4 d4 g8 f8 
-  e4 
+  e2. 
   
 }
 

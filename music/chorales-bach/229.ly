@@ -86,16 +86,16 @@ baixo = \relative c {
     bes4 g4 a4 bes4~ 
   bes8 a8 g4. fis8 g4 
   c4 d4 g,4 g4 
-  d'4 ees4 a8 f8 bes4~ 
+  d'4 ees4 a,8 f8 bes4~ 
   bes4 ees8 d8 c4. cis8   %5
   d2 g,4 g8 a8 
   bes8 c8 d4 ees4 e4 
   fis4 g4 d4 ees4 
-  a4 f4 bes4 g8 a8 
+  a,4 f4 bes4 g8 a8 
   bes8 c8 d4 ees4 d8 c8   %10
   bes8 c8 bes8 a8 g8 a8 g8 fis8 
   g8 a8 bes8 g8 d'4 g,4 
-  d'4 ees4 a4 bes8 c8 
+  d'4 ees4 a,4 bes8 c8 
   d4 d4 ees4 bes4 
   c8 d8 ees8 c8 g'4 g,4   %15
   a4 bes8 c8 d4. c8 
