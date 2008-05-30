@@ -300,8 +300,8 @@
 (defun add-to-cadence-hash (hash chord prev pprev file-name segno)
   (push (list file-name segno)
         (gethash (format nil "~4a ~4a ~4a"
-                         (print-roman (chord-interval-number pprev chord) pprev)
-                         (print-roman (chord-interval-number prev chord) prev)
+                         (print-roman (chord-interval-number chord pprev) pprev)
+                         (print-roman (chord-interval-number chord prev) prev)
                          (print-roman 1 chord))
                  hash)))
 
@@ -338,8 +338,8 @@
             (add-to-cadence-hash cadences chord prev pprev file-name segno))
           (when (and ppprev pprev prev chord (not (equal pf file-name)))
             (add-to-cadence-hash last-cadences ppprev pprev prev pf "end")))
-    (format t "All cadences:~%")
-    (show-cadence-hash options cadences)
+    ;(format t "All cadences:~%")
+    ;(show-cadence-hash options cadences)
     (format t "Cadences in the end:~%")
     (show-cadence-hash options last-cadences)))
 
