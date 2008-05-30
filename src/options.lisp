@@ -46,6 +46,9 @@
       ("resolve-seventh")
       ("parallel-fifths")
       ("parallel-octaves")
+      ("print-segments"
+       (("-i" "start" "segmento inicial" 0 type-integer)
+        ("-z" "end" "segmendo final" 1000000 type-integer)))
       ("train-neural"
        (("" "e-chord-data-set" "generate the data set for the network")
         ("" "e-chord-fann-file" "generate the reural network file")

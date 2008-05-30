@@ -533,21 +533,33 @@
   )
 
 (defcommand print-segments (options analysis)
-  (declare (ignore options))
   (iter (for anal in analysis)
         (format t "Chorale ~a ~%" (analysis-file-name anal))
-        (iter (for seg in (analysis-segments anal))
-              (for i from 0)
-              (let ((s (sorted seg #'event-<)))
-                (format t "   ~3a ~3a      "
-                        i
-                        (event-dur (first seg)))
-                (iter (for note in s)
-                      (format t "~9a ~2a~2a, "
-                              (event-voice-name note)
-                              (print-event-note note)
-                              (event-octave note)))
-                (format t "~%")))))
+        (let ((ini (or (get-start options) 0))
+              (fim (or (get-end options) 1000000)))
+          (with-open-file (f (concat *rameau-path* (format nil "analysis/segments-~a-~a-~a.ly"
+                                                           (analysis-file-name anal)
+                                                           ini
+                                                           fim))
+                                         :direction :output
+                                         :if-exists :supersede)
+                        (format f "~a"
+                                (make-lily-segments
+                                 (remove-if #'null (firstn (nthcdr ini (analysis-segments anal))
+                                                           (- fim ini))))))
+          (iter (for seg in (analysis-segments anal))
+                (for i from 0)
+                (when (<= ini i fim)
+                    (let ((s (sorted seg #'event-<)))
+                      (format t "   ~3a ~3a      "
+                              i
+                              (event-dur (first seg)))
+                      (iter (for note in s)
+                            (format t "~9a ~2a~2a, "
+                                    (event-voice-name note)
+                                    (print-event-note note)
+                                    (event-octave note)))
+                      (format t "~%")))))))
 
 ;;; Training
 (defcommand train-neural (options &rest ignore)
