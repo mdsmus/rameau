@@ -89,7 +89,7 @@ baixo = \relative c {
     \partial 4 ees4 
     aes8 g8 f4 b,4 c4~ 
     c4 fis,4 g4 g'4 
-    c,8 d8 ees4 a8 b8 c4~ 
+    c,8 d8 ees4 a,8 b8 c4~ 
     c4 f,4 bes4 f'8 ees8 
     d8 bes8 c8 d8 ees8 d8 c8 bes8     %5
     aes8 f8 bes4 ees,4 } ees8 f8 
