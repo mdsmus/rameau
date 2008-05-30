@@ -18,7 +18,7 @@ soprano = \relative c'' {
     d4 d4 cis2 
     b8 cis8 d4 a8 g8 fis4 
     g4 fis4 e4 d4 }
-  fis4 gis4 bes4 b8 cis8   %5
+  fis4 gis4 ais4 b8 cis8   %5
   d4 cis4 b2 
   cis4 d4 e4 fis4 
   e4 e4 d2 

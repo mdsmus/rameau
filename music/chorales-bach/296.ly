@@ -77,7 +77,7 @@ alto = \relative c'' {
   g4 f4 e4 
   e2 a4 
   a2 a4   %20
-  ais4 f4 g4 
+  bes4 f4 g4 
   f2 g4 
   g2 a4 
   f4 a2 
