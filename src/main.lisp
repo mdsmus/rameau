@@ -305,12 +305,17 @@
                          (print-roman 1 chord))
                  hash)))
 
+(defun make-int (value)
+  (if (inegerp value)
+      value
+      (parse-integer value)))
+
 (defun show-cadence-hash (options cadences)
   (iter (for (cadence  places) in (sorted (iter (for (cadence places) in-hashtable cadences)
                                                 (collect (list cadence places)))
                                           #L(< (length (second !1))
                                                (length (second !2)))))
-        (if (< (parse-integer (get-max-print-error options))
+        (if (< (make-int (get-max-print-error options))
                (length places))
             (format t "  ~a found ~a times (max ~a)~%"
                     cadence (length places) (get-max-print-error options))
@@ -398,7 +403,7 @@
     (if (get-verbose options)
         (iter (for (k v) in-hashtable jumps)
               (format t "~20a: ~%" (print-absolute-interval k))
-              (if (< (length v) (parse-integer (get-max-print-error options)))
+              (if (< (length v) (make-int (get-max-print-error options)))
                   (iter (for i in v)
                         (for n from 0)
                         (format t "          chorale ~a in ~,2f%, of voice ~a from ~a to ~a~%"
