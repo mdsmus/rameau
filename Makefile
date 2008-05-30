@@ -128,7 +128,7 @@ anppom:
 	./rameau octaves -f music/chorales-bach/*.ly -a es-net -v > anppom/oitavas.txt
 	./rameau ambito -f music/chorales-bach/*.ly -a es-net -v > anppom/ambitos.txt
 	./rameau jumps -f music/chorales-bach/*.ly -a es-net -v > anppom/saltos.txt
-	./rameau cadences -f music/chorales-bach/*.ly -a es-net -v > anppom/cadencias.txt
+	./rameau cadences -f music/chorales-bach/*.ly -a es-net -v -m 100 > anppom/cadencias.txt
 
 .PHONY: coral
 coral:
