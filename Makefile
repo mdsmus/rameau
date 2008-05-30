@@ -102,7 +102,7 @@ clisprameau: $(lisp-files)
 	${clisp} -x "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" -x "(load \"tools/make-image.lisp\")"
 
 contagem.txt:
-	for x in $$(awk '{print $$3}' cruzamentos.txt | uniq ); do echo "$$(grep -c $$x cruzamentos.txt) $$x"; done | sort  -n > contagem.txt
+	for x in $$(awk '{print $$3}' anppom/cruzamentos.txt | uniq ); do echo "$$(grep -c $$x anppom/cruzamentos.txt) $$x"; done | sort  -n > contagem.txt
 
 doc:
 	cd docs ;\
