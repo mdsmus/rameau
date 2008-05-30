@@ -1,9 +1,10 @@
-* procurar cruzamento no kostka
-* ex. cruzamento: coral 003, seg. 40
-* ex. cruzamento: coral 020, seg. 20
-* corrige coral 13 seg 96 e 53 (tudo errado no tenor), 200 seg 13, 359 seg 54
-* fazer ex: 244, 279 (oitava-unissono), 329
-* separar o que é na fermata e o que nao é, checar com edicao, corrigir coral
+* procurar cruzamento no kostka [emerson]
+* exemplos ambito (ver no .tex) [givaldo]
+* ex. cruzamento: coral 003, seg. 40 [givaldo]
+* ex. cruzamento: coral 020, seg. 20 [givaldo]
+* corrige coral 13 seg 96 e 53 (tudo errado no tenor), 200 seg 13, 359 seg 54 [marcos]
+* fazer ex: 244, 279 (oitava-unissono), 329 [marcos]
+* separar o que é na fermata e o que nao é, checar com edicao [nathan]
  parallel fifths chorale 004 voices "tenor" and "soprano" sonority 58 notes b and f# to f# and c#
  parallel fifths chorale 013 voices "tenor" and "alto" sonority 105 notes d and a to c# and g#
  parallel fifths chorale 045 voices "baixo" and "tenor" sonority 28 notes f# and c# to b and f#
@@ -13,7 +14,7 @@
  parallel fifths chorale 259 voices "baixo" and "alto" sonority 10 notes f# and c# to b and f#
  parallel fifths chorale 266 voices "tenor" and "alto" sonority 61 notes d and a to c and g
  parallel fifths chorale 359 voices "tenor" and "alto" sonority 51 notes e and b to d and a
-* separar o que é na fermata e o que nao é, checar com edicao, corrigir coral
+* separar o que é na fermata e o que nao é, checar com edicao [nathan]
  parallel octaves chorale 002 voices "baixo" and "alto" sonority 60 notes e and e to b and b
  parallel octaves chorale 009 voices "tenor" and "baixo" sonority 57 notes d and d to c and c
  parallel octaves chorale 013 voices "tenor" and "baixo" sonority 96 notes b and b to a and a
