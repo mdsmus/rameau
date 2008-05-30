@@ -306,7 +306,7 @@
                  hash)))
 
 (defun make-int (value)
-  (if (inegerp value)
+  (if (integerp value)
       value
       (parse-integer value)))
 
