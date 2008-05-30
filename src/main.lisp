@@ -300,11 +300,11 @@
         (format nil "~@r" number)
         (format nil "~(~@r~a~)" number (if (equal mode "m") "" mode)))))
 
-(defun add-to-cadence-hash (hash chord prev pprev file-name segno)
+(defun add-to-cadence-hash (hash pprev prev chord file-name segno)
   (push (list file-name segno)
         (gethash (format nil "~4a ~4a ~4a"
-                         (print-roman (chord-interval-number chord pprev) pprev)
-                         (print-roman (chord-interval-number chord prev) prev)
+                         (print-roman (chord-interval-number pprev chord) pprev)
+                         (print-roman (chord-interval-number prev chord) prev)
                          (print-roman 1 chord))
                  hash)))
 
