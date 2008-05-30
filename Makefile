@@ -3,6 +3,7 @@ TRAIN_NAME = $(shell git branch | grep "*" | cut -f 2 -d ' ')-$(TRAIN_VERSION)
 RAMEAUDEPS = t
 hostname = $(shell hostname)
 maindir = $(shell pwd)
+c = 001
 
 ifeq ($(RAMEAUDEPS),t)
 	sbcl = /usr/bin/sbcl --disable-debugger --no-userinit
@@ -128,6 +129,10 @@ anppom:
 	./rameau ambito -f music/chorales-bach/*.ly -a es-net -v > anppom/ambitos.txt
 	./rameau jumps -f music/chorales-bach/*.ly -a es-net -v > anppom/saltos.txt
 	./rameau cadences -f music/chorales-bach/*.ly -a es-net -v > anppom/cadencias.txt
+
+.PHONY: coral
+coral:
+	./rameau anal -f chora:$(c) -a es-net -S
 
 all-png:
 	./rameau anal -f music/chorales-bach/*.ly -a es-net -s > /dev/null

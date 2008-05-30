@@ -1,3 +1,26 @@
 * procurar cruzamento no kostka
 * ex. cruzamento: coral 003, seg. 40
 * ex. cruzamento: coral 020, seg. 20
+* corrige coral 13 seg 96, 200 seg 13, 359 seg 54
+* fazer ex: 244, 279 (oitava-unissono), 329
+* separar o que é na fermata e o que nao é, checar com edicao, corrigir coral
+ parallel fifths chorale 004 voices "tenor" and "soprano" sonority 58 notes b and f# to f# and c#
+ parallel fifths chorale 013 voices "tenor" and "alto" sonority 105 notes d and a to c# and g#
+ parallel fifths chorale 045 voices "baixo" and "tenor" sonority 28 notes f# and c# to b and f#
+ parallel fifths chorale 061 voices "baixo" and "alto" sonority 12 notes g and d to ab and eb
+ parallel fifths chorale 071 voices "alto" and "soprano" sonority 83 notes d and a to e and b
+ parallel fifths chorale 091 voices "baixo" and "alto" sonority 10 notes f# and c# to b and f#
+ parallel fifths chorale 259 voices "baixo" and "alto" sonority 10 notes f# and c# to b and f#
+ parallel fifths chorale 266 voices "tenor" and "alto" sonority 61 notes d and a to c and g
+ parallel fifths chorale 359 voices "tenor" and "alto" sonority 51 notes e and b to d and a
+* separar o que é na fermata e o que nao é, checar com edicao, corrigir coral
+ parallel octaves chorale 002 voices "baixo" and "alto" sonority 60 notes e and e to b and b
+ parallel octaves chorale 009 voices "tenor" and "baixo" sonority 57 notes d and d to c and c
+ parallel octaves chorale 013 voices "tenor" and "baixo" sonority 96 notes b and b to a and a
+ parallel octaves chorale 107 voices "baixo" and "tenor" sonority 97 notes c and c to g and g
+ parallel octaves chorale 118 voices "alto" and "tenor" sonority 11 notes f and f to bb and bb
+ parallel octaves chorale 152 voices "tenor" and "alto" sonority 10 notes e and e to a and a
+ parallel octaves chorale 200 voices "tenor" and "baixo" sonority 13 notes c and c to bb and bb
+ parallel octaves chorale 244 voices "soprano" and "alto" sonority 27 notes g and g to c and c
+ parallel octaves chorale 351 voices "alto" and "tenor" sonority 88 notes b and b to e and e
+ parallel octaves chorale 359 voices "baixo" and "tenor" sonority 54 notes c# and c# to b and b
