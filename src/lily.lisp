@@ -44,7 +44,7 @@
         (denom (denominator (abs dur))))
     (cond ((= numer 1) (format nil "~a" denom))
           ((= numer 3) (format nil "~a." (/ denom 2)))
-          (t (error "duracao invalida")))))
+          (t (format nil "~a*~a" denom numer)))))
 
 (defun print-duracoes :private (segmento)
   (values (loop for s = segmento then (rest s)
@@ -107,7 +107,8 @@
 
 (defun make-note-list (notes)
   (let (notelist
-        (rest 0))
+        (rest 0)
+        (notes (remove-if #'null notes)))
     (iter (for note in notes)
           (for i from 0)
           (until (not (equal :piece (event-original-event note))))
@@ -116,7 +117,7 @@
     (iter (for note in (nthcdr rest notes))
           (if (equal :self (event-original-event note))
               (setf notelist (append notelist (list note)))
-              (if (not (equal :piece (event-original-event note)))
+              (when (not (equal :piece (event-original-event note)))
                 (setf notelist (append notelist (list (event-original-event note)))))))
     notelist))
 

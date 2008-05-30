@@ -269,10 +269,11 @@
   (declare (ignore options))
   (iter (for anal in analysis)
         (nconcing
-            (iter (for chord in (first (analysis-results anal)))
-                  (for segment in (analysis-segments anal))
-                  (for i from 0)
-                  (collect (list chord segment (analysis-file-name anal) i))))))
+            (append '(nil nil nil nil nil)
+                    (iter (for chord in (first (analysis-results anal)))
+                          (for segment in (analysis-segments anal))
+                          (for i from 0)
+                          (collect (list chord segment (analysis-file-name anal) i)))))))
 
 (defun root-pitch (chord)
   (parse-note (chord-root chord)))

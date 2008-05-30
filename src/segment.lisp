@@ -59,7 +59,9 @@
                              :dur tamanho
                              :start (event-start nota)
                              :voice-name (event-voice-name nota)
-                             :original-event nota
+                             :original-event (if (equal :self (event-original-event nota))
+                                                 nota
+                                                 (event-original-event nota))
                              :key (event-key nota)
                              :time-sig (event-time-sig nota)))))
                     segmento)
