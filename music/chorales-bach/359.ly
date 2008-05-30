@@ -72,7 +72,7 @@ tenor = \relative c {
     a2 r4 d 
     cis d e8 d cis4 
     d e ais,8 b cis4~
-    cis4 b ais4 
+    cis4 b2 ais4 
     b2 r4 } d 
   d8 b cis4 cis8 a b4 
   b cis d fis 
