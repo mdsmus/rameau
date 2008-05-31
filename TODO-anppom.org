@@ -1,12 +1,12 @@
 
 * exemplo coral 35 seg 17--19 (alto no baixo!!!)
 * exemplo coral 290 ultimo compasso (cruza S-A e T-B as mesmo tempo)
-* exemplo coral 45 seg 28-29 (quintas, colocar fermata, lembrar acidentes)
 * exemplo coral 71 seg 82-84 (quintas)
 * exemplo coral 91 seg 10-11 (quintas, lembrar armadura)
 * exemplo coral  19, seg.  5 it6+
 * exemplo coral 140, seg. 24 fr6+
 * exemplo coral 340, seg. 53 al6+
+* exemplo coral 046 seg 41 (quintas Baixo e Alto)
 * exemplos ambito (ver no .tex) [givaldo]
 * ex. cruzamento: coral 003, seg. 40 [givaldo]
 * ex. cruzamento: coral 020, seg. 20 [givaldo]
