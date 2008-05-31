@@ -496,6 +496,7 @@
   (iter (for anal in analysis)
         (iter (for n in (get-strong strong (analysis-segments anal)))
               (for s previous n)
+              (for p previous s)
               (for i from 0)
               (awhen (and n s (intervals (sorted s #'event-<) number))
                 (let* ((n1 (first it))
@@ -509,6 +510,16 @@
                        (d2 (and f2 (- (event-pitch f2)
                                       (event-pitch n2)))))
                   (when (and f1 f2 (= d1 d2) (not (= d1 0)))
+                    (unless strong
+                      (with-open-file (f (concat *rameau-path* (format nil "analysis/parallel-~a-~a-~a.ly"
+                                                                       name
+                                                                       (analysis-file-name anal)
+                                                                       i))
+                                         :direction :output
+                                         :if-exists :supersede)
+                        (format f "~a"
+                                (make-lily-segments
+                                 (remove-if #'null (list p s n))))))
                     (format t " parallel ~a chorale ~a voices ~a and ~a sonority ~a notes ~a and ~a to ~a and ~a~%"
                             name
                             (analysis-file-name anal)
