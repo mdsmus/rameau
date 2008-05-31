@@ -462,9 +462,10 @@
 (defcommand cruzamento (options analysis)
   (declare (ignore options))
   (iter (for anal in analysis)
-        (let ((notes (analysis-segments anal)))
+        (let ((notes (analysis-segments anal))
+              min max)
           (iter (for segment in notes)
-                (for segno from 1)
+                (for segno from 0)
                 (let ((segment (sorted segment #'event-<)))
                   (when (= 4 (length segment))
                     (unless (or
@@ -473,10 +474,21 @@
                                   (equal (event-voice-name (third segment)) "\"alto\"")
                                   (equal (event-voice-name (fourth segment)) "\"soprano\""))
                              (repeated-notes segment))
+                      (unless min
+                        (setf min segno))
+                      (setf max (1+ segno))
                       (format t "Cruzamento coral ~a segmento ~5a ordem ~a~%"
                               (analysis-file-name anal)
                               segno
-                              (mapcar #'event-voice-name segment)))))))))
+                              (mapcar #'event-voice-name segment))))))
+          (when (and min max)
+            (with-open-file (f (concat *rameau-path* (format nil "analysis/cruzamento-~a-~a-~a.ly"
+                                                             (analysis-file-name anal)
+                                                             min
+                                                             max))
+                               :direction :output
+                               :if-exists :supersede)
+              (format f "~a" (make-lily-segments (subseq (analysis-segments anal) min max))))))))
 
 (defun intervals (segment number)
   (iter (for n in segment)
