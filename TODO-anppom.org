@@ -1,29 +1,28 @@
-
-* exemplo coral 35 seg 17--19 (alto no baixo!!!)
-* exemplo coral 290 ultimo compasso (cruza S-A e T-B as mesmo tempo)
-* exemplo coral 71 seg 82-84 (quintas)
-* exemplo coral 91 seg 10-11 (quintas, lembrar armadura)
-* exemplo coral  19, seg.  5 it6+
-* exemplo coral 140, seg. 24 fr6+
-* exemplo coral 340, seg. 53 al6+
-* exemplo coral 046 seg 41 (quintas Baixo e Alto)
-* exemplo coral 341 seg 100-102 (erro analise cadencias)
+* exemplo coral 35 seg 17--19 (alto no baixo!!!) [marcos]
+* exemplo coral 290 ultimo compasso (cruza S-A e T-B as mesmo tempo) [marcos]
+* exemplo coral 71 seg 82-84 (quintas) [marcos]
+* exemplo coral 91 seg 10-11 (quintas, lembrar armadura) [marcos]
+* exemplo coral  19, seg.  5 it6+ [marcos]
+* exemplo coral 140, seg. 24 fr6+ [marcos]
+* exemplo coral 340, seg. 53 al6+ [marcos]
+* exemplo coral 046 seg 41 (quintas Baixo e Alto) [marcos]
+* exemplo coral 341 seg 100-102 (erro analise cadencias) [marcos]
 * exemplos ambito (ver no .tex) [givaldo]
 * ex. cruzamento: coral 003, seg. 40 [givaldo]
 * ex. cruzamento: coral 020, seg. 20 [givaldo]
 * preparar exemplor de tipos de resolucao de 7as [marcos]
-* checar  I    iv   I    [17] found in:
+* checar  I    iv   I    [17] found in: [kroger]
   (meia-cadencia, pedal?)
   358 352 345 320 283 279 270 265 205 197 113 089 081 056 021 016 010
-* checar  iii  V    I    [16] found in:
+* checar  iii  V    I    [16] found in: [kroger]
   (alguns erros, é i v i)
   366 357 337 298 276 247 227 216 211 202 189 137 117 083 079 072
-* enterder  v°   vii  I    [5] found in:
+* enterder  v°   vii  I    [5] found in: [kroger]
   307 214 198 190 034 
-* entender  I    IV   I    [3] found in: 288 187 127
+* entender  I    IV   I    [3] found in: 288 187 127  [kroger]
   (meia cadencia? modal?)
   vi   IV   I    [2] found in: 051 
-* verifica
+* verifica  [kroger]
  V    iv   I    [1] found in: (049 end) 
  iiø  iv   I    [1] found in: (091 end) 
  vi   iv   I    [1] found in: (132 end) 
