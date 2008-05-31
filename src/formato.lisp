@@ -2,7 +2,7 @@
 
 (enable-sharp-l-syntax)
 
-(defparameter *current-key* '("c" "\\major"))
+(defparameter *current-key* '("c" "major"))
 (defparameter *current-sig* "4/4")
 
 (defstruct event

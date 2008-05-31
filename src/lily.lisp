@@ -147,12 +147,14 @@
       \\override StaffGroup.SystemStartBracket #'style = #'line 
       \\new Staff \\with {\\remove \"Time_signature_engraver\" } {
         <<
+          \\key ~a \\~a
           \\new Voice = \"soprano\" { \\voiceOne ~a }
           \\new Voice = \"alto\" { \\voiceTwo ~a }
         >>
       }
       \\new Staff \\with {\\remove \"Time_signature_engraver\" }{
         <<
+          \\key ~a \\~a
           \\clef \"bass\"
           \\new Voice = \"tenor\" {\\voiceOne ~a }
           \\new Voice = \"baixo\" { \\voiceTwo ~a \\bar \"|.\"}
@@ -175,8 +177,12 @@
 }
 
 "
+            (string-downcase (first (event-key (first (first segments)))))
+            (string-downcase (second (event-key (first (first segments)))))
             sopranos
             altos
+            (string-downcase (first (event-key (first (first segments)))))
+            (string-downcase (second (event-key (first (first segments)))))
             tenores
             baixos
             (get-paper-width options)

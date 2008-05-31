@@ -614,7 +614,7 @@
                                 (make-lily-segments
                                  options
                                  (remove-if #'null (firstn (nthcdr ini (analysis-segments anal))
-                                                           (- fim ini))))))
+                                                           (min (- fim ini) (length (analysis-segments anal))))))))
           (iter (for seg in (analysis-segments anal))
                 (for i from 0)
                 (when (<= ini i fim)
