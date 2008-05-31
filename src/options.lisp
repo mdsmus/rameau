@@ -18,6 +18,8 @@
         ("-d" "debug" "ativa código de depuração para os itens i" nil type-list)
         ("-v" "verbose" "verbose")
         ("-t" "trace" "mostra o trace de <funções>" nil type-list)
+        ("" "paper-width" "largura do papel" 7.1)
+        ("" "paper-height" "altura do papel" 4.3)
         ;;("-q" "quiet" "quiet")
         ("-m" "max-print-error" "Quando o numero de arquivos que não são
   parseados é maior que essa constante, rameau mostra apenas o start

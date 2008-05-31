@@ -3,7 +3,7 @@
 (defpackage :rameau-main
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
-  (:use :rameau :cl :cl-ppcre :lisp-unit :iterate :rameau-options :rameau-terminal :genoslib :fann :rameau-neural))
+  (:use :rameau :cl :cl-ppcre :lisp-unit :iterate :rameau-options :rameau-terminal :genoslib :fann :rameau-neural :rameau-lily))
 
 (in-package :rameau-main)
 
@@ -371,7 +371,8 @@
                                                                        (fourth chord)))
                                          :direction :output
                                          :if-exists :supersede)
-                        (format f "~a" (make-lily-segments (list (second prev)
+                        (format f "~a" (make-lily-segments options
+                                                           (list (second prev)
                                                                  (second chord)
                                                                  (second next)))))
                       (format t "  ~3a ~3a ~9a de ~2a setima ~2a resolve ~2a ~a~9a~%"
@@ -453,7 +454,7 @@
                    )))))
 
 
-(defun print-report-ambito (notes min max segs chorale voice)
+(defun print-report-ambito (notes min max segs chorale voice options)
   (iter (for next in notes)
         (for segno from 0)
         (for note previous next)
@@ -473,7 +474,7 @@
                                                            segno))
                                          :direction :output
                                          :if-exists :supersede)
-                        (format f "~a" (make-lily-segments (list pseg seg nseg)))))))
+                        (format f "~a" (make-lily-segments options (list pseg seg nseg)))))))
 
 (defcommand kostka-amb (options analysis)
   (declare (ignore options))
@@ -490,10 +491,10 @@
               (maxt (make-event :pitch 55 :octave 1))
               (minb (make-event :pitch 28 :octave -1))
               (maxb (make-event :pitch 0 :octave 1)))
-          (print-report-ambito baixos minb maxb (analysis-segments anal) (analysis-file-name anal) "baixo")
-          (print-report-ambito tenores mint maxt (analysis-segments anal) (analysis-file-name anal) "tenor")
-          (print-report-ambito altos mina maxa (analysis-segments anal) (analysis-file-name anal) "alto")
-          (print-report-ambito sopranos mins maxs (analysis-segments anal) (analysis-file-name anal) "soprano"))))
+          (print-report-ambito baixos minb maxb (analysis-segments anal) (analysis-file-name anal) "baixo" options)
+          (print-report-ambito tenores mint maxt (analysis-segments anal) (analysis-file-name anal) "tenor" options)
+          (print-report-ambito altos mina maxa (analysis-segments anal) (analysis-file-name anal) "alto" options)
+          (print-report-ambito sopranos mins maxs (analysis-segments anal) (analysis-file-name anal) "soprano" options))))
 
 (defun repeated-notes (segmento)
   (/= 4 (length (remove-duplicates (sorted segmento #'event-<)
@@ -529,7 +530,7 @@
                                                              max))
                                :direction :output
                                :if-exists :supersede)
-              (format f "~a" (make-lily-segments (subseq (analysis-segments anal) min max))))))))
+              (format f "~a" (make-lily-segments options (subseq (analysis-segments anal) min max))))))))
 
 (defun intervals (segment number)
   (iter (for n in segment)
@@ -572,6 +573,7 @@
                                          :if-exists :supersede)
                         (format f "~a"
                                 (make-lily-segments
+                                 options
                                  (remove-if #'null (list p s n))))))
                     (format t " parallel ~a chorale ~a voices ~a and ~a sonority ~a notes ~a and ~a to ~a and ~a~%"
                             name
@@ -610,6 +612,7 @@
                                          :if-exists :supersede)
                         (format f "~a"
                                 (make-lily-segments
+                                 options
                                  (remove-if #'null (firstn (nthcdr ini (analysis-segments anal))
                                                            (- fim ini))))))
           (iter (for seg in (analysis-segments anal))

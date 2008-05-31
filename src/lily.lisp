@@ -1,5 +1,9 @@
-(in-package :rameau)
+(defpackage :rameau-lily
+  (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
+  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
+  (:use :rameau :cl :cl-ppcre :lisp-unit :iterate :rameau-options  :genoslib :fann :rameau-neural :rameau-lily))
 
+(in-package :rameau-lily)
 
 (enable-sharp-l-syntax)
 
@@ -132,7 +136,7 @@
                                  (show-octave (event-octave note))
                                  (frac->dur-lily (event-dur note)))))))
 
-(defun make-lily-segments (segments)
+(defun make-lily-segments (options segments)
   (let ((baixos (add-rests (make-note-list (mapcar #L(extract-note !1 (make-event :voice-name "\"baixo\"")) segments))))
         (tenores (add-rests (make-note-list (mapcar #L(extract-note !1 (make-event :voice-name "\"tenor\"")) segments))))
         (altos (add-rests (make-note-list (mapcar #L(extract-note !1 (make-event :voice-name "\"alto\"")) segments))))
@@ -141,13 +145,13 @@
   <<
     \\new StaffGroup <<
       \\override StaffGroup.SystemStartBracket #'style = #'line 
-      \\new Staff {
+      \\new Staff \\with {\\remove \"Time_signature_engraver\" } {
         <<
           \\new Voice = \"soprano\" { \\voiceOne ~a }
           \\new Voice = \"alto\" { \\voiceTwo ~a }
         >>
       }
-      \\new Staff {
+      \\new Staff \\with {\\remove \"Time_signature_engraver\" }{
         <<
           \\clef \"bass\"
           \\new Voice = \"tenor\" {\\voiceOne ~a }
@@ -161,12 +165,12 @@
 }
 
 
- \paper {
-  paper-width = 7.1\cm
-  paper-height = 4.3\cm
-  line-width = 8\cm
-  top-margin = -.5\cm
-  left-margin = -1.2\cm
+ \\paper {
+  paper-width = ~a\\cm
+  paper-height = ~a\\cm
+  line-width = 8\\cm
+  top-margin = -.5\\cm
+  left-margin = -1.2\\cm
   tagline = 0
 }
 
@@ -174,5 +178,7 @@
             sopranos
             altos
             tenores
-            baixos)))
+            baixos
+            (get-paper-width options)
+            (get-paper-height options))))
     
