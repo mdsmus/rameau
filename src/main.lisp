@@ -324,8 +324,8 @@
             (format t "  ~a found ~a times (max ~a)~%"
                     cadence (length places) (get-max-print-error options))
             (progn
-              (format t " ~a found in: "
-                      cadence)
+              (format t " ~a [~a] found in: "
+                      cadence (length places))
               (iter (for cad in places)
                     (format t "(~a ~a) " (first cad) (second cad)))
               (format t "~%")))))
