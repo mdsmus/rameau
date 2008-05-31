@@ -425,34 +425,75 @@
         (iter (for (k v) in-hashtable jumps)
               (format t "~20a: ~a~%" (print-absolute-interval k) (length v))))))
 
-
-
 (defcommand ambito (options analysis)
+   (declare (ignore options))
+   (iter (for anal in analysis)
+         (let ((notes (parse-file (analysis-full-path anal)))
+               (voices nil))
+           (iter (for note in notes)
+                 (setf voices (union voices (list (event-voice-name note)))))
+           (iter (for voice in voices)
+                 (let ((ns (iter (for note in notes)
+                                 (if (equal (event-voice-name note) voice)
+                                     (collect note))))
+                       (min (make-event :pitch 95 :octave 100))
+                       (max (make-event :pitch 0 :octave -100)))
+                   (iter (for note in ns)
+                         (when (event-< note min)
+                           (setf min note))
+                         (when (event-< max note)
+                           (setf max note)))
+                   (format t "Chorale ~a voice ~10a min ~2a ~2a max ~2a ~2a~%"
+                           (analysis-file-name anal)
+                           voice
+                           (print-event-note min)
+                           (+ 3 (event-octave min))
+                           (print-event-note max)
+                           (+ 3 (event-octave max)))
+                   )))))
+
+
+(defun print-report-ambito (notes min max segs chorale voice)
+  (iter (for next in notes)
+        (for segno from 0)
+        (for note previous next)
+        (for nseg in segs)
+        (for seg previous nseg)
+        (for pseg previous seg)
+        (when (and note
+                   (or (event-< note min)
+                       (event-< max note)))
+          (format t "Chorale ~a voice ~10a note ~a~%" 
+                  chorale
+                  voice
+                  (print-event-note note))
+          (with-open-file (f (concat *rameau-path* (format nil "analysis/ambito-~a-~a-~a.ly"
+                                                           chorale
+                                                           voice
+                                                           segno))
+                                         :direction :output
+                                         :if-exists :supersede)
+                        (format f "~a" (make-lily-segments (list pseg seg nseg)))))))
+
+(defcommand kostka-amb (options analysis)
   (declare (ignore options))
   (iter (for anal in analysis)
-        (let ((notes (parse-file (analysis-full-path anal)))
-              (voices nil))
-          (iter (for note in notes)
-                (setf voices (union voices (list (event-voice-name note)))))
-          (iter (for voice in voices)
-                (let ((ns (iter (for note in notes)
-                                (if (equal (event-voice-name note) voice)
-                                    (collect note))))
-                      (min (make-event :pitch 95 :octave 100))
-                      (max (make-event :pitch 0 :octave -100)))
-                  (iter (for note in ns)
-                        (when (event-< note min)
-                          (setf min note))
-                        (when (event-< max note)
-                          (setf max note)))
-                  (format t "Chorale ~a voice ~10a min ~2a ~2a max ~2a ~2a~%"
-                          (analysis-file-name anal)
-                          voice
-                          (print-event-note min)
-                          (+ 3 (event-octave min))
-                          (print-event-note max)
-                          (+ 3 (event-octave max)))
-                  )))))
+        (let ((baixos   (mapcar #L(extract-note !1 (make-event :voice-name "\"baixo\"")) (analysis-segments anal)))
+              (tenores  (mapcar #L(extract-note !1 (make-event :voice-name "\"tenor\"")) (analysis-segments anal)))
+              (altos    (mapcar #L(extract-note !1 (make-event :voice-name "\"alto\"")) (analysis-segments anal)))
+              (sopranos (mapcar #L(extract-note !1 (make-event :voice-name "\"soprano\"")) (analysis-segments anal)))
+              (mins (make-event :pitch 0 :octave 1))
+              (maxs (make-event :pitch 55 :octave 2))
+              (mina (make-event :pitch 55 :octave 0))
+              (maxa (make-event :pitch 14 :octave 2))
+              (mint (make-event :pitch 0 :octave 0))
+              (maxt (make-event :pitch 55 :octave 1))
+              (minb (make-event :pitch 28 :octave -1))
+              (maxb (make-event :pitch 0 :octave 1)))
+          (print-report-ambito baixos minb maxb (analysis-segments anal) (analysis-file-name anal) "baixo")
+          (print-report-ambito tenores mint maxt (analysis-segments anal) (analysis-file-name anal) "tenor")
+          (print-report-ambito altos mina maxa (analysis-segments anal) (analysis-file-name anal) "alto")
+          (print-report-ambito sopranos mins maxs (analysis-segments anal) (analysis-file-name anal) "soprano"))))
 
 (defun repeated-notes (segmento)
   (/= 4 (length (remove-duplicates (sorted segmento #'event-<)
