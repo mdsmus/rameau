@@ -1,4 +1,5 @@
 * exemplos ambito (ver no .tex) [givaldo]
+* as sextas estao fora do contexto
 * bibtex para
 The comeback of systematic musicology:
 new empiricism and the cognitive revolution*
