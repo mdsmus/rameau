@@ -159,6 +159,17 @@
   \\layout {}
   \\midi {}
 }
+
+
+ \paper {
+  paper-width = 7.1\cm
+  paper-height = 4.3\cm
+  line-width = 8\cm
+  top-margin = -.5\cm
+  left-margin = -1.2\cm
+  tagline = 0
+}
+
 "
             sopranos
             altos
