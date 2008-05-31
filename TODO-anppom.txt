@@ -2,8 +2,8 @@
 * exemplos ambito (ver no .tex) [givaldo]
 * ex. cruzamento: coral 003, seg. 40 [givaldo]
 * ex. cruzamento: coral 020, seg. 20 [givaldo]
-* corrige coral 13 seg 96 e 53 (tudo errado no tenor), 200 seg 13, 359 seg 54 [marcos]
-* fazer ex: 244, 279 (oitava-unissono), 329 [marcos]
+* corrige coral 13 seg 96 e 53 (tudo errado no tenor), 200 seg 13, 359 seg 54 [marcosOK]
+* fazer ex: 244, 279 (oitava-unissono), 329 [marcos OK]
 * separar o que é na fermata e o que nao é, checar com edicao [nathan]
  parallel fifths chorale 004 voices "tenor" and "soprano" sonority 58 notes b and f# to f# and c#
  parallel fifths chorale 013 voices "tenor" and "alto" sonority 105 notes d and a to c# and g#
@@ -65,13 +65,13 @@
 9 290
 9 367
 ** marcos
-10 091
-10 120
-10 259
-10 279
-10 345
-10 358
-17 133
-24 056
-30 205
-90 229
+10 091 OK
+10 120 OK
+10 259 OK
+10 279 OK
+10 345 OK
+10 358 OK
+17 133 OK
+24 056 OK
+30 205 won't fix today
+90 229 OK
