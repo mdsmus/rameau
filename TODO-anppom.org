@@ -1,4 +1,2 @@
 * exemplos ambito (ver no .tex) [givaldo]
-* ex. cruzamento: coral 003, seg. 40 [givaldo]
-* ex. cruzamento: coral 020, seg. 20 [givaldo]
 * corrige coral 205 (tira notas repetidas, etc)
