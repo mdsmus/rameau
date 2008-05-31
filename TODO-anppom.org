@@ -7,8 +7,32 @@
 * exemplo coral 140, seg. 24 fr6+
 * exemplo coral 340, seg. 53 al6+
 * exemplo coral 046 seg 41 (quintas Baixo e Alto)
+* exemplo coral 341 seg 100-102 (erro analise cadencias)
 * exemplos ambito (ver no .tex) [givaldo]
 * ex. cruzamento: coral 003, seg. 40 [givaldo]
 * ex. cruzamento: coral 020, seg. 20 [givaldo]
 * preparar exemplor de tipos de resolucao de 7as [marcos]
+* checar  I    iv   I    [17] found in:
+  (meia-cadencia, pedal?)
+  358 352 345 320 283 279 270 265 205 197 113 089 081 056 021 016 010
+* checar  iii  V    I    [16] found in:
+  (alguns erros, é i v i)
+  366 357 337 298 276 247 227 216 211 202 189 137 117 083 079 072
+* enterder  v°   vii  I    [5] found in:
+  307 214 198 190 034 
+* entender  I    IV   I    [3] found in: 288 187 127
+  (meia cadencia? modal?)
+  vi   IV   I    [2] found in: 051 
+* verifica
+ V    iv   I    [1] found in: (049 end) 
+ iiø  iv   I    [1] found in: (091 end) 
+ vi   iv   I    [1] found in: (132 end) 
+ IV   ii   I    [1] found in: (143 end) 
+ viø  V    I    [1] found in: (145 end) 
+ VI   V    I    [1] found in: (170 end) 
+ vii  iii° I    [1] found in: (181 end) 
+ iv   vø   I    [1] found in: (208 end) 
+ iv   iiø  I    [1] found in: (286 end) 
+ v°   iv   I    [1] found in: (367 end) 
+
 * corrige coral 205 (tira notas repetidas, etc)
