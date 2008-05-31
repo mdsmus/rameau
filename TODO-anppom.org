@@ -1,2 +1,16 @@
 * exemplos ambito (ver no .tex) [givaldo]
+* bibtex para
+The comeback of systematic musicology:
+new empiricism and the cognitive revolution*
+Henkjan Honing
+
+Towards the compleat musicologist?
+Prof. Nicholas Cook, FBA
+
+Computational Musicology: An Artificial Life
+Approach
+
+Interactive data mining & machine learning techniques for
+musicology
+
 * corrige coral 205 (tira notas repetidas, etc)
