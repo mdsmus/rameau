@@ -26,6 +26,7 @@
   da lista." 10)))
       ("analysis"
        (("" "dont-compare" "don't compare the results with the answer sheet")
+	("" "sonorities" "print total number of sonorities")
         ("-u" "show-dur" "")
         ("-n" "show-notes" "")
         ("-i" "ignore" "ignora (não imprime) corais sem gabaritos")
