@@ -1,17 +1,7 @@
-* exemplos ambito (ver no .tex) [givaldo]
-* as sextas estao fora do contexto
 * bibtex para
-The comeback of systematic musicology:
-new empiricism and the cognitive revolution*
-Henkjan Honing
-
-Towards the compleat musicologist?
-Prof. Nicholas Cook, FBA
-
-Computational Musicology: An Artificial Life
-Approach
-
-Interactive data mining & machine learning techniques for
-musicology
+Kranenburg, P. van, E. Backer, "Musical style recognition - a
+quantitative approach", R. Parncutt, A. Kessler & F. Zimmer (Eds.),
+Proceedings of the Conference on Interdisciplinary Musicology (CIM04),
+Graz/Austria, 15-18 April, 
 
 * corrige coral 205 (tira notas repetidas, etc)
