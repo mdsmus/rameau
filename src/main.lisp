@@ -251,7 +251,9 @@
           (iter (for res in result)
                 (print-chord-column options res))
           (finally
-           (print-hline-term size-line)))))
+           (print-hline-term size-line)
+	   (when (get-sonorities options)
+	     (format t "~&TOTAL SONORITIES: ~a~%" seg-number))))))
 
 (defcommand analysis (options analysis)
   (iter (for anal in analysis)
