@@ -274,13 +274,11 @@
         (for i from 0)
         (collect (list chord segment (analysis-file-name anal) i))))
 
-
 (defun all-chords (options analysis)
-  (declare (ignore options))
-  (iter (for anal in analysis)
-        (nconcing
-            (append '(nil nil nil nil nil)
-                    (all-chords-single anal)))))
+	(iter (for anal in analysis)
+				(nconcing
+						(append '(nil nil nil nil nil)
+										(all-chords-single options anal)))))
 
 (defun root-pitch (chord)
   (parse-note (chord-root chord)))
@@ -482,7 +480,6 @@
                         (format f "~a" (make-lily-segments options (list pseg seg nseg)))))))
 
 (defcommand kostka-amb (options analysis)
-  (declare (ignore options))
   (iter (for anal in analysis)
         (let ((baixos   (mapcar #L(extract-note !1 (make-event :voice-name "\"baixo\"")) (analysis-segments anal)))
               (tenores  (mapcar #L(extract-note !1 (make-event :voice-name "\"tenor\"")) (analysis-segments anal)))
@@ -507,7 +504,6 @@
                                   :key #L(cons (event-pitch !1) (event-octave !1))))))
 
 (defcommand cruzamento (options analysis)
-  (declare (ignore options))
   (iter (for anal in analysis)
         (let ((notes (analysis-segments anal))
               min max)
@@ -551,7 +547,6 @@
       segments))
 
 (defun do-parallel (options analysis number name strong)
-  (declare (ignore options))
   (iter (for anal in analysis)
         (iter (for n in (get-strong strong (analysis-segments anal)))
               (for s previous n)
