@@ -42,7 +42,8 @@
 	("" "gv" "roda gv")
 	("" "png" "gera png")
 	("-S" "view-score" "gera score, roda lily e gv")))
-      ("cadences")
+      ("cadences"
+       (("-z" "cadence-number" "number of chords to consider" 4 type-integer)))
       ("jumps")
       ("ambitos")
       ("cruzamento")
