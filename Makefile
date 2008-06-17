@@ -170,10 +170,10 @@ clean-resultados:
 
 clean:
 	rm -f rameau
-	find -name *.fasl -exec rm {} \;
-	find -name *.fas -exec rm {} \;
-	find -name *.lib -exec rm {} \;
-	find -name *.x86f -exec rm {} \;
+	find . -name *.fasl -exec rm {} \;
+	find . -name *.fas -exec rm {} \;
+	find . -name *.lib -exec rm {} \;
+	find . -name *.x86f -exec rm {} \;
 
 clean-lisp-cache:
 	rm -rf /var/cache/common-lisp-controller/$$UID/sbcl/local
@@ -184,7 +184,7 @@ cleanall: clean clean-nets clean-resultados lispclean
 lispclean: clean
 	@if [ $(hostname) == "phoenix" ]; then \
 	rm -rf ~/lisp/fasl/* ;\
-	find ~/lisp -name *.fas -exec rm {} \; ;\
+	find . ~/lisp -name *.fas -exec rm {} \; ;\
 	else \
 	rm -rf /var/cache/common-lisp-controller/$$UID/* ;\
 	fi 
