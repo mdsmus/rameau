@@ -1,4 +1,17 @@
-TRAIN_VERSION = $(shell grep -o '(neural-version "[0-9]\+")' src/main.lisp | sed 's/(neural-version "\([0-9]\+\)")/\1/')
+SYSTEM = $(shell uname -s)
+
+ifeq ($(SYSTEM), "Linux")
+	TRAIN_VERSION = $(shell grep -o '(neural-version "[0-9]\+")' src/main.lisp | \
+	sed 's/(neural-version "\([0-9]\+\)")/\1/')
+	SBCL_BIN = /usr/bin/sbcl
+	LISP_BIN = /usr/bin/lisp
+else ifeq ($(SYSTEM), "FreeBSD")
+T	RAIN_VERSION = $(shell grep -o '(neural-version "[0-9]\+")' src/main.lisp | \
+	sed -E 's/\(neural-version "([0-9]+)"\)/\1/')
+	SBCL_BIN = /usr/local/bin/sbcl
+	LISP_BIN = /usr/local/bin/lisp
+endif
+
 TRAIN_NAME = $(shell git branch | grep "*" | cut -f 2 -d ' ')-$(TRAIN_VERSION)
 RAMEAUDEPS = t
 hostname = $(shell hostname)
@@ -6,12 +19,12 @@ maindir = $(shell pwd)
 c = 001
 
 ifeq ($(RAMEAUDEPS),t)
-	sbcl = /usr/bin/sbcl --disable-debugger --no-userinit
-	lisp = /usr/bin/lisp -noinit 
+	sbcl = $(SBCL_BIN) --disable-debugger --no-userinit
+	lisp = $(LISP_BIN) -noinit 
 	clisp = clisp -ansi -K full -norc
 else
-	sbcl = /usr/bin/sbcl --disable-debugger
-	lisp = /usr/bin/lisp -batch -quiet
+	sbcl = $(SBCL_BIN) --disable-debugger
+	lisp = $(LISP_BIN) -batch -quiet
 	clisp = clisp -ansi -K full
 endif
 
