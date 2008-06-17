@@ -117,8 +117,8 @@ book: book-stuff
 	latex book-corais.tex
 	dvips book-corais.dvi
 
-book-stuff: docs/corais.lytex corais-ly
-	lilypond-book -o out --psfonts -I corais/ docs/corais.lytex
+book-stuff: docs/corais.lytex
+	lilypond-book -o out --psfonts -I music/chorales-bach/ docs/corais.lytex
 
 .PHONY: anppom
 anppom:
