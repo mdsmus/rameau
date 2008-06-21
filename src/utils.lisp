@@ -203,6 +203,15 @@ returning two values: the string and the number of bytes read. [DONTCHECK]"
            (*package* (find-package :rameau)))
       (values data (read-sequence data s)))))
 
+(defun binary-file-string (path)
+  "Suck up an entire file from \\texttt{path} into a freshly-allocated byte-string,
+returning two values: the string and the number of bytes read. [DONTCHECK]"
+  (with-open-file (s path #+sbcl :element-type '(unsigned-byte 8) )
+    (let ((file-data (make-array (file-length s)
+                                 :element-type '(unsigned-byte 8))))
+      (read-sequence file-data s)
+      file-data)))
+
 (defun firstn (list n)
   "Return the first \\texttt{n} elements of \\texttt{list}, or \\texttt{n} nulls."
   (loop for i from 0 to (1- n) collect
