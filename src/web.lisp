@@ -22,19 +22,79 @@
              (:meta :http-equiv "Content-Type" 
                     :content    "text/html;charset=utf-8")
              (:title ,title)
-             (:link :type "text/css" 
-                    :rel "stylesheet"
-                    :href "/retro.css"))
-            (:body 
-             ,@body))))
+             (:style :type "text/css"
+                     "
+h1 {
+ color: #228822;
+ font-weight: bold;
+ text-decoration: none; 
+}
+
+h2 {
+ color: #222288;
+ font-weight: normal;
+ font-size: 10pt;
+}
+
+a {
+ color: #223399;
+ text-decoration: none;
+}
+
+a.hover {
+ color: #229922;
+}
+
+ul {
+ padding-left: 0.5em; 
+}
+
+li {
+ list-style-type: none;
+ color: #223399;
+}
+
+body {
+ font-family: sans-serif;
+}
+
+textarea {
+ font-family: mono;
+ font-size: 10pt;
+ width: 70%;
+ height: 20em;
+}
+
+"))
+            (:body
+             (:div :id "nav" :style "float: left"
+                   (:p (:h2 (:a :href "/rameau/index.htm" "Rameau Online")))
+                   (:p (:h2 "Genos"))
+                   (:ul (:li (:a :href "http://wiki.genos.mus.br" "Genos wiki"))
+                        (:li (:a :href "http://bugs.genos.mus.br" "Genos bugs"))
+                        (:li (:a :href "http://git.genos.mus.br" "Genos git"))))
+             (:div :id "content" ,@body)))))
 
 (defun rameau-web ()
   (standard-page (:title "Rameau")
-                 (:h1 "Rameau - Automated harmonic analysis")
-                 (:form :action "/analysis" :method "post"
-                        (:p "Enter the lilypond code for the score")
-                        (:textarea :name "lily")
-                        (:input :type "submit" :value "Analyze"))))
+    (:center (:h1 "Rameau - Automated harmonic analysis"))
+    (:form :action "/analysis" :method "post"
+           (:center
+            (:p "Enter the lilypond code for the score")
+            (:div :id "coral"
+                  (:textarea :name "lily" 
+                             "
+\\score {
+  {
+    % Your music here
+  }
+ \\layout {}
+ \\midi {}
+}
+
+"))
+            (:div :id "submit"
+                  (:input :type "submit" :value "Analyze"))))))
 
 (push (create-prefix-dispatcher "/rameau/index.htm" 'rameau-web) *dispatch-table*)
 
@@ -70,11 +130,11 @@
                                           :full-path full-path
                                           :dur (durations segments))))
             (setf (gethash md5 *results*)
-            analysis)
+                  analysis)
             (set-png t options)
             (set-lily t options)
             (with-open-file (f full-path :direction :output :if-exists :supersede)
-            (format f "~a" code))
+              (format f "~a" code))
             (analysis-lily options analysis))
           (redirect (format nil "/show-analysis?analysis=~a" md5)))))))
 
@@ -100,10 +160,17 @@
     (when anal
       (setf *data* (parameter "analysis"))
       (standard-page (:title "Analysis results")
-        (:p (fmt "Musica ~a" md5))
+        (:h1 "Analysis results")
         (iter (for i from 0)
               (for file in (list-pngs md5))
-              (htm (:img :src (format nil "/image?md5=~a&n=~a" md5 i))))))))
+              (htm (:img :src (format nil "/image?md5=~a&n=~a" md5 i))))
+        (:center
+         (:form :name "analysis" :action "/analysis" :method "post"
+                (:div
+                 (:textarea :name "lily"
+                            (fmt "~a" (file-string (concat (analysis-full-path anal))))))
+                (:div
+                 (:input :type "submit" :value "Analyze"))))))))
 
 
 (push (create-prefix-dispatcher "/show-analysis" 'show-analysis) *dispatch-table*)
