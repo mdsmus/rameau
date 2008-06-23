@@ -23,6 +23,9 @@
              (:meta :http-equiv "Content-Type" 
                     :content    "text/html;charset=utf-8")
              (:title ,title)
+             (:link :rel "icon"
+                    :type "image/gif"
+                    :href "/favicon.ico")
              (:script :type "text/javascript" "
 
 function show_algorithms() {
@@ -99,7 +102,7 @@ textarea {
 }
 
 .results {
- background: #f0e0e0;
+ background: #e0f0f0;
  border: 1pt solid #302020;
 }
 
