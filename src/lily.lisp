@@ -187,4 +187,63 @@
             baixos
             (get-paper-width options)
             (get-paper-height options))))
-    
+
+
+(defun analysis-lily (options analysis)
+  (let* ((ast (analysis-ast analysis))
+         (score (first (get-children-by-type ast 'rameau::score)))
+         (music (first-child (first-child (first (children score)))))
+         (variables (make-string-output-stream))
+         (in-score (make-string-output-stream)))
+    (format variables (make-devnull-var (analysis-segments analysis)))
+    (format variables (make-lily-sonorities (analysis-segments analysis)))
+    (format in-score (make-lyrics "sonorities"))
+    (loop for al in (get-algorithms options)
+          for re in (analysis-results analysis)
+          do (format variables (print-compare-answer-sheet re
+                                                           (analysis-answer-sheet analysis)
+                                                           (algorithm-name al)
+                                                           options))
+          (format in-score (make-lyrics (algorithm-name al))))
+    (when (analysis-answer-sheet analysis)
+      (format variables (make-answer-sheet (analysis-answer-sheet analysis)))
+      (format in-score (make-lyrics "answer")))
+    (setf (node-text score) (append (list (get-output-stream-string variables)
+                                          "\\score { "
+                                          "<< "
+                                          (make-devnull-voice)
+                                          "  ")
+                                    (node-text music)
+                                    (list (get-output-stream-string in-score)
+                                          " >>
+  \\layout {
+    \\context {
+      \\Lyrics
+      \\override LyricSpace #'minimum-distance = #1.0
+      \\override LyricText #'font-size = #-1
+      \\override LyricText #'font-family = #'roman
+    }
+  }
+  \\midi {}
+}
+")))
+    (let* ((result-dir (concat *rameau-path* "/analysis/"))
+	   (result-file (make-pathname :directory result-dir
+                                       :name (concat "analysis-" (pathname-name (analysis-full-path analysis)))
+                                       :type (pathname-type (analysis-full-path analysis))))
+           (ps-file (make-pathname :directory result-dir
+                                   :name (pathname-name result-file)
+                                   :type "ps")))
+      (ensure-directories-exist result-dir)
+      (with-open-file (f result-file :direction :output :if-exists :supersede)
+        (format f "~a" (print-ast (cdr ast))))
+      (when (or (get-lily options) (get-view-score options))
+	#+sbcl (progn
+		 (sb-posix:chdir result-dir)
+		 (sb-ext:run-program "/usr/bin/lilypond" (list "-f"
+							       "ps"
+							       (when (get-png options) "--png")
+							       (file-namestring result-file)))))
+      (when (or (get-gv options) (get-view-score options))
+	#+sbcl (sb-ext:run-program "/usr/bin/gv" (list (file-namestring ps-file))))
+      )))

@@ -19,11 +19,13 @@
                (:file "parser")
                (:file "parser-grammar")
                (:file "chords")
-               (:file "tools")))
+               (:file "tools")
+               ))
 
 (asdf:defsystem :options
   :depends-on (:rameau-pkg)
-  :components ((:file "options")))
+  :components ((:file "options")
+               ))
 
 (asdf:defsystem :algorithms
   :depends-on (:rameau-pkg :options)
@@ -33,20 +35,27 @@
                                      (:file "knn")
                                      (:file "tree-enarm")))))
 
-(asdf:defsystem :rameau
-  :name "rameau"
-  :version "4.0"
-  :author "Alexandre Passos e Pedro Kroger"
+(asdf:defsystem :backends
   :depends-on (:rameau-pkg :algorithms :options)
   :components ((:file "terminal")
-               (:file "lily")
-               (:file "cadence")
-               (:file "main" :depends-on ("terminal" "lily"))
-               ))
+               (:file "lily")))
+
 
 (asdf:defsystem :rameau-web
   :name "rameau-web"
   :version "0.0"
   :author "Alexandre Passos e Pedro Kroger"
-  :depends-on (:rameau :hunchentoot :cl-who :md5 :cl-fad :cl-base64)
+  :depends-on (:rameau-pkg :options :algorithms :hunchentoot :cl-who
+                           :md5 :cl-fad :cl-base64 :backends)
   :components ((:file "web")))
+
+(asdf:defsystem :rameau
+  :name "rameau"
+  :version "4.0"
+  :author "Alexandre Passos e Pedro Kroger"
+  :depends-on (:rameau-pkg :algorithms :options :rameau-web :backends)
+  :components ((:file "cadence")
+               (:file "main")
+               ))
+
+

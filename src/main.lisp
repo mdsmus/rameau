@@ -2,6 +2,7 @@
 ;;; Define rameau-main package
 (defpackage :rameau-main
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
+  (:import-from #:rameau-options #:parse-file-name)
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
   (:use :rameau :cl :cl-ppcre :lisp-unit :iterate :rameau-options :rameau-terminal :genoslib :fann :rameau-neural :rameau-lily))
 
@@ -59,9 +60,7 @@
     (eval expr)))
 
 ;;; Make analysis
-(defstruct analysis
-  segments results answer-sheet file-name notes dur size-answer-sheet
-  number-algorithms ast full-path algorithms)
+
 
 (defun analyse-files (options)
   (loop
@@ -177,64 +176,7 @@
            (iter (for i in (mapcar (lambda (x) (% x seg-number)) right-answer-list))
                  (print-chord-column options (format nil "~,2f" i)))))))
 
-(defun analysis-lily (options analysis)
-  (let* ((ast (analysis-ast analysis))
-         (score (first (get-children-by-type ast 'rameau::score)))
-         (music (first-child (first-child (first (children score)))))
-         (variables (make-string-output-stream))
-         (in-score (make-string-output-stream)))
-    (format variables (make-devnull-var (analysis-segments analysis)))
-    (format variables (make-lily-sonorities (analysis-segments analysis)))
-    (format in-score (make-lyrics "sonorities"))
-    (loop for al in (get-algorithms options)
-          for re in (analysis-results analysis)
-          do (format variables (print-compare-answer-sheet re
-                                                           (analysis-answer-sheet analysis)
-                                                           (algorithm-name al)
-                                                           options))
-          (format in-score (make-lyrics (algorithm-name al))))
-    (when (analysis-answer-sheet analysis)
-      (format variables (make-answer-sheet (analysis-answer-sheet analysis)))
-      (format in-score (make-lyrics "answer")))
-    (setf (node-text score) (append (list (get-output-stream-string variables)
-                                          "\\score { "
-                                          "<< "
-                                          (make-devnull-voice)
-                                          "  ")
-                                    (node-text music)
-                                    (list (get-output-stream-string in-score)
-                                          " >>
-  \\layout {
-    \\context {
-      \\Lyrics
-      \\override LyricSpace #'minimum-distance = #1.0
-      \\override LyricText #'font-size = #-1
-      \\override LyricText #'font-family = #'roman
-    }
-  }
-  \\midi {}
-}
-")))
-    (let* ((result-dir (concat *rameau-path* "/analysis/"))
-	   (result-file (make-pathname :directory result-dir
-                                       :name (concat "analysis-" (pathname-name (analysis-full-path analysis)))
-                                       :type (pathname-type (analysis-full-path analysis))))
-           (ps-file (make-pathname :directory result-dir
-                                   :name (pathname-name result-file)
-                                   :type "ps")))
-      (ensure-directories-exist result-dir)
-      (with-open-file (f result-file :direction :output :if-exists :supersede)
-        (format f "~a" (print-ast (cdr ast))))
-      (when (or (get-lily options) (get-view-score options))
-	#+sbcl (progn
-		 (sb-posix:chdir result-dir)
-		 (sb-ext:run-program "/usr/bin/lilypond" (list "-f"
-							       "ps"
-							       (when (get-png options) "--png")
-							       (file-namestring result-file)))))
-      (when (or (get-gv options) (get-view-score options))
-	#+sbcl (sb-ext:run-program "/usr/bin/gv" (list (file-namestring ps-file))))
-      )))
+
 
 (defun analysis-terminal-no-answer (options analysis)
   (let* ((number-algorithms (analysis-number-algorithms analysis))
@@ -648,6 +590,14 @@
     (train-context-net options))
   )
 
+(defcommand web (options &rest ignore)
+  (declare (ignore ignore options))
+
+  (rameau-web::start-rameau-web)
+  (loop)
+  )
+
+
 ;;; Main
 (defun split-command-list (command-list)
   (let ((pos (position "and" command-list :test #'string=)))
@@ -672,22 +622,6 @@
                   (sublist-of-args (nthcdr p list))))
           (list list)))))
 
-(defun parse-file-name (exp options)
-  (unless (search ":" exp)
-    (error "expression should be in the format <substring>:<expression>"))
-  (let* ((tmp (cl-ppcre:split ":" exp))
-         (substring (first tmp))
-         (file-or-range (second tmp))
-         (dir (search-music-dirs substring "music")))
-    (set-substring substring options)
-    (mapcar (lambda (item) (concat dir item ".ly"))
-            (cond ((search ".." file-or-range)
-                   (files-range (cl-ppcre:split "\\.\\." file-or-range)))
-                  ((search "," file-or-range)
-                   (cl-ppcre:split "," file-or-range))
-                  (t (search " " file-or-range)
-                     (cl-ppcre:split " " file-or-range))))))
-
 (defun parse-files (options)
   (loop for file in (get-files options) append
        (if (search "/" file)
@@ -700,21 +634,7 @@
         (for s = (intern (concat "GET-" (symbol-name (sb-mop:slot-definition-name slot)))))
         (format t "~a: ~a~%" s (funcall s obj))))
 
-(defun default-arguments (options)
-  (let* ((neural-version "005")
-         (neural-path (concat *rameau-path* "neural-nets/master-" neural-version "-"))
-         (*package* (find-package :rameau-options)))
-    (iter outer (for (k v) in *commands*)
-          (iter (for (short long doc init list) in v)
-                (for writer = (intern (concat "SET-" (string-upcase long))))
-                (when (and writer init) (funcall writer init options))))
-    (set-context-value (* (+ 1 (get-context-after options) (get-context-before options))
-                          96)
-                       options)
-    (set-context-fann (concat neural-path "context.fann") options)
-    (set-context-data (concat neural-path "context-train.data") options)
-    (set-e-chord-fann (concat neural-path "e-chord.fann") options)
-    (set-e-chord-data (concat neural-path "e-chord-train.data") options)))
+
 
 (defun main (&optional args)
   "You can run main from the REPL with all arguments as a

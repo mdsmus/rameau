@@ -160,3 +160,7 @@ debugging)")
   (let ((segmento (sorted segmento #'event-<)))
     (event-pitch (first segmento))))
 
+
+(defstruct analysis
+  segments results answer-sheet file-name notes dur size-answer-sheet
+  number-algorithms ast full-path algorithms)
