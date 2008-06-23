@@ -145,7 +145,10 @@ div.content {
            (:center
             (:p (:input :type "radio" :name "escolha" :value "chor" :onchange "habilita_chor()")
                 (:label :for "escolha-2" "...or choose one of Bach's 371 Chorales"))
-            (:input :disabled "" :type "text" :name "chorale" :id "chorale" :value (or (parameter "chorale") ""))
+            (:select :name "chorale" :disabled "" :id "chorale"
+                     (iter (for f in (parse-file-name "chor:1..371" (make-instance 'arguments)))
+                           (let ((name (pathname-name f)))
+                             (htm (:option :value name (fmt "~a" name))))))
             (:div :id "submit"
                   (:input :type "submit" :value "Analyze")))
             (:a :href "javascript:void(0)" :onClick "show_algorithms();"
@@ -157,6 +160,7 @@ div.content {
                                          :id (algorithm-name alg))
                                  (:label :for (algorithm-name alg) (fmt "~a" (algorithm-name alg)))))))
             ))))
+
 
 (defun rameau-web ()
   (standard-page (:title "Rameau")
