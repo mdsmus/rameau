@@ -100,10 +100,11 @@ div.nav {
  background: #aaaaaa;
  border-width: 2px;
  height: 100%;
+ width: 20%;
 }
 
 div.content {
- width: 80%;
+ padding-left: 20%;
 }
 
 "))
