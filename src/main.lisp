@@ -61,7 +61,7 @@
 ;;; Make analysis
 (defstruct analysis
   segments results answer-sheet file-name notes dur size-answer-sheet
-  number-algorithms ast full-path)
+  number-algorithms ast full-path algorithms)
 
 (defun analyse-files (options)
   (loop
@@ -75,6 +75,7 @@
         :answer-sheet (new-parse-answer-sheet (pathname-name file) (get-substring options))
         :file-name (pathname-name file)
         :number-algorithms (length (get-algorithms options))
+        :algorithms (get-algorithms options)
         :notes (mapcar #'list-events segments)
         :ast (file-ast file)
         :full-path file

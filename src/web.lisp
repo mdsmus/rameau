@@ -42,6 +42,12 @@ function habilita_chor() {
  document.getElementById('chorale').disabled = false;
 }
 
+function toggle_visible(el) {
+ if (el.style.display == \"block\")
+   el.style.display = \"none\";
+ else
+   el.style.display = \"block\";
+}
 ")
              (:style :type "text/css"
                      "
@@ -84,6 +90,10 @@ textarea {
  font-size: 10pt;
  width: 70%;
  height: 20em;
+}
+
+textarea.inv {
+ display:none;
 }
 
 div.algorithms {
@@ -211,6 +221,7 @@ div.content {
                                           :answer-sheet (grab-possible-answer-sheet)
                                           :file-name md5
                                           :number-algorithms (length (get-algorithms options))
+                                          :algorithms (get-algorithms options)
                                           :notes (mapcar #'list-events segments)
                                           :ast ast
                                           :full-path full-path
@@ -251,7 +262,17 @@ div.content {
         (:center (:h1 "Analysis results")
                  (iter (for i from 0)
                        (for file in (list-pngs md5))
-                       (htm (:img :src (format nil "/image?md5=~a&n=~a" md5 i)))))
+                       (htm (:img :src (format nil "/image?md5=~a&n=~a" md5 i))))
+                 (iter (for r in (analysis-results anal))
+                       (for a in (analysis-algorithms anal))
+                       (htm (:div :class "gabarito"
+                                  (:a :href "javascript: void(0);"
+                                      :onclick (format nil "toggle_visible(document.getElementById(\"~a\"));"
+                                                       (algorithm-name a))
+                                      (fmt "Gabarito de ~a" (algorithm-name a)))
+                                  (:textarea :class "inv"
+                                             :id (algorithm-name a)
+                                             (fmt "~{~a ~}" r))))))
         (fmt "~a" (an-form (file-string (concat (analysis-full-path anal)))))))))
 
 
