@@ -1,12 +1,12 @@
 SYSTEM = $(shell uname -s)
 
 ifeq ("$(SYSTEM)", "Linux")
-	TRAIN_VERSION = $(shell grep -o '(neural-version "[0-9]\+")' src/main.lisp | \
+	TRAIN_VERSION = $(shell grep -o '(neural-version "[0-9]\+")' src/options.lisp | \
 	sed 's/(neural-version "\([0-9]\+\)")/\1/')
 	SBCL_BIN = /usr/bin/sbcl
 	LISP_BIN = /usr/bin/lisp
 else ifeq ("$(SYSTEM)", "FreeBSD")
-	TRAIN_VERSION = $(shell grep -o '(neural-version "[0-9]\+")' src/main.lisp | \
+	TRAIN_VERSION = $(shell grep -o '(neural-version "[0-9]\+")' src/option.lisp | \
 	sed -E 's/\(neural-version "([0-9]+)"\)/\1/')
 	SBCL_BIN = /usr/local/bin/sbcl
 	LISP_BIN = /usr/local/bin/lisp
