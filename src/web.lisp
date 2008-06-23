@@ -95,15 +95,27 @@ div.algorithms {
  border-decoration: line;
  display: none;
 }
+
+div.nav {
+ background: #aaaaaa;
+ border-width: 2px;
+ height: 100%;
+}
+
+div.content {
+ width: 80%;
+}
+
 "))
             (:body
-             (:div :id "nav" :style "float: left"
-                   (:p (:h2 (:a :href "/rameau/index.htm" "Rameau Online")))
+             (:div :id "nav" :style "float: left" :class "nav"
+                   (:p (:i (:h1 "Rameau")))
+                   (:p (:h2 (:a :href "/rameau/index.htm" "Rameau Web Home")))
                    (:p (:h2 "Genos"))
                    (:ul (:li (:a :href "http://wiki.genos.mus.br" "Genos wiki"))
                         (:li (:a :href "http://bugs.genos.mus.br" "Genos bugs"))
                         (:li (:a :href "http://git.genos.mus.br" "Genos git"))))
-             (:div :id "content" ,@body)))))
+             (:div :id "content" :class "content" ,@body)))))
 
 (defun an-form (text)
   (with-html-output-to-string (*standard-output* nil :prologue t :indent t)
