@@ -99,11 +99,11 @@ div.nav {
  padding-left: 1em;
  border: medium dotted #000000;
  height: 100%;
- width: 15%;
+ width: 120pt;
 }
 
 div.content {
- margin-left: 20%;
+ margin-left: 120pt;
 }
 
 "))
