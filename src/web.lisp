@@ -22,6 +22,25 @@
              (:meta :http-equiv "Content-Type" 
                     :content    "text/html;charset=utf-8")
              (:title ,title)
+             (:script :type "text/javascript" "
+
+function show_algorithms() {
+ var alg = document.getElementById('algorithms')
+ if (alg.style.display == \"none\")
+   alg.style.display = \"block\";
+ else
+   alg.style.display = \"none\";
+}
+
+function show_algorithms2() {
+ var alg = document.getElementById('algorithms2')
+ if (alg.style.display == \"none\")
+   alg.style.display = \"block\";
+ else
+   alg.style.display = \"none\";
+}
+
+")
              (:style :type "text/css"
                      "
 h1 {
@@ -65,6 +84,17 @@ textarea {
  height: 20em;
 }
 
+div.algorithms {
+ background: #aaccdd;
+ width: 20em;
+ float:center;
+ border-top-width: 2px;
+ border-right-width: 2px;
+ border-left-width: 2px;
+ border-bottom-width: 2px;
+ border-decoration: line;
+ display: none;
+}
 "))
             (:body
              (:div :id "nav" :style "float: left"
@@ -75,26 +105,53 @@ textarea {
                         (:li (:a :href "http://git.genos.mus.br" "Genos git"))))
              (:div :id "content" ,@body)))))
 
-(defun rameau-web ()
-  (standard-page (:title "Rameau")
-    (:center (:h1 "Rameau - Automated harmonic analysis"))
+(defun an-form (text)
+  (with-html-output-to-string (*standard-output* nil :prologue t :indent t)
     (:form :action "/analysis" :method "post"
            (:center
             (:p "Enter the lilypond code for the score")
             (:div :id "coral"
                   (:textarea :name "lily" 
-                             "
+                             (fmt "~a" text)))
+            (:a :href "javascript:void(0)" :onClick "show_algorithms();"
+                "Choose Algorithms")
+            (:div :align "left" :id "algorithms" :class "algorithms"
+                  (iter (for alg in (filter-algorithms nil))
+                        (htm (:p (:input :type "checkbox" :checked "true"
+                                         :name (algorithm-name alg)
+                                         :id (algorithm-name alg))
+                                 (:label :for (algorithm-name alg) (fmt "~a" (algorithm-name alg)))))))
+            (:div :id "submit"
+                  (:input :type "submit" :value "Analyze"))))
+    (:form :action "/analysis" :method "post"
+           (:center
+            (:p "Or choose one of Bach's 371 Chorales")
+            (:input :type "text" :name "chorale" :value (or (parameter "chorale") "1"))
+            (:input :type "submit" :value "Go")
+            (:a :href "javascript:void(0)" :onClick "show_algorithms2();"
+                "Choose Algorithms")
+            (:div :align "left" :id "algorithms2" :class "algorithms"
+                  (iter (for alg in (filter-algorithms nil))
+                        (htm (:p (:input :type "checkbox" :checked "true"
+                                         :name (algorithm-name alg)
+                                         :id (algorithm-name alg))
+                                 (:label :for (algorithm-name alg) (fmt "~a" (algorithm-name alg)))))))
+            ))))
+
+(defun rameau-web ()
+  (standard-page (:title "Rameau")
+    (:center (:h1 "Rameau - Automated harmonic analysis"))
+    (fmt "~a"(an-form "
 \\score {
   {
-    % Your music here
+    % Welcome to rameau web.
+    <c e g> <d a f> <g b d> <c e g> % Your music here
   }
  \\layout {}
  \\midi {}
 }
 
-"))
-            (:div :id "submit"
-                  (:input :type "submit" :value "Analyze"))))))
+"))))
 
 (push (create-prefix-dispatcher "/rameau/index.htm" 'rameau-web) *dispatch-table*)
 
@@ -104,16 +161,30 @@ textarea {
           (iter (for i in-vector (md5sum-sequence string))
                 (collect (format nil "~(~x~)" i)))))
 
+(defun get-params-alg ()
+  (iter (for alg in (filter-algorithms nil))
+        (when (parameter (algorithm-name alg))
+          (collect alg))))
 
-
+(defun get-params-code ()
+  (aif (parameter "lily")
+       (format nil "~a" it)
+       (awhen (parameter "chorale")
+         (let* ((n (or (parse-integer it :junk-allowed t) 1))
+                (c (cond ((< 0 n 10) (format nil "00~a" n))
+                         ((< n 100) (format nil "0~a" n))
+                         (t (format nil "~a" n)))))
+           (file-string (concat *rameau-path* "music/chorales-bach/" c ".ly"))))))
+                    
 (defun do-analysis ()
-  (let ((code (format nil "~a" (parameter "lily"))))
+  (let ((code (get-params-code)))
     (unless (or (null code) (zerop (length code)))
       (let* ((md5 (make-md5 code)))
         (unless (gethash md5 *results*)
           (let* ((options (make-instance 'arguments))
                  (options (progn
-                            (set-algorithms (filter-algorithms '("knn")) options)
+                            (default-arguments options)
+                            (set-algorithms (get-params-alg) options)
                             options))
                  (ast (get-ast-string code))
                  (notes (get-parsed-notes ast))
@@ -135,8 +206,8 @@ textarea {
             (set-lily t options)
             (with-open-file (f full-path :direction :output :if-exists :supersede)
               (format f "~a" code))
-            (analysis-lily options analysis))
-          (redirect (format nil "/show-analysis?analysis=~a" md5)))))))
+            (analysis-lily options analysis)))
+        (redirect (format nil "/show-analysis?analysis=~a&chorale=~a" md5 (or (parameter "chorale") "")))))))
 
 (push (create-prefix-dispatcher "/analysis" 'do-analysis) *dispatch-table*)
 
@@ -160,17 +231,11 @@ textarea {
     (when anal
       (setf *data* (parameter "analysis"))
       (standard-page (:title "Analysis results")
-        (:h1 "Analysis results")
-        (iter (for i from 0)
-              (for file in (list-pngs md5))
-              (htm (:img :src (format nil "/image?md5=~a&n=~a" md5 i))))
-        (:center
-         (:form :name "analysis" :action "/analysis" :method "post"
-                (:div
-                 (:textarea :name "lily"
-                            (fmt "~a" (file-string (concat (analysis-full-path anal))))))
-                (:div
-                 (:input :type "submit" :value "Analyze"))))))))
+        (:center (:h1 "Analysis results")
+                 (iter (for i from 0)
+                       (for file in (list-pngs md5))
+                       (htm (:img :src (format nil "/image?md5=~a&n=~a" md5 i)))))
+        (fmt "~a" (an-form (file-string (concat (analysis-full-path anal)))))))))
 
 
 (push (create-prefix-dispatcher "/show-analysis" 'show-analysis) *dispatch-table*)
