@@ -174,16 +174,23 @@ div.content {
         (when (parameter (algorithm-name alg))
           (collect alg))))
 
+(defun get-chorale-string (n)
+  (cond ((< 0 n 10) (format nil "00~a" n))
+        ((< n 100) (format nil "0~a" n))
+        (t (format nil "~a" n))))
+
 (defun get-params-code ()
   (aif (parameter "lily")
        (format nil "~a" it)
        (awhen (parameter "chorale")
          (let* ((n (or (parse-integer it :junk-allowed t) 1))
-                (c (cond ((< 0 n 10) (format nil "00~a" n))
-                         ((< n 100) (format nil "0~a" n))
-                         (t (format nil "~a" n)))))
+                (c (get-chorale-string n)))
            (file-string (concat *rameau-path* "music/chorales-bach/" c ".ly"))))))
-                    
+
+(defun grab-possible-answer-sheet ()
+  (awhen (parse-integer (parameter "chorale") :junk-allowed t)
+    (new-parse-answer-sheet (get-chorale-string it) "chor")))
+
 (defun do-analysis ()
   (let ((code (get-params-code)))
     (unless (or (null code) (zerop (length code)))
@@ -201,7 +208,7 @@ div.content {
                  (analysis (make-analysis :segments segments
                                           :results (mapcar #L(funcall (algorithm-classify !1) segments options)
                                                            (get-algorithms options))
-                                          :answer-sheet nil 
+                                          :answer-sheet (grab-possible-answer-sheet)
                                           :file-name md5
                                           :number-algorithms (length (get-algorithms options))
                                           :notes (mapcar #'list-events segments)
@@ -229,8 +236,9 @@ div.content {
   (setf (content-type) "image/png")
   (let ((n (parse-integer (parameter "n")))
         (md5 (format nil "~a" (parameter "md5"))))
-    (format t "~a" md5)
-    (binary-file-string (nth n (list-pngs md5)))))
+    (when (gethash md5 *results*)
+      (format t "~a" md5)
+      (binary-file-string (nth n (list-pngs md5))))))
 
 (push (create-prefix-dispatcher "/image" 'show-png) *dispatch-table*)
 
