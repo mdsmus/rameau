@@ -103,7 +103,7 @@ div.nav {
 }
 
 div.content {
- padding-left: 20%;
+ margin-left: 20%;
 }
 
 "))
@@ -127,13 +127,13 @@ div.content {
             
             (:p (:input :type "radio" :name "escolha" :value "textbox" :onchange "habilita_text()" :checked "")
                 (:label :for "escolha-1"
-                        "Enter the lilypond code for the score"))
+                        "Enter the lilypond code for the score..."))
             (:div :id "coral"
                   (:textarea :name "lily" :id "lily"
                              (fmt "~a" text)))
            (:center
             (:p (:input :type "radio" :name "escolha" :value "chor" :onchange "habilita_chor()")
-                (:label :for "escolha-2" "Or choose one of Bach's 371 Chorales"))
+                (:label :for "escolha-2" "...or choose one of Bach's 371 Chorales"))
             (:input :disabled "" :type "text" :name "chorale" :id "chorale" :value (or (parameter "chorale") ""))
             (:div :id "submit"
                   (:input :type "submit" :value "Analyze")))
