@@ -32,12 +32,14 @@ function show_algorithms() {
    alg.style.display = \"none\";
 }
 
-function show_algorithms2() {
- var alg = document.getElementById('algorithms2')
- if (alg.style.display == \"none\")
-   alg.style.display = \"block\";
- else
-   alg.style.display = \"none\";
+function habilita_text() {
+ document.getElementById('lily').disabled = false;
+ document.getElementById('chorale').disabled = true;
+}
+
+function habilita_chor() {
+ document.getElementById('lily').disabled = true;
+ document.getElementById('chorale').disabled = false;
 }
 
 ")
@@ -88,19 +90,16 @@ div.algorithms {
  background: #aaccdd;
  width: 20em;
  float:center;
- border-top-width: 2px;
- border-right-width: 2px;
- border-left-width: 2px;
- border-bottom-width: 2px;
- border-decoration: line;
+ border: medium dotted #000000;
  display: none;
 }
 
 div.nav {
  background: #aaaaaa;
- border-width: 2px;
+ padding-left: 1em;
+ border: medium dotted #000000;
  height: 100%;
- width: 20%;
+ width: 15%;
 }
 
 div.content {
@@ -109,41 +108,38 @@ div.content {
 
 "))
             (:body
-             (:div :id "nav" :style "float: left" :class "nav"
-                   (:p (:i (:h1 "Rameau")))
-                   (:p (:h2 (:a :href "/rameau/index.htm" "Rameau Web Home")))
-                   (:p (:h2 "Genos"))
-                   (:ul (:li (:a :href "http://wiki.genos.mus.br" "Genos wiki"))
-                        (:li (:a :href "http://bugs.genos.mus.br" "Genos bugs"))
-                        (:li (:a :href "http://git.genos.mus.br" "Genos git"))))
-             (:div :id "content" :class "content" ,@body)))))
+             (:div :id "title" :align "center"
+                   (:p (:h1 "Rameau - Automated Harmonic Analysis")))
+             (:div :id "main"
+                   (:div :id "nav" :style "float: left" :class "nav"
+                         (:p (:i (:h1 "Rameau")))
+                         (:p (:h2 (:a :href "/rameau/index.htm" "Rameau Web Home")))
+                         (:p (:h2 "Genos"))
+                         (:ul (:li (:a :href "http://wiki.genos.mus.br" "Genos wiki"))
+                              (:li (:a :href "http://bugs.genos.mus.br" "Genos bugs"))
+                              (:li (:a :href "http://git.genos.mus.br" "Genos git"))))
+                   (:div :id "content" :class "content" ,@body))))))
 
 (defun an-form (text)
   (with-html-output-to-string (*standard-output* nil :prologue t :indent t)
     (:form :action "/analysis" :method "post"
            (:center
-            (:p "Enter the lilypond code for the score")
+            
+            (:p (:input :type "radio" :name "escolha" :value "textbox" :onchange "habilita_text()" :checked "")
+                (:label :for "escolha-1"
+                        "Enter the lilypond code for the score"))
             (:div :id "coral"
-                  (:textarea :name "lily" 
+                  (:textarea :name "lily" :id "lily"
                              (fmt "~a" text)))
+           (:center
+            (:p (:input :type "radio" :name "escolha" :value "chor" :onchange "habilita_chor()")
+                (:label :for "escolha-2" "Or choose one of Bach's 371 Chorales"))
+            (:input :disabled "" :type "text" :name "chorale" :id "chorale" :value (or (parameter "chorale") ""))
+            (:div :id "submit"
+                  (:input :type "submit" :value "Analyze")))
             (:a :href "javascript:void(0)" :onClick "show_algorithms();"
                 "Choose Algorithms")
             (:div :align "left" :id "algorithms" :class "algorithms"
-                  (iter (for alg in (filter-algorithms nil))
-                        (htm (:p (:input :type "checkbox" :checked "true"
-                                         :name (algorithm-name alg)
-                                         :id (algorithm-name alg))
-                                 (:label :for (algorithm-name alg) (fmt "~a" (algorithm-name alg)))))))
-            (:div :id "submit"
-                  (:input :type "submit" :value "Analyze"))))
-    (:form :action "/analysis" :method "post"
-           (:center
-            (:p "Or choose one of Bach's 371 Chorales")
-            (:input :type "text" :name "chorale" :value (or (parameter "chorale") "1"))
-            (:input :type "submit" :value "Go")
-            (:a :href "javascript:void(0)" :onClick "show_algorithms2();"
-                "Choose Algorithms")
-            (:div :align "left" :id "algorithms2" :class "algorithms"
                   (iter (for alg in (filter-algorithms nil))
                         (htm (:p (:input :type "checkbox" :checked "true"
                                          :name (algorithm-name alg)
@@ -153,7 +149,6 @@ div.content {
 
 (defun rameau-web ()
   (standard-page (:title "Rameau")
-    (:center (:h1 "Rameau - Automated harmonic analysis"))
     (fmt "~a"(an-form "
 \\score {
   {
@@ -226,7 +221,8 @@ div.content {
 
 (defun list-pngs (md5)
   (iter (for file in (cl-fad:list-directory (concat *rameau-path* "analysis/")))
-        (when (and (cl-ppcre:scan md5 (pathname-name file)) (cl-ppcre:scan "png" (pathname-type file)))
+        (when (and (/= 0 (count-subseq md5 (pathname-name file)))
+                   (/= 0 (count-subseq "png" (pathname-type file))))
           (collect  file))))
 
 (defun show-png ()
