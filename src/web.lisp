@@ -188,7 +188,7 @@ div.content {
            (file-string (concat *rameau-path* "music/chorales-bach/" c ".ly"))))))
 
 (defun grab-possible-answer-sheet ()
-  (awhen (parse-integer (parameter "chorale") :junk-allowed t)
+  (awhen (parse-integer (or (parameter "chorale") ""):junk-allowed t)
     (new-parse-answer-sheet (get-chorale-string it) "chor")))
 
 (defun do-analysis ()
