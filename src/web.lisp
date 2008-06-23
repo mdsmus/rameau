@@ -93,6 +93,16 @@ textarea {
  height: 20em;
 }
 
+.analise {
+ background: #e0e0f0;
+ border: 1pt solid #223022;
+}
+
+.results {
+ background: #f0e0e0;
+ border: 1pt solid #302020;
+}
+
 textarea.inv {
  display:none;
 }
@@ -106,15 +116,15 @@ div.algorithms {
 }
 
 div.nav {
- background: #aaaaaa;
+ background: #ddddff;
  padding-left: 1em;
- border: medium dotted #000000;
+ border: 1pt dotted #222244;
  height: 100%;
  width: 120pt;
 }
 
 div.content {
- margin-left: 120pt;
+ margin-left: 140pt;
 }
 
 "))
@@ -123,7 +133,8 @@ div.content {
                    (:p (:h1 "Rameau - Automated Harmonic Analysis")))
              (:div :id "main"
                    (:div :id "nav" :style "float: left" :class "nav"
-                         (:p (:i (:h1 "Rameau")))
+                         (:p (:i (:h1 (:img :src "/genos.png" :style "display:inline")
+                                      "Rameau")))
                          (:p (:h2 (:a :href "/rameau/index.htm" "Rameau Web Home")))
                          (:p (:h2 "Genos"))
                          (:ul (:li (:a :href "http://wiki.genos.mus.br" "Genos wiki"))
@@ -133,7 +144,7 @@ div.content {
 
 (defun an-form (text)
   (with-html-output-to-string (*standard-output* nil :prologue t :indent t)
-    (:form :action "/analysis" :method "post"
+    (:form :action "/analysis" :method "post" :class "analise"
            (:center
             
             (:p (:input :type "radio" :name "escolha" :value "textbox" :onchange "habilita_text()" :checked "")
@@ -177,6 +188,18 @@ div.content {
 "))))
 
 (push (create-prefix-dispatcher "/rameau/index.htm" 'rameau-web) *dispatch-table*)
+
+(defun favicon ()
+  (setf (content-type) "image/gif")
+  (binary-file-string (concat *rameau-web-dir* "favicon.ico")))
+
+(push (create-prefix-dispatcher "/favicon.ico" 'favicon) *dispatch-table*)
+
+(defun logo-genos ()
+  (setf (content-type) "image/png")
+  (binary-file-string (concat *rameau-web-dir* "genos.png")))
+
+(push (create-prefix-dispatcher "/genos.png" 'logo-genos) *dispatch-table*)
 
 (defun make-md5 (string)
   (setf *data* string)
@@ -264,7 +287,8 @@ div.content {
     (when anal
       (setf *data* (parameter "analysis"))
       (standard-page (:title "Analysis results")
-        (:center (:h1 "Analysis results")
+        (:center :class "results"
+                 (:h1 "Analysis results")
                  (iter (for i from 0)
                        (for file in (list-pngs md5))
                        (htm (:img :src (format nil "/image?md5=~a&n=~a" md5 i))))
