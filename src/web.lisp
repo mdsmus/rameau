@@ -194,13 +194,13 @@ div.content {
 
 (defun favicon ()
   (setf (content-type) "image/gif")
-  (binary-file-string (concat *rameau-web-dir* "favicon.ico")))
+  (binary-file-string (concat *rameau-web-dir* "static/favicon.ico")))
 
 (push (create-prefix-dispatcher "/favicon.ico" 'favicon) *dispatch-table*)
 
 (defun logo-genos ()
   (setf (content-type) "image/png")
-  (binary-file-string (concat *rameau-web-dir* "genos.png")))
+  (binary-file-string (concat *rameau-web-dir* "static/genos.png")))
 
 (push (create-prefix-dispatcher "/genos.png" 'logo-genos) *dispatch-table*)
 
