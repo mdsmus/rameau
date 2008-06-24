@@ -26,111 +26,8 @@
              (:link :rel "icon"
                     :type "image/gif"
                     :href "/favicon.ico")
-             (:script :type "text/javascript" "
-
-function show_algorithms() {
- var alg = document.getElementById('algorithms')
- if (alg.style.display == \"none\")
-   alg.style.display = \"block\";
- else
-   alg.style.display = \"none\";
-}
-
-function habilita_text() {
- document.getElementById('lily').disabled = false;
- document.getElementById('chorale').disabled = true;
-}
-
-function habilita_chor() {
- document.getElementById('lily').disabled = true;
- document.getElementById('chorale').disabled = false;
-}
-
-function toggle_visible(el) {
- if (el.style.display == \"block\")
-   el.style.display = \"none\";
- else
-   el.style.display = \"block\";
-}
-")
-             (:style :type "text/css"
-                     "
-h1 {
- color: #228822;
- font-weight: bold;
- text-decoration: none; 
-}
-
-h2 {
- color: #222288;
- font-weight: normal;
- font-size: 10pt;
-}
-
-a {
- color: #223399;
- text-decoration: none;
-}
-
-a.hover {
- color: #229922;
-}
-
-ul {
- padding-left: 0.5em; 
-}
-
-li {
- list-style-type: none;
- color: #223399;
-}
-
-body {
- font-family: sans-serif;
-}
-
-textarea {
- font-family: mono;
- font-size: 10pt;
- width: 70%;
- height: 20em;
-}
-
-.analise {
- background: #e0e0f0;
- border: 1pt solid #223022;
-}
-
-.results {
- background: #e0f0f0;
- border: 1pt solid #302020;
-}
-
-textarea.inv {
- display:none;
-}
-
-div.algorithms {
- background: #aaccdd;
- width: 20em;
- float:center;
- border: medium dotted #000000;
- display: none;
-}
-
-div.nav {
- background: #ddddff;
- padding-left: 1em;
- border: 1pt dotted #222244;
- height: 100%;
- width: 120pt;
-}
-
-div.content {
- margin-left: 140pt;
-}
-
-"))
+             (:script :type "text/javascript" :src "/scripts.js")
+             (:link :rel "stylesheet" :href "/style.css"))
             (:body
              (:div :id "title" :align "center"
                    (:p (:h1 "Rameau - Automated Harmonic Analysis")))
@@ -165,7 +62,7 @@ div.content {
                              (htm (:option :value name (fmt "~a" name))))))
             (:div :id "submit"
                   (:input :type "submit" :value "Analyze")))
-            (:a :href "javascript:void(0)" :onClick "show_algorithms();"
+            (:a :href "javascript:void(0)" :onClick "toggle_visible(document.getElementById(\"algorithms\"));"
                 "Choose Algorithms")
             (:div :align "left" :id "algorithms" :class "algorithms"
                   (iter (for alg in (filter-algorithms nil))
@@ -203,6 +100,19 @@ div.content {
   (binary-file-string (concat *rameau-web-dir* "static/genos.png")))
 
 (push (create-prefix-dispatcher "/genos.png" 'logo-genos) *dispatch-table*)
+
+(defun style-sheet ()
+  (setf (content-type) "text/css")
+  (binary-file-string (concat *rameau-web-dir* "static/style.css")))
+
+(push (create-prefix-dispatcher "/style.css" 'style-sheet) *dispatch-table*)
+
+(defun javascript ()
+  (setf (content-type) "application/javascript")
+  (binary-file-string (concat *rameau-web-dir* "static/scripts.js")))
+
+(push (create-prefix-dispatcher "/scripts.js" 'javascript) *dispatch-table*)
+
 
 (defun make-md5 (string)
   (setf *data* string)
@@ -316,3 +226,5 @@ div.content {
 
 (defun start-rameau-web ()
   (start-server :port 4242))
+
+;;(start-rameau-web)
