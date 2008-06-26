@@ -72,7 +72,10 @@
                                          :id (algorithm-name alg))
                                  (:label :for (algorithm-name alg) (fmt "<b>~a</b>:<i>~a</i>"
                                                                         (algorithm-name alg)
-                                                                        (algorithm-description alg)))))))
+                                                                        (algorithm-description alg))))))
+                  (:div :align "center"
+                        (:a :href "javascript: void(0)" :onClick "toggle_visible(document.getElementById(\"algorithms\"));"
+                      "Close")))
             ))))
 
 
