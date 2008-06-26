@@ -41,12 +41,12 @@ textarea {
 
 .analise {
  background: #e0e0f0;
- border: 1pt solid #223022;
+ border: 0.2em dotted #223022;
 }
 
 .results {
  background: #e0f0f0;
- border: 1pt solid #302020;
+ border: 0.2em dotted #302020;
 }
 
 textarea.inv {
@@ -64,12 +64,12 @@ div.algorithms {
 div.nav {
  background: #ddddff;
  padding-left: 1em;
- border: 1pt dotted #222244;
+ border: 0.2em dotted #222244;
  height: 100%;
- width: 120pt;
+ width: 10em;
 }
 
 div.content {
- margin-left: 140pt;
+ margin-left: 12em;
 }
 
