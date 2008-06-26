@@ -122,7 +122,7 @@ doc:
 	make pdf
 
 update: cl-fann
-	git fetch && git rebase origin/master
+	git pull --rebase
 
 
 book: book-stuff
