@@ -162,7 +162,7 @@
                     :from-end t :initial-value nil))))
      
 
-(register-algorithm "S-PB" #'pardo-classify)
+(register-algorithm "S-PB" #'pardo-classify :description "The original algorithm decribed in Pardo and Birmingham's papers.")
 
 (deftemplates *incf-pardo-templates* 
   (("" "") (0 28 55))
@@ -191,4 +191,4 @@
            (reduce #'tie-break (mapcar #'incf-pardo sonorities)
                    :from-end t :initial-value nil))))
 
-(register-algorithm "ES-PB" #'incf-pardo-classify)
+(register-algorithm "ES-PB" #'incf-pardo-classify :description "Our extension of Pardo and Birmingham's algorithm.")

@@ -44,13 +44,14 @@
 (defstruct algorithm
   name
   classify
-  tempered?)
+  tempered?
+  description)
 
 (defparameter *algorithms* nil)
 
-(defun register-algorithm (nome processa &optional tempered?)
+(defun register-algorithm (nome processa  &key tempered? (description ""))
   "[DONTCHECK]"
-  (push (make-algorithm :name nome :classify processa :tempered? tempered?)
+  (push (make-algorithm :name nome :classify processa :tempered? tempered? :description description)
         *algorithms*))
 
 (defun filter-algorithms (algoritmos)

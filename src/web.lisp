@@ -66,10 +66,13 @@
                 "Choose Algorithms")
             (:div :align "left" :id "algorithms" :class "algorithms"
                   (iter (for alg in (filter-algorithms nil))
-                        (htm (:p (:input :type "checkbox" :checked "true"
+                        (htm (:p (:input :type "checkbox" 
+                                         :checked (= 0 (count-subseq "C" (algorithm-name alg)))
                                          :name (algorithm-name alg)
                                          :id (algorithm-name alg))
-                                 (:label :for (algorithm-name alg) (fmt "~a" (algorithm-name alg)))))))
+                                 (:label :for (algorithm-name alg) (fmt "<b>~a</b>:<i>~a</i>"
+                                                                        (algorithm-name alg)
+                                                                        (algorithm-description alg)))))))
             ))))
 
 

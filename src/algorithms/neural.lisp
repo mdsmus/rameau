@@ -203,7 +203,7 @@
 (defun e-chord-data-set (options)
   (write-data-set (e-chord-training-data) (get-e-chord-data options) (get-e-chord-value options)))
 
-(register-algorithm "ES-net" #'apply-e-chord-net)
+(register-algorithm "ES-net" #'apply-e-chord-net :description "A neural network classifier that looks only at each sonority.")
 
 ;;; context
 (defun context-extract-diffs (segmento)
@@ -245,7 +245,7 @@
           (format t "I could not find ~a, please train the net.~%" fann-file)
           (rameau-quit)))))
 
-(register-algorithm "EC-net" #'apply-context-net)
+(register-algorithm "EC-net" #'apply-context-net :description "A neural network classifier that considers surrounding sonorities as well.")
 
 (defun context-data-set (options)
   (write-data-set (context-training-data) (get-context-data options) (get-context-value options)))

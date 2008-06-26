@@ -86,7 +86,7 @@
   (dbg 'rameau::mostra-arvore "Arvore: ~/rameau-tree-enarm::show-chord-tree/ ~%" *chord-tree*)
   (add-inversions coral (mapcar #'chord-tree-classify coral)))
 
-(register-algorithm "ES-tree" #'do-classification)
+(register-algorithm "ES-tree" #'do-classification :description "A decision tree classifier.")
 
 (defun do-train-chord-tree ()
   (multiple-value-bind (corais gabaritos)

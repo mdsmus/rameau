@@ -100,7 +100,7 @@
   (declare (ignore ignore))
   (add-inversions coral (mapcar #'classify-k1 coral)))
 
-(register-algorithm "ES-Knn" #'prepare-answers-k1)
+(register-algorithm "ES-Knn" #'prepare-answers-k1 :description "A k-nearest-neighbors classifier that classifies each sonority by itself.")
 
 (defun show-examples ()
   "Mostra em que corais estão que tipos de acorde."
@@ -161,4 +161,4 @@
   (let ((c (contextualize coral *before-context* *after-context*)))
     (add-inversions coral (mapcar #'classify-context (butlast c *before-context*)))))
 
-(register-algorithm "EC-Knn" #'prepare-answers-context)
+(register-algorithm "EC-Knn" #'prepare-answers-context :description "A k-nearest-neighbor classifier that considers a bit of contextual information.")
