@@ -182,9 +182,9 @@ cleanall: clean clean-nets clean-resultados lispclean
 	rm -rf rameau cmurameau eclrameau clisprameau 
 
 lispclean: clean
-	@if [ $(hostname) == "phoenix" ]; then \
-	rm -rf ~/lisp/fasl/* ;\
-	find . ~/lisp -name *.fas -exec rm {} \; ;\
-	else \
-	rm -rf /var/cache/common-lisp-controller/$$UID/* ;\
-	fi 
+ifeq ("$(hostname)", "phoenix")
+	rm -rf ~/lisp/fasl/*
+	find . ~/lisp -name *.fas -exec rm {} \;
+else
+	rm -rf /var/cache/common-lisp-controller/$$UID/*
+endif
