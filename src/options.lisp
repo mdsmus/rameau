@@ -107,7 +107,7 @@
 (defun get-long-flag-name (command flag)
   (second (find-flag-by-name command (subseq flag 2))))
 
-(defun get-default-in-flag (command flag)
+(defun get-default-in-flag :private (command flag)
   (third (find-flag command flag)))
 
 (defun get-type-by-flag (command flag)
@@ -116,11 +116,11 @@
 (defun get-type-by-name (command name)
   (fifth (find-flag-by-name command name)))
 
-(defun find-flag-by-name (command name)
+(defun find-flag-by-name :private (command name)
   (or (find name (get-item "common-flags" *commands*) :key #'second :test #'string=)
       (find name (get-flag-assoc command) :key #'second :test #'string=)))
 
-(defun find-flag (command flag)
+(defun find-flag :private (command flag)
   (or (find flag (get-item "common-flags" *commands*) :key #'first :test #'string=)
       (find flag (get-flag-assoc command) :key #'first :test #'string=)))
 
@@ -132,16 +132,16 @@
   (when (cl-ppcre:scan "^-[a-zA-Z]+" flag)
     t))
 
-(defun get-common-flags ()
+(defun get-common-flags :private ()
   (get-item "common-flags" *commands*))
 
 (defun get-commands-assoc ()
-  (remove "common-flags" (mapcar #'first *commands*)))
+  (remove "common-flags" :private (mapcar #'first *commands*)))
   
-(defun get-command-slots (command)
+(defun get-command-slots :private (command)
   (mapcar #'second (get-flag-assoc command)))
   
-(defun get-flag-assoc (item)
+(defun get-flag-assoc :private (item)
   "Works for commands only"
   (get-item item *commands*))
 
