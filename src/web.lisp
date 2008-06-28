@@ -1,18 +1,21 @@
 (defpackage :rameau-web
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
-  (:use :rameau :rameau-options :cl :cl-ppcre :lisp-unit :iterate :rameau-options  :genoslib :cl-who :hunchentoot :md5 :rameau-lily))
+  (:use :rameau :rameau-options :cl :cl-ppcre :lisp-unit :iterate :rameau-options  :genoslib :cl-who :hunchentoot :md5 :rameau-lily
+        :cl-store))
 
 (in-package :rameau-web)
 
 
 (enable-sharp-l-syntax)
 
-(defparameter *results* (make-hash-table :test #'equal))
 (setf *catch-errors-p* nil)
 (defparameter *data* nil)
 
 (defparameter *rameau-web-dir* (concat *rameau-path* "web/"))
+(defparameter *results* (if (cl-fad:file-exists-p (concat *rameau-web-dir* "cache.store"))
+                            (restore (concat *rameau-web-dir* "cache.store"))
+                            (make-hash-table :test #'equal)))
 
 (defmacro standard-page ((&key title) &body body)
   `(with-html-output-to-string (*standard-output* nil :prologue t :indent t)
@@ -179,6 +182,7 @@
             (setf (gethash md5 *results*) analysis
                   (arg :png options) t
                   (arg :lily options) t)
+            (cl-store:store *results* (concat *rameau-web-dir* "cache.store"))
             (with-open-file (f full-path :direction :output :if-exists :supersede)
               (format f "~a" code))
             (analysis-lily options analysis)))
@@ -252,7 +256,8 @@
     (let ((page (format nil "~a" it)))
       (print page)
       (print (gethash page *results*))
-      (remhash page *results*))
+      (remhash page *results*)
+      (cl-store:store *results* (concat *rameau-web-dir* "cache.store")))
     (redirect "/rameau/results.htm")))
 
 (push (create-prefix-dispatcher "/rameau/clear-cache" 'clear-cache) *dispatch-table*)

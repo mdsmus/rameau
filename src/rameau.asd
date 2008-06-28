@@ -46,7 +46,7 @@
   :version "0.0"
   :author "Alexandre Passos e Pedro Kroger"
   :depends-on (:rameau-pkg :options :algorithms :hunchentoot :cl-who
-                           :md5 :cl-fad :cl-base64 :backends)
+                           :md5 :cl-fad :cl-base64 :backends :cl-store)
   :components ((:file "web")))
 
 (asdf:defsystem :rameau
