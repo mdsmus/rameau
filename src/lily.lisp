@@ -7,20 +7,20 @@
 
 (enable-sharp-l-syntax)
 
-(defun make-variable (name content)
+(defun make-variable :private (name content)
   (concat name " = " content "
 
 "))
 
-(defun make-lily-list (content)
+(defun make-lily-list :private (content)
   (reduce #L(concat !1 "
 " !2)
           content))
 
-(defun make-lyrics (name)
+(defun make-lyrics :private (name)
   (format nil "\\new Lyrics \\lyricsto \"nowhere\" \\~a~%" (remove #\- name)))
 
-(defun intervalo (s1 s2)
+(defun intervalo :private (s1 s2)
   "Retorna o intervalo entre dois segmentos."
   (if (null s2)
       0
@@ -28,7 +28,7 @@
          (event-end (first s1)))))
 
 
-(defun make-lily-sonorities (notes)
+(defun make-lily-sonorities :private (notes)
   (make-variable "sonorities" 
                  (concat " \\lyricmode {
  \\set Stanza = \"Sonority\""
@@ -62,17 +62,17 @@
                   n
                   (list n))))))
 
-(defun make-devnull-var (sonorities)
+(defun make-devnull-var :private (sonorities)
   (multiple-value-bind (durs first-rest) (print-duracoes sonorities)
         (make-variable "texto"
                        (if first-rest
                            (format nil "{~{s~a ~} ~{~a ~}}~%~%" first-rest durs)
                            (format nil "{~{~a ~}}~%~%" durs)))))
 
-(defun make-devnull-voice ()
+(defun make-devnull-voice :private ()
   "\\new Devnull = \"nowhere\" \\texto")
 
-(defun print-compare-answer-sheet (analysis answer name options)
+(defun print-compare-answer-sheet :private (analysis answer name options)
   (make-variable (remove #\- name)
                  (concat " \\lyricmode {
  \\set stanza = \""
@@ -98,7 +98,7 @@
            "}
 ")))
 
-(defun make-answer-sheet (answer)
+(defun make-answer-sheet :private (answer)
   (make-variable "answer"
                  (concat "\\lyricmode {
   \\set stanza = \"Answer\" "
@@ -109,7 +109,7 @@
 
 
 
-(defun make-note-list (notes)
+(defun make-note-list :private (notes)
   (let (notelist
         (rest 0)
         (notes (remove-if #'null notes)))
@@ -125,7 +125,7 @@
                 (setf notelist (append notelist (list (event-original-event note)))))))
     notelist))
 
-(defun add-rests (notes)
+(defun add-rests :private (notes)
   (format nil " { ~{~a ~% ~} }"
           (iter (for note in notes)
                 (for prev previous note)
