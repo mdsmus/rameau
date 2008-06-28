@@ -41,24 +41,31 @@
                              (:h2 (:a :href "/rameau/results.htm" "Browse Results"))))
                    (:div :id "content" :class "content" ,@body))))))
 
-(defun an-form (text)
+(defun an-form ()
   (with-html-output-to-string (*standard-output* nil :prologue t :indent t)
-    (:form :action "/analysis" :method "post" :class "analise"
+    (:form :action "/analysis" :method "post" :class "analise" :id "analise"
            (:center
             
-            (:p (:input :type "radio" :name "escolha" :value "textbox" :onchange "habilita_text()" :checked "")
+            (:p (:input :type "radio" :name "escolha" :value "input" :onchange "habilita_input()" :checked "")
                 (:label :for "escolha-1"
-                        "Enter the lilypond code for the score..."))
-            (:div :id "coral"
-                  (:textarea :name "lily" :id "lily"
-                             (str text)))
+                        "Enter the notes for each voice..."))
+            (:div :id "coral" :style "max-width: 40em;" :class "coralbox"
+                  (:p (:label :for "soprano" "Soprano:")
+                      (:input :id "soprano" :type "text" :name "soprano"))
+                  (:p (:label :for "alto" "Alto:")
+                      (:input :id "alto" :type "text" :name "alto"))
+                  (:p (:label :for "tenor" "Tenor:")
+                      (:input :id "tenor" :type "text" :name "tenor"))
+                  (:p (:label :for "bass" "Bass:")
+                      (:input :id "bass" :type "text" :name "bass"))
+                  (:div :style "clear: both"))
            (:center
             (:p (:input :type "radio" :name "escolha" :value "chor" :onchange "habilita_chor()")
-                (:label :for "escolha-2" "...or choose one of Bach's 371 Chorales"))
-            (:select :name "chorale" :disabled "" :id "chorale"
-                     (iter (for f in (parse-file-name "chor:1..371" (make-default-arguments)))
-                           (let ((name (pathname-name f)))
-                             (htm (:option :value name (str name))))))
+                (:label :for "escolha-2" "...or choose one of Bach's 371 Chorales")
+                (:select :name "chorale" :disabled "" :id "chorale"  :disabled t
+                         (iter (for f in (parse-file-name "chor:1..371" (make-default-arguments)))
+                               (let ((name (pathname-name f)))
+                                 (htm (:option :value name (str name)))))))
             (:div :id "submit"
                   (:input :type "submit" :value "Analyze")))
             (:a :href "javascript:void(0)" :onClick "toggle_visible(document.getElementById(\"algorithms\"));"
@@ -80,17 +87,7 @@
 
 (defun rameau-web ()
   (standard-page (:title "Rameau")
-    (str (an-form "
-\\score {
-  {
-    % Welcome to rameau web.
-    <c e g> <d a f> <g b d> <c e g> % Your music here
-  }
- \\layout {}
- \\midi {}
-}
-
-"))))
+    (str (an-form))))
 
 (push (create-prefix-dispatcher "/rameau/index.htm" 'rameau-web) *dispatch-table*)
 
@@ -136,10 +133,56 @@
         (t (format nil "~a" n))))
 
 (defun get-params-code ()
-  (aif (parameter "lily")
-       (format nil "~a" it)
-       (awhen (parameter "chorale")
-         (let* ((n (or (parse-integer it :junk-allowed t) 1))
+  (cond ((equal "input" (format nil "~a" (parameter "escolha")))
+         (format nil "
+
+
+soprano = \\relative c'' {
+  ~a
+}
+
+alto = \\relative c' {
+  ~a 
+}
+
+tenor = \\relative c' {
+  ~a
+}
+
+baixo = \\relative c {
+  ~a
+}
+
+\\score {
+  <<
+    \\new StaffGroup <<
+      \\override StaffGroup.SystemStartBracket #'style = #'line 
+      \\new Staff {
+        <<
+          \\new Voice = \"soprano\" { \\voiceOne \\soprano }
+          \\new Voice = \"alto\" { \\voiceTwo \\alto }
+        >>
+      }
+      \\new Staff {
+        <<
+          \\clef \"bass\"
+          \\new Voice = \"tenor\" {\\voiceOne \\tenor }
+          \\new Voice = \"baixo\" { \\voiceTwo \\baixo \\bar \"|.\"}
+        >>
+      }
+    >>
+  >>
+  \\layout {}
+  \\midi {}
+}
+
+"
+                 (parameter "soprano")
+                 (parameter "alto")
+                 (parameter "tenor")
+                 (parameter "bass")))
+        (t
+         (let* ((n (or (parse-integer (or (parameter "chorale") "") :junk-allowed t) 1))
                 (c (get-chorale-string n)))
            (file-string (concat *rameau-path* "music/chorales-bach/" c ".ly"))))))
 
@@ -196,7 +239,6 @@
   (let ((n (parse-integer (parameter "n")))
         (md5 (format nil "~a" (parameter "md5"))))
     (when (gethash md5 *results*)
-      (format t "~a" md5)
       (binary-file-string (nth n (list-pngs md5))))))
 
 (push (create-prefix-dispatcher "/image" 'show-png) *dispatch-table*)
@@ -249,8 +291,6 @@
 (defun clear-cache ()
   (awhen (parameter "page")
     (let ((page (format nil "~a" it)))
-      (print page)
-      (print (gethash page *results*))
       (remhash page *results*)
       (cl-store:store *results* (concat *rameau-web-dir* "cache.store")))
     (redirect "/rameau/results.htm")))

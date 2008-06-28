@@ -45,6 +45,24 @@ textarea {
  -moz-border-radius: 2em;
 }
 
+div.coralbox label {
+ float: left;
+ clear: left;
+ height: 2em;
+}
+
+div.coralbox input {
+ float: right;
+ clear: right;
+ width: 40em;
+ height: 1.5em;
+}
+
+div.coralbox p {
+ vertical-align: middle;
+ display: box;
+}
+
 .results {
  background: #e0e0f0;
  -moz-border-radius: 2em;

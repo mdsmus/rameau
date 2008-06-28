@@ -1,11 +1,18 @@
 
-function habilita_text() {
-    document.getElementById('lily').disabled = false;
+
+function habilita_input() {
+    document.getElementById('soprano').disabled = false;
+    document.getElementById('alto').disabled = false;
+    document.getElementById('tenor').disabled = false;
+    document.getElementById('bass').disabled = false;
     document.getElementById('chorale').disabled = true;
 }
 
 function habilita_chor() {
-    document.getElementById('lily').disabled = true;
+    document.getElementById('soprano').disabled = true;
+    document.getElementById('alto').disabled = true;
+    document.getElementById('tenor').disabled = true;
+    document.getElementById('bass').disabled = true;
     document.getElementById('chorale').disabled = false;
 }
 
