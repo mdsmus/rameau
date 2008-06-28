@@ -35,7 +35,7 @@
                    (:div :id "nav" :style "float: left" :class "nav"
                          (:p (:i (:h1 (:img :src "/genos.png" :style "display:inline")
                                       "Rameau")))
-                         (:p (:h2 (:a :href "/rameau/index.htm" "Rameau Web Home")))
+                         (:p (:h2 (:a :href "/rameau/index.htm" "Perform Analysis")))
                          (:p (:h2 "Genos"))
                          (:ul (:li (:a :href "http://wiki.genos.mus.br" "Genos wiki"))
                               (:li (:a :href "http://bugs.genos.mus.br" "Genos bugs"))
@@ -215,8 +215,7 @@
                                       (fmt "Gabarito de ~a" (algorithm-name a)))
                                   (:textarea :class "inv"
                                              :id (algorithm-name a)
-                                             (fmt "~{~a ~}" r))))))
-        (fmt "~a" (an-form (file-string (concat (analysis-full-path anal)))))))))
+                                             (fmt "~{~a ~}" r))))))))))
 
 
 (push (create-prefix-dispatcher "/show-analysis" 'show-analysis) *dispatch-table*)
