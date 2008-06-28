@@ -36,6 +36,7 @@
                          (:p (:i (:h1 (:img :src "/genos.png" :style "display:inline")
                                       "Rameau")))
                          (:p (:h2 (:a :href "/rameau/index.htm" "Perform Analysis")))
+                         (:p (:h2 (:a :href "/rameau/results.htm" "Browse Results")))
                          (:p (:h2 "Genos"))
                          (:ul (:li (:a :href "http://wiki.genos.mus.br" "Genos wiki"))
                               (:li (:a :href "http://bugs.genos.mus.br" "Genos bugs"))
@@ -52,14 +53,14 @@
                         "Enter the lilypond code for the score..."))
             (:div :id "coral"
                   (:textarea :name "lily" :id "lily"
-                             (fmt "~a" text)))
+                             (str text)))
            (:center
             (:p (:input :type "radio" :name "escolha" :value "chor" :onchange "habilita_chor()")
                 (:label :for "escolha-2" "...or choose one of Bach's 371 Chorales"))
             (:select :name "chorale" :disabled "" :id "chorale"
                      (iter (for f in (parse-file-name "chor:1..371" (make-default-arguments)))
                            (let ((name (pathname-name f)))
-                             (htm (:option :value name (fmt "~a" name))))))
+                             (htm (:option :value name (str name))))))
             (:div :id "submit"
                   (:input :type "submit" :value "Analyze")))
             (:a :href "javascript:void(0)" :onClick "toggle_visible(document.getElementById(\"algorithms\"));"
@@ -81,7 +82,7 @@
 
 (defun rameau-web ()
   (standard-page (:title "Rameau")
-    (fmt "~a"(an-form "
+    (str (an-form "
 \\score {
   {
     % Welcome to rameau web.
@@ -221,8 +222,30 @@
 (push (create-prefix-dispatcher "/show-analysis" 'show-analysis) *dispatch-table*)
 
 (defun show-results ()
-  (iter (for (k v) in-hashtable *results*)
-        (format t "~a: ~a~%" k (type-of k))))
+  (standard-page (:title "Browse Results")
+    (:div :class "results"
+          (iter (for (k v) in-hashtable *results*)
+                (htm (:div :align "right" :class "cache" 
+                           (:div :align "center" (str k))
+                           (:p (:a :href (format nil "/show-analysis?analysis=~a"  k)
+                                   "View"))
+                           (:p (:a :href (format nil "/rameau/clear-cache?page=~a" k)
+                                   "Clear from cache")))))
+          (:div :style "clear: left"))))
+
+(push (create-prefix-dispatcher "/rameau/results.htm" 'show-results) *dispatch-table*)
+
+(defun clear-cache ()
+  (awhen (parameter "page")
+    (let ((page (format nil "~a" it)))
+      (print page)
+      (print (gethash page *results*))
+      (remhash page *results*))
+    (redirect "/rameau/results.htm")))
+
+(push (create-prefix-dispatcher "/rameau/clear-cache" 'clear-cache) *dispatch-table*)
+
+
 
 (defun start-rameau-web ()
   (start-server :port 4242))

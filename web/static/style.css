@@ -83,3 +83,11 @@ div.content {
  max-width: 860px;
 }
 
+div.cache {
+ margin: 1em;
+ padding: 1em;
+ width: 20em;
+ float: left;
+ background: #a0a0d0;
+ border: 0.2em dotted #222244;
+}
