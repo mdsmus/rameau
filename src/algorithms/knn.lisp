@@ -21,7 +21,6 @@
 
 (defparameter *examples* (make-alist))
 (defparameter *1-neighbours* (make-alist))
-(defparameter *k* 1)
 
 (defun process-chord (acorde diff)
   (cond ((chord-p acorde)
@@ -90,8 +89,7 @@
   (let* ((diff (extract-diff segmento))
          (pitches (extract-feature-list segmento diff))
          (k (or (aget :k (arg :options options))
-                (aget :k priv)
-                *k*)))
+                (aget :k priv))))
     (loop for (key value) in *1-neighbours* 
        with nn = nil
        do 
