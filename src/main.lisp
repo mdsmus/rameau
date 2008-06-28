@@ -606,6 +606,12 @@
                        (t (first value))))
                    t)))))
 
+(defun process-option-list (options)
+  (iter (for op in options)
+        (aif (search "=" op)
+             (collect (list (make-keyword (subseq op 0 it)) (subseq op (1+ it) (length op))))
+             (collect (list (make-keyword op) t)))))
+
 (defun sublist-of-args (list)
   "Separate the arguments in a list in sublist of arguments."
   (labels ((next-flag (list)
@@ -650,6 +656,7 @@
               (setf (arg :files options) (parse-files options))
               ;;; parse algorithms options
               (setf (arg :algorithms options) (filter-algorithms (arg :algorithms options)))
+              (setf (arg :options options) (process-option-list (arg :options options)))
               (for analysis = (analyse-files options))
               ;; FIXME debug is not working
               (aif (arg :debug options)

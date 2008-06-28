@@ -18,6 +18,7 @@
         ("-d" "debug" "ativa código de depuração para os itens i" nil type-list)
         ("-v" "verbose" "verbose")
         ("-t" "trace" "mostra o trace de <funções>" nil type-list)
+        ("-o" "options" "send options to the algorithms" nil type-list)
         ("" "paper-width" "largura do papel" 7.1)
         ("" "paper-height" "altura do papel" 4.3)
         ;;("-q" "quiet" "quiet")
