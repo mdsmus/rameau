@@ -2,7 +2,7 @@
 
 (in-package #:rameau)
 
-(defun group-by (start resto)
+(defun group-by :private (start resto)
   "Helper grouping function. [DONTCHECK]"
   (if resto
       (if (= start (event-start (car resto)))
@@ -14,7 +14,7 @@
            resto))
       (values nil nil)))
   
-(defun group-with-start (musica)
+(defun group-with-start :private (musica)
   "Group \\texttt{music} by the on-set times of the notes. [DONTCHECK]"
   (when musica
     (let* ((primeiro (first musica))
@@ -25,7 +25,7 @@
         (cons (cons primeiro grupo)
               (group-with-start restante))))))
 
-(defun correct-segments (segmento proximo)
+(defun correct-segments :private (segmento proximo)
   "Split the notes in segment to ensure they do not overflow the
   possible sonority. Any too long notes are bunked into the next
   sonority. [DONTCHECK]"
@@ -67,7 +67,7 @@
                     segmento)
             sobras)))
 
-(defun resplit-segments (musica)
+(defun resplit-segments :private (musica)
   "Create the sonorities of a piece already grouped by note onset
   time. For this, it is necessary to ensure that the notes in every
   sonority have the same on-set and off-set times. This is
