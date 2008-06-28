@@ -175,4 +175,4 @@ debugging)")
 
 (defstruct analysis
   segments results answer-sheet file-name notes dur size-answer-sheet
-  number-algorithms ast full-path algorithms)
+  number-algorithms ast full-path algorithms title)

@@ -150,11 +150,14 @@
     (new-parse-answer-sheet (get-chorale-string it) "chor")))
 
 (defun do-analysis ()
-  (let ((code (get-params-code)))
+  (let ((code (get-params-code))
+        (algs (get-params-alg)))
     (unless (or (null code) (zerop (length code)))
-      (let* ((md5 (make-md5 code)))
+      (let* ((md5 (make-md5 (concat code (format nil "~a" algs)))))
         (unless (gethash md5 *results*)
           (let* ((options (make-default-arguments))
+                 (options (progn (setf (arg :algorithms options) algs)
+                                 options))
                  (ast (get-ast-string code))
                  (notes (get-parsed-notes ast))
                  (segments (sonorities notes))
@@ -168,6 +171,9 @@
                                           :algorithms (arg :algorithms options)
                                           :notes (mapcar #'list-events segments)
                                           :ast ast
+                                          :title (aif (parameter "chorale")
+                                                      (format nil "Chorale ~a" it)
+                                                      (format nil "Custom ~a" md5))
                                           :full-path full-path
                                           :dur (durations segments))))
             (setf (gethash md5 *results*) analysis
@@ -226,11 +232,17 @@
     (:div :class "results"
           (iter (for (k v) in-hashtable *results*)
                 (htm (:div :align "right" :class "cache" 
-                           (:div :align "center" (str k))
-                           (:p (:a :href (format nil "/show-analysis?analysis=~a"  k)
+                           (:div :align "center" (str (analysis-title v)))
+                           (:p :style "float:left"
+                               (:a :href (format nil "/show-analysis?analysis=~a"  k)
                                    "View"))
-                           (:p (:a :href (format nil "/rameau/clear-cache?page=~a" k)
-                                   "Clear from cache")))))
+                           (:p :style "float:right"
+                               (:a :href (format nil "/rameau/clear-cache?page=~a" k)
+                                   "Clear from cache"))
+                           (:p :style "clear: both;" :align "left"
+                               (:b "Algorithms:")
+                               (iter (for alg in (analysis-algorithms v))
+                                     (htm (:i (str (algorithm-name alg)))))))))
           (:div :style "clear: left"))))
 
 (push (create-prefix-dispatcher "/rameau/results.htm" 'show-results) *dispatch-table*)
