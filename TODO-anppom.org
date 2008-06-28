@@ -1,9 +1,0 @@
-* bibtex para [top]
-Kranenburg, P. van, E. Backer, "Musical style recognition - a
-quantitative approach", R. Parncutt, A. Kessler & F. Zimmer (Eds.),
-Proceedings of the Conference on Interdisciplinary Musicology (CIM04),
-Graz/Austria, 15-18 April, 
-* abstract [top]
-* numero coral e compasso [givaldo]
-* fermata [top]
-* corrige coral 205 (tira notas repetidas, etc)
