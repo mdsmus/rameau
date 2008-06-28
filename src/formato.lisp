@@ -116,7 +116,7 @@
 (defun make-skip (skip igno dur)
   (make-note "s" "" igno dur))
 
-(defun move-event (event tempo)
+(defun move-event :private (event tempo)
   "[DONTCHECK]"
   (setf (event-start event) (+ (event-start event) tempo))
   event)
@@ -148,7 +148,7 @@
             (sequence-expressions (cons primeiro resto)))
           (car sequencias))))
 
-(defun %expmerge (exp1 exp2)
+(defun %expmerge :private (exp1 exp2)
   (setf (note-sequence-dur exp1) (max (note-sequence-dur exp1)
                                            (note-sequence-dur exp2)))
   (setf (note-sequence-notas exp1)
@@ -172,18 +172,16 @@
             (merge-exprs (cons primeiro resto)))
           (car exprs))))
 
-
-
-(defun but-a-fifth-apart (a b)
+(defun but-a-fifth-apart :private (a b)
   (let ((a (event-pitch a))
         (b (event-pitch b)))
     (< (first (interval->code (module (- b a))))
        5)))
 
-(defun same-note (a b)
+(defun same-note :private (a b)
   (< (abs (- a b)) (code->interval '(2 dim 6))))
 
-(defun modificador-oitava (a b)
+(defun modificador-oitava :private (a b)
   "[DONTCHECK]"
   (let ((pa (event-pitch a))
         (pb (event-pitch b))
@@ -203,7 +201,7 @@
                       oa)))))))
 
 
-(defun %do-relative (nota expressao &optional oitava)
+(defun %do-relative :private (nota expressao &optional oitava)
          (when expressao
            (let* ((prox-nota (first expressao))
                   (oitava (if oitava oitava
