@@ -28,12 +28,13 @@
                ))
 
 (asdf:defsystem :algorithms
-  :depends-on (:rameau-pkg :options)
+  :depends-on (:rameau-pkg :options :cl-store)
   :components ((:module algorithms
                         :components ((:file "neural")
                                      (:file "pardo")
                                      (:file "knn")
-                                     (:file "tree-enarm")))))
+                                     (:file "tree-enarm")
+                                     (:file "save")))))
 
 (asdf:defsystem :backends
   :depends-on (:rameau-pkg :algorithms :options)

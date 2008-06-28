@@ -45,13 +45,24 @@
   name
   classify
   tempered?
-  description)
+  description
+  private-data
+  do-options)
 
 (defparameter *algorithms* nil)
 
-(defun register-algorithm (nome processa  &key tempered? (description ""))
+(defun do-nothing (alg options)
+  (declare (ignore options))
+  alg)
+
+(defun register-algorithm (nome processa  &key tempered? private-data (description "") (do-options #'do-nothing))
   "[DONTCHECK]"
-  (push (make-algorithm :name nome :classify processa :tempered? tempered? :description description)
+  (push (make-algorithm :name nome
+                        :classify processa
+                        :tempered? tempered?
+                        :description description
+                        :private-data private-data
+                        :do-options do-options)
         *algorithms*))
 
 (defun filter-algorithms (algoritmos)

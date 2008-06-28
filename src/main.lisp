@@ -4,7 +4,7 @@
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:import-from #:rameau-options #:parse-file-name)
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
-  (:use :rameau :cl :cl-ppcre :lisp-unit :iterate :rameau-options :rameau-terminal :genoslib :fann :rameau-neural :rameau-lily))
+  (:use :rameau :cl :cl-ppcre :lisp-unit :iterate :rameau-options :rameau-terminal :genoslib :fann :rameau-neural :rameau-lily :rameau-save))
 
 (in-package :rameau-main)
 
@@ -553,6 +553,15 @@
                                     (event-octave note)))
                       (format t "~%")))))))
 
+(defcommand algorithms (options &rest ignore)
+  (declare (ignore ignore))
+  (setf *algorithms*
+        (iter (for alg in *algorithms*)
+              (if (find alg (arg :algorithms options) :test #'equalp)
+                  (collect (funcall (algorithm-do-options alg) alg options))
+                  (collect alg))))
+  (store-algorithms))
+
 ;;; Training
 (defcommand train-neural (options &rest ignore)
   (declare (ignore ignore))
@@ -637,6 +646,7 @@
 (defun main (&optional args)
   "You can run main from the REPL with all arguments as a
   string: (main \"analysis chorales -v -f 001\")"
+  (load-algorithms)
   (let* ((*package* (find-package :rameau-main))
          (rameau-args (rameau-args))
          (arguments (if rameau-args rameau-args (cl-ppcre:split " " args)))
