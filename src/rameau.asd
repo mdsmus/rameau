@@ -55,8 +55,7 @@
   :version "4.0"
   :author "Alexandre Passos e Pedro Kroger"
   :depends-on (:rameau-pkg :algorithms :options :rameau-web :backends)
-  :components ((:file "cadence")
-               (:file "main")
+  :components ((:file "main")
                ))
 
 
