@@ -1,8 +1,8 @@
 (defpackage :rameau-web
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
-  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
   (:use :rameau :rameau-options :cl :cl-ppcre :lisp-unit :iterate :rameau-options  :genoslib :cl-who :hunchentoot :md5 :rameau-lily
-        :cl-store))
+        :cl-store)
+  (:export #:start-rameau-web))
 
 (in-package :rameau-web)
 

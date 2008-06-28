@@ -5,10 +5,6 @@
 
 (enable-sharp-l-syntax)
 
-(defparameter *ignore-algorithms-files* nil
-  "Use non-nil value to not load the algorithm files. (useful for
-debugging)")
-
 (defparameter *rameau-path*
   (format nil "~a" (or #+sbcl *default-pathname-defaults*
 		       #+cmu (first (ext:search-list "default:"))
