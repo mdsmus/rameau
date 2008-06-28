@@ -4,13 +4,13 @@
                                             (it (0 28 70))
                                             (fr (0 28 42 70))))
 
-(defun expand-non-chord-tones (stream char)
+(defun expand-non-chord-tones :private (stream char)
   "[DONTCHECK]"
   (declare (ignore char))
   (let ((*package* (find-package :rameau)))
     `(m! ,@(read-delimited-list #\] stream t))))
 
-(defun expand-repeat (stream char)
+(defun expand-repeat :private (stream char)
   "[DONTCHECK]"
   (declare (ignore char))
   (let ((*package* (find-package :rameau)))
@@ -22,7 +22,7 @@
 (set-macro-character #\{ #'expand-repeat)
 (set-macro-character #\} (get-macro-character #\)))
 
-(defun parse-multiplication (chord)
+(defun parse-multiplication :private (chord)
   (if (listp chord)
       (if (eql (first chord) '*)
           (append (subseq chord 0 2)
@@ -36,7 +36,7 @@
                   (string->symbol (subseq chord-string 0 pos)))
             chord))))
 
-(defun expand-multiplications (gab)
+(defun expand-multiplications :private (gab)
   (when gab
     (let ((atual (first gab))
           (resto (rest gab)))
@@ -47,7 +47,7 @@
            (expand-multiplications resto))
           (cons atual (expand-multiplications resto))))))
 
-(defun expand-chords (list)
+(defun expand-chords :private (list)
   "[DONTCHECK]"
   (expand-multiplications (mapcar #'parse-multiplication list)))
 
@@ -106,7 +106,7 @@ position."
          (position it '(1 3 5 7))
          (error "don't know inversion ~a" it))))
 
-(defun %parse-chord (chord)
+(defun %parse-chord :private (chord)
   (let* ((6+ (second (multiple-value-list (cl-ppcre:scan-to-strings "(al|fr|it)+\\+6" (stringify chord)))))
          (poplist (cl-ppcre:split "/" (stringify chord)))
          (bass-note (second poplist)))
@@ -161,7 +161,7 @@ position."
      collect (transpose-chord (if (listp c) (find-if #'chord-p c) c)
                               n)))
 
-(defun %compare-answer-sheet (result answer-sheet &optional tempered?)
+(defun %compare-answer-sheet :private (result answer-sheet &optional tempered?)
   (or (and (melodic-note-p result)
            (melodic-note-p answer-sheet))
       (and (augmented-sixth-p result)
@@ -205,4 +205,3 @@ position."
                      (equal "7" (chord-7th chord))))
             (+ root (code->interval '(7 dim))))
            (t (+ root (code->interval '(7 min))))))))
-           
