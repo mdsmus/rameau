@@ -135,8 +135,8 @@
 (defun get-common-flags :private ()
   (get-item "common-flags" *commands*))
 
-(defun get-commands-assoc ()
-  (remove "common-flags" :private (mapcar #'first *commands*)))
+(defun get-commands-assoc :private ()
+  (remove "common-flags" (mapcar #'first *commands*)))
   
 (defun get-command-slots :private (command)
   (mapcar #'second (get-flag-assoc command)))
