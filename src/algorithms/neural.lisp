@@ -181,16 +181,16 @@
 ;;; e-chord
 (defun train-e-chord-net (options)
   (train-net '*e-chord-net* 
-             (get-e-chord-data options)
+             (arg :e-chord-data options)
              96
-             (get-e-chord-fann options)
-             (get-hidden-units options)))
+             (arg :e-chord-fann options)
+             (arg :hidden-units options)))
 
 (defun apply-e-chord-net (inputs options)
-  (let ((fann-file (get-e-chord-fann options)))
+  (let ((fann-file (arg :e-chord-fann options)))
     (if (cl-fad:file-exists-p fann-file)
         (progn
-          (setf *e-chord-net* (load-from-file (get-e-chord-fann options)))
+          (setf *e-chord-net* (load-from-file (arg :e-chord-fann options)))
           (add-inversions inputs (mapcar #L(run-my-net !1 *e-chord-net* #'extract-diff #'make-sonority-pattern)
                                          inputs)))
         (progn
@@ -201,7 +201,7 @@
   (loop for (a b) in *training-data* nconc (prepare-training-data-net a b)))
 
 (defun e-chord-data-set (options)
-  (write-data-set (e-chord-training-data) (get-e-chord-data options) (get-e-chord-value options)))
+  (write-data-set (e-chord-training-data) (arg :e-chord-data options) (arg :e-chord-value options)))
 
 (register-algorithm "ES-net" #'apply-e-chord-net :description "A neural network classifier that looks only at each sonority.")
 
@@ -217,13 +217,13 @@
     (loop for s in segmento nconc (make-sonority-pattern s diff))))
 
 (defun train-context-net (options)
-  (let ((fann-file (get-context-fann options))
-        (data-file (get-context-data options)))
+  (let ((fann-file (arg :context-fann options))
+        (data-file (arg :context-data options)))
     (train-net '*context-net*
                data-file
                (* (+ 1 *context-after* *context-before*) 96)
                fann-file
-               (get-hidden-units options))))
+               (arg :hidden-units options))))
 
 (defun context-training-data ()
   (loop for (a b) in *training-data* nconc
@@ -233,7 +233,7 @@
                                   #'context-extract-features)))
 
 (defun apply-context-net (inputs options)
-  (let ((fann-file (get-context-fann options))
+  (let ((fann-file (arg :context-fann options))
         (context (butlast (contextualize inputs *context-before* *context-after*)
                           *context-before*)))
     (if (cl-fad:file-exists-p fann-file)
@@ -248,4 +248,4 @@
 (register-algorithm "EC-net" #'apply-context-net :description "A neural network classifier that considers surrounding sonorities as well.")
 
 (defun context-data-set (options)
-  (write-data-set (context-training-data) (get-context-data options) (get-context-value options)))
+  (write-data-set (context-training-data) (arg :context-data options) (arg :context-value options)))

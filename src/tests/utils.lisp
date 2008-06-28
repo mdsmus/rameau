@@ -138,3 +138,6 @@
 
 (define-test distance
   (assert-equal 100 (distance '(0) '(10))))
+
+(define-test make-keyword
+  (assert-equal :foo (make-keyword "FoO")))

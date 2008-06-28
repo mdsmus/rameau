@@ -22,26 +22,6 @@
 (defun %string->symbol (string &optional (package #+sbcl(sb-int:sane-package) #-sbcl *package*))
   (intern (string-upcase string) package))
 
-(defun parse-options (command list)
-  "Parse the list of options to a structure."
-  (loop for item in (sublist-of-args list) collect
-       (destructuring-bind (flag &rest value) item
-         (list (cond ((long-flag? flag)
-                      (%string->symbol (concat "SET-" (get-long-flag-name command flag))))
-                     ((short-flag? flag)
-                      (%string->symbol (concat "SET-" (get-short-flag-name command flag)))))
-               (if value
-                   (let ((type (cond ((long-flag? flag)
-                                      ;; FIXME: that's ugly
-                                      (get-type-by-name command (remove #\- flag :count 2)))
-                                     ((short-flag? flag)
-                                      (get-type-by-flag command flag)))))
-                     (case type
-                       (type-list value)
-                       (type-integer (parse-integer (first value)))
-                       (t (first value))))
-                   t)))))
-
 (defun rameau-args ()
   #+sbcl (rest sb-ext:*posix-argv*)
   #+cmu (subseq cmu-args (1+ (position "cmurameau" extensions:*command-line-strings* :test #'string=)))
@@ -49,10 +29,10 @@
 
 (defmacro with-profile (args &body body)
   `(progn
-     (when (get-profile ,args)
+     (when (arg :profile ,args)
        (rameau-profile))
      ,@body
-     (when (get-profile ,args)
+     (when (arg :profile ,args)
        (rameau-report))))
 
 (defun maptrace (lista-string &optional (trace 'trace))
@@ -64,17 +44,17 @@
 
 (defun analyse-files (options)
   (loop
-     for file in (get-files options)
+     for file in (arg :files options)
      for segments = (sonorities (parse-file file))
      collect
        (make-analysis
         :segments segments
         :results (mapcar #L(funcall (algorithm-classify !1) segments options)
-                         (get-algorithms options))
-        :answer-sheet (new-parse-answer-sheet (pathname-name file) (get-substring options))
+                         (arg :algorithms options))
+        :answer-sheet (new-parse-answer-sheet (pathname-name file) (arg :substring options))
         :file-name (pathname-name file)
-        :number-algorithms (length (get-algorithms options))
-        :algorithms (get-algorithms options)
+        :number-algorithms (length (arg :algorithms options))
+        :algorithms (arg :algorithms options)
         :notes (mapcar #'list-events segments)
         :ast (file-ast file)
         :full-path file
@@ -102,9 +82,9 @@
   (destructuring-bind (ok no) list
     (let* ((s2 (length no))
            (no-string
-            (cond ((zerop (get-max-print-error options)) no)
-                  ((> s2 (get-max-print-error options))
-                   (format nil "~a ..." (subseq no 0 (get-max-print-error options))))
+            (cond ((zerop (arg :max-print-error options)) no)
+                  ((> s2 (arg :max-print-error options))
+                   (format nil "~a ..." (subseq no 0 (arg :max-print-error options))))
                   (t no))))
       (format t "  [OK]: ~a [NO]: ~a ~@[~a ~]~%" (length ok) s2 no-string))))
 
@@ -127,9 +107,9 @@
     (list (reverse ok) (reverse no))))
 
 (defun regression (options)
-  (if (get-verbose options)
-      (parse-verbose (get-files options))
-      (print-ok/no-list (parse-summary (get-files options)) options)))
+  (if (arg :verbose options)
+      (parse-verbose (arg :files options))
+      (print-ok/no-list (parse-summary (arg :files options)) options)))
 
 (defun unit (options)
   (let ((string-result
@@ -137,14 +117,14 @@
            (let ((*standard-output* string))
              (lisp-unit:run-all-tests :rameau-test)
              (format t "~%")))))
-    (if (get-verbose options)
+    (if (arg :verbose options)
         (write-line string-result)
         (write-line (subseq (last1 (cl-ppcre:split "\\n" string-result)) 34)))))
 
 (defcommand test (options analysis)
   (declare (ignorable analysis))
-  (when (get-unit options) (unit options))
-  (when (get-regression options) (regression options)))
+  (when (arg :unit options) (unit options))
+  (when (arg :regression options) (regression options)))
 
 ;;; Analysis
 (defun make-result-list (analysis)
@@ -155,7 +135,7 @@
          (size-line (hline-size number-algorithms options)))
     (format t "~2%")
     (print-line-term options "#" "notes" "dur" "answer")
-    (iter (for algo in (get-algorithms options))
+    (iter (for algo in (arg :algorithms options))
           (print-chord-column options (algorithm-name algo)))
     (print-hline-term size-line)
     (iter (with right-answer-list = (make-list number-algorithms :initial-element 0))
@@ -183,7 +163,7 @@
          (size-line (hline-size number-algorithms options 'no-answer)))
     (format t "~2%")
     (print-line-term options "#" "notes" "dur")
-    (iter (for algo in (get-algorithms options))
+    (iter (for algo in (arg :algorithms options))
           (print-chord-column options (algorithm-name algo)))
     (print-hline-term size-line)
     (iter (for note in (analysis-notes analysis))
@@ -195,19 +175,19 @@
                 (print-chord-column options res))
           (finally
            (print-hline-term size-line)
-	   (when (get-sonorities options)
+	   (when (arg :sonorities options)
 	     (format t "~&TOTAL SONORITIES: ~a~%" seg-number))))))
 
 (defcommand analysis (options analysis)
   (iter (for anal in analysis)
-        (cond ((get-dont-compare options) (analysis-terminal-no-answer options anal))
+        (cond ((arg :dont-compare options) (analysis-terminal-no-answer options anal))
               ((analysis-answer-sheet anal)
                (analysis-terminal options anal))
               (t (print-warning (concat "the answer sheet for "
                                         (analysis-file-name anal)
                                         " doesn't exist"))
                  (analysis-terminal-no-answer options anal)))
-        (when (or (get-score options) (get-view-score options))
+        (when (or (arg :score options) (arg :view-score options))
           (analysis-lily options anal))))
 
 (defun all-chords-single (options anal)
@@ -269,10 +249,10 @@
                                                 (collect (list cadence places)))
                                           #L(< (length (second !1))
                                                (length (second !2)))))
-        (if (< (make-int (get-max-print-error options))
+        (if (< (make-int (arg :max-print-error options))
                (length places))
             (format t "  ~a found ~a times (max ~a)~%"
-                    cadence (length places) (get-max-print-error options))
+                    cadence (length places) (arg :max-print-error options))
             (progn
               (format t " ~a [~a] found in: "
                       cadence (length places))
@@ -286,7 +266,7 @@
     (iter (for anal in analysis)
           (let ((prep (prepare-cadence options
                                       anal
-                                      (get-cadence-number options))))
+                                      (arg :cadence-number options))))
             (iter (for chords in prep)
                   (add-to-cadence-hash cadences (mapcar #'first chords) (third (first chords)) (fourth (first chords))))
             (add-to-cadence-hash last-cadences (mapcar #'first (last1 prep)) (third (first (last1 prep))) "end")))
@@ -355,10 +335,10 @@
                                         (print-event-note n))
                                   (gethash (absolute-interval-code n p)
                                            jumps))))))))
-    (if (get-verbose options)
+    (if (arg :verbose options)
         (iter (for (k v) in-hashtable jumps)
               (format t "~20a: ~%" (print-absolute-interval k))
-              (if (< (length v) (make-int (get-max-print-error options)))
+              (if (< (length v) (make-int (arg :max-print-error options)))
                   (iter (for i in v)
                         (for n from 0)
                         (format t "          chorale ~a in ~,2f%, of voice ~a from ~a to ~a~%"
@@ -546,8 +526,8 @@
 (defcommand print-segments (options analysis)
   (iter (for anal in analysis)
         (format t "Chorale ~a ~%" (analysis-file-name anal))
-        (let ((ini (or (get-start options) 0))
-              (fim (or (get-end options) 1000000)))
+        (let ((ini (or (arg :start options) 0))
+              (fim (or (arg :end options) 1000000)))
           (with-open-file (f (concat *rameau-path* (format nil "analysis/segments-~a-~a-~a.ly"
                                                            (analysis-file-name anal)
                                                            ini
@@ -577,16 +557,16 @@
 (defcommand train-neural (options &rest ignore)
   (declare (ignore ignore))
 
-  (when (get-e-chord-data-set options)
+  (when (arg :e-chord-data-set options)
     (e-chord-data-set options))
 
-  (when (get-context-data-set options)
+  (when (arg :context-data-set options)
     (context-data-set options))
 
-  (when (get-e-chord-fann-file options)
+  (when (arg :e-chord-fann-file options)
     (train-e-chord-net options))
   
-  (when (get-context-fann-file options)
+  (when (arg :context-fann-file options)
     (train-context-net options))
   )
 
@@ -606,6 +586,26 @@
                 (split-command-list (subseq command-list (1+ pos))))
         (list command-list))))
 
+(defun parse-options (command list)
+  "Parse the list of options to a structure."
+  (loop for item in (sublist-of-args list) collect
+       (destructuring-bind (flag &rest value) item
+         (list (cond ((long-flag? flag)
+                      (make-keyword (get-long-flag-name command flag)))
+                     ((short-flag? flag)
+                      (make-keyword (get-short-flag-name command flag))))
+               (if value
+                   (let ((type (cond ((long-flag? flag)
+                                      ;; FIXME: that's ugly
+                                      (get-type-by-name command (remove #\- flag :count 2)))
+                                     ((short-flag? flag)
+                                      (get-type-by-flag command flag)))))
+                     (case type
+                       (type-list value)
+                       (type-integer (parse-integer (first value)))
+                       (t (first value))))
+                   t)))))
+
 (defun sublist-of-args (list)
   "Separate the arguments in a list in sublist of arguments."
   (labels ((next-flag (list)
@@ -623,18 +623,10 @@
           (list list)))))
 
 (defun parse-files (options)
-  (loop for file in (get-files options) append
+  (loop for file in (arg :files options) append
        (if (search "/" file)
            (list file)
            (parse-file-name file options))))
-
-(defun print-slots (obj)
-  (iter (for slot in (sb-mop:class-slots (class-of obj)))
-        ;;; FIXME that's f*cking ugly, why sb-mop:slot-definition-readers dont work?
-        (for s = (intern (concat "GET-" (symbol-name (sb-mop:slot-definition-name slot)))))
-        (format t "~a: ~a~%" s (funcall s obj))))
-
-
 
 (defun main (&optional args)
   "You can run main from the REPL with all arguments as a
@@ -642,29 +634,28 @@
   (let* ((*package* (find-package :rameau-main))
          (rameau-args (rameau-args))
          (arguments (if rameau-args rameau-args (cl-ppcre:split " " args)))
-         (options (make-instance 'arguments)))
+         (options (make-default-arguments)))
     (if arguments
         (iter (for command-list in (split-command-list arguments))
               (for cmd = (first command-list))
               (for command = (search-string-in-list cmd *command-names*))
               ;;; revert to default arguments
-              (default-arguments options)
               ;;; apply command-line options
               (iter (for (key value) in (parse-options command (rest command-list)))
                     (if key
-                        (funcall key value options)
+                        (setf (arg key options) value)
                         (return-from main  (progn (format t "ERROR: command not found. Exiting.~%") 1))))
-              (when (or (get-help options) (string= cmd "-h")) (print-help))
+              (when (or (arg :help options) (string= cmd "-h")) (print-help))
               ;;; parse file options
-              (set-files (parse-files options) options)
+              (setf (arg :files options) (parse-files options))
               ;;; parse algorithms options
-              (set-algorithms (filter-algorithms (get-algorithms options)) options)
+              (setf (arg :algorithms options) (filter-algorithms (arg :algorithms options)))
               (for analysis = (analyse-files options))
               ;; FIXME debug is not working
-              (aif (get-debug options)
+              (aif (arg :debug options)
                    (mapcar2 #'rameau-debug #'string->symbol it)
                    (rameau-undebug))
-              (awhen (get-trace options)
+              (awhen (arg :trace options)
                 (trace maptrace)
                 (trace %do-relative)
                 (maptrace it))

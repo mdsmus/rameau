@@ -74,22 +74,32 @@
       ("gui"))
     "The 'list' at the end indicates that the flag accepts multiple values."))
 
-(defun make-args-class ()
-  (eval `(defclass arguments ()
-           ,(append
-             (list '(substring :writer set-substring :reader get-substring
-                     :initarg :substring :initform nil))
-             (iter outer (for (k v) in *commands*)
-                   (iter (for (short long doc init list) in v)
-                         (for writer = (intern (concat "SET-" (string-upcase long))))
-                         (for reader = (intern (concat "GET-" (string-upcase long))))
-                         (initially (export '(get-substring set-substring)))
-                         (export (list writer reader))
-                         (in outer (collect (list (intern (string-upcase long))
-                                                  :writer writer
-                                                  :reader reader
-                                                  :initarg (intern (string-upcase long) :keyword)
-                                                  :initform init)))))))))
+(defclass arguments-table ()
+  ((arguments :accessor get-args :initform (make-hash-table :test #'eql))))
+
+(defun arg (name options)
+  (gethash name (get-args options)))
+
+(defsetf arg (name options) (value)
+  `(setf (gethash ,name (get-args ,options)) ,value))
+
+(defun make-default-arguments ()
+  (let* ((options (make-instance 'arguments-table))
+         (neural-version "005")
+         (neural-path (concat *rameau-path* "neural-nets/master-" neural-version "-"))
+         (*package* (find-package :rameau-options)))
+    (iter outer (for (k v) in *commands*)
+          (iter (for (short long doc init list) in v)
+                (for comando = (make-keyword long))
+                (when (and comando init) (setf (arg comando options) init))))
+    (setf (arg :context-value options)
+          (* (+ 1 (arg :context-after options) (arg :context-before options))
+             96))
+    (setf (arg :context-fann options) (concat neural-path "context.fann"))
+    (setf (arg :context-data options) (concat neural-path "context-train.data"))
+    (setf (arg :e-chord-fann options) (concat neural-path "e-chord.fann"))
+    (setf (arg :e-chord-data options) (concat neural-path "e-chord-train.data"))
+    options))
 
 (defun get-short-flag-name (command flag)
   (second (find-flag command flag)))
@@ -135,22 +145,6 @@
   "Works for commands only"
   (get-item item *commands*))
 
-(defun default-arguments (options)
-  (let* ((neural-version "005")
-         (neural-path (concat *rameau-path* "neural-nets/master-" neural-version "-"))
-         (*package* (find-package :rameau-options)))
-    (iter outer (for (k v) in *commands*)
-          (iter (for (short long doc init list) in v)
-                (for writer = (intern (concat "SET-" (string-upcase long))))
-                (when (and writer init) (funcall writer init options))))
-    (set-context-value (* (+ 1 (get-context-after options) (get-context-before options))
-                          96)
-                       options)
-    (set-context-fann (concat neural-path "context.fann") options)
-    (set-context-data (concat neural-path "context-train.data") options)
-    (set-e-chord-fann (concat neural-path "e-chord.fann") options)
-    (set-e-chord-data (concat neural-path "e-chord-train.data") options)))
-
 (defun parse-file-name (exp options)
   (unless (search ":" exp)
     (error "expression should be in the format <substring>:<expression>"))
@@ -158,7 +152,7 @@
          (substring (first tmp))
          (file-or-range (second tmp))
          (dir (search-music-dirs substring "music")))
-    (set-substring substring options)
+    (setf (arg :substring options) substring)
     (mapcar (lambda (item) (concat dir item ".ly"))
             (cond ((search ".." file-or-range)
                    (files-range (cl-ppcre:split "\\.\\." file-or-range)))
@@ -167,4 +161,4 @@
                   (t (search " " file-or-range)
                      (cl-ppcre:split " " file-or-range))))))
 
-(make-args-class)
+

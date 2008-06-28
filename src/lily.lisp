@@ -85,12 +85,12 @@
                for an = (first ans)
                collect (if (or (null answer) (compare-answer-sheet al an))
                            (concat "\"" (format nil "~a" al) "\"")
-                           (if (rameau-options:get-no-color options)
+                           (if (arg :no-color options)
                                (concat "\\markup { \\roman \\italic \\bold \""
                                        (format nil "~a" al)
                                        "\"}")
                                (concat "\\markup { \\roman \\italic \\bold \\with-color #(x11-color '"
-                                       (substitute #\Space #\- (rameau-options:get-wrong-answer-color options))
+                                       (substitute #\Space #\- (arg :wrong-answer-color options))
                                        ") "
                                        "\""
                                        (format nil "~a" al)
@@ -185,8 +185,8 @@
             (string-downcase (second (event-key (first (first segments)))))
             tenores
             baixos
-            (get-paper-width options)
-            (get-paper-height options))))
+            (arg :paper-width options)
+            (arg :paper-height options))))
 
 
 (defun analysis-lily (options analysis)
@@ -198,7 +198,7 @@
     (format variables (make-devnull-var (analysis-segments analysis)))
     (format variables (make-lily-sonorities (analysis-segments analysis)))
     (format in-score (make-lyrics "sonorities"))
-    (loop for al in (get-algorithms options)
+    (loop for al in (arg :algorithms options)
           for re in (analysis-results analysis)
           do (format variables (print-compare-answer-sheet re
                                                            (analysis-answer-sheet analysis)
@@ -237,13 +237,13 @@
       (ensure-directories-exist result-dir)
       (with-open-file (f result-file :direction :output :if-exists :supersede)
         (format f "~a" (print-ast (cdr ast))))
-      (when (or (get-lily options) (get-view-score options))
+      (when (or (arg :lily options) (arg :view-score options))
 	#+sbcl (progn
 		 (sb-posix:chdir result-dir)
 		 (sb-ext:run-program "/usr/bin/lilypond" (list "-f"
 							       "ps"
-							       (when (get-png options) "--png")
+							       (when (arg :png options) "--png")
 							       (file-namestring result-file)))))
-      (when (or (get-gv options) (get-view-score options))
+      (when (or (arg :gv options) (arg :view-score options))
 	#+sbcl (sb-ext:run-program "/usr/bin/gv" (list (file-namestring ps-file))))
       )))

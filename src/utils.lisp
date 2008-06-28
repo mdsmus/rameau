@@ -330,3 +330,7 @@ null or 'erro."
          for j in b
          sum (square (- i j)))
       most-positive-fixnum))
+
+(defun make-keyword (string)
+  "Make \\texttt{string} into a keyword."
+  (intern (string-upcase string) (find-package :keyword)))

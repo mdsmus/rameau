@@ -57,7 +57,7 @@
             (:p (:input :type "radio" :name "escolha" :value "chor" :onchange "habilita_chor()")
                 (:label :for "escolha-2" "...or choose one of Bach's 371 Chorales"))
             (:select :name "chorale" :disabled "" :id "chorale"
-                     (iter (for f in (parse-file-name "chor:1..371" (make-instance 'arguments)))
+                     (iter (for f in (parse-file-name "chor:1..371" (make-default-arguments)))
                            (let ((name (pathname-name f)))
                              (htm (:option :value name (fmt "~a" name))))))
             (:div :id "submit"
@@ -153,30 +153,25 @@
     (unless (or (null code) (zerop (length code)))
       (let* ((md5 (make-md5 code)))
         (unless (gethash md5 *results*)
-          (let* ((options (make-instance 'arguments))
-                 (options (progn
-                            (default-arguments options)
-                            (set-algorithms (get-params-alg) options)
-                            options))
+          (let* ((options (make-default-arguments))
                  (ast (get-ast-string code))
                  (notes (get-parsed-notes ast))
                  (segments (sonorities notes))
                  (full-path (concat *rameau-web-dir* md5 ".ly"))
                  (analysis (make-analysis :segments segments
                                           :results (mapcar #L(funcall (algorithm-classify !1) segments options)
-                                                           (get-algorithms options))
+                                                           (arg :algorithms options))
                                           :answer-sheet (grab-possible-answer-sheet)
                                           :file-name md5
-                                          :number-algorithms (length (get-algorithms options))
-                                          :algorithms (get-algorithms options)
+                                          :number-algorithms (length (arg :algorithms options))
+                                          :algorithms (arg :algorithms options)
                                           :notes (mapcar #'list-events segments)
                                           :ast ast
                                           :full-path full-path
                                           :dur (durations segments))))
-            (setf (gethash md5 *results*)
-                  analysis)
-            (set-png t options)
-            (set-lily t options)
+            (setf (gethash md5 *results*) analysis
+                  (arg :png options) t
+                  (arg :lily options) t)
             (with-open-file (f full-path :direction :output :if-exists :supersede)
               (format f "~a" code))
             (analysis-lily options analysis)))
