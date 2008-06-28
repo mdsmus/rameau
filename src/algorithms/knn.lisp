@@ -1,11 +1,11 @@
 (defpackage :rameau-knn
-  (:import-from #:arnesi "AIF" "IT" "LAST1")
+  (:import-from #:arnesi "AIF" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
-  (:use #:cl #:rameau #:genoslib))
+  (:use #:cl #:rameau #:genoslib #:rameau-options))
 
 (in-package :rameau-knn)
 
-
+(enable-sharp-l-syntax)
 
 ;; src/algoritmos/knn.lisp
 ;; A k-nearest-neighbor chord finder, for use in Rameau.
@@ -86,21 +86,26 @@
                                                     maxv (gethash k resultado))
        finally (return (extract-chord maxk diff)))))
 
-(defun classify-k1 (segmento)
+(defun classify-k1 (segmento options priv)
   (let* ((diff (extract-diff segmento))
-         (pitches (extract-feature-list segmento diff)))
+         (pitches (extract-feature-list segmento diff))
+         (k (or (aget :k (arg :options options))
+                (aget :k priv)
+                *k*)))
     (loop for (key value) in *1-neighbours* 
        with nn = nil
        do 
          (let ((d (distance pitches key)))
-           (setf nn (clip *k* (insert (list d key value) nn :key #'car))))
+           (setf nn (clip k (insert (list d key value) nn :key #'car))))
        finally (return (get-class diff (mapcar #'second nn) (mapcar #'third nn))))))
 
-(defun prepare-answers-k1 (coral &rest ignore)
-  (declare (ignore ignore))
-  (add-inversions coral (mapcar #'classify-k1 coral)))
+(defun prepare-answers-k1 (coral options alg)
+  (add-inversions coral (mapcar #L(classify-k1 !1 options (algorithm-private-data alg)) coral)))
 
-(register-algorithm "ES-Knn" #'prepare-answers-k1 :description "A k-nearest-neighbors classifier that classifies each sonority by itself.")
+(register-algorithm "ES-Knn" #'prepare-answers-k1
+                    :description "A k-nearest-neighbors classifier that classifies each sonority by itself."
+                    :private-data '((:k 1))
+                    :do-options #'standard-do-options)
 
 (defun show-examples ()
   "Mostra em que corais estão que tipos de acorde."
@@ -117,7 +122,6 @@
 (defparameter *variance* 1/2)
 
 (defparameter *context-neighbors* (make-alist))
-(defparameter *k-neighbors* 1)
 
 (defun context-extract-diff (segmentos)
   (extract-diff (nth *before-context* segmentos)))
@@ -146,19 +150,25 @@
 
 (train-context *training-data*)
 
-(defun classify-context (segmento)
+(defun classify-context (segmento options priv)
   (let* ((diff (context-extract-diff segmento))
-         (pitches (context-extract-features segmento diff)))
+         (pitches (context-extract-features segmento diff))
+         (k (or (aget :ck (arg :options options))
+                (aget :ck priv))))
     (loop for (key value) in *context-neighbors* 
        with nn = nil
        do 
          (let ((d (distance pitches key)))
-           (setf nn (clip *k-neighbors* (insert (list d key value) nn :key #'car))))
+           (setf nn (clip k (insert (list d key value) nn :key #'car))))
        finally (return (get-class diff (mapcar #'second nn) (mapcar #'third nn))))))
 
-(defun prepare-answers-context (coral &rest ignore)
-  (declare (ignore ignore))
+(defun prepare-answers-context (coral options alg)
   (let ((c (contextualize coral *before-context* *after-context*)))
-    (add-inversions coral (mapcar #'classify-context (butlast c *before-context*)))))
+    (format t " ----- k = ~a" (or (aget :ck (arg :options options))
+                                  (aget :ck (algorithm-private-data alg))))
+    (add-inversions coral (mapcar #L(classify-context !1 options (algorithm-private-data alg)) (butlast c *before-context*)))))
 
-(register-algorithm "EC-Knn" #'prepare-answers-context :description "A k-nearest-neighbor classifier that considers a bit of contextual information.")
+(register-algorithm "EC-Knn" #'prepare-answers-context
+                    :description "A k-nearest-neighbor classifier that considers a bit of contextual information."
+                    :private-data '((:ck 3))
+                    :do-options #'standard-do-options)

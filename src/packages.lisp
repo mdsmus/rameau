@@ -51,11 +51,16 @@
 
 (defparameter *algorithms* nil)
 
-(defun do-nothing (alg options)
+(defun do-nothing-options (alg options)
   (declare (ignore options))
   alg)
 
-(defun register-algorithm (nome processa  &key tempered? private-data (description "") (do-options #'do-nothing))
+(defun standard-do-options (alg options)
+  (setf (algorithm-private-data alg) (append options
+                                             (algorithm-private-data alg)))
+  alg)
+
+(defun register-algorithm (nome processa  &key tempered? private-data (description "") (do-options #'do-nothing-options))
   "[DONTCHECK]"
   (push (make-algorithm :name nome
                         :classify processa

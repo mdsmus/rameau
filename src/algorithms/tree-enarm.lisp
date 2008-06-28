@@ -81,8 +81,8 @@
   (declare (ignore args))
   (print-tree *chord-tree*))
 
-(defun do-classification (coral &rest ignore)
-  (declare (ignore ignore))
+(defun do-classification (coral options alg)
+  (declare (ignore options alg))
   (dbg 'rameau::mostra-arvore "Arvore: ~/rameau-tree-enarm::show-chord-tree/ ~%" *chord-tree*)
   (add-inversions coral (mapcar #'chord-tree-classify coral)))
 

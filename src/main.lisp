@@ -49,7 +49,7 @@
      collect
        (make-analysis
         :segments segments
-        :results (mapcar #L(funcall (algorithm-classify !1) segments options)
+        :results (mapcar #L(funcall (algorithm-classify !1) segments options !1)
                          (arg :algorithms options))
         :answer-sheet (new-parse-answer-sheet (pathname-name file) (arg :substring options))
         :file-name (pathname-name file)
@@ -558,7 +558,7 @@
   (setf *algorithms*
         (iter (for alg in *algorithms*)
               (if (find alg (arg :algorithms options) :test #'equalp)
-                  (collect (funcall (algorithm-do-options alg) alg options))
+                  (collect (funcall (algorithm-do-options alg) alg (arg :options options)))
                   (collect alg))))
   (store-algorithms))
 
@@ -618,7 +618,7 @@
 (defun process-option-list (options)
   (iter (for op in options)
         (aif (search "=" op)
-             (collect (list (make-keyword (subseq op 0 it)) (subseq op (1+ it) (length op))))
+             (collect (list (make-keyword (subseq op 0 it)) (read-from-string (subseq op (1+ it) (length op)))))
              (collect (list (make-keyword op) t)))))
 
 (defun sublist-of-args (list)

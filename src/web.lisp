@@ -166,7 +166,7 @@
                  (segments (sonorities notes))
                  (full-path (concat *rameau-web-dir* md5 ".ly"))
                  (analysis (make-analysis :segments segments
-                                          :results (mapcar #L(funcall (algorithm-classify !1) segments options)
+                                          :results (mapcar #L(funcall (algorithm-classify !1) segments options !1)
                                                            (arg :algorithms options))
                                           :answer-sheet (grab-possible-answer-sheet)
                                           :file-name md5

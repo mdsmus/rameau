@@ -186,7 +186,7 @@
              (arg :e-chord-fann options)
              (arg :hidden-units options)))
 
-(defun apply-e-chord-net (inputs options)
+(defun apply-e-chord-net (inputs options alg)
   (let ((fann-file (arg :e-chord-fann options)))
     (if (cl-fad:file-exists-p fann-file)
         (progn
@@ -232,7 +232,7 @@
                                   #'context-extract-diffs
                                   #'context-extract-features)))
 
-(defun apply-context-net (inputs options)
+(defun apply-context-net (inputs options alg)
   (let ((fann-file (arg :context-fann options))
         (context (butlast (contextualize inputs *context-before* *context-after*)
                           *context-before*)))
