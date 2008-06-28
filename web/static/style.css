@@ -30,7 +30,6 @@ li {
 
 body {
  font-family: sans-serif;
- background: #efefef;
 }
 
 textarea {
@@ -42,13 +41,17 @@ textarea {
 
 .analise {
  background: #e0e0f0;
- border: 0.2em dotted #223022;
  -moz-border-radius: 2em;
 }
 
 .results {
+ background: #e0e0f0;
+ -moz-border-radius: 2em;
+}
+
+.browse-results {
  background: #e0f0f0;
- border: 0.2em dotted #302020;
+ padding-left: 8em;
  -moz-border-radius: 2em;
 }
 
@@ -59,40 +62,38 @@ textarea.inv {
 div.algorithms {
  background: #aaccdd;
  width: 20em;
- float:center;
  border: medium dotted #000000;
  -moz-border-radius: 1em;
  display: none;
  margin: 0.5em;
- left: 30em;
  top: 5em;
+ left: 25em;
  position: absolute;
 }
 
 div.nav {
- background: #ddddff;
- padding-left: 1em;
- border: 0.2em dotted #222244;
+ align: center;
+ margin: 1em;
  -moz-border-radius: 1em;
- height: 100%;
- width: 10em;
+}
+
+div.nav h2 {
+ display: inline;
 }
 
 div.content {
- margin-left: 12em;
- max-width: 860px;
+ max-width: 900px;
 }
 
 div.cache {
- margin: 1em;
+ margin: 0.5em;
  padding: 1em;
  font-size: 10pt;
  width: 20em; 
  height: 7em;
  float: left;
- background: #a0a0d0;
+ background: #e0e0f0;
  -moz-border-radius: 1em;
- border: 0.2em dotted #222244;
 }
 
 div.cache p {

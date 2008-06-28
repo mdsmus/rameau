@@ -31,19 +31,14 @@
                     :href "/favicon.ico")
              (:script :type "text/javascript" :src "/scripts.js")
              (:link :rel "stylesheet" :href "/style.css"))
-            (:body
+            (:body :align "center"
              (:div :id "title" :align "center"
                    (:p (:h1 "Rameau - Automated Harmonic Analysis")))
-             (:div :id "main"
-                   (:div :id "nav" :style "float: left" :class "nav"
-                         (:p (:i (:h1 (:img :src "/genos.png" :style "display:inline")
-                                      "Rameau")))
-                         (:p (:h2 (:a :href "/rameau/index.htm" "Perform Analysis")))
-                         (:p (:h2 (:a :href "/rameau/results.htm" "Browse Results")))
-                         (:p (:h2 "Genos"))
-                         (:ul (:li (:a :href "http://wiki.genos.mus.br" "Genos wiki"))
-                              (:li (:a :href "http://bugs.genos.mus.br" "Genos bugs"))
-                              (:li (:a :href "http://git.genos.mus.br" "Genos git"))))
+             (:div :id "main" :align "center"
+                   (:div :id "nav"  :class "nav" :align "center"
+                         (:p (:h2 (:a :href "/rameau/index.htm" "Perform Analysis"))
+                             " | "
+                             (:h2 (:a :href "/rameau/results.htm" "Browse Results"))))
                    (:div :id "content" :class "content" ,@body))))))
 
 (defun an-form (text)
@@ -233,7 +228,7 @@
 
 (defun show-results ()
   (standard-page (:title "Browse Results")
-    (:div :class "results"
+    (:div :class "browse-results"
           (iter (for (k v) in-hashtable *results*)
                 (htm (:div :align "right" :class "cache" 
                            (:div :align "center" (str (analysis-title v)))
