@@ -164,8 +164,6 @@
 
 (defun prepare-answers-context (coral options alg)
   (let ((c (contextualize coral *before-context* *after-context*)))
-    (format t " ----- k = ~a" (or (aget :ck (arg :options options))
-                                  (aget :ck (algorithm-private-data alg))))
     (add-inversions coral (mapcar #L(classify-context !1 options (algorithm-private-data alg)) (butlast c *before-context*)))))
 
 (register-algorithm "EC-Knn" #'prepare-answers-context
