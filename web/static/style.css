@@ -87,9 +87,14 @@ div.cache {
  margin: 1em;
  padding: 1em;
  font-size: 10pt;
- width: 20em;
+ width: 20em; 
+ height: 7em;
  float: left;
  background: #a0a0d0;
  -moz-border-radius: 1em;
  border: 0.2em dotted #222244;
+}
+
+div.cache p {
+ margin: 0;
 }
