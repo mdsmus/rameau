@@ -170,6 +170,7 @@ clean-resultados:
 
 clean:
 	rm -f rameau
+	rm -f tools/algorithms.store
 	find . -name *.fasl -exec rm {} \;
 	find . -name *.fas -exec rm {} \;
 	find . -name *.lib -exec rm {} \;
