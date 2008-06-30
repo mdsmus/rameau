@@ -74,8 +74,12 @@ div.coralbox p {
  -moz-border-radius: 2em;
 }
 
-textarea.inv {
+div.inv {
  display:none;
+ max-width: 30em;
+ background: #e0f0e0;
+ -moz-border-radius: 1em;
+ font-family: 'Bitstream Vera Sans Mono', monospace;
 }
 
 div.algorithms {

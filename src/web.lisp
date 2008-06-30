@@ -261,9 +261,9 @@ baixo = \\relative c {
                                       :onclick (format nil "toggle_visible(document.getElementById(\"~a\"));"
                                                        (algorithm-name a))
                                       (fmt "Gabarito de ~a" (algorithm-name a)))
-                                  (:textarea :class "inv"
-                                             :id (algorithm-name a)
-                                             (fmt "~{~a ~}" r))))))))))
+                                  (:div :class "inv"
+                                        :id (algorithm-name a)
+                                        (fmt "~{~a ~}" r))))))))))
 
 
 (push (create-prefix-dispatcher "/show-analysis" 'show-analysis) *dispatch-table*)
