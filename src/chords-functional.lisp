@@ -2,9 +2,6 @@
 
 (enable-sharp-l-syntax)
 
-;; Define a chord that is described based in its function to the
-;; tonality.
-
 (defparameter *roman-functions* '("i" "ii" "iii" "iv" "v" "vi" "vii"))
 
 (defparameter *inversions-template*
