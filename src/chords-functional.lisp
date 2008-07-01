@@ -1,5 +1,7 @@
 (in-package #:rameau)
 
+(enable-sharp-l-syntax)
+
 ;; Define a chord that is described based in its function to the
 ;; tonality.
 
@@ -23,13 +25,13 @@
 		     *inversions-template*
 		     :test #'equalp)))
 
-(defun %parse-fchord (symbol &optional center)
+(defun %parse-fchord (symbol center)
   (let* ((function-string (symbol-name symbol))
 	 (split-secondary (cl-ppcre:split "/" function-string))
 	 (function (first split-secondary))
 	 (center-function (second split-secondary)))
     (cl-ppcre:register-groups-bind (roman-function rest)
-	("(iii|ii|i|iv|v|vi|vii|III|II|I|IV|V|VI|VII)(.*)?" function)
+	("(iii|ii|iv|i|v|vi|vii|III|II|IV|I|V|VI|VII)(.*)?" function)
       (destructuring-bind (&optional inversion 7th)
 	  (match-inversion (cl-ppcre:split "\\." rest))
 	(make-fchord :root nil
@@ -40,29 +42,17 @@
 		     :function (1+ (position roman-function *roman-functions* :test #'equalp))
 		     :center center)))))
 
-(defun sublist-of-centers (list)
-  ;; tem um bug quando repete proxima flag imediatamente: (@a foo @a bar)
-  ;; entra em loop recursivo
-  (labels ((next-flag (list)
-	     (iter (for item in (rest list))
-		   (unless (consp item)
-		     (for x = (symbol-name item))
-		     (print x)
-		     (if (equal #\@ (aref x 0))
-			 (return x)))))
-           (pos (list flag)
-	     (let ((pos (position flag list :test #'equalp)))
-	       (aif pos pos 0))))
-    (when list
-      (aif (next-flag list)
-	   (let ((p (pos list it)))
-	     (cons (subseq list 0 p)
-		   (sublist-of-centers (nthcdr p list))))
-	   (list list)))))
+(defun parse-fchords (chords center)
+  (mapcar #'(lambda (chord)
+	      (if (consp chord)
+		  (mapcar #L(%parse-fchord !1 center) chord)
+		  (%parse-fchord chord center)))
+	  chords))
 
-;; (defun parse-fchord-list (list)
-;;   (let ((center (first list))
-;; 	)
-;; ))
+(defun read-fchords (list)
+  (iter (for item in (sublist-of-args list #\@))
+	(for center = (subseq (symbol-name (first item)) 1))
+	(for chords = (rest item))
+	(nconcing (parse-fchords chords center))))
 
-(sublist-of-centers (read-file-as-sexp (concat *rameau-path* "answer-sheets/examples/001.fun") :preserve))
+(read-fchords (read-file-as-sexp (concat *rameau-path* "answer-sheets/examples/001.fun") :preserve))
