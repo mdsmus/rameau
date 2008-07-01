@@ -120,8 +120,6 @@
 
 ;; Algoritmo context-knn. 
 
-
-
 (defun context-extract-diff (alg segmentos)
   (extract-diff (nth (aget :before-context (algorithm-private-data alg)) segmentos)))
 
@@ -178,10 +176,10 @@
 
 (register-algorithm "EC-Knn" #'prepare-answers-context
                     :description "A k-nearest-neighbor classifier that considers a bit of contextual information."
-                    :private-data `((:ck 3)
+                    :private-data `((:ck 1)
                                     (:nn ,(make-alist))
-                                    (:before-context 2)
+                                    (:before-context 1)
                                     (:after-context 0)
-                                    (:variance 1/2)
+                                    (:variance 3/2)
                                     )
                     :do-options #'do-options-cknn)
