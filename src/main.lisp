@@ -190,6 +190,44 @@
         (when (or (arg :score options) (arg :view-score options))
           (analysis-lily options anal))))
 
+(defun average (r)
+  (let ((l (length r)))
+    (iter (for n in r)
+          (sum (/ n (coerce l 'single-float))))))
+
+(defun stddev (r a)
+  (let ((l (length r)))
+    (sqrt (iter (for n in r)
+                (sum (* (- n a) (- n a)))))))
+
+(defun count-hits (res gab)
+  (length (remove-if #'null (mapcar #'compare-answer-sheet gab res))))
+
+(defcommand collect-data (options analysis)
+  (declare (ignore options))
+  (let ((a (first analysis)))
+    (format t "~5a|" " ")
+    (iter (for alg in (analysis-algorithms a))
+          (format t "~7a|" (algorithm-name alg)))
+    (format t "~%"))
+  (let ((res (iter (for i in (analysis-algorithms (first analysis))) (collect (list 0)))))
+    (iter (for anal in analysis)
+          (when (analysis-answer-sheet anal)
+            (format t "~5a|" (analysis-file-name anal))
+            (iter (for r in (analysis-results anal))
+                  (for i from 0)
+                  (let ((c (count-hits r (analysis-answer-sheet anal))))
+                    (format t "~6,2f%|" (% c (length r)))
+                    (apush (% c (length r)) (nth i res))))
+            (format t "~%")))
+    (format t "Medias:~%~5a|" " ")
+    (iter (for r in res)
+          (format t "~6,2f%|" (average (butlast r))))
+    (format t "~%Desvios:~%~5a|" " ")
+    (iter (for r in res)
+          (format t "~6,2f |" (stddev (butlast r) (average (butlast r)))))
+    (format t "~%")))
+
 (defun all-chords-single (options anal)
   (declare (ignore options))
   (iter (for chord in (first (analysis-results anal)))
@@ -566,9 +604,7 @@
   (declare (ignore ignore options))
 
   (rameau-web::start-rameau-web)
-  (loop)
-  )
-
+  (loop))
 
 ;;; Main
 (defun split-command-list (command-list)
