@@ -38,7 +38,7 @@ vpath %.data $(neural-path)
 
 .PHONY: update clean all doc update  resultados erros
 
-default: rameau train-neural
+default: rameau train-neural train
 
 all-rameau: rameau cmurameau clisprameau
 
@@ -83,6 +83,9 @@ deps:
 	fi
 
 train-neural: $(TRAIN_NAME)-context.fann $(TRAIN_NAME)-e-chord.fann
+
+train:
+	./rameau algorithms -o train
 
 $(TRAIN_NAME)-e-chord-train.data:
 	echo $@

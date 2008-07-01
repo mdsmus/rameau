@@ -55,11 +55,6 @@
   (declare (ignore options))
   alg)
 
-(defun standard-do-options (alg options)
-  (setf (algorithm-private-data alg) (append options
-                                             (algorithm-private-data alg)))
-  alg)
-
 (defun register-algorithm (nome processa  &key tempered? private-data (description "") (do-options #'do-nothing-options))
   "[DONTCHECK]"
   (push (make-algorithm :name nome

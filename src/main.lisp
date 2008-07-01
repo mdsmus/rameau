@@ -558,7 +558,7 @@
   (setf *algorithms*
         (iter (for alg in *algorithms*)
               (if (find alg (arg :algorithms options) :test #'equalp)
-                  (collect (funcall (algorithm-do-options alg) alg (arg :options options)))
+                  (collect (funcall (algorithm-do-options alg) alg options))
                   (collect alg))))
   (store-algorithms))
 

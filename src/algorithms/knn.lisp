@@ -20,7 +20,6 @@
 ;; values are the counts for how many times each class appears.
 
 (defparameter *examples* (make-alist))
-(defparameter *1-neighbours* (make-alist))
 
 (defun process-chord (acorde diff)
   (cond ((chord-p acorde)
@@ -41,36 +40,36 @@
                      :mode (third lista)
                      :7th (fourth lista)))
         (t (make-augmented-sixth :type (first lista)))))
-;(trace extract-chord get-class)
+
 (defun hash-default (key table default)
   (aif (gethash key table nil)
        it
        (setf (gethash key table) default)))
 
-(defun insert-count (chave acorde diff hash n)
-  (let ((acorde (process-chord acorde diff)))
+(defun insert-count (chave acorde diff alg n)
+  (let ((acorde (process-chord acorde diff))
+        (hash (aget :nn (algorithm-private-data alg))))
     (if (aget acorde *examples*)
         (apush (cons chave n) (aget acorde *examples*))
         (aset acorde *examples* (list (cons chave n))))
     (aincf acorde (aget chave hash (make-alist)))))
 
-(defun train-1nn (coral answer n)
-  (loop for segmento in coral
-     for acorde in answer
-     for diff = (extract-diff segmento)
-     for pitches = (extract-feature-list segmento diff)
-     do (if (listp acorde)
-            (mapcar (lambda (x) (insert-count pitches x diff *1-neighbours* n)) acorde)
-            (insert-count pitches acorde diff *1-neighbours* n))))
+(defun train-1nn (alg coral answer n)
+  (let ((nn (aget :nn (algorithm-private-data alg))))
+    (loop for segmento in coral
+       for acorde in answer
+       for diff = (extract-diff segmento)
+       for pitches = (extract-feature-list segmento diff)
+       do (if (listp acorde)
+              (mapcar (lambda (x) (insert-count pitches x diff alg n)) acorde)
+              (insert-count pitches acorde diff alg n)))))
 
-(defun train-k1 (exemplos)
+(defun train-k1 (alg exemplos)
   (loop for exemplo in exemplos
        for n from 0
        for coral = (first exemplo)
        for answer = (second exemplo)
-       do (train-1nn coral answer n)))
-
-(train-k1 *training-data*)
+       do (train-1nn alg coral answer n)))
 
 (defun get-class (diff maxkey maxv)
   (declare (ignore maxkey))
@@ -85,25 +84,34 @@
                                                     maxv (gethash k resultado))
        finally (return (extract-chord maxk diff)))))
 
-(defun classify-k1 (segmento options priv)
+(defun classify-k1 (segmento options alg)
+  (declare (ignore options))
   (let* ((diff (extract-diff segmento))
          (pitches (extract-feature-list segmento diff))
-         (k (or (aget :k (arg :options options))
-                (aget :k priv))))
-    (loop for (key value) in *1-neighbours* 
-       with nn = nil
+         (k (aget :k (algorithm-private-data alg)))
+         (nn (aget :nn (algorithm-private-data alg))))
+    (loop for (key value) in nn
+       with knn = nil
        do 
          (let ((d (distance pitches key)))
-           (setf nn (clip k (insert (list d key value) nn :key #'car))))
-       finally (return (get-class diff (mapcar #'second nn) (mapcar #'third nn))))))
+           (setf knn (clip k (insert (list d key value) knn :key #'car))))
+       finally (return (get-class diff (mapcar #'second knn) (mapcar #'third knn))))))
 
 (defun prepare-answers-k1 (coral options alg)
-  (add-inversions coral (mapcar #L(classify-k1 !1 options (algorithm-private-data alg)) coral)))
+  (add-inversions coral (mapcar #L(classify-k1 !1 options alg) coral)))
+
+(defun do-options-knn (alg options)
+  (args-into-private-data '(:k) alg options)
+  (when (aget :train (arg :options options))
+    (train-k1 alg *training-data*))
+  alg)
+
 
 (register-algorithm "ES-Knn" #'prepare-answers-k1
                     :description "A k-nearest-neighbors classifier that classifies each sonority by itself."
-                    :private-data '((:k 1))
-                    :do-options #'standard-do-options)
+                    :private-data  `((:k 1)
+                                    (:nn ,(make-alist)))
+                    :do-options #'do-options-knn)
 
 (defun show-examples ()
   "Mostra em que corais estão que tipos de acorde."
@@ -114,57 +122,66 @@
 
 
 
-(defparameter *before-context* 2)
-(defparameter *after-context* 0)
+(defun context-extract-diff (alg segmentos)
+  (extract-diff (nth (aget :before-context (algorithm-private-data alg)) segmentos)))
 
-(defparameter *variance* 1/2)
+(defun context-extract-features (alg segmentos diff)
+  (let ((before-context (aget :before-context (algorithm-private-data alg)))
+        (variance (aget :variance (algorithm-private-data alg))))
+    (loop for seg in segmentos
+       for peso from (-  before-context)
+       nconc (loop for x in (extract-feature-list seg diff)
+                collect (/ x (+ 1 (* (abs peso) variance)))))))
 
-(defparameter *context-neighbors* (make-alist))
-
-(defun context-extract-diff (segmentos)
-  (extract-diff (nth *before-context* segmentos)))
-
-(defun context-extract-features (segmentos diff)
-  (loop for seg in segmentos
-     for peso from (-  *before-context*)
-     nconc (loop for x in (extract-feature-list seg diff)
-              collect (/ x (+ 1 (* (abs peso) *variance*))))))
-
-(defun train-context-nn (coral answer n)
+(defun train-context-nn (alg coral answer n)
   (loop for segmento in coral
      for acorde in answer
-     for diff = (context-extract-diff segmento)
-     for pitches = (context-extract-features segmento diff)
+     for diff = (context-extract-diff alg segmento)
+     for pitches = (context-extract-features alg segmento diff)
      do (if (listp acorde)
-            (mapcar (lambda (x) (insert-count pitches x diff *context-neighbors* n)) acorde)
-            (insert-count pitches acorde diff *context-neighbors* n))))
+            (mapcar (lambda (x) (insert-count pitches x diff alg n)) acorde)
+            (insert-count pitches acorde diff alg n))))
 
-(defun train-context (exemplos)
+(defun train-context (alg exemplos)
+  (let ((before-context (aget :before-context (algorithm-private-data alg)))
+        (after-context (aget :after-context (algorithm-private-data alg))))
   (loop for exemplo in exemplos
      for coral = (first exemplo)
      for n from 0
      for answer = (second exemplo)
-     do (train-context-nn (contextualize coral *before-context* *after-context*) answer n)))
+     do (train-context-nn alg (contextualize coral before-context after-context) answer n))))
 
-(train-context *training-data*)
-
-(defun classify-context (segmento options priv)
-  (let* ((diff (context-extract-diff segmento))
-         (pitches (context-extract-features segmento diff))
-         (k (or (aget :ck (arg :options options))
-                (aget :ck priv))))
-    (loop for (key value) in *context-neighbors* 
-       with nn = nil
+(defun classify-context (alg segmento options)
+  (declare (ignore options))
+  (let* ((diff (context-extract-diff alg segmento))
+         (pitches (context-extract-features alg segmento diff))
+         (k (aget :ck (algorithm-private-data alg)))
+         (nn (aget :nn (algorithm-private-data alg))))
+    (loop for (key value) in nn 
+       with knn = nil
        do 
          (let ((d (distance pitches key)))
-           (setf nn (clip k (insert (list d key value) nn :key #'car))))
-       finally (return (get-class diff (mapcar #'second nn) (mapcar #'third nn))))))
+           (setf knn (clip k (insert (list d key value) knn :key #'car))))
+       finally (return (get-class diff (mapcar #'second knn) (mapcar #'third knn))))))
 
 (defun prepare-answers-context (coral options alg)
-  (let ((c (contextualize coral *before-context* *after-context*)))
-    (add-inversions coral (mapcar #L(classify-context !1 options (algorithm-private-data alg)) (butlast c *before-context*)))))
+  (let* ((before-context (aget :before-context (algorithm-private-data alg)))
+         (after-context (aget :after-context (algorithm-private-data alg)))
+         (c (contextualize coral before-context after-context)))
+    (add-inversions coral (mapcar #L(classify-context alg !1 options) (butlast c before-context)))))
+
+(defun do-options-cknn (alg options)
+  (args-into-private-data '(:ck :before-context :after-context :variance) alg options)
+  (when (aget :train (arg :options options))
+    (train-context alg *training-data*))
+  alg)
 
 (register-algorithm "EC-Knn" #'prepare-answers-context
                     :description "A k-nearest-neighbor classifier that considers a bit of contextual information."
-                    :private-data '((:ck 3))
-                    :do-options #'standard-do-options)
+                    :private-data `((:ck 3)
+                                    (:nn ,(make-alist))
+                                    (:before-context 2)
+                                    (:after-context 0)
+                                    (:variance 1/2)
+                                    )
+                    :do-options #'do-options-cknn)

@@ -2,13 +2,13 @@
   (asdf:oos 'asdf:load-op :machine-learning))
 
 (defpackage :rameau-tree-enarm
-  (:import-from #:arnesi "AIF" "IT" "LAST1")
+  (:import-from #:arnesi "AIF" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
-  (:use #:cl #:rameau #:machine-learning #:genoslib))
+  (:use #:cl #:rameau #:machine-learning #:genoslib #:rameau-options))
 
 (in-package :rameau-tree-enarm)
 
-
+(enable-sharp-l-syntax)
 
 (defparameter *attributes* (list
                            (cons 'pitch1 (loop for i from 0 to 95 collect i))
@@ -31,9 +31,6 @@
 
 (defparameter *chord-classes* (mapcar #'string->symbol (mapcar #'stringify (append (list '— 'al+6 'fr+6 'it+6)
                                                                                    *chords*))))
-
-
-(defparameter *chord-tree* nil)
 
 (defun prepare-sonority (segmento)
   (loop for nota in segmento
@@ -66,33 +63,32 @@
                nconc (prepare-training-sample (transpose-segmentos c i)
                                                         (transpose-chords g i)))))
 
-(defun train-chord-tree (corais gabaritos)
-  (setf *chord-tree* (id3 (prepare-training-song corais gabaritos)
-                          *attributes*
-                          *chord-classes*)))
+(defun train-chord-tree (alg corais gabaritos)
+  (aset :tree (algorithm-private-data alg) (id3 (prepare-training-song corais gabaritos)
+                                                *attributes*
+                                                *chord-classes*)))
 
-(defun chord-tree-classify (segmento)
-  (let ((res (classify (make-example :values (prepare-sonority segmento)) *chord-tree*)))
+(defun chord-tree-classify (alg segmento)
+  (let ((res (classify (make-example :values (prepare-sonority segmento)) (aget :tree (algorithm-private-data alg)))))
     (aif (parse-chord res)
          it
          (make-melodic-note))))
 
-(defun show-chord-tree (&rest args)
-  (declare (ignore args))
-  (print-tree *chord-tree*))
-
 (defun do-classification (coral options alg)
-  (declare (ignore options alg))
-  (dbg 'rameau::mostra-arvore "Arvore: ~/rameau-tree-enarm::show-chord-tree/ ~%" *chord-tree*)
-  (add-inversions coral (mapcar #'chord-tree-classify coral)))
+  (declare (ignore options))
+  (add-inversions coral (mapcar #L(chord-tree-classify alg !1) coral)))
 
-(register-algorithm "ES-tree" #'do-classification :description "A decision tree classifier.")
-
-(defun do-train-chord-tree ()
+(defun do-train-chord-tree (alg)
   (multiple-value-bind (corais gabaritos)
       (unzip *training-data*)
-    (train-chord-tree corais gabaritos)))
+    (train-chord-tree alg corais gabaritos)))
 
-(do-train-chord-tree)
+(defun tree-do-options (alg options)
+  (when (aget :train (arg :options options))
+    (do-train-chord-tree alg))
+  alg)
 
-
+(register-algorithm "ES-tree" #'do-classification
+                    :description "A decision tree classifier."
+                    :private-data `((:tree nil))
+                    :do-options #'tree-do-options)
