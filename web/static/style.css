@@ -58,6 +58,12 @@ div.coralbox input {
  height: 1.5em;
 }
 
+div.coralbox select {
+ float: right;
+ margin-right: 32.5em;
+ width: 8em;
+}
+
 div.coralbox p {
  vertical-align: middle;
  display: box;

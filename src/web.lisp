@@ -50,6 +50,26 @@
                 (:label :for "escolha-1"
                         "Enter the notes for each voice..."))
             (:div :id "coral" :style "max-width: 40em;" :class "coralbox"
+                  (:p (:label :for "key" "Key:")
+                      (:select :name "key" :id "key"
+                               (iter (for root in '("a" "b" "c" "d" "e" "f" "g"))
+                                     (iter (for suffix in '("is" "es"))
+                                           (iter (for mode in '("major" "minor"))
+                                                 (htm (:option :value (format nil
+                                                                              "~a~a \\~a"
+                                                                              root
+                                                                              suffix
+                                                                              mode)
+                                                               (fmt "~a~a ~a"
+                                                                    (string-upcase root)
+                                                                    (if (equal "is" suffix)
+                                                                        "#"
+                                                                        "b")
+                                                                    mode))))))))
+                  (:p (:label :for "sig" "Time:")
+                      (:select :name "sig" :id "sig"
+                               (iter (for sig in '("3/4" "4/4" "6/8" "9/8" "12/8" "3/2" "1/2" "2/4" "4/1"))
+                                     (htm (:option :value sig (str sig))))))
                   (:p (:label :for "soprano" "Soprano:")
                       (:input :id "soprano" :type "text" :name "soprano"))
                   (:p (:label :for "alto" "Alto:")
@@ -62,7 +82,7 @@
            (:center
             (:p (:input :type "radio" :name "escolha" :value "chor" :onchange "habilita_chor()")
                 (:label :for "escolha-2" "...or choose one of Bach's 371 Chorales")
-                (:select :name "chorale" :disabled "" :id "chorale"  :disabled t
+                (:select :name "chorale" :id "chorale"  :disabled t
                          (iter (for f in (parse-file-name "chor:1..371" (make-default-arguments)))
                                (let ((name (pathname-name f)))
                                  (htm (:option :value name (str name)))))))
@@ -136,6 +156,10 @@
   (cond ((equal "input" (format nil "~a" (parameter "escolha")))
          (format nil "
 
+global = {
+ \\time ~a
+ \\key ~a
+}
 
 soprano = \\relative c'' {
   ~a
@@ -159,12 +183,14 @@ baixo = \\relative c {
       \\override StaffGroup.SystemStartBracket #'style = #'line 
       \\new Staff {
         <<
+         \\global
           \\new Voice = \"soprano\" { \\voiceOne \\soprano }
           \\new Voice = \"alto\" { \\voiceTwo \\alto }
         >>
       }
       \\new Staff {
         <<
+          \\global
           \\clef \"bass\"
           \\new Voice = \"tenor\" {\\voiceOne \\tenor }
           \\new Voice = \"baixo\" { \\voiceTwo \\baixo \\bar \"|.\"}
@@ -177,6 +203,8 @@ baixo = \\relative c {
 }
 
 "
+                 (parameter "sig")
+                 (parameter "key")
                  (parameter "soprano")
                  (parameter "alto")
                  (parameter "tenor")
@@ -193,38 +221,44 @@ baixo = \\relative c {
 (defun do-analysis ()
   (let ((code (get-params-code))
         (algs (get-params-alg)))
-    (unless (or (null code) (zerop (length code)))
-      (let* ((md5 (make-md5 (concat code (format nil "~a" algs)))))
-        (unless (gethash md5 *results*)
-          (let* ((options (make-default-arguments))
-                 (options (progn (setf (arg :algorithms options) algs)
-                                 options))
-                 (ast (get-ast-string code))
-                 (notes (get-parsed-notes ast))
-                 (segments (sonorities notes))
-                 (full-path (concat *rameau-web-dir* md5 ".ly"))
-                 (analysis (make-analysis :segments segments
-                                          :results (mapcar #L(funcall (algorithm-classify !1) segments options !1)
-                                                           (arg :algorithms options))
-                                          :answer-sheet (grab-possible-answer-sheet)
-                                          :file-name md5
-                                          :number-algorithms (length (arg :algorithms options))
-                                          :algorithms (arg :algorithms options)
-                                          :notes (mapcar #'list-events segments)
-                                          :ast ast
-                                          :title (aif (parameter "chorale")
-                                                      (format nil "Chorale ~a" it)
-                                                      (format nil "Custom ~a" md5))
-                                          :full-path full-path
-                                          :dur (durations segments))))
-            (setf (gethash md5 *results*) analysis
-                  (arg :png options) t
-                  (arg :lily options) t)
-            (cl-store:store *results* (concat *rameau-web-dir* "cache.store"))
-            (with-open-file (f full-path :direction :output :if-exists :supersede)
-              (format f "~a" code))
-            (analysis-lily options analysis)))
-        (redirect (format nil "/show-analysis?analysis=~a&chorale=~a" md5 (or (parameter "chorale") "")))))))
+    (if (or (null code) (zerop (length code)))
+        (:htm (fmt "Erro: ~a||||||~a"
+                   code algs))
+        (progn
+          (let* ((md5 (make-md5 (concat code (format nil "~a" algs)))))
+            (if (gethash md5 *results*)
+                (:htm (fmt "Erro: ~a||||||~a"
+                   code algs))
+                (progn
+                  (let* ((options (make-default-arguments))
+                         (options (progn (setf (arg :algorithms options) algs)
+                                         options))
+                         (ast (get-ast-string code))
+                         (notes (get-parsed-notes ast))
+                         (segments (sonorities notes))
+                         (full-path (concat *rameau-web-dir* md5 ".ly"))
+                         (analysis (make-analysis :segments segments
+                                                  :results (mapcar #L(funcall (algorithm-classify !1) segments options !1)
+                                                                   (arg :algorithms options))
+                                                  :answer-sheet (grab-possible-answer-sheet)
+                                                  :file-name md5
+                                                  :number-algorithms (length (arg :algorithms options))
+                                                  :algorithms (arg :algorithms options)
+                                                  :notes (mapcar #'list-events segments)
+                                                  :ast ast
+                                                  :title (aif (parameter "chorale")
+                                                              (format nil "Chorale ~a" it)
+                                                              (format nil "Custom ~a" md5))
+                                                  :full-path full-path
+                                                  :dur (durations segments))))
+                    (setf (gethash md5 *results*) analysis
+                          (arg :png options) t
+                          (arg :lily options) t)
+                    (cl-store:store *results* (concat *rameau-web-dir* "cache.store"))
+                    (with-open-file (f full-path :direction :output :if-exists :supersede)
+                      (format f "~a" code))
+                    (analysis-lily options analysis))))
+                (redirect (format nil "/show-analysis?analysis=~a&chorale=~a" md5 (or (parameter "chorale") ""))))))))
 
 (push (create-prefix-dispatcher "/analysis" 'do-analysis) *dispatch-table*)
 
