@@ -580,7 +580,7 @@
 
 (defun parse-options (command list)
   "Parse the list of options to a structure."
-  (loop for item in (sublist-of-args list) collect
+  (loop for item in (sublist-of-args list #\-) collect
        (destructuring-bind (flag &rest value) item
          (list (cond ((long-flag? flag)
                       (make-keyword (get-long-flag-name command flag)))
@@ -604,21 +604,6 @@
              (collect (list (make-keyword (subseq op 0 it)) (read-from-string (subseq op (1+ it) (length op)))))
              (collect (list (make-keyword op) t)))))
 
-(defun sublist-of-args (list)
-  "Separate the arguments in a list in sublist of arguments."
-  (labels ((next-flag (list)
-             (loop for x in (rest list) do
-                  (if (and (< 0 (length x)) (equal #\- (aref x 0)))
-                      (return x))))
-           (pos (list)
-             (let ((pos (position (next-flag list) list :test #'string=)))
-               (if pos pos 0))))
-    (when list
-      (if (next-flag list)
-          (let ((p (pos list)))
-            (cons (subseq list 0 p)
-                  (sublist-of-args (nthcdr p list))))
-          (list list)))))
 
 (defun parse-files (options)
   (loop for file in (arg :files options) append

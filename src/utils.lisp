@@ -336,3 +336,24 @@ null or 'erro."
 (defun make-keyword (string)
   "Make \\texttt{string} into a keyword."
   (intern (string-upcase string) (find-package :keyword)))
+
+(defun sublist-of-args (list char)
+  ;; tem um bug quando repete proxima flag imediatamente: (@a foo @a bar)
+  ;; entra em loop recursivo
+  (labels ((next-flag (list)
+	     (iter (for item in (rest list))
+		   (unless (consp item)
+		     (let ((x (if (stringp item)
+				  item
+				  (symbol-name item))))
+		       (if (and (< 0 (length x)) (equal char (aref x 0)))
+			   (return item))))))
+           (pos (list flag)
+	     (let ((pos (position flag list :test #'equalp)))
+	       (aif pos pos 0))))
+    (when list
+      (aif (next-flag list)
+	   (let ((p (pos list it)))
+	     (cons (subseq list 0 p)
+		   (sublist-of-args (nthcdr p list) char)))
+	   (list list)))))
