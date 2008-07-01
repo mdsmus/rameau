@@ -215,12 +215,15 @@
     (train-e-chord-net alg))
   alg)
 
+
+
 (register-algorithm "ES-net" #'apply-e-chord-net
                     :description "A neural network classifier that looks only at each sonority."
                     :private-data `((:e-chord-data ,(concat *neural-path* "chord-data.fann"))
                                     (:e-chord-fann ,(concat *neural-path* "chord.fann"))
-                                    (:hidden-units 22))
+                                    (:hidden-units 30))
                     :do-options #'net-options)
+
 
 ;;; context
 
@@ -241,7 +244,7 @@
                                       #'context-extract-features)))))
 
 (defun context-data-set (alg)
-  (write-data-set (context-training-data alg) (alget :context-data alg) (* (+ 1 (alget :context-after alg) (alget :context-before alg)) 96)))
+  (write-data-set (context-training-data alg) (alget :context-data alg) (* (+ 1 (alget :context-after alg) (alget :context-before alg)) *value*)))
 
 (defun train-context-net (alg)
   (let ((fann-file (alget :context-fann alg))
@@ -253,7 +256,7 @@
     (unless (cl-fad:file-exists-p fann-file)
       (train-net 'net
                  data-file
-                 (* (+ 1 (alget :context-after alg) (alget :context-before alg)) 96)
+                 (* (+ 1 (alget :context-after alg) (alget :context-before alg)) *value*)
                  fann-file
                  (alget :hidden-units alg)))))
 
@@ -293,3 +296,5 @@
                                     (:context-after 1)
                                     (:hidden-units 22)
                                     ))
+
+
