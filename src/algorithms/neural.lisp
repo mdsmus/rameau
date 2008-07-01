@@ -17,8 +17,9 @@
 (defparameter *root-increment* 4)
 (defparameter *mode-length* 5)
 (defparameter *7th-length* 4)
-(defparameter *context-before* 1)
-(defparameter *context-after* 1)
+(defparameter *value* 96)
+(defparameter *neural-version* "-006-")
+(defparameter *neural-path* (concat *rameau-path* "neural-nets/master-" *neural-version* "-"))
 (defvar *e-chord-net* nil)
 (defvar *context-net* nil)
 
@@ -179,73 +180,112 @@
   (save-to-file (symbol-value net) net-file))
 
 ;;; e-chord
-(defun train-e-chord-net (options)
-  (train-net '*e-chord-net* 
-             (arg :e-chord-data options)
-             96
-             (arg :e-chord-fann options)
-             (arg :hidden-units options)))
-
-(defun apply-e-chord-net (inputs options alg)
-  (let ((fann-file (arg :e-chord-fann options)))
-    (if (cl-fad:file-exists-p fann-file)
-        (progn
-          (setf *e-chord-net* (load-from-file (arg :e-chord-fann options)))
-          (add-inversions inputs (mapcar #L(run-my-net !1 *e-chord-net* #'extract-diff #'make-sonority-pattern)
-                                         inputs)))
-        (progn
-          (format t "I could not find ~a, please train the net.~%" fann-file)
-          (rameau-quit)))))
-
 (defun e-chord-training-data ()
   (loop for (a b) in *training-data* nconc (prepare-training-data-net a b)))
 
-(defun e-chord-data-set (options)
-  (write-data-set (e-chord-training-data) (arg :e-chord-data options) (arg :e-chord-value options)))
+(defun e-chord-data-set (alg)
+  (write-data-set (e-chord-training-data) (alget :e-chord-data alg) *value*))
 
-(register-algorithm "ES-net" #'apply-e-chord-net :description "A neural network classifier that looks only at each sonority.")
+(defun train-e-chord-net (alg)
+  (unless (cl-fad:file-exists-p (alget :e-chord-data alg))
+    (e-chord-data-set alg))
+  (unless (cl-fad:file-exists-p (alget :e-chord-fann alg))
+    (train-net '*e-chord-net* 
+               (alget :e-chord-data alg)
+               *value*
+               (alget :e-chord-fann alg)
+               (alget :hidden-units alg))))
 
-;;; context
-(defun context-extract-diffs (segmento)
-  (extract-diffs (nth *context-before* segmento)))
-
-(defun context-extract-diff (segmentos)
-  (extract-diff (nth *context-before* segmentos)))
-
-(defun context-extract-features (segmento &optional diff)
-  (let ((diff (or diff (context-extract-diff segmento))))
-    (loop for s in segmento nconc (make-sonority-pattern s diff))))
-
-(defun train-context-net (options)
-  (let ((fann-file (arg :context-fann options))
-        (data-file (arg :context-data options)))
-    (train-net '*context-net*
-               data-file
-               (* (+ 1 *context-after* *context-before*) 96)
-               fann-file
-               (arg :hidden-units options))))
-
-(defun context-training-data ()
-  (loop for (a b) in *training-data* nconc
-       (prepare-training-data-net (contextualize a *context-before* *context-after*)
-                                  b
-                                  #'context-extract-diffs
-                                  #'context-extract-features)))
-
-(defun apply-context-net (inputs options alg)
-  (let ((fann-file (arg :context-fann options))
-        (context (butlast (contextualize inputs *context-before* *context-after*)
-                          *context-before*)))
+(defun apply-e-chord-net (inputs options alg)
+  (let ((fann-file (alget :e-chord-fann alg)))
     (if (cl-fad:file-exists-p fann-file)
         (progn
-          (setf *context-net* (load-from-file fann-file))
-          (add-inversions inputs (mapcar #L(run-my-net !1 *context-net* #'context-extract-diff #'context-extract-features)
-                                         context)))
+          (setf *e-chord-net* (load-from-file (alget :e-chord-fann alg)))
+          (add-inversions inputs (mapcar #L(run-my-net !1 *e-chord-net* #'extract-diff #'make-sonority-pattern)
+                                         inputs)))
         (progn
-          (format t "I could not find ~a, please train the net.~%" fann-file)
-          (rameau-quit)))))
+          (train-e-chord-net alg)
+          (apply-e-chord-net inputs options alg)))))
 
-(register-algorithm "EC-net" #'apply-context-net :description "A neural network classifier that considers surrounding sonorities as well.")
+(defun net-options (alg options)
+  (args-into-private-data '(:e-chord-data :e-chord-fann :hidden-units)
+                          alg options)
+  (when (aget :train (arg :options options))
+    (train-e-chord-net alg))
+  alg)
 
-(defun context-data-set (options)
-  (write-data-set (context-training-data) (arg :context-data options) (arg :context-value options)))
+(register-algorithm "ES-net" #'apply-e-chord-net
+                    :description "A neural network classifier that looks only at each sonority."
+                    :private-data `((:e-chord-data ,(concat *neural-path* "chord-data.fann"))
+                                    (:e-chord-fann ,(concat *neural-path* "chord.fann"))
+                                    (:hidden-units 22))
+                    :do-options #'net-options)
+
+;;; context
+
+(defun context-training-data (alg)
+  (let* ((context-before (alget :context-before alg))
+         (context-after (alget :context-before alg)))
+    (labels ((context-extract-diffs (segmentos)
+               (extract-diffs (nth context-before segmentos)))
+             (context-extract-diff (segmento)
+               (extract-diff (nth context-before segmentos)))
+             (context-extract-features (segmento &optional diff)
+               (let ((diff (or diff (context-extract-diff segmento))))
+                 (loop for s in segmento nconc (make-sonority-pattern s diff)))))
+      (loop for (a b) in *training-data* nconc
+           (prepare-training-data-net (contextualize a context-before context-after)
+                                      b
+                                      #'context-extract-diffs
+                                      #'context-extract-features)))))
+
+(defun context-data-set (alg)
+  (write-data-set (context-training-data alg) (alget :context-data alg) (* (+ 1 (alget :context-after alg) (alget :context-before alg)) 96)))
+
+(defun train-context-net (alg)
+  (let ((fann-file (alget :context-fann alg))
+        (data-file (alget :context-data alg)))
+    (unless (cl-fad:file-exists-p data-file)
+      (context-data-set alg))
+    (unless (cl-fad:file-exists-p fann-file)
+      (train-net '*context-net*
+                 data-file
+                 (* (+ 1 (alget :context-after alg) (alget :context-before alg)) 96)
+                 fann-file
+                 (alget :hidden-units alg)))))
+
+(defun apply-context-net (inputs options alg)
+  (let* ((fann-file (alget :context-fann alg))
+         (context-before (alget :context-before alg))
+         (context-after (alget :context-before alg))
+         (context (butlast (contextualize inputs context-before context-after)
+                           context-before)))
+    (labels ((context-extract-diff (segmentos)
+               (extract-diff (nth context-before segmentos)))
+             (context-extract-features (segmento &optional diff)
+               (let ((diff (or diff (context-extract-diff segmento))))
+                 (loop for s in segmento nconc (make-sonority-pattern s diff)))))
+      (if (cl-fad:file-exists-p fann-file)
+          (progn
+            (setf *context-net* (load-from-file fann-file))
+            (add-inversions inputs (mapcar #L(run-my-net !1 *context-net* #'context-extract-diff #'context-extract-features)
+                                           context)))
+          (progn
+            (train-context-net alg)
+            (apply-context-net inputs options alg))))))
+
+(defun context-net-do-options (alg options)
+  (args-into-private-data '(:context-data :context-fann :context-before :context-after :hidden-units)
+                          alg options)
+  (when (aget :train (arg :options options))
+    (train-context-net alg))
+  alg)
+
+(register-algorithm "EC-net" #'apply-context-net
+                    :description "A neural network classifier that considers surrounding sonorities as well."
+                    :private-data `((:context-data ,(concat *neural-path* "context-train.data" ))
+                                    (:context-fann ,(concat *neural-path* "context.fann"))
+                                    (:context-before 1)
+                                    (:context-after 1)
+                                    (:hidden-units 22)
+                                    ))

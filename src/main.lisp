@@ -562,23 +562,6 @@
                   (collect alg))))
   (store-algorithms))
 
-;;; Training
-(defcommand train-neural (options &rest ignore)
-  (declare (ignore ignore))
-
-  (when (arg :e-chord-data-set options)
-    (e-chord-data-set options))
-
-  (when (arg :context-data-set options)
-    (context-data-set options))
-
-  (when (arg :e-chord-fann-file options)
-    (train-e-chord-net options))
-  
-  (when (arg :context-fann-file options)
-    (train-context-net options))
-  )
-
 (defcommand web (options &rest ignore)
   (declare (ignore ignore options))
 

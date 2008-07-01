@@ -55,6 +55,9 @@
   (declare (ignore options))
   alg)
 
+(defun alget (value alg)
+  (aget value (algorithm-private-data alg)))
+
 (defun register-algorithm (nome processa  &key tempered? private-data (description "") (do-options #'do-nothing-options))
   "[DONTCHECK]"
   (push (make-algorithm :name nome

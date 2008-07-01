@@ -98,7 +98,6 @@
   (mapcar (lambda (x) (event-dur (first x))) segmento))
 
 (defun make-note (nota &optional (octave "") igno (dur (make-instance 'dur-node :dur nil))  &rest ignore) 
-  (declare (ignore ignore igno))
   (make-note-sequence
    :notas (list
            (make-event :pitch (parse-note nota)
@@ -114,6 +113,7 @@
    :dur (node-dur dur)))
 
 (defun make-skip (skip igno dur)
+  (declare (ignore skip))
   (make-note "s" "" igno dur))
 
 (defun move-event :private (event tempo)
@@ -137,9 +137,7 @@
       (if (cdr sequencias)
           (let* ((primeiro (sequence-expressions (car sequencias)))
                  (segundo (sequence-expressions (second sequencias)))
-                 (resto (cddr sequencias))
-                 ;(foo             (format t "pri: ~a~%" primeiro))
-                 (movimentador (note-sequence-dur primeiro)))
+                 (resto (cddr sequencias)))
             (setf (note-sequence-notas primeiro)
                   (nconc (note-sequence-notas primeiro)
                    (move-sequence (note-sequence-notas segundo)

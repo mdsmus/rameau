@@ -38,7 +38,7 @@ vpath %.data $(neural-path)
 
 .PHONY: update clean all doc update  resultados erros
 
-default: rameau train-neural train
+default: rameau  train
 
 all-rameau: rameau cmurameau clisprameau
 
@@ -82,25 +82,8 @@ deps:
 	cd rameau-deps ; git pull ;\
 	fi
 
-train-neural: $(TRAIN_NAME)-context.fann $(TRAIN_NAME)-e-chord.fann
-
 train:
 	./rameau algorithms -o train
-
-$(TRAIN_NAME)-e-chord-train.data:
-	echo $@
-	./rameau train --e-chord-data-set --e-chord-data $(neural-path)/$@
-
-$(TRAIN_NAME)-context-train.data:
-	./rameau train --context-data-set --context-data $(neural-path)/$@
-
-$(TRAIN_NAME)-context.fann: $(TRAIN_NAME)-context-train.data
-	./rameau train --context-fann-file --context-data $(neural-path)/$< \
-	--context-fann $(neural-path)/$@
-
-$(TRAIN_NAME)-e-chord.fann: $(TRAIN_NAME)-e-chord-train.data
-	./rameau train --e-chord-fann-file --e-chord-data $(neural-path)/$< \
-	--e-chord-fann $(neural-path)/$@
 
 rameau: $(lisp-files)
 	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" --load "tools/make-image.lisp"
