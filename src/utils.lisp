@@ -222,9 +222,11 @@ returning two values: the string and the number of bytes read. [DONTCHECK]"
   (if (> n 0)
       (cons list (repeat-list (- n 1) list))))
 
-(defun read-file-as-sexp (file)
+(defun read-file-as-sexp (file &optional (case :upcase))
   "Read file named \\texttt{file} as a single sexp. [DONTCHECK]"
-  (read-from-string (format nil "(~a)" (file-string file))))
+  (let ((*readtable* (copy-readtable nil)))
+    (setf (readtable-case *readtable*) case)
+    (read-from-string (format nil "(~a)" (file-string file)))))
 
 (defun unzip (lista)
   "Transform the list of pairs \\texttt{lista} in a pair of lists."
