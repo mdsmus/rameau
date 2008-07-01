@@ -20,8 +20,6 @@
 (defparameter *value* 96)
 (defparameter *neural-version* "-006-")
 (defparameter *neural-path* (concat *rameau-path* "neural-nets/master-" *neural-version* "-"))
-(defvar *e-chord-net* nil)
-(defvar *context-net* nil)
 
 ;;; general functions
 (defun extract-diffs (segmento)
@@ -187,21 +185,24 @@
   (write-data-set (e-chord-training-data) (alget :e-chord-data alg) *value*))
 
 (defun train-e-chord-net (alg)
-  (unless (cl-fad:file-exists-p (alget :e-chord-data alg))
-    (e-chord-data-set alg))
-  (unless (cl-fad:file-exists-p (alget :e-chord-fann alg))
-    (train-net '*e-chord-net* 
-               (alget :e-chord-data alg)
-               *value*
-               (alget :e-chord-fann alg)
-               (alget :hidden-units alg))))
+  (let (net)
+    (declare (special net))
+    (unless (cl-fad:file-exists-p (alget :e-chord-data alg))
+      (e-chord-data-set alg))
+    (unless (cl-fad:file-exists-p (alget :e-chord-fann alg))
+      (train-net 'net 
+                 (alget :e-chord-data alg)
+                 *value*
+                 (alget :e-chord-fann alg)
+                 (alget :hidden-units alg)))))
 
 (defun apply-e-chord-net (inputs options alg)
-  (let ((fann-file (alget :e-chord-fann alg)))
+  (let ((fann-file (alget :e-chord-fann alg))
+        net)
     (if (cl-fad:file-exists-p fann-file)
         (progn
-          (setf *e-chord-net* (load-from-file (alget :e-chord-fann alg)))
-          (add-inversions inputs (mapcar #L(run-my-net !1 *e-chord-net* #'extract-diff #'make-sonority-pattern)
+          (setf net (load-from-file (alget :e-chord-fann alg)))
+          (add-inversions inputs (mapcar #L(run-my-net !1 net #'extract-diff #'make-sonority-pattern)
                                          inputs)))
         (progn
           (train-e-chord-net alg)
@@ -229,7 +230,7 @@
     (labels ((context-extract-diffs (segmentos)
                (extract-diffs (nth context-before segmentos)))
              (context-extract-diff (segmento)
-               (extract-diff (nth context-before segmentos)))
+               (extract-diff (nth context-before segmento)))
              (context-extract-features (segmento &optional diff)
                (let ((diff (or diff (context-extract-diff segmento))))
                  (loop for s in segmento nconc (make-sonority-pattern s diff)))))
@@ -244,11 +245,13 @@
 
 (defun train-context-net (alg)
   (let ((fann-file (alget :context-fann alg))
-        (data-file (alget :context-data alg)))
+        (data-file (alget :context-data alg))
+        net)
+    (declare (special net))
     (unless (cl-fad:file-exists-p data-file)
       (context-data-set alg))
     (unless (cl-fad:file-exists-p fann-file)
-      (train-net '*context-net*
+      (train-net 'net
                  data-file
                  (* (+ 1 (alget :context-after alg) (alget :context-before alg)) 96)
                  fann-file
@@ -259,7 +262,8 @@
          (context-before (alget :context-before alg))
          (context-after (alget :context-before alg))
          (context (butlast (contextualize inputs context-before context-after)
-                           context-before)))
+                           context-before))
+         net)
     (labels ((context-extract-diff (segmentos)
                (extract-diff (nth context-before segmentos)))
              (context-extract-features (segmento &optional diff)
@@ -267,8 +271,8 @@
                  (loop for s in segmento nconc (make-sonority-pattern s diff)))))
       (if (cl-fad:file-exists-p fann-file)
           (progn
-            (setf *context-net* (load-from-file fann-file))
-            (add-inversions inputs (mapcar #L(run-my-net !1 *context-net* #'context-extract-diff #'context-extract-features)
+            (setf net (load-from-file fann-file))
+            (add-inversions inputs (mapcar #L(run-my-net !1 net #'context-extract-diff #'context-extract-features)
                                            context)))
           (progn
             (train-context-net alg)
