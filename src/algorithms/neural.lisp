@@ -229,7 +229,7 @@
 
 (defun context-training-data (alg)
   (let* ((context-before (alget :context-before alg))
-         (context-after (alget :context-before alg)))
+         (context-after (alget :context-after alg)))
     (labels ((context-extract-diffs (segmentos)
                (extract-diffs (nth context-before segmentos)))
              (context-extract-diff (segmento)
@@ -263,7 +263,7 @@
 (defun apply-context-net (inputs options alg)
   (let* ((fann-file (alget :context-fann alg))
          (context-before (alget :context-before alg))
-         (context-after (alget :context-before alg))
+         (context-after (alget :context-after alg))
          (context (butlast (contextualize inputs context-before context-after)
                            context-before))
          net)
@@ -288,13 +288,15 @@
     (train-context-net alg))
   alg)
 
+
+
 (register-algorithm "EC-net" #'apply-context-net
                     :description "A neural network classifier that considers surrounding sonorities as well."
                     :private-data `((:context-data ,(concat *neural-path* "context-train.data" ))
                                     (:context-fann ,(concat *neural-path* "context.fann"))
                                     (:context-before 1)
-                                    (:context-after 1)
+                                    (:context-after 0)
                                     (:hidden-units 22)
-                                    ))
-
+                                    )
+                    :do-options #'context-net-do-options)
 
