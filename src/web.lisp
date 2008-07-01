@@ -53,7 +53,7 @@
                   (:p (:label :for "key" "Key:")
                       (:select :name "key" :id "key"
                                (iter (for root in '("a" "b" "c" "d" "e" "f" "g"))
-                                     (iter (for suffix in '("is" "es"))
+                                     (iter (for suffix in '("is" "es" ""))
                                            (iter (for mode in '("major" "minor"))
                                                  (htm (:option :value (format nil
                                                                               "~a~a \\~a"
@@ -62,9 +62,9 @@
                                                                               mode)
                                                                (fmt "~a~a ~a"
                                                                     (string-upcase root)
-                                                                    (if (equal "is" suffix)
-                                                                        "#"
-                                                                        "b")
+                                                                    (cond ((equal "is" suffix) "#")
+                                                                          ((equal "es" suffix) "b")
+                                                                          (t ""))
                                                                     mode))))))))
                   (:p (:label :for "sig" "Time:")
                       (:select :name "sig" :id "sig"
@@ -86,6 +86,8 @@
                          (iter (for f in (parse-file-name "chor:1..371" (make-default-arguments)))
                                (let ((name (pathname-name f)))
                                  (htm (:option :value name (str name)))))))
+            (:p (:label :for "answer" "Answer:")
+                (:input :id "answer" :type "text" :name "answer"))
             (:div :id "submit"
                   (:input :type "submit" :value "Analyze")))
             (:a :href "javascript:void(0)" :onClick "toggle_visible(document.getElementById(\"algorithms\"));"
@@ -215,20 +217,23 @@ baixo = \\relative c {
            (file-string (concat *rameau-path* "music/chorales-bach/" c ".ly"))))))
 
 (defun grab-possible-answer-sheet ()
-  (awhen (parse-integer (or (parameter "chorale") ""):junk-allowed t)
-    (new-parse-answer-sheet (get-chorale-string it) "chor")))
+  (let ((an (parameter "answer")))
+    (if (and an (/= 0 (length an)))
+        (read-chords (read-from-string (format nil "(~a)" an)))
+        (awhen (parse-integer (or (parameter "chorale") ""):junk-allowed t)
+          (new-parse-answer-sheet (get-chorale-string it) "chor")))))
 
 (defun do-analysis ()
   (let ((code (get-params-code))
         (algs (get-params-alg)))
     (if (or (null code) (zerop (length code)))
-        (:htm (fmt "Erro: ~a||||||~a"
-                   code algs))
+        (format t "Erro: ~a||||||~a"
+                code algs)
         (progn
           (let* ((md5 (make-md5 (concat code (format nil "~a" algs)))))
             (if (gethash md5 *results*)
-                (:htm (fmt "Erro: ~a||||||~a"
-                   code algs))
+                (format t "Erro: ~a||||||~a"
+                        code algs)
                 (progn
                   (let* ((options (make-default-arguments))
                          (options (progn (setf (arg :algorithms options) algs)
