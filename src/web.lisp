@@ -125,6 +125,12 @@
 
 (push (create-prefix-dispatcher "/genos.png" 'logo-genos) *dispatch-table*)
 
+(defun logo-grande ()
+  (setf (content-type) "image/png")
+  (binary-file-string (concat *rameau-web-dir* "static/background.png")))
+
+(push (create-prefix-dispatcher "/rameau/background.png" 'logo-grande) *dispatch-table*)
+
 (defun style-sheet ()
   (setf (content-type) "text/css")
   (binary-file-string (concat *rameau-web-dir* "static/style.css")))

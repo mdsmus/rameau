@@ -30,6 +30,10 @@ li {
 
 body {
  font-family: sans-serif;
+ background-image: url("/rameau/background.png");
+ background-repeat: no-repeat;
+ background-position: top center;
+ background-attachment: fixed;
 }
 
 textarea {
