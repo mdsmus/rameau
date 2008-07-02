@@ -157,6 +157,7 @@ clean-resultados:
 clean:
 	rm -f rameau
 	rm -f tools/algorithms.store
+	rm -f web/cache.store
 	find . -name *.fasl -exec rm {} \;
 	find . -name *.fas -exec rm {} \;
 	find . -name *.lib -exec rm {} \;

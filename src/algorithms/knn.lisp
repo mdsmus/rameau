@@ -119,9 +119,8 @@
      do (format t " ~a => ~a~%" h (remove-duplicates (gethash h *examples*)))))
 
 ;; Algoritmo context-knn. 
-
 (defun context-extract-diff (alg segmentos)
-  (extract-diff (nth (aget :before-context (algorithm-private-data alg)) segmentos)))
+  (extract-diff (nth (alget :before-context alg) segmentos)))
 
 (defun context-extract-features (alg segmentos diff)
   (let ((before-context (aget :before-context (algorithm-private-data alg)))
@@ -147,7 +146,7 @@
      for coral = (first exemplo)
      for n from 0
      for answer = (second exemplo)
-     do (train-context-nn alg (contextualize coral before-context after-context) answer n))))
+     do (train-context-nn alg (butlast (contextualize coral before-context after-context) before-context) answer n))))
 
 (defun classify-context (alg segmento options)
   (declare (ignore options))

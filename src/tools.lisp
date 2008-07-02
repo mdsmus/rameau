@@ -134,7 +134,7 @@
                            (directory (concat path "*" ext)))))))
 
 (defparameter *training-data*
-  (nconc (loop for f in (parse-file-list "chorales" '("001..2"))
+  (nconc (loop for f in (parse-file-list "chorales" '("001..10"))
             for g = (parse-answer-sheet f "chorales")
             collect (list (sonorities (parse-file f)) g))))
 #|         (loop for f in (parse-file-list "chorales" '("010"))
