@@ -116,6 +116,11 @@ div.nav h2 {
 
 div.content {
  max-width: 900px;
+ opacity: 0.95;
+}
+
+img {
+ opacity: 1.0;
 }
 
 div.cache {
