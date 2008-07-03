@@ -205,3 +205,5 @@ position."
                      (equal "7" (chord-7th chord))))
             (+ root (code->interval '(7 dim))))
            (t (+ root (code->interval '(7 min))))))))
+
+

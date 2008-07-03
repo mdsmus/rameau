@@ -224,7 +224,7 @@ returning two values: the string and the number of bytes read. [DONTCHECK]"
 
 (defun read-file-as-sexp (file &optional (case :upcase))
   "Read file named \\texttt{file} as a single sexp. [DONTCHECK]"
-  (let ((*readtable* (copy-readtable nil)))
+  (let ((*readtable* (copy-readtable *readtable*)))
     (setf (readtable-case *readtable*) case)
     (read-from-string (format nil "(~a)" (file-string file)))))
 
