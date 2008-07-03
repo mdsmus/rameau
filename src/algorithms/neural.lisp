@@ -6,7 +6,6 @@
 (defpackage :rameau-neural
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:import-from #:alexandria "SWITCH")
-  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
   (:use #:cl #:fann #:rameau #:iterate #:rameau-options #:genoslib))
 
 (in-package :rameau-neural)
@@ -182,54 +181,58 @@
   (loop for (a b) in *training-data* nconc (prepare-training-data-net a b)))
 
 (defun e-chord-data-set (alg)
-  (write-data-set (e-chord-training-data) (alget :e-chord-data alg) *value*))
+  (write-data-set (e-chord-training-data) (e-chord-data alg) *value*))
 
 (defun train-e-chord-net (alg)
   (let (net)
     (declare (special net))
-    (unless (cl-fad:file-exists-p (alget :e-chord-data alg))
+    (unless (cl-fad:file-exists-p (e-chord-data alg))
       (e-chord-data-set alg))
-    (unless (cl-fad:file-exists-p (alget :e-chord-fann alg))
+    (unless (cl-fad:file-exists-p (e-chord-fann alg))
       (train-net 'net 
-                 (alget :e-chord-data alg)
+                 (e-chord-data alg)
                  *value*
-                 (alget :e-chord-fann alg)
-                 (alget :hidden-units alg)))))
+                 (e-chord-fann alg)
+                 (chord-hidden-units alg)))))
 
 (defun apply-e-chord-net (inputs options alg)
-  (let ((fann-file (alget :e-chord-fann alg))
+  (let ((fann-file (e-chord-fann alg))
         net)
     (if (cl-fad:file-exists-p fann-file)
         (progn
-          (setf net (load-from-file (alget :e-chord-fann alg)))
+          (setf net (load-from-file (e-chord-fann alg)))
           (add-inversions inputs (mapcar #L(run-my-net !1 net #'extract-diff #'make-sonority-pattern)
                                          inputs)))
         (progn
           (train-e-chord-net alg)
           (apply-e-chord-net inputs options alg)))))
 
-(defun net-options (alg options)
-  (args-into-private-data '(:e-chord-data :e-chord-fann :hidden-units)
-                          alg options)
+(defclass chord-net (rameau-algorithm)
+  ((chord-data :accessor e-chord-data :initarg :data :initform (concat *neural-path* "chord-data.fann"))
+   (chord-fann :accessor e-chord-fann :initarg :fann :initform (concat *neural-path* "chord.fann"))
+   (hidden-units :accessor chord-hidden-units :initarg :units :initform 30)))
+
+(defmethod perform-analysis (segments options (alg chord-net))
+  (apply-e-chord-net segments options alg))
+
+(defmethod do-options ((alg chord-net) options)
+  (awhen (aget :e-chord-data (arg :options options))
+    (setf (e-chord-data alg) it))
+  (awhen (aget :e-chord-fann (arg :options options))
+    (setf (e-chord-fann alg) it))
+  (awhen (aget :hidden-units (arg :options options))
+    (setf (chord-hidden-units alg) it))
   (when (aget :train (arg :options options))
-    (train-e-chord-net alg))
-  alg)
+    (train-e-chord-net alg)))
 
-
-
-(register-algorithm "ES-net" #'apply-e-chord-net
-                    :description "A neural network classifier that looks only at each sonority."
-                    :private-data `((:e-chord-data ,(concat *neural-path* "chord-data.fann"))
-                                    (:e-chord-fann ,(concat *neural-path* "chord.fann"))
-                                    (:hidden-units 30))
-                    :do-options #'net-options)
-
-
+(add-algorithm (make-instance 'chord-net
+                              :name "ES-Net"
+                              :description "A neural network classifier that looks only at each sonority."))
 ;;; context
 
 (defun context-training-data (alg)
-  (let* ((context-before (alget :context-before alg))
-         (context-after (alget :context-after alg)))
+  (let* ((context-before (net-context-before alg))
+         (context-after (net-context-after alg)))
     (labels ((context-extract-diffs (segmentos)
                (extract-diffs (nth context-before segmentos)))
              (context-extract-diff (segmento)
@@ -244,11 +247,11 @@
                                       #'context-extract-features)))))
 
 (defun context-data-set (alg)
-  (write-data-set (context-training-data alg) (alget :context-data alg) (* (+ 1 (alget :context-after alg) (alget :context-before alg)) *value*)))
+  (write-data-set (context-training-data alg) (context-data alg) (* (+ 1 (net-context-after alg) (net-context-before alg)) *value*)))
 
 (defun train-context-net (alg)
-  (let ((fann-file (alget :context-fann alg))
-        (data-file (alget :context-data alg))
+  (let ((fann-file (context-fann alg))
+        (data-file (context-data alg))
         net)
     (declare (special net))
     (unless (cl-fad:file-exists-p data-file)
@@ -256,14 +259,14 @@
     (unless (cl-fad:file-exists-p fann-file)
       (train-net 'net
                  data-file
-                 (* (+ 1 (alget :context-after alg) (alget :context-before alg)) *value*)
+                 (* (+ 1 (net-context-after alg) (net-context-before alg)) *value*)
                  fann-file
-                 (alget :hidden-units alg)))))
+                 (context-hidden-units alg)))))
 
 (defun apply-context-net (inputs options alg)
-  (let* ((fann-file (alget :context-fann alg))
-         (context-before (alget :context-before alg))
-         (context-after (alget :context-after alg))
+  (let* ((fann-file (context-fann alg))
+         (context-before (net-context-before alg))
+         (context-after (net-context-after alg))
          (context (butlast (contextualize inputs context-before context-after)
                            context-before))
          net)
@@ -281,22 +284,32 @@
             (train-context-net alg)
             (apply-context-net inputs options alg))))))
 
-(defun context-net-do-options (alg options)
-  (args-into-private-data '(:context-data :context-fann :context-before :context-after :hidden-units)
-                          alg options)
+(defclass context-net (rameau-algorithm)
+  ((context-data :accessor context-data :initarg :data :initform (concat *neural-path* "context-train.data" ))
+   (context-fann :accessor context-fann :initarg :fann :initform (concat *neural-path* "context.fann" ))
+   (context-before :accessor net-context-before :initarg :context-before :initform 1)
+   (context-after :accessor net-context-after :initarg :context-after :initform 0)
+   (hidden-units :accessor context-hidden-units :initarg :units :initform 22)))
+
+(defmethod perform-analysis (segments options (alg context-net))
+  (apply-context-net segments options alg))
+
+(defmethod do-options ((alg context-net) options)
+  (awhen (aget :context-data (arg :options options))
+    (setf (context-data alg) it))
+  (awhen (aget :context-fann (arg :options options))
+    (setf (context-fann alg) it))
+  (awhen (aget :hidden-units (arg :options options))
+    (setf (context-hidden-units alg) it))
+  (awhen (aget :context-before (arg :options options))
+    (setf (net-context-before alg) it))
+  (awhen (aget :context-after (arg :options options))
+    (setf (net-context-after alg) it))
   (when (aget :train (arg :options options))
-    (train-context-net alg))
-  alg)
+    (train-context-net alg)))
 
+(add-algorithm (make-instance 'context-net
+                              :name "EC-Net"
+                              :description "A neural network classifier that considers surrounding sonorities as well."))
 
-
-(register-algorithm "EC-net" #'apply-context-net
-                    :description "A neural network classifier that considers surrounding sonorities as well."
-                    :private-data `((:context-data ,(concat *neural-path* "context-train.data" ))
-                                    (:context-fann ,(concat *neural-path* "context.fann"))
-                                    (:context-before 1)
-                                    (:context-after 0)
-                                    (:hidden-units 22)
-                                    )
-                    :do-options #'context-net-do-options)
 

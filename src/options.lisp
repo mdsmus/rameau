@@ -139,10 +139,3 @@
                   (t (search " " file-or-range)
                      (cl-ppcre:split " " file-or-range))))))
 
-(defun arg-into-private-data (option alg options)
-  (let ((op (aget option (arg :options options))))
-    (when (and op (not (equal (aget :options (algorithm-private-data alg)) op)))
-      (aset options (algorithm-private-data alg) op))))
-
-(defun args-into-private-data (args alg options)
-  (mapcar #L(arg-into-private-data !1 alg options) args))

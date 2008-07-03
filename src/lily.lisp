@@ -202,9 +202,9 @@
           for re in (analysis-results analysis)
           do (format variables (print-compare-answer-sheet re
                                                            (analysis-answer-sheet analysis)
-                                                           (algorithm-name al)
+                                                           (alg-name al)
                                                            options))
-          (format in-score (make-lyrics (algorithm-name al))))
+          (format in-score (make-lyrics (alg-name al))))
     (when (analysis-answer-sheet analysis)
       (format variables (make-answer-sheet (analysis-answer-sheet analysis)))
       (format in-score (make-lyrics "answer")))

@@ -95,12 +95,12 @@
             (:div :align "left" :id "algorithms" :class "algorithms"
                   (iter (for alg in (filter-algorithms nil))
                         (htm (:p (:input :type "checkbox" 
-                                         :checked (= 0 (count-subseq "C" (algorithm-name alg)))
-                                         :name (algorithm-name alg)
-                                         :id (algorithm-name alg))
-                                 (:label :for (algorithm-name alg) (fmt "<b>~a</b>:<i>~a</i>"
-                                                                        (algorithm-name alg)
-                                                                        (algorithm-description alg))))))
+                                         :checked (= 0 (count-subseq "C" (alg-name alg)))
+                                         :name (alg-name alg)
+                                         :id (alg-name alg))
+                                 (:label :for (alg-name alg) (fmt "<b>~a</b>:<i>~a</i>"
+                                                                  (alg-name alg)
+                                                                  (alg-description alg))))))
                   (:div :align "center"
                         (:a :href "javascript: void(0)" :onClick "toggle_visible(document.getElementById(\"algorithms\"));"
                       "Close")))
@@ -152,7 +152,7 @@
 
 (defun get-params-alg ()
   (iter (for alg in (filter-algorithms nil))
-        (when (parameter (algorithm-name alg))
+        (when (parameter (alg-name alg))
           (collect alg))))
 
 (defun get-chorale-string (n)
@@ -249,7 +249,7 @@ baixo = \\relative c {
                          (segments (sonorities notes))
                          (full-path (concat *rameau-web-dir* md5 ".ly"))
                          (analysis (make-analysis :segments segments
-                                                  :results (mapcar #L(funcall (algorithm-classify !1) segments options !1)
+                                                  :results (mapcar #L(perform-analysis segments options !1)
                                                                    (arg :algorithms options))
                                                   :answer-sheet (grab-possible-answer-sheet)
                                                   :file-name md5
@@ -304,10 +304,10 @@ baixo = \\relative c {
                        (htm (:div :class "gabarito"
                                   (:a :href "javascript: void(0);"
                                       :onclick (format nil "toggle_visible(document.getElementById(\"~a\"));"
-                                                       (algorithm-name a))
-                                      (fmt "Gabarito de ~a" (algorithm-name a)))
+                                                       (alg-name a))
+                                      (fmt "Gabarito de ~a" (alg-name a)))
                                   (:div :class "inv"
-                                        :id (algorithm-name a)
+                                        :id (alg-name a)
                                         (fmt "~{~a ~}" r))))))))))
 
 
@@ -328,7 +328,7 @@ baixo = \\relative c {
                            (:p :style "clear: both;" :align "left"
                                (:b "Algorithms:")
                                (iter (for alg in (analysis-algorithms v))
-                                     (htm (:i (str (algorithm-name alg)))))))))
+                                     (htm (:i (str (alg-name alg)))))))))
           (:div :style "clear: left"))))
 
 (push (create-prefix-dispatcher "/rameau/results.htm" 'show-results) *dispatch-table*)

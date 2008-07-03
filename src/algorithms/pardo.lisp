@@ -1,6 +1,5 @@
 (defpackage :rameau-pardo
   (:import-from #:arnesi "AIF" "IT" "LAST1")
-  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
   (:use #:rameau #:cl #:genoslib))
 
 (in-package #:rameau-pardo)
@@ -160,9 +159,15 @@
     (mapcar #'pardo->chord
             (reduce #'tie-break (mapcar #'pardo (temperado sonoritys))
                     :from-end t :initial-value nil))))
-     
 
-(register-algorithm "S-PB" #'pardo-classify :description "The original algorithm decribed in Pardo and Birmingham's papers.")
+(defclass pardo (rameau-algorithm) ())
+
+(defmethod perform-analysis (segments options (alg pardo))
+  (pardo-classify segments options alg))
+
+(add-algorithm (make-instance 'pardo
+                              :name "S-PB"
+                              :description "The original algorithm decribed in Pardo and Birmingham's papers."))
 
 (deftemplates *incf-pardo-templates* 
   (("" "") (0 28 55))
@@ -191,4 +196,11 @@
            (reduce #'tie-break (mapcar #'incf-pardo sonorities)
                    :from-end t :initial-value nil))))
 
-(register-algorithm "ES-PB" #'incf-pardo-classify :description "Our extension of Pardo and Birmingham's algorithm.")
+(defclass es-pardo (rameau-algorithm) ())
+
+(defmethod perform-analysis (segments options (alg es-pardo))
+  (incf-pardo-classify segments options alg))
+
+(add-algorithm (make-instance 'es-pardo
+                              :name "ES-PB"
+                              :description "Our extension of Pardo and Birmingham's algorithm."))

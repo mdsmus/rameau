@@ -49,7 +49,7 @@
      collect
        (make-analysis
         :segments segments
-        :results (mapcar #L(funcall (algorithm-classify !1) segments options !1)
+        :results (mapcar #L(perform-analysis segments options !1)
                          (arg :algorithms options))
         :answer-sheet (new-parse-answer-sheet (pathname-name file) (arg :substring options))
         :file-name (pathname-name file)
@@ -136,7 +136,7 @@
     (format t "~2%")
     (print-line-term options "#" "notes" "dur" "answer")
     (iter (for algo in (arg :algorithms options))
-          (print-chord-column options (algorithm-name algo)))
+          (print-chord-column options (alg-name algo)))
     (print-hline-term size-line)
     (iter (with right-answer-list = (make-list number-algorithms :initial-element 0))
           (for note in (analysis-notes analysis))
@@ -164,7 +164,7 @@
     (format t "~2%")
     (print-line-term options "#" "notes" "dur")
     (iter (for algo in (arg :algorithms options))
-          (print-chord-column options (algorithm-name algo)))
+          (print-chord-column options (alg-name algo)))
     (print-hline-term size-line)
     (iter (for note in (analysis-notes analysis))
           (for dur in (analysis-dur analysis))
@@ -207,7 +207,7 @@
   (let ((a (first analysis)))
     (format t "~5a|" " ")
     (iter (for alg in (analysis-algorithms a))
-          (format t "~7a|" (algorithm-name alg)))
+          (format t "~7a|" (alg-name alg)))
     (format t "~%"))
   (let ((res (iter (for i in (analysis-algorithms (first analysis))) (collect (list 0)))))
     (iter (for anal in analysis)
@@ -594,9 +594,9 @@
   (declare (ignore ignore))
   (setf *algorithms*
         (iter (for alg in *algorithms*)
-              (if (find alg (arg :algorithms options) :test #'equalp)
-                  (collect (funcall (algorithm-do-options alg) alg options))
-                  (collect alg))))
+              (when (find (alg-name alg) (mapcar #'alg-name (arg :algorithms options)) :test #'equalp)
+                (do-options alg options))
+              (collect alg)))
   (store-algorithms))
 
 (defcommand web (options &rest ignore)

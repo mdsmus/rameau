@@ -23,10 +23,15 @@
   "[DONTCHECK]"
   #+sbcl(progn
          (setf sb-profile::*print-functions-not-called* nil)
-         (sb-profile:profile "RAMEAU")
+         ;(sb-profile:profile "RAMEAU")
          (sb-profile:profile "RAMEAU-PARDO")
          (sb-profile:profile "RAMEAU-KNN")
-         (sb-profile:profile "GENOSLIB"))
+         (sb-profile:profile "RAMEAU-NEURAL")
+         (sb-profile:profile "RAMEAU-SAVE")
+         ;(sb-profile:profile "RAMEAU-MAIN")
+         ;(sb-profile:profile "RAMEAU-TREE-ENARM")
+         ;(sb-profile:profile "GENOSLIB")
+         )
   #+cmu (progn
           (profile:profile-all :package "RAMEAU")
           (profile:profile-all :package "RAMEAU-PARDO")

@@ -34,6 +34,8 @@
    #:layout
    #:node-text
    #:node-expr
+   #:alg-name
+   #:alg-description
    )
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defgeneric
                           #:defparameter #:defvar #:defstruct #:defclass)
@@ -41,32 +43,29 @@
 
 (in-package :rameau)
 
-(defstruct algorithm
-  name
-  classify
-  tempered?
-  description
-  private-data
-  do-options)
+(enable-sharp-l-syntax)
 
+(defclass rameau-algorithm ()
+    ((name :accessor alg-name :initarg :name)
+     (tempered? :accessor alg-tempered? :initarg :tempered?)
+     (description :accessor alg-description :initarg :description)))
+
+(defgeneric perform-analysis (segments options algorithm)
+  (:documentation "Perform harmonic analysis"))
+
+(defmethod perform-analysis (segments options (algorithm rameau-algorithm))
+  (declare (ignore options algorithm))
+  (mapcar #L(make-chord :root (print-event-note (first !1))) segments))
+
+(defgeneric do-options (algorithm options)
+  (:documentation "Process algorithm-specific options"))
+
+(defmethod do-options ((algorithm rameau-algorithm) options))
+  
 (defparameter *algorithms* nil)
 
-(defun do-nothing-options (alg options)
-  (declare (ignore options))
-  alg)
-
-(defun alget (value alg)
-  (aget value (algorithm-private-data alg)))
-
-(defun register-algorithm (nome processa  &key tempered? private-data (description "") (do-options #'do-nothing-options))
-  "[DONTCHECK]"
-  (push (make-algorithm :name nome
-                        :classify processa
-                        :tempered? tempered?
-                        :description description
-                        :private-data private-data
-                        :do-options do-options)
-        *algorithms*))
+(defun add-algorithm (alg)
+  (push alg *algorithms*))
 
 (defun filter-algorithms (algoritmos)
   "[DONTCHECK]"
@@ -74,6 +73,6 @@
       (remove-duplicates
        (loop for alg in algoritmos
           append (loop for i in *algorithms*
-                    when (> (count-subseq alg (string-downcase (algorithm-name i))) 0)
+                    when (> (count-subseq alg (string-downcase (alg-name i))) 0)
                     collect i)))
     *algorithms*))

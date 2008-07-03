@@ -3,7 +3,6 @@
 
 (defpackage :rameau-tree-enarm
   (:import-from #:arnesi "AIF" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
-  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
   (:use #:cl #:rameau #:machine-learning #:genoslib #:rameau-options))
 
 (in-package :rameau-tree-enarm)
@@ -64,12 +63,11 @@
                                                         (transpose-chords g i)))))
 
 (defun train-chord-tree (alg corais gabaritos)
-  (aset :tree (algorithm-private-data alg) (id3 (prepare-training-song corais gabaritos)
-                                                *attributes*
-                                                *chord-classes*)))
+  (setf (tree-tree alg)
+        (id3 (prepare-training-song corais gabaritos) *attributes* *chord-classes*)))
 
 (defun chord-tree-classify (alg segmento)
-  (let ((res (classify (make-example :values (prepare-sonority segmento)) (aget :tree (algorithm-private-data alg)))))
+  (let ((res (classify (make-example :values (prepare-sonority segmento)) (tree-tree alg))))
     (aif (parse-chord res)
          it
          (make-melodic-note))))
@@ -83,12 +81,16 @@
       (unzip *training-data*)
     (train-chord-tree alg corais gabaritos)))
 
-(defun tree-do-options (alg options)
-  (when (aget :train (arg :options options))
-    (do-train-chord-tree alg))
-  alg)
+(defclass tree (rameau-algorithm)
+  ((tree :accessor tree-tree :initform nil)))
 
-(register-algorithm "ES-tree" #'do-classification
-                    :description "A decision tree classifier."
-                    :private-data `((:tree nil))
-                    :do-options #'tree-do-options)
+(defmethod perform-analysis (segments options (alg tree))
+  (do-classification segments options alg))
+
+(defmethod do-options ((alg tree) options)
+  (when (aget :train (arg :options options))
+    (do-train-chord-tree alg)))
+
+(add-algorithm (make-instance 'tree
+                              :name "ES-tree"
+                              :description "A decision tree classifier."))

@@ -1,6 +1,5 @@
 (defpackage :rameau-knn
-  (:import-from #:arnesi "AIF" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
-  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
+  (:import-from #:arnesi "AIF" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX" "AWHEN")
   (:use #:cl #:rameau #:genoslib #:rameau-options))
 
 (in-package :rameau-knn)
@@ -46,23 +45,22 @@
        it
        (setf (gethash key table) default)))
 
-(defun insert-count (chave acorde diff alg n)
-  (let ((acorde (process-chord acorde diff))
-        (hash (aget :nn (algorithm-private-data alg))))
+(defun insert-count (chave acorde diff hash n)
+  (let ((acorde (process-chord acorde diff)))
     (if (aget acorde *examples*)
         (apush (cons chave n) (aget acorde *examples*))
         (aset acorde *examples* (list (cons chave n))))
     (aincf acorde (aget chave hash (make-alist)))))
 
 (defun train-1nn (alg coral answer n)
-  (let ((nn (aget :nn (algorithm-private-data alg))))
+  (let ((nn (knn-nn alg)))
     (loop for segmento in coral
        for acorde in answer
        for diff = (extract-diff segmento)
        for pitches = (extract-feature-list segmento diff)
        do (if (listp acorde)
-              (mapcar (lambda (x) (insert-count pitches x diff alg n)) acorde)
-              (insert-count pitches acorde diff alg n)))))
+              (mapcar (lambda (x) (insert-count pitches x diff nn n)) acorde)
+              (insert-count pitches acorde diff nn n)))))
 
 (defun train-k1 (alg exemplos)
   (loop for exemplo in exemplos
@@ -88,8 +86,8 @@
   (declare (ignore options))
   (let* ((diff (extract-diff segmento))
          (pitches (extract-feature-list segmento diff))
-         (k (aget :k (algorithm-private-data alg)))
-         (nn (aget :nn (algorithm-private-data alg))))
+         (k (knn-k alg))
+         (nn (knn-nn alg)))
     (loop for (key value) in nn
        with knn = nil
        do 
@@ -100,18 +98,22 @@
 (defun prepare-answers-k1 (coral options alg)
   (add-inversions coral (mapcar #L(classify-k1 !1 options alg) coral)))
 
-(defun do-options-knn (alg options)
-  (args-into-private-data '(:k) alg options)
+(defclass knn (rameau-algorithm)
+  ((k :accessor knn-k :initarg :k :initform 1)
+   (nn :accessor knn-nn :initform (make-alist))))
+
+(defmethod perform-analysis (segments options (alg knn))
+  (prepare-answers-k1 segments options alg))
+
+(defmethod do-options ((alg knn) options)
+  (awhen (aget :k (arg :options options))
+    (setf (knn-k alg) it))
   (when (aget :train (arg :options options))
-    (train-k1 alg *training-data*))
-  alg)
+    (train-k1 alg *training-data*)))
 
-
-(register-algorithm "ES-Knn" #'prepare-answers-k1
-                    :description "A k-nearest-neighbors classifier that classifies each sonority by itself."
-                    :private-data  `((:k 1)
-                                    (:nn ,(make-alist)))
-                    :do-options #'do-options-knn)
+(add-algorithm
+ (make-instance 'knn :name "ES-Knn"
+                :description "A k-nearest-neighbors classifier that classifies each sonority by itself."))
 
 (defun show-examples ()
   "Mostra em que corais estão que tipos de acorde."
@@ -120,28 +122,29 @@
 
 ;; Algoritmo context-knn. 
 (defun context-extract-diff (alg segmentos)
-  (extract-diff (nth (alget :before-context alg) segmentos)))
+  (extract-diff (nth (cknn-before-context alg) segmentos)))
 
 (defun context-extract-features (alg segmentos diff)
-  (let ((before-context (aget :before-context (algorithm-private-data alg)))
-        (variance (aget :variance (algorithm-private-data alg))))
+  (let ((before-context (cknn-before-context alg))
+        (variance (cknn-variance alg)))
     (loop for seg in segmentos
        for peso from (-  before-context)
        nconc (loop for x in (extract-feature-list seg diff)
                 collect (/ x (+ 1 (* (abs peso) variance)))))))
 
 (defun train-context-nn (alg coral answer n)
-  (loop for segmento in coral
-     for acorde in answer
-     for diff = (context-extract-diff alg segmento)
-     for pitches = (context-extract-features alg segmento diff)
-     do (if (listp acorde)
-            (mapcar (lambda (x) (insert-count pitches x diff alg n)) acorde)
-            (insert-count pitches acorde diff alg n))))
+  (let ((nn (cknn-nn alg)))
+    (loop for segmento in coral
+       for acorde in answer
+       for diff = (context-extract-diff alg segmento)
+       for pitches = (context-extract-features alg segmento diff)
+       do (if (listp acorde)
+              (mapcar (lambda (x) (insert-count pitches x diff nn n)) acorde)
+              (insert-count pitches acorde diff nn n)))))
 
 (defun train-context (alg exemplos)
-  (let ((before-context (aget :before-context (algorithm-private-data alg)))
-        (after-context (aget :after-context (algorithm-private-data alg))))
+  (let ((before-context (cknn-before-context alg))
+        (after-context (cknn-after-context alg)))
   (loop for exemplo in exemplos
      for coral = (first exemplo)
      for n from 0
@@ -152,8 +155,8 @@
   (declare (ignore options))
   (let* ((diff (context-extract-diff alg segmento))
          (pitches (context-extract-features alg segmento diff))
-         (k (aget :ck (algorithm-private-data alg)))
-         (nn (aget :nn (algorithm-private-data alg))))
+         (k (cknn-k alg))
+         (nn (cknn-nn alg)))
     (loop for (key value) in nn 
        with knn = nil
        do 
@@ -162,23 +165,34 @@
        finally (return (get-class diff (mapcar #'second knn) (mapcar #'third knn))))))
 
 (defun prepare-answers-context (coral options alg)
-  (let* ((before-context (aget :before-context (algorithm-private-data alg)))
-         (after-context (aget :after-context (algorithm-private-data alg)))
+  (let* ((before-context (cknn-before-context alg))
+         (after-context (cknn-after-context alg))
          (c (contextualize coral before-context after-context)))
     (add-inversions coral (mapcar #L(classify-context alg !1 options) (butlast c before-context)))))
 
-(defun do-options-cknn (alg options)
-  (args-into-private-data '(:ck :before-context :after-context :variance) alg options)
-  (when (aget :train (arg :options options))
-    (train-context alg *training-data*))
-  alg)
+(defclass context-knn (rameau-algorithm)
+  ((ck :accessor cknn-k :initarg :ck :initform 1)
+   (nn :accessor cknn-nn :initform (make-alist))
+   (before-context :accessor cknn-before-context :initarg :before-context :initform 1)
+   (after-context :accessor cknn-after-context :initarg :after-context :initform 0)
+   (variance :accessor cknn-variance :initarg :variance :initform 3/2)))
 
-(register-algorithm "EC-Knn" #'prepare-answers-context
-                    :description "A k-nearest-neighbor classifier that considers a bit of contextual information."
-                    :private-data `((:ck 1)
-                                    (:nn ,(make-alist))
-                                    (:before-context 1)
-                                    (:after-context 0)
-                                    (:variance 3/2)
-                                    )
-                    :do-options #'do-options-cknn)
+(defmethod perform-analysis (segments options (alg context-knn))
+  (prepare-answers-context segments options alg))
+
+(defmethod do-options ((alg context-knn) options)
+  (awhen (aget :ck (arg :options options))
+    (setf (cknn-k alg) it))
+  (awhen (aget :before-context (arg :options options))
+    (setf (cknn-before-context alg) it))
+  (awhen (aget :after-context (arg :options options))
+    (setf (cknn-after-context alg) it))
+  (awhen (aget :variance (arg :options options))
+    (setf (cknn-variance alg) it))
+  (when (aget :train (arg :options options))
+    (train-context alg *training-data*)))
+
+(add-algorithm (make-instance
+                'context-knn
+                :name "EC-Knn"
+                :description "A k-nearest-neighbor classifier that considers a bit of contextual information."))
