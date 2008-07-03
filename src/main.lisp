@@ -697,4 +697,6 @@
   #+clisp(ext:exit)
   0)
 
+(main "algorithms -o train")
+
 ;(trace module genoslib::get-system-module)

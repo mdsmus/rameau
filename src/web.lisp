@@ -345,6 +345,7 @@ baixo = \\relative c {
 
 
 (defun start-rameau-web ()
+  (rameau-save:load-algorithms)
   (start-server :port 4242))
 
 ;;(start-rameau-web)

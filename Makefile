@@ -38,7 +38,7 @@ vpath %.data $(neural-path)
 
 .PHONY: update clean all doc update  resultados erros
 
-default: rameau  train
+default: rameau 
 
 all-rameau: rameau cmurameau clisprameau
 
