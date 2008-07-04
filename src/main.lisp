@@ -676,8 +676,6 @@
                    (mapcar2 #'rameau-debug #'string->symbol it)
                    (rameau-undebug))
               (awhen (arg :trace options)
-                (trace maptrace)
-                (trace %do-relative)
                 (maptrace it))
                    ;(maptrace it 'untrace))
               (with-profile options
