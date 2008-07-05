@@ -68,12 +68,11 @@ deps:
 train:
 	./rameau algorithms -o train
 
-rameau: $(lisp-files)
-	@if [ ! -d rameau-deps/ ]; then \
-	echo rode make deps rameau ;\
-	else \
+rameau-deps:
+	$(MAKE) cl-fann rameau
+
+rameau: $(lisp-files) rameau-deps
 	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" --load "tools/make-image.lisp" ;\
-	fi
 
 checa-notas: tools/read-notes.lisp
 	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" --load "tools/make-image-read-notes.lisp"
@@ -89,14 +88,6 @@ clisprameau: $(lisp-files)
 
 update: cl-fann
 	git pull --rebase
-
-book: book-stuff
-	sh gera-tex.sh
-	latex book-corais.tex
-	dvips book-corais.dvi
-
-book-stuff: docs/corais.lytex
-	lilypond-book -o out --psfonts -I music/chorales-bach/ docs/corais.lytex
 
 coral:
 	./rameau anal -f chora:$(c) -a es-net -S
