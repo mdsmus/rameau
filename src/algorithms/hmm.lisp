@@ -117,7 +117,7 @@
   ;; chord-notes
   (let ((notes (notes alg)))
     (with-canvas (:width  800 :height 1050)
-      (let ((font (get-font (concat *rameau-path* "fonts/" "Vera.ttf"))))
+      (let ((font (get-font (rameau-get-font-path "Vera.ttf"))))
         (rectangle 0 0 800 1050)
         (set-rgb-stroke 0 0 0)
         (fill-path)

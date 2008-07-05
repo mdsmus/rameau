@@ -55,6 +55,15 @@
   #+cmu(cdr (assoc (intern string :keyword) ext:*environment-list*))
   #+clisp(ext:getenv string))
 
+(defun rameau-get-font-path (font)
+  (let ((result))
+   (cl-fad:walk-directory #+linux "/usr/share/fonts/"
+			  #+windows "c:/windows/fonts/"
+			  (lambda (path) (push path result))
+			  :test (lambda (path) (search font (file-namestring path))))
+
+   (first result)))
+
 (defun remove-comma-if-needed (text)
   "[DONTCHECK]"
   (if (= 1 (count-subseq "pt" (getenv "LANG")))
