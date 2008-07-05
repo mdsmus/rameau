@@ -30,7 +30,8 @@
 (asdf:defsystem :algorithms
   :depends-on (:rameau-pkg :options :cl-store)
   :components ((:module algorithms
-                        :components ((:file "neural")
+                        :components ((:file "hmm")
+                                     (:file "neural")
                                      (:file "pardo")
                                      (:file "knn")
                                      (:file "tree-enarm")
