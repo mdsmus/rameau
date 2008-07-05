@@ -1,7 +1,7 @@
 ;;; -*- Mode: LISP; Syntax: COMMON-LISP; Package: CL-USER; Base: 10 -*-
 
 (asdf:defsystem :rameau-base
-  :depends-on (:yacc :lexer :cl-fad :cl-ppcre :lisp-unit :arnesi :cffi :alexandria :ltk :iterate)
+  :depends-on (:yacc :lexer :cl-fad :cl-ppcre :lisp-unit :arnesi :cffi :alexandria :ltk :iterate :fann)
   :components ((:file "rameau-base")))
 
 (asdf:defsystem :genoslib
@@ -46,7 +46,7 @@
   :name "rameau-web"
   :version "0.0"
   :author "Alexandre Passos e Pedro Kroger"
-  :depends-on (:rameau-pkg :options :algorithms :hunchentoot :cl-who
+  :depends-on (:rameau-pkg :options :algorithms :hunchentoot :cl-who :backends
                            :md5 :cl-fad :cl-base64 :backends :cl-store)
   :components ((:file "web")))
 
