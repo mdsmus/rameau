@@ -32,12 +32,10 @@ lisp-files = $(wildcard src/*asd src/*.lisp src/lib/*.lisp tools/*.lisp src/algo
 
 neural-path = $(maindir)/neural-nets/
 
-
 vpath %.fann $(neural-path)
 vpath %.data $(neural-path)
 
-.PHONY: update clean all doc update  resultados erros
-.PHONY: coral
+.PHONY: update clean all doc update
 
 default: rameau 
 
@@ -45,12 +43,6 @@ all-rameau: rameau cmurameau clisprameau
 
 check: rameau
 	./rameau check all
-
-unit: rameau
-	./rameau teste unidade -v
-
-test: rameau unit
-	./rameau a c -f 001
 
 cl-fann: deps
 	@if [ ! -d rameau-deps/cl-fann ]; then \
@@ -99,37 +91,41 @@ all-png:
 pauta:
 	wget -O pauta.html "http://wiki.genos.mus.br/PautaReuniao"
 
-clean-nets:
-	rm -f neural-nets/*
-
 clean:
-	rm -f rameau
-	rm -f tools/algorithms.store
-	rm -f web/cache.store
-	rm -f music/*/*.{pdf,ps}
-	rm -f regressao/*.{pdf,ps}
-	rm -f book-corais.tex
-	rm -f checa-notas
-	rm -f analysis/*
-	rm -f music/chorales-bach/*.midi
-	find . -name *.o -exec rm {} \;
-	find . -name *.fasl -exec rm {} \;
-	find . -name *.fas -exec rm {} \;
-	find . -name *.lib -exec rm {} \;
-	find . -name *.x86f -exec rm {} \;
+	rm -f rameau cmurameau eclrameau clisprameau checa-notas
 
-clean-web:
-	rm -f web/*.ly
-	rm -f web/cache.store
+cleanall: clean clean-nets clean-web clean-lib
+
+distclean: cleanall clean-deps clean-analysis clean-score clean-midi clean-cache clean-web clean-deps
 
 lispclean:
 	rm -rf /var/cache/common-lisp-controller/$$UID/sbcl/local
 	rm -rf ~/lisp/fasl/*
 
-cleanall: clean clean-nets lispclean clean-web
-	rm -rf rameau cmurameau eclrameau clisprameau 
+clean-nets:
+	rm -f neural-nets/*
+
+clean-analysis:
+	rm -rf analysis
+
+clean-score:
+	rm -f music/*/*.{pdf,ps}
+	rm -f regressao/*.{pdf,ps}
+
+clean-midi:
+	rm -f music/*/*.midi
+
+clean-lib:
+	find -name *.fasl -or -name *.o -or -name *.fas -or -name *.lib -or -name *.x86f | xargs rm -f
+
+clean-cache:
+	rm -f tools/algorithms.store
+	rm -f web/cache.store
+
+clean-web:
+	rm -f web/*.ly
+	rm -f web/cache.store
 
 clean-deps:
 	rm -rf rameau-deps
 
-distclean: cleanall clean-deps
