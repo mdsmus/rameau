@@ -37,17 +37,11 @@ vpath %.fann $(neural-path)
 vpath %.data $(neural-path)
 
 .PHONY: update clean all doc update  resultados erros
+.PHONY: coral
 
 default: rameau 
 
 all-rameau: rameau cmurameau clisprameau
-
-resultados: rameau clean-resultados
-	./rameau resultados c -f 7..400 > resultados/rameau
-	python tools/formata-tipos.py resultados/rameau resultados/
-
-clean-erros:
-	rm -f erros/*
 
 check: rameau
 	./rameau check all
@@ -57,17 +51,6 @@ unit: rameau
 
 test: rameau unit
 	./rameau a c -f 001
-
-erros: rameau clean-erros
-	./rameau erros c > erros/rameau
-	python tools/formata-tipos.py erros/rameau erros/
-
-clean-acertos:
-	rm -f acertos/*
-
-acertos: rameau clean-acertos
-	./rameau acertos c > acertos/rameau
-	python tools/formata-tipos.py acertos/rameau acertos/
 
 cl-fann: deps
 	@if [ ! -d rameau-deps/cl-fann ]; then \
@@ -86,7 +69,11 @@ train:
 	./rameau algorithms -o train
 
 rameau: $(lisp-files)
-	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" --load "tools/make-image.lisp"
+	@if [ ! -d rameau-deps/ ]; then \
+	echo rode make deps rameau ;\
+	else \
+	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" --load "tools/make-image.lisp" ;\
+	fi
 
 checa-notas: tools/read-notes.lisp
 	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" --load "tools/make-image-read-notes.lisp"
@@ -100,16 +87,8 @@ eclrameau: $(lisp-files)
 clisprameau: $(lisp-files)
 	${clisp} -x "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" -x "(load \"tools/make-image.lisp\")"
 
-contagem.txt:
-	for x in $$(awk '{print $$3}' anppom/cruzamentos.txt | uniq ); do echo "$$(grep -c $$x anppom/cruzamentos.txt) $$x"; done | sort  -n > contagem.txt
-
-doc:
-	cd docs ;\
-	make pdf
-
 update: cl-fann
 	git pull --rebase
-
 
 book: book-stuff
 	sh gera-tex.sh
@@ -119,17 +98,6 @@ book: book-stuff
 book-stuff: docs/corais.lytex
 	lilypond-book -o out --psfonts -I music/chorales-bach/ docs/corais.lytex
 
-.PHONY: anppom
-anppom:
-	./rameau cruz -f music/chorales-bach/*.ly -a es-net -v > anppom/cruzamentos.txt
-	./rameau seventh -f music/chorales-bach/*.ly -a es-net -v > anppom/setimas.txt
-	./rameau fifths  -f music/chorales-bach/*.ly -a es-net -v > anppom/quintas.txt
-	./rameau octaves -f music/chorales-bach/*.ly -a es-net -v > anppom/oitavas.txt
-	./rameau ambito -f music/chorales-bach/*.ly -a es-net -v > anppom/ambitos.txt
-	./rameau jumps -f music/chorales-bach/*.ly -a es-net -v > anppom/saltos.txt
-	./rameau cadences -f music/chorales-bach/*.ly -a es-net -v -m 100 > anppom/cadencias.txt
-
-.PHONY: coral
 coral:
 	./rameau anal -f chora:$(c) -a es-net -S
 
@@ -137,22 +105,11 @@ all-png:
 	./rameau anal -f music/chorales-bach/*.ly -a es-net -s > /dev/null
 	cd analysis ; lilypond --png *.ly 2> /dev/null
 
-sync: anppom
-	rsync -v --progress --rsh=ssh anppom/* rameau@genos.mus.br:public_html/
-
-sync-png: all-png
-	rsync -v --progress --rsh=ssh analysis/*.png rameau@genos.mus.br:public_html/corais/
-
-sync-all: sync sync-png
-
 pauta:
 	wget -O pauta.html "http://wiki.genos.mus.br/PautaReuniao"
 
 clean-nets:
 	rm -f neural-nets/*
-
-clean-resultados:
-	rm -f resultados/*
 
 clean:
 	rm -f rameau
@@ -170,16 +127,18 @@ clean:
 	find . -name *.lib -exec rm {} \;
 	find . -name *.x86f -exec rm {} \;
 
-clean-lisp-cache:
-	rm -rf /var/cache/common-lisp-controller/$$UID/sbcl/local
+clean-web:
+	rm -f web/*.ly
+	rm -f web/cache.store
 
-cleanall: clean clean-nets clean-resultados lispclean
+lispclean:
+	rm -rf /var/cache/common-lisp-controller/$$UID/sbcl/local
+	rm -rf ~/lisp/fasl/*
+
+cleanall: clean clean-nets lispclean clean-web
 	rm -rf rameau cmurameau eclrameau clisprameau 
 
-lispclean: clean
-ifeq ("$(hostname)", "phoenix")
-	rm -rf ~/lisp/fasl/*
-	find . ~/lisp -name *.fas -exec rm {} \;
-else
-	rm -rf /var/cache/common-lisp-controller/$$UID/*
-endif
+clean-deps:
+	rm -rf rameau-deps
+
+distclean: cleanall clean-deps
