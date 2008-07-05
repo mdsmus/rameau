@@ -97,6 +97,7 @@ clean:
 cleanall: clean clean-nets clean-web clean-lib
 
 distclean: cleanall clean-deps clean-analysis clean-score clean-midi clean-cache clean-web clean-deps
+	cd docs/choral-book && $(MAKE) cleanall
 
 lispclean:
 	rm -rf /var/cache/common-lisp-controller/$$UID/sbcl/local
