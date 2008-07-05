@@ -1,0 +1,2 @@
+every thing created must be cleaned
+all text files must have a .txt extension
