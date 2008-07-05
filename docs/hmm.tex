@@ -5,6 +5,8 @@
 \title{Algoritmo de Hidden Markov Model para o Rameau}
 \author{Alexandre Tachard Passos}
 
+\newcommand{\argmax}[1]{\underset{#1}{\operatorname{arg\,max}}\,}
+
 \begin{document}
 \maketitle
 
@@ -24,7 +26,7 @@ acordes. Para completar o modelo se associa uma distribuição de
 probabilidade de cada ``acorde'' desses gerar cada conjunto de notas
 possível. A análise harmônica, então, é a sequência de acordes que
 maximiza a probabilidade da sequência de notas observada, ou $
-\underset{h}{\operatorname{arg\,max}} \, P(h|N) $, onde $h$ é a análise
+\argmax{h} \, P(h|N) $, onde $h$ é a análise
 harmônica, $N$ é a sequência de notas e $P(h|N)$ é a probabilidade da
 análise harmônica dado a sequência de notas.
                                                                    
@@ -42,7 +44,7 @@ Assim, pelo teorema de Bayes,
 Como $P(N)$ é constante em todas as análises, podemos retirar da
 fórmula. Expandindo, então, temos que a análise correta $h_1 \ldots
 h_n$ é
-\[\underset{h_1 \ldots h_n}{\operatorname{arg\,max}} \, \prod_{i=1}^n P(N_i|h_i)P(h_i|h_{i-1}),\]
+\[\argmax{h_1 \ldots h_n} \prod_{i=1}^n P(N_i|h_i)P(h_i|h_{i-1}),\]
 onde as probabilidades $P(N_i|h_i)$ e $P(h_i|h_{i-1})$ são
 determinadas a partir dos dados de treinamento.
 
@@ -67,8 +69,11 @@ assim:
 \item Para a primeira linha, $T[0,j] = P(j|N_0)$, onde $N_0$ é
   o conjunto de notas da sonoridade $0$. $M[0,j] = nil$.
 \item Para cada linha consecutiva, 
-\[ T[i,j] = max \{ P(N_i|j)P(j|j')T[i-1,j'] \forall j' \in h \} \] 
-\[ M[i,j] = \underset{j'}{\operatorname{arg\,max}}\,  P(N_i|j)P(j|j')T[i-1,j']  \]
+  \begin{eqnarray}
+ T[i,j] &=& \operatorname{max} \{ P(N_i|j)P(j|j')T[i-1,j'] \forall j' \in h \} \\
+ M[i,j] &=& \argmax{j'} \{ P(N_i|j)P(j|j')T[i-1,j'] \}
+\label{eq:1}
+\end{eqnarray}
 onde $h$ é o conjunto de acordes possíveis.
 \end{itemize}
 A análise ideal, então, é o melhor caminho nessa tabela, calculado com
@@ -77,8 +82,12 @@ Backtracking. Esse é o algoritmo de Viterbi.
 Para simplificar as contas, o algoritmo usa, sempre que possível,
 $\log P(x)$ em vez de $P(x)$, já que multiplicar os muitos números
 pequenos pode causar underflow. Assim, as fórmulas ficam
-\[ T[0,j] = \log P(j|N_0)\]
-\[ T[i,j] = max \{ \log P(N_i|j) + \log P(j|j') + T[i-1,j'] \forall j' \in h \} \] 
-\[ M[i,j] = \underset{j'}{\operatorname{arg\,max}}\,  \log P(N_i|j) + \log P(j|j') + T[i-1,j'].\]
+\begin{eqnarray}
+T[0,j] &=& \log P(j|N_0) \\
+T[i,j] &=& \operatorname{max} \{ \log P(N_i|j) + \log P(j|j') + T[i-1,j'] \} \\
+M[i,j] &=& \argmax{j'} \{ \log P(N_i|j) + \log P(j|j') + T[i-1,j']\}.
+\label{eq:2}
+\end{eqnarray}
+
 
 \end{document}
