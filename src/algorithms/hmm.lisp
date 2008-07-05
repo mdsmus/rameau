@@ -262,3 +262,36 @@
 (add-algorithm (make-instance 'hmm
                               :name "EC-Hmm"
                               :description "A Hidden Markov Model for chord labeling."))
+
+(defclass hmm-bayes (hmm) ())
+
+(defun train-hmm-bayes (alg)
+  (let* ((training-data (mapcan #'transpose-96 *training-data*))
+         (pairs (collect-pairs training-data)))
+    (setf (notes alg) (estimate-chord-notes pairs))))
+
+(defmethod do-options ((alg hmm-bayes) options)
+  (when (aget :visualize (arg :options options))
+    (output-note-images alg))
+  (when (aget :train (arg :options options))
+    (train-hmm-bayes alg)))
+
+(defun bayes-decode (segments alg)
+  (let ((notes (notes alg)))
+    (iter (for s in segments)
+          (let (max
+                (maxp most-negative-double-float))
+            (iter (for i from 0 below *nlabels*)
+                  (let ((atual (notes-probabilities s notes i)))
+                    (when (< maxp atual)
+                      (setf maxp atual
+                            max i))))
+            (collect (number->label max))))))
+
+(defmethod perform-analysis (segments options (alg hmm-bayes))
+  (declare (ignore options))
+  (add-inversions segments (bayes-decode segments alg)))
+
+(add-algorithm (make-instance 'hmm-bayes
+                              :name "ES-Bay"
+                              :description "A naive bayes classifier for chord labeling."))
