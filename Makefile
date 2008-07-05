@@ -159,7 +159,12 @@ clean:
 	rm -f tools/algorithms.store
 	rm -f web/cache.store
 	rm -f music/*/*.{pdf,ps}
+	rm -f regressao/*.{pdf,ps}
 	rm -f book-corais.tex
+	rm -f checa-notas
+	rm -f analysis/*
+	rm -f music/chorales-bach/*.midi
+	find . -name *.o -exec rm {} \;
 	find . -name *.fasl -exec rm {} \;
 	find . -name *.fas -exec rm {} \;
 	find . -name *.lib -exec rm {} \;
