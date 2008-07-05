@@ -1,0 +1,84 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage[utf8x]{inputenc}
+
+\title{Algoritmo de Hidden Markov Model para o Rameau}
+\author{Alexandre Tachard Passos}
+
+\begin{document}
+\maketitle
+
+Um HMM (Hidden Markov Model) é um modelo probabilístico, uma       
+extensão das cadeias de Markov (Markov Chains) para ambientes onde 
+não se tem toda a informação necessária pra saber os estados da    
+sequência.                                                         
+                                                                   
+O objetivo de se usar um HMM para análise harmônica é prever a melhor
+análise possível para uma dada sequência de notas. Para isso, um HMM é
+dividido em duas partes. Em primeiro lugar se tem uma cadeia de Markov
+normal, representando os acordes ou os graus da análise funcional. A
+partir daí se tira a probabilidade de um acorde, ou de uma cadência
+como ii V I. Essa é a parte oculta do modelo. Ela se chama oculta por
+não ser diretamente observável na música---se ouvem notas, não
+acordes. Para completar o modelo se associa uma distribuição de
+probabilidade de cada ``acorde'' desses gerar cada conjunto de notas
+possível. A análise harmônica, então, é a sequência de acordes que
+maximiza a probabilidade da sequência de notas observada, ou $
+\underset{h}{\operatorname{arg\,max}} \, P(h|N) $, onde $h$ é a análise
+harmônica, $N$ é a sequência de notas e $P(h|N)$ é a probabilidade da
+análise harmônica dado a sequência de notas.
+                                                                   
+Para extrair essa probabilidade, algumas assumições são feitas:    
+\begin{itemize}                                                    
+ \item As notas observadas em um dado instante dependem apenas do  
+   acorde ``escondido'' naquele instante                           
+ \item O acorde ``escondido'' em um dado instante é unicamente     
+   determinado pelo acorde escondido imediatamente precedente.     
+\end{itemize}                                                      
+                                                                   
+Assim, pelo teorema de Bayes,
+\[P(h|N) = \frac{P(N|h)P(h)}{P(N)}.\]
+
+Como $P(N)$ é constante em todas as análises, podemos retirar da
+fórmula. Expandindo, então, temos que a análise correta $h_1 \ldots
+h_n$ é
+\[\underset{h_1 \ldots h_n}{\operatorname{arg\,max}} \, \prod_{i=1}^n P(N_i|h_i)P(h_i|h_{i-1}),\]
+onde as probabilidades $P(N_i|h_i)$ e $P(h_i|h_{i-1})$ são
+determinadas a partir dos dados de treinamento.
+
+Para determinar $P(N_i|h_i)$ basta construir um modelo que associe
+acordes a conjuntos de notas baseado no corpus de treinamento. Para
+determinar $P(h_i|h_{i-1})$ basta determinar uma matriz de transição
+de acordes no corpus de treinamento. Essa matriz é também chamada de
+um modelo bi-gram de acordes.
+
+Nessa implementação faremos ainda outra assumição simplificadora, a de
+que, dado um acorde $h_i$, as notas que o formam são aproximadamente
+independentes entre si, ou seja, para $N_i = \{n_1, \ldots , n_m\}$,
+$P(N_i|h_i) = \prod_{j=1}^m P(n_j|h_i)$.
+
+Por causa da propriedade de independência e por querermos encontrar
+apenas o evento de maior probabilidade a análise pode ser feita em
+$O(n*m)$, onde $n$ é o número de sonoridades e $m$ é o número de
+acordes possíveis. Para isso, constrói-se duas tabela $T[i,j]$ e
+$M[i,j]$ que associam o acorde $j$ à sonoridade $i$, e se preenche
+assim:
+\begin{itemize}
+\item Para a primeira linha, $T[0,j] = P(j|N_0)$, onde $N_0$ é
+  o conjunto de notas da sonoridade $0$. $M[0,j] = nil$.
+\item Para cada linha consecutiva, 
+\[ T[i,j] = max \{ P(N_i|j)P(j|j')T[i-1,j'] \forall j' \in h \} \] 
+\[ M[i,j] = \underset{j'}{\operatorname{arg\,max}}\,  P(N_i|j)P(j|j')T[i-1,j']  \]
+onde $h$ é o conjunto de acordes possíveis.
+\end{itemize}
+A análise ideal, então, é o melhor caminho nessa tabela, calculado com
+Backtracking. Esse é o algoritmo de Viterbi.
+
+Para simplificar as contas, o algoritmo usa, sempre que possível,
+$\log P(x)$ em vez de $P(x)$, já que multiplicar os muitos números
+pequenos pode causar underflow. Assim, as fórmulas ficam
+\[ T[0,j] = \log P(j|N_0)\]
+\[ T[i,j] = max \{ \log P(N_i|j) + \log P(j|j') + T[i-1,j'] \forall j' \in h \} \] 
+\[ M[i,j] = \underset{j'}{\operatorname{arg\,max}}\,  \log P(N_i|j) + \log P(j|j') + T[i-1,j'].\]
+
+\end{document}
