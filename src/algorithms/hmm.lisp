@@ -153,7 +153,7 @@
                                               (normalize 0 4 min max (aref notes i j))))
                       (fill-path))
                 (format t "One more line --- ~a of ~a ~%" i *nlabels*)))
-        (save-png (concatenate *rameau-path* "docs/view-hmm-note-probabilities.png"))))))
+        (save-png (concat *rameau-path* "docs/view-hmm-note-probabilities.png"))))))
 
 ;; (setf my-hmm (last1 rameau:*algorithms*))
 ;;(output-note-images my-hmm)
