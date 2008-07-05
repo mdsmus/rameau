@@ -28,7 +28,7 @@
                ))
 
 (asdf:defsystem :algorithms
-  :depends-on (:rameau-pkg :options :cl-store)
+  :depends-on (:rameau-pkg :options :cl-store :vecto)
   :components ((:module algorithms
                         :components ((:file "hmm")
                                      (:file "neural")
