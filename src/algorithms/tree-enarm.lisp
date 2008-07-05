@@ -3,6 +3,7 @@
 
 (defpackage :rameau-tree-enarm
   (:import-from #:arnesi "AIF" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
+  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
   (:use #:cl #:rameau #:machine-learning #:genoslib #:rameau-options))
 
 (in-package :rameau-tree-enarm)

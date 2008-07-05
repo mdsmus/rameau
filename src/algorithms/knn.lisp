@@ -1,5 +1,6 @@
 (defpackage :rameau-knn
   (:import-from #:arnesi "AIF" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX" "AWHEN")
+  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
   (:use #:cl #:rameau #:genoslib #:rameau-options))
 
 (in-package :rameau-knn)
