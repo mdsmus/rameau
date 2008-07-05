@@ -114,7 +114,7 @@
   ;; chord-notes
   (let ((notes (notes alg)))
     (with-canvas (:width  800 :height 1050)
-      (let ((font (get-font "/usr/share/fonts/truetype/ttf-bitstream-vera/Vera.ttf")))
+      (let ((font (get-font (concat *rameau-path* "fonts/" "Vera.ttf"))))
         (rectangle 0 0 800 1050)
         (set-rgb-stroke 0 0 0)
         (fill-path)
@@ -153,7 +153,7 @@
                                               (normalize 0 4 min max (aref notes i j))))
                       (fill-path))
                 (format t "One more line --- ~a of ~a ~%" i *nlabels*)))
-        (save-png (concatenate *rameau-path* "docs/view-hmm-note-probabilities.png")))))
+        (save-png (concatenate *rameau-path* "docs/view-hmm-note-probabilities.png"))))))
 
 ;; (setf my-hmm (last1 rameau:*algorithms*))
 ;;(output-note-images my-hmm)
