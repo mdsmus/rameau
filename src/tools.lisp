@@ -80,8 +80,8 @@
   '(("chorales" "music/chorales-bach/")
     ("kostka" "music/kostka-payne/")
     ("exemplos" "music/examples/")
-    ("regressao" "regressao/")
-    ("lily" "regressao-lily/")))
+    ("regression" "regression/")
+    ("lily" "regression-lily/")))
 
 (defparameter *gabarito-dir-list*
   '(("chorales" "answer-sheets/chorales-bach/")
