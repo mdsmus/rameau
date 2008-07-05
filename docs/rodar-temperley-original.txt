@@ -1,1 +1,0 @@
-../mftext-release-07/mftext ../../../corais/coral-001.midi | ../meter/meter | ../harmony/harmony | 

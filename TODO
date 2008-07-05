@@ -1,8 +1,0 @@
-* nao faz analise sempre
-* check
-* fix debug
-* fix profile
-[ok] * valores iniciais em *commands*
-* entra gab na linha comando com --answer-sheet foo.gab
-* divide main.lisp em secoes (folding ou alguma coisa assim)
-* bug: para achar gab de exemplo e chorale

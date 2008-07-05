@@ -4,6 +4,9 @@ fann-windows/*
 pauta.html
 *.lib
 rameau
+*.o
+*.pdf
+*.ps
 *.fasl
 *.fas
 *.lib

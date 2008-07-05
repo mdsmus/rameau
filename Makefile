@@ -158,6 +158,8 @@ clean:
 	rm -f rameau
 	rm -f tools/algorithms.store
 	rm -f web/cache.store
+	rm -f music/*/*.{pdf,ps}
+	rm -f book-corais.tex
 	find . -name *.fasl -exec rm {} \;
 	find . -name *.fas -exec rm {} \;
 	find . -name *.lib -exec rm {} \;
