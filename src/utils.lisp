@@ -358,3 +358,13 @@ null or 'erro."
 	     (cons (subseq list 0 p)
 		   (sublist-of-args (nthcdr p list) char)))
 	   (list list)))))
+
+(defun argmax (function start end)
+  (let ((argmax 0)
+        (max most-negative-double-float))
+    (iter (for column from start below end)
+          (for v = (funcall function column))
+          (when (< max v)
+            (setf max v
+                  argmax column)))
+    (values argmax max)))
