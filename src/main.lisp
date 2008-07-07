@@ -672,7 +672,6 @@
               ;;; parse algorithms options
               (setf (arg :algorithms options) (filter-algorithms (arg :algorithms options)))
               (setf (arg :options options) (process-option-list (arg :options options)))
-              (format t "Done.~%")
               (for analysis = (analyse-files options))
               (if (and (string= command "analysis")
                        (every #'null (mapcar #'analysis-segments analysis)))

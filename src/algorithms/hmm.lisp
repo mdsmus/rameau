@@ -14,7 +14,8 @@
 (defclass hmm (rameau-algorithm)
   ((transitions :accessor trans :initform nil)
    (initial-transitions :accessor start-trans :initform nil)
-   (chord-notes :accessor notes :initform nil)))
+   (chord-notes :accessor notes :initform nil)
+   (special-notes :accessor special-notes :initform nil)))
 
 (defparameter *chords*
   (iter (for root from 0 to 95)
@@ -24,12 +25,35 @@
                                                                :mode mode
                                                                :7th seventh))))))))
 
+(defparameter *modes*
+  (iter (for mode in '("" "m" "+" "°" "ø" "!"))
+        (appending (iter (for seventh in '("" "7" "7-" "7+"))
+                         (collect (make-chord :root "C"
+                                              :mode mode
+                                              :7th seventh))))))
+
 (defparameter *nct* (list (make-melodic-note)))
 (defparameter *aug6s* (iter (for type in '("al" "fr" "it"))
                             (collect (make-augmented-sixth :type type))))
 
+(defparameter *specials* (append *nct* *aug6s*))
+
 (defparameter *labels* (append *chords* *nct* *aug6s*))
 (defparameter *nlabels* (length *labels*))
+(defparameter *nchords* (length *chords*))
+(defparameter *nmodes* (length *modes*))
+(defparameter *nspecials* (length *specials*))
+
+(defun mode->list (mode)
+  (list :chord (make-keyword (chord-mode mode)) (make-keyword (chord-7th mode))))
+
+(defparameter *lmodes* (mapcar #'mode->list *modes*))
+
+(defun mode->number (mode)
+  (position (mode->list mode) *lmodes* :test #'equal))
+
+(defun number->mode (number)
+  (nth number *modes*))
 
 (defun label->list (label)
   (cond ((chord-p label)
@@ -41,13 +65,21 @@
         (t (list :other))))
 
 (defparameter *llabels* (mapcar #'label->list *labels*))
-         
+(defparameter *lspecials* (mapcar #'label->list *specials*))
+
 (defun label->number (label)
   (or (position (label->list label) *llabels* :test #'equal)
       (error "Should never be nil")))
 
 (defun number->label (number)
   (nth number *labels*))
+
+(defun special->number (label)
+  (or (position (label->list label) *lspecials* :test #'equal)
+      (error "Should never be nil")))
+
+(defun number->special (number)
+  (nth number *specials*))
 
 (defun transpose-96 (data)
   (destructuring-bind (coral gabarito) data
@@ -76,24 +108,38 @@
                   )))
     transitions))
 
-(defun estimate-chord-probabilities (chords)
-  (let ((chords (mapcar #'label->number chords))
-        (probs (make-array (list *nlabels*) :initial-element 1d0 :element-type 'double-float)))
-    (iter (for c in chords)
-          (incf (aref probs c)))
-    (let ((sum (iter (for c from 0 below *nlabels*) (sum (aref probs c)))))
-      (iter (for c from 0 below *nlabels*)
-            (setf (aref probs c) (log (/ (aref probs c) sum)))))
+(defun estimate-chord-notes (pairs)
+  (let ((pairs (mapcar #L(and (chord-p (second !1))
+                              (list (mode->number (second !1)) (mapcar #'event-pitch (first !1)) (parse-note (chord-root (second !1)))))
+                       pairs))
+        (probs (make-array (list *nmodes* 96) :initial-element 1d0 :element-type 'double-float)))
+    (iter (for (label notes root) in pairs)
+          (and label notes root
+               (iter (for n in notes)
+                     (incf (aref probs label (module (- n root)))))))
+    (iter (for i from 0 below *nmodes*)
+          (let ((sum (iter (for j from 0 below 96) (sum (aref probs i j)))))
+            (iter (for j from 0 below 96)
+                  (setf (aref probs i j) (log (/ (aref probs i j) sum))))))
     probs))
 
-(defun estimate-chord-notes (pairs)
-  (let ((pairs (mapcar #L(list (label->number (second !1)) (mapcar #'event-pitch (first !1)))
+(defun get-special (l)
+  (if (listp l)
+      (iter (for i in l)
+            (unless (chord-p i)
+              (return i)))
+      l))
+
+(defun estimate-special-notes (pairs)
+  (let ((pairs (mapcar #L(and (not (chord-p (second !1)))
+                              (list (special->number (get-special (second !1))) (mapcar #'event-pitch (first !1))))
                        pairs))
-        (probs (make-array (list *nlabels* 96) :initial-element 1d0 :element-type 'double-float)))
+        (probs (make-array (list *nspecials* 96) :initial-element 1d0 :element-type 'double-float)))
     (iter (for (label notes) in pairs)
-          (iter (for n in notes)
-                (incf (aref probs label n))))
-    (iter (for i from 0 below *nlabels*)
+          (and label notes
+               (iter (for n in notes)
+                     (incf (aref probs label n)))))
+    (iter (for i from 0 below *nspecials*)
           (let ((sum (iter (for j from 0 below 96) (sum (aref probs i j)))))
             (iter (for j from 0 below 96)
                   (setf (aref probs i j) (log (/ (aref probs i j) sum))))))
@@ -102,9 +148,9 @@
 (defun train-hmm (alg)
   (let* ((training-data (mapcan #'transpose-96 *training-data*))
          (chords (mapcar #'second training-data))
-         (pairs (collect-pairs training-data)))
+         (pairs (collect-pairs *training-data*)))
     (setf (trans alg) (estimate-transitions chords)
-          ;(start-trans alg) (estimate-chord-probabilities chords)
+          (special-notes alg) (estimate-special-notes pairs)
           (notes alg) (estimate-chord-notes pairs))))
 
 (defun normalize (zero one min max value)
@@ -211,33 +257,50 @@
   (when (aget :train (arg :options options))
     (train-hmm alg)))
 
-(defun notes-probabilities (segment notes chord)
+(defun notes-probabilities (segment notes mode root)
   (let ((pitches (mapcar #'event-pitch segment)))
     (iter (for p in pitches)
-          (sum (aref notes chord p)))))
+          (sum (aref notes mode (module (- p root)))))))
+
+(defun special-probabilities (segment specials special)
+  (let ((pitches (mapcar #'event-pitch segment)))
+    (iter (for p in pitches)
+          (sum (aref specials special p)))))
 
 (defun viterbi-decode (segments alg)
   (let* ((tran (trans alg))
          ;(ini (start-trans alg))
          (notes (notes alg))
+         (specials (special-notes alg))
          (size (length segments))
-         (tp (make-array (list size *nlabels*) :element-type 'double-float))
-         (m (make-array (list size *nlabels*) :element-type 'integer)))
+         (tp (make-array (list size (+ (* 96 *nmodes*) *nspecials*)) :element-type 'double-float))
+         (m (make-array (list size (+ (* 96 *nmodes*) *nspecials*)) :element-type 'integer))
+         (maxmodes (* 96 *nmodes*)))
     (dbg :hmm-prof "Setting up initial conditions...~%")
-    (iter (for j from 0 below *nlabels*)
-          (setf (aref tp 0 j) (notes-probabilities (first segments) notes j)))
+    (dbg :hmm-prof "Starting up with notes: 96 notes, ~a modes, ~a labels, ~a size...~%"
+         *nmodes* *nlabels* (+ (* 96 *nmodes*) *nspecials*))
+    (iter (for note from 0 below 96)
+          (iter (for mode from 0 below *nmodes*)
+                ;(dbg :hmm-prof "Chord-note-mode ~a ~a ~a~%" note mode (+ mode (* note 96)))
+                (setf (aref tp 0 (+ mode (* note *nmodes*)))
+                      (notes-probabilities (first segments) notes mode note))))
+    (dbg :hmm-prof "...done.~%Starting up with specials...~%")
+    (iter (for special from maxmodes below *nlabels*)
+          (setf (aref tp 0 special)
+                (special-probabilities (first segments) specials (- special maxmodes))))
     (dbg :hmm-prof " ... done.~%")
     (iter (for i from 1 below size)
           (for seg in (cdr segments))
           (dbg :hmm-prof "  Analysing sonority ~a~%" i)
           (iter (for j from 0 below *nlabels*)
                 (let ((maxjp 0)
-                      (maxp most-negative-double-float)
-                      (np (notes-probabilities seg notes j)))
+                      (maxp most-negative-double-float))
                   (iter (for jp from 0 below *nlabels*)
                         (let ((p (+ (aref tp (1- i) jp)
                                     (aref tran jp j)
-                                    np)))
+                                    (if (< j maxmodes)
+                                        (notes-probabilities seg notes (mod j *nmodes*) (truncate j *nmodes*))
+                                        (special-probabilities seg specials (- j maxmodes))))))
                           (when (> p maxp)
                             (setf maxp p
                                   maxjp jp))))
@@ -269,37 +332,37 @@
                               :name "EC-Hmm"
                               :description "A Hidden Markov Model for chord labeling."))
 
-(defclass hmm-bayes (hmm) ())
-
-(defun train-hmm-bayes (alg)
-  (let* ((training-data (mapcan #'transpose-96 *training-data*))
-         (pairs (collect-pairs training-data)))
-    (setf (notes alg) (estimate-chord-notes pairs))))
-
-(defmethod do-options ((alg hmm-bayes) options)
-  (when (aget :visualize (arg :options options))
-    (output-note-images alg))
-  (when (aget :train (arg :options options))
-    (train-hmm-bayes alg)))
-
-(defun bayes-decode (segments alg)
-  (let ((notes (notes alg)))
-    (iter (for s in segments)
-          (for n from 0)
-          (dbg :hmm-prof " Bayes-Analyzing sonority ~a~%" n)
-          (let (max
-                (maxp most-negative-double-float))
-            (iter (for i from 0 below *nlabels*)
-                  (let ((atual (notes-probabilities s notes i)))
-                    (when (< maxp atual)
-                      (setf maxp atual
-                            max i))))
-            (collect (number->label max))))))
-
-(defmethod perform-analysis (segments options (alg hmm-bayes))
-  (declare (ignore options))
-  (add-inversions segments (bayes-decode segments alg)))
-
-(add-algorithm (make-instance 'hmm-bayes
-                              :name "ES-Bay"
-                              :description "A naive bayes classifier for chord labeling."))
+;(defclass hmm-bayes (hmm) ())
+;
+;(defun train-hmm-bayes (alg)
+;  (let* ((training-data (mapcan #'transpose-96 *training-data*))
+;         (pairs (collect-pairs training-data)))
+;    (setf (notes alg) (estimate-chord-notes pairs))))
+;
+;(defmethod do-options ((alg hmm-bayes) options)
+;  (when (aget :visualize (arg :options options))
+;    (output-note-images alg))
+;  (when (aget :train (arg :options options))
+;    (train-hmm-bayes alg)))
+;
+;(defun bayes-decode (segments alg)
+;  (let ((notes (notes alg)))
+;    (iter (for s in segments)
+;          (for n from 0)
+;          (dbg :hmm-prof " Bayes-Analyzing sonority ~a~%" n)
+;          (let (max
+;                (maxp most-negative-double-float))
+;            (iter (for i from 0 below *nlabels*)
+;                  (let ((atual (notes-probabilities s notes i)))
+;                    (when (< maxp atual)
+;                      (setf maxp atual
+;                            max i))))
+;            (collect (number->label max))))))
+;
+;(defmethod perform-analysis (segments options (alg hmm-bayes))
+;  (declare (ignore options))
+;  (add-inversions segments (bayes-decode segments alg)))
+;
+;(add-algorithm (make-instance 'hmm-bayes
+;                              :name "ES-Bay"
+;                              :description "A naive bayes classifier for chord labeling."))
