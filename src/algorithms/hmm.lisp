@@ -62,7 +62,11 @@
         ((melodic-note-p label)
          (list :melodic-note))
         ((augmented-sixth-p label)
-         (list :augmented-sixth (augmented-sixth-type label)))
+         (list :augmented-sixth (make-keyword (augmented-sixth-type label))))
+        ((null label)
+         (error "Should not be nil"))
+        ((listp label)
+         (label->list (first label)))
         (t (list :other))))
 
 (defparameter *llabels* (mapcar #'label->list *labels*))
@@ -155,7 +159,8 @@
       l))
 
 (defun estimate-special-notes (pairs)
-  (let ((pairs (mapcar #L(and (not (chord-p (second !1)))
+  (let ((pairs (mapcar #L(and (not (listp (second !1)))
+                              (not (chord-p (second !1)))
                               (list (special->number (get-special (second !1))) (mapcar #'event-pitch (first !1))))
                        pairs))
         (probs (make-array (list (* *nspecials* 96)) :initial-element 0d0 :element-type 'double-float)))
