@@ -284,11 +284,6 @@
                   argmax column)))
     (values argmax max)))
 
-(defun max-2 (array function row size)
-  (multiple-value-bind (argmax max) (argmax-2 array function row size)
-    (declare (ignore argmax))
-    max))
-
 (defun viterbi-decode (segments alg)
   (declare (optimize (speed 3)))
   (let* ((tran (trans alg))
