@@ -154,7 +154,8 @@
            (print-hline-term size-line)
            (print-footer-term "CORRECT(%)" size-line number-algorithms options)
            (iter (for i in (mapcar (lambda (x) (% x seg-number)) right-answer-list))
-                 (print-chord-column options (format nil "~,2f" i)))))))
+                 (print-chord-column options (format nil "~,2f" i)))
+           (format t "~%")))))
 
 
 
@@ -649,7 +650,9 @@
 (defun main (&optional args)
   "You can run main from the REPL with all arguments as a
   string: (main \"analysis chorales -v -f 001\")"
+  ;(format t "Starting rameau... loading algorithms~%")
   (load-algorithms)
+  ;(format t "Done, processing arguments...~%")
   (let* ((*package* (find-package :rameau-main))
          (rameau-args (rameau-args))
          (arguments (if rameau-args rameau-args (cl-ppcre:split " " args)))
@@ -664,30 +667,29 @@
                     (if key
                         (setf (arg key options) value)
                         (return-from main  (progn (format t "ERROR: command not found. Exiting.~%") 1))))
+              (aif (arg :debug options)
+                   (mapcar2 #'rameau-debug #'make-keyword it)
+                   (rameau-undebug))
               (when (or (arg :help options) (string= cmd "-h")) (print-help))
               ;;; parse file options
               (setf (arg :files options) (parse-files options))
               ;;; parse algorithms options
               (setf (arg :algorithms options) (filter-algorithms (arg :algorithms options)))
               (setf (arg :options options) (process-option-list (arg :options options)))
+              (format t "Done.~%")
               (for analysis = (analyse-files options))
-              ;; FIXME debug is not working
-              (aif (arg :debug options)
-                   (mapcar2 #'rameau-debug #'string->symbol it)
-                   (rameau-undebug))
               (awhen (arg :trace options)
                 (maptrace it))
-                   ;(maptrace it 'untrace))
               (with-profile options
                 (if (and (string= command "analysis")
                          (every #'null (mapcar #'analysis-segments analysis)))
                     (progn
                       (print-fatal "It seems I couldn't make the analysis. Check if your file is correct.")
                       (rameau-quit))
-		    (let ((fn (%string->symbol command)))
-		      (if (fboundp fn)
-			  (funcall fn options analysis)
-			  (print-fatal (concat cmd " is not a rameau command."))))))
+                    (let ((fn (%string->symbol command)))
+                      (if (fboundp fn)
+                          (funcall fn options analysis)
+                          (print-fatal (concat cmd " is not a rameau command."))))))
               ;;(dbg 'main "~a" (print-slots options))
               )
         (print-help)))

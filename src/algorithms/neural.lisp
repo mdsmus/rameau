@@ -214,7 +214,10 @@
    (hidden-units :accessor chord-hidden-units :initarg :units :initform 30)))
 
 (defmethod perform-analysis (segments options (alg chord-net))
-  (apply-e-chord-net segments options alg))
+  (format t "Starting neural net...~%")
+  (let ((result (apply-e-chord-net segments options alg)))
+    (format t "LEaving neural net...~%")
+    result))
 
 (defmethod do-options ((alg chord-net) options)
   (awhen (aget :e-chord-data (arg :options options))

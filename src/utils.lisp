@@ -71,9 +71,9 @@
 (defun dbg (id format-string &rest args)
   "Print debugging info if (DEBUG ID) has been specified. [DONTCHECK]"
   (when (member id *dbg-ids* :test #'string=)
-    (fresh-line *debug-io*)
-    (apply #'format *debug-io* (concat " => DEBUG: " format-string) args)
-    (force-output *debug-io*)))
+    (fresh-line *standard-output*)
+    (apply #'format t (concat " => DEBUG: " format-string) args)
+    (force-output *standard-output*)))
 
 (defun dbg-indent (id indent format-string &rest args)
   "Print indented debugging info if (DEBUG ID) has been specified. [DONTCHECK]"
@@ -82,9 +82,10 @@
     (dotimes (i indent) (princ " " *debug-io*))
     (apply #'format *debug-io* (concat " => DEBUG: " format-string) args)))
 
-(defun rameau-debug (&rest ids)
+(defun rameau-debug (id)
   "Start dbg output on the given ids. [DONTCHECK]"
-  (setf *dbg-ids* (union ids *dbg-ids*)))
+  (format t "Debugging ~a~%" id)
+  (push id *dbg-ids*))
 
 (defun rameau-undebug (&rest ids)
   "Stop dbg on the ids. With no ids, stop dbg altogether. [DONTCHECK]"

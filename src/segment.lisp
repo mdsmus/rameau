@@ -38,7 +38,6 @@
                              (+ (smallest segmento #'event-dur)
                                      (event-start (first segmento)))))
          (tamanho (- proximo-start (event-start (first segmento)))))
-    (dbg 'segmento "Prox-ini: ~a, Tam: ~a ~%" proximo-start tamanho)
     (values (mapcar (lambda (nota)
                       (if (= (event-dur nota) tamanho)
                           nota
