@@ -275,6 +275,20 @@
       (notes-probabilities seg notes (mod j *nmodes*) (truncate j *nmodes*))
       (special-probabilities seg specials (- j *maxmodes*))))
 
+(defun argmax-2 (array function row size)
+  (let ((argmax 0)
+        (max most-negative-double-float))
+    (iter (for column from 0 below size)
+          (when (< max (funcall function array row column))
+            (setf max (funcall function array row column)
+                  argmax column)))
+    (values argmax max)))
+
+(defun max-2 (array function row size)
+  (multiple-value-bind (argmax max) (argmax-2 array function row size)
+    (declare (ignore argmax))
+    max))
+
 (defun viterbi-decode (segments alg)
   (declare (optimize (speed 3)))
   (let* ((tran (trans alg))
@@ -285,8 +299,6 @@
          (tp (make-array (list size (+ (* 96 *nmodes*) *nspecials*)) :element-type 'double-float))
          (m (make-array (list size (+ (* 96 *nmodes*) *nspecials*)) :element-type 'integer)))
     (dbg :hmm-prof "Setting up initial conditions...~%")
-    (dbg :hmm-prof "Starting up with notes: 96 notes, ~a modes, ~a labels, ~a size...~%"
-         *nmodes* *nlabels* (+ (* 96 *nmodes*) *nspecials*))
     (iter (for note from 0 below *nlabels*)
           (setf (aref tp 0 note)
                 (probabilities (first segments) notes specials note)))
@@ -295,32 +307,20 @@
           (for seg in (cdr segments))
           (dbg :hmm-prof "  Analysing sonority ~a~%" i)
           (iter (for j from 0 below *nlabels*)
-                (let ((maxjp 0)
-                      (maxp most-negative-double-float)
-                      (prob (probabilities seg notes specials j)))
-                  (iter (for jp from 0 below *nlabels*)
-                        (let ((p (+ (aref tp (1- i) jp)
-                                    (aref tran jp j)
-                                    prob)))
-                          (when (> p maxp)
-                            (setf maxp p
-                                  maxjp jp))))
-                  (setf (aref tp i j) maxp)
-                  (setf (aref m i j) maxjp))))
+                (let ((prob (probabilities seg notes specials j)))
+                  (multiple-value-bind (maxjp maxp)
+                      (argmax-2 tp
+                                #L(+ (aref !1 !2 !3)
+                                     (aref tran !3 j)
+                                     prob)
+                                (1- i)
+                                *nlabels*)
+                    (setf (aref tp i j) maxp)
+                    (setf (aref m i j) maxjp)))))
     (dbg :hmm-prof "Backtracking...~%")
-    (let ((chords (let ((maxp most-negative-double-float)
-                        (maxj 0)
-                        (i (1- size)))
-                    (iter (for j from 0 below *nlabels*)
-                          (when (> (aref tp i j) maxp)
-                            (setf maxp (aref tp i j)
-                                  maxj j)))
-                    (list maxj)))
-          j)
-      (setf j (first chords))
+    (let ((chords (list (argmax-2 tp #'aref (1- size) *nlabels*))))
       (iter (for i from (1- size) downto 1)
-            (push (aref m i j) chords)
-            (setf j (aref m i j)))
+            (push (aref m i (first chords)) chords))
       (mapcar #'number->label chords))))
 
 (defmethod perform-analysis (segments options (alg hmm))
@@ -333,37 +333,39 @@
                               :name "EC-Hmm"
                               :description "A Hidden Markov Model for chord labeling."))
 
-;(defclass hmm-bayes (hmm) ())
-;
-;(defun train-hmm-bayes (alg)
-;  (let* ((training-data (mapcan #'transpose-96 *training-data*))
-;         (pairs (collect-pairs training-data)))
-;    (setf (notes alg) (estimate-chord-notes pairs))))
-;
-;(defmethod do-options ((alg hmm-bayes) options)
-;  (when (aget :visualize (arg :options options))
-;    (output-note-images alg))
-;  (when (aget :train (arg :options options))
-;    (train-hmm-bayes alg)))
-;
-;(defun bayes-decode (segments alg)
-;  (let ((notes (notes alg)))
-;    (iter (for s in segments)
-;          (for n from 0)
-;          (dbg :hmm-prof " Bayes-Analyzing sonority ~a~%" n)
-;          (let (max
-;                (maxp most-negative-double-float))
-;            (iter (for i from 0 below *nlabels*)
-;                  (let ((atual (notes-probabilities s notes i)))
-;                    (when (< maxp atual)
-;                      (setf maxp atual
-;                            max i))))
-;            (collect (number->label max))))))
-;
-;(defmethod perform-analysis (segments options (alg hmm-bayes))
-;  (declare (ignore options))
-;  (add-inversions segments (bayes-decode segments alg)))
-;
-;(add-algorithm (make-instance 'hmm-bayes
-;                              :name "ES-Bay"
-;                              :description "A naive bayes classifier for chord labeling."))
+(defclass hmm-bayes (hmm) ())
+
+(defun train-hmm-bayes (alg)
+  (let* ((training-data (mapcan #'transpose-96 *training-data*))
+         (pairs (collect-pairs training-data)))
+    (setf (notes alg) (estimate-chord-notes pairs)
+          (special-notes alg) (estimate-special-notes pairs))))
+
+(defmethod do-options ((alg hmm-bayes) options)
+  (when (aget :visualize (arg :options options))
+    (output-note-images alg))
+  (when (aget :train (arg :options options))
+    (train-hmm-bayes alg)))
+
+(defun bayes-decode (segments alg)
+  (let ((notes (notes alg))
+        (specials (special-notes alg)))
+    (iter (for s in segments)
+          (for n from 0)
+          (dbg :hmm-prof " Bayes-Analyzing sonority ~a~%" n)
+          (let (max
+                (maxp most-negative-double-float))
+            (iter (for i from 0 below *nlabels*)
+                  (let ((atual (probabilities s notes specials i)))
+                    (when (< maxp atual)
+                      (setf maxp atual
+                            max i))))
+            (collect (number->label max))))))
+
+(defmethod perform-analysis (segments options (alg hmm-bayes))
+  (declare (ignore options))
+  (add-inversions segments (bayes-decode segments alg)))
+
+(add-algorithm (make-instance 'hmm-bayes
+                              :name "ES-Bay"
+                              :description "A naive bayes classifier for chord labeling."))
