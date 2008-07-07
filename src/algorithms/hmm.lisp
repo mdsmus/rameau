@@ -114,6 +114,14 @@
       not-zero
       value))
 
+(defun dirichlett-smooth (array sizea sizeb)
+  (iter (for i from 0 below sizea)
+        (let ((sum (iter (for j from 0 below sizeb) (sum (aref array (+ (* sizeb i) j)))))
+              (zeros (iter (for j from 0 below sizeb) (counting (= 0 (aref array (+ (* sizeb i) j)))))))
+          (iter (for j from 0 below sizeb)
+                (setf (aref array (+ (* sizeb i) j))
+                      (log (/ (not-zero (aref array (+ (* sizeb i) j)) (/ 1 (+ 0.00000001 zeros))) (1+ sum))))))))
+
 (defun estimate-chord-notes (pairs)
   (let ((pairs (mapcar #L(and (chord-p (second !1))
                               (list (mode->number (second !1)) (mapcar #'event-pitch (first !1)) (parse-note (chord-root (second !1)))))
@@ -123,11 +131,7 @@
           (and label notes root
                (iter (for n in notes)
                      (incf (aref probs (+ (* 96 label) (module (- n root))))))))
-    (iter (for i from 0 below *nmodes*)
-          (let ((sum (iter (for j from 0 below 96) (sum (aref probs (+ (* 96 i) j)))))
-                (zeros (iter (for j from 0 below 96) (counting (= 0 (aref probs (+ (* 96 i) j)))))))
-            (iter (for j from 0 below 96)
-                  (setf (aref probs (+ (* 96 i) j)) (log (/ (not-zero (aref probs (+ (* 96 i) j)) (/ 1 (+ 0.00000001 zeros))) (1+ sum)))))))
+    (dirichlett-smooth probs *nmodes* 96)
     probs))
 
 (defun get-special (l)
@@ -146,11 +150,7 @@
           (and label notes
                (iter (for n in notes)
                      (incf (aref probs (+ (* 96 label) n))))))
-    (iter (for i from 0 below *nspecials*)
-          (let ((sum (iter (for j from 0 below 96) (sum (aref probs (+ (* 96 i) j)))))
-                (zeros (iter (for j from 0 below 96) (counting (= 0 (aref probs (+ (* 96 i) j)))))))
-            (iter (for j from 0 below 96)
-                  (setf (aref probs (+ (* 96 i) j)) (log (/ (not-zero (aref probs (+ (* 96 i) j)) (/ 1 (+ 0.000001 zeros))) (1+ sum)))))))
+    (dirichlett-smooth probs *nspecials* 96)
     probs))
 
 (defun train-hmm (alg)
