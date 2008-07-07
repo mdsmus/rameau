@@ -27,14 +27,6 @@
   #+cmu (subseq cmu-args (1+ (position "cmurameau" extensions:*command-line-strings* :test #'string=)))
   #+clisp ext:*args*)
 
-(defmacro with-profile (args &body body)
-  `(progn
-     (when (arg :profile ,args)
-       (rameau-profile))
-     ,@body
-     (when (arg :profile ,args)
-       (rameau-report))))
-
 (defun maptrace (lista-string &optional (trace 'trace))
   (let ((expr (append (list trace) (mapcar2 #'read-from-string #'string-upcase lista-string))))
     (eval expr)))
@@ -670,6 +662,10 @@
               (aif (arg :debug options)
                    (mapcar2 #'rameau-debug #'make-keyword it)
                    (rameau-undebug))
+              (when (arg :profile options)
+                (rameau-profile))
+              (awhen (arg :trace options)
+                (maptrace it))
               (when (or (arg :help options) (string= cmd "-h")) (print-help))
               ;;; parse file options
               (setf (arg :files options) (parse-files options))
@@ -678,20 +674,19 @@
               (setf (arg :options options) (process-option-list (arg :options options)))
               (format t "Done.~%")
               (for analysis = (analyse-files options))
-              (awhen (arg :trace options)
-                (maptrace it))
-              (with-profile options
-                (if (and (string= command "analysis")
-                         (every #'null (mapcar #'analysis-segments analysis)))
-                    (progn
-                      (print-fatal "It seems I couldn't make the analysis. Check if your file is correct.")
-                      (rameau-quit))
-                    (let ((fn (%string->symbol command)))
-                      (if (fboundp fn)
-                          (funcall fn options analysis)
-                          (print-fatal (concat cmd " is not a rameau command."))))))
+              (if (and (string= command "analysis")
+                       (every #'null (mapcar #'analysis-segments analysis)))
+                  (progn
+                    (print-fatal "It seems I couldn't make the analysis. Check if your file is correct.")
+                    (rameau-quit))
+                  (let ((fn (%string->symbol command)))
+                    (if (fboundp fn)
+                        (funcall fn options analysis)
+                        (print-fatal (concat cmd " is not a rameau command.")))))
+              (when (arg :profile options)
+                (rameau-report)))
               ;;(dbg 'main "~a" (print-slots options))
-              )
+        
         (print-help)))
   #+clisp(ext:exit)
   0)

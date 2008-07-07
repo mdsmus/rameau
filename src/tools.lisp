@@ -26,6 +26,7 @@
          (sb-profile:profile "RAMEAU")
          (sb-profile:profile "RAMEAU-PARDO")
 				 (sb-profile:profile "RAMEAU-KNN")
+         (sb-profile:profile "RAMEAU-HMM")
 				 (sb-profile:profile "RAMEAU-NEURAL")
 				 (sb-profile:profile "RAMEAU-SAVE")
          (sb-profile:profile "RAMEAU-TREE-ENARM")
