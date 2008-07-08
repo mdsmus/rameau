@@ -19,7 +19,7 @@
 (defparameter *7th-length* 4)
 (defparameter *value* 96)
 (defparameter *neural-version* "-006-")
-(defparameter *neural-path* (concat *rameau-path* "neural-nets/master-" *neural-version* "-"))
+(defparameter *neural-path* (concat *rameau-path* "algorithms/master-" *neural-version* "-"))
 
 ;;; general functions
 (defun extract-diffs (segmento)

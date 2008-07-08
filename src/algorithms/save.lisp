@@ -5,7 +5,7 @@
 
 (in-package :rameau-save)
 
-(defparameter *algs-path* (concat *rameau-path* "tools/algorithms.store"))
+(defparameter *algs-path* (concat *rameau-path* "algorithms/algorithms.store"))
 
 (defun store-algorithms ()
   (cl-store:store *algorithms* *algs-path*))

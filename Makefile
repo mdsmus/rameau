@@ -1,13 +1,9 @@
 SYSTEM = $(shell uname -s)
 
 ifeq ("$(SYSTEM)", "Linux")
-	TRAIN_VERSION = $(shell grep -o '(neural-version "[0-9]\+")' src/options.lisp | \
-	sed 's/(neural-version "\([0-9]\+\)")/\1/')
 	SBCL_BIN = /usr/bin/sbcl
 	LISP_BIN = /usr/bin/lisp
 else ifeq ("$(SYSTEM)", "FreeBSD")
-	TRAIN_VERSION = $(shell grep -o '(neural-version "[0-9]\+")' src/options.lisp | \
-	sed -E 's/\(neural-version "([0-9]+)"\)/\1/')
 	SBCL_BIN = /usr/local/bin/sbcl
 	LISP_BIN = /usr/local/bin/lisp
 endif
@@ -30,10 +26,8 @@ endif
 
 lisp-files = $(wildcard src/*asd src/*.lisp src/lib/*.lisp tools/*.lisp src/algorithms/*.lisp)
 
-neural-path = $(maindir)/neural-nets/
+neural-path = $(maindir)/algorithms/
 
-vpath %.fann $(neural-path)
-vpath %.data $(neural-path)
 
 .PHONY: update clean all doc update
 
@@ -94,7 +88,7 @@ pauta:
 clean:
 	rm -f rameau cmurameau eclrameau clisprameau checa-notas
 
-cleanall: clean clean-nets clean-web clean-lib
+cleanall: clean clean-algs clean-web clean-lib
 
 distclean: cleanall clean-deps clean-analysis clean-score clean-midi clean-cache clean-web clean-deps
 	cd docs/choral-book && $(MAKE) cleanall
@@ -103,8 +97,8 @@ lispclean:
 	rm -rf /var/cache/common-lisp-controller/$$UID/sbcl/local
 	rm -rf ~/lisp/fasl/*
 
-clean-nets:
-	rm -f neural-nets/*
+clean-algs:
+	rm -f algorithms/*
 
 clean-analysis:
 	rm -rf analysis
