@@ -378,7 +378,7 @@
                                                     prevj)
                                               maximizing (+ (aref tp (1- i) prevj)
                                                             (get-tran tran strans prevj j))))))
-                  (setf (aref tp i j) (+ prob (first values))
+                  (setf (aref tp i j) (+ (* 2 prob) (first values))
                         (aref m i j) (second values))
                   (setf newcache (clip 10 (insert (list (aref tp i j) (aref m i j) i j) newcache :less #'> :key #'first)))))
           (setf cache newcache)
