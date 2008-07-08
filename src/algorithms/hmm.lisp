@@ -338,9 +338,13 @@
 
 (defun get-tran (tr str p c)
   (if (< p *maxmodes*)
-      (aref tr (+ (* *nlabels* (mod p *nmodes*))
-                  (mod (- c (truncate p *nmodes*))
-                       *nlabels*)))
+      (let* ((l (number->label p))
+             (m (mode->number l))
+             (ll (number->label c))
+             (rr (reroot l ll))
+             (nn (label->number rr)))
+        (aref tr (+ (* *nlabels* m)
+                    nn)))
       (aref str (+ (* *nlabels* (- p *maxmodes*))
                    c))))
 
