@@ -10,10 +10,13 @@
 \begin{document}
 \maketitle
 
-Um HMM (Hidden Markov Model) é um modelo probabilístico, uma       
-extensão das cadeias de Markov (Markov Chains) para ambientes onde 
-não se tem toda a informação necessária pra saber os estados da    
-sequência.                                                         
+\section{Introdução}
+\label{sec:intro}
+
+Um HMM (Hidden Markov Model) é uma extensão das cadeias de Markov
+(Markov Chains, modelos estatísticos para predição de sequências) para
+ambientes onde não se tem toda a informação necessária pra saber os
+estados da sequência.
                                                                    
 O objetivo de se usar um HMM para análise harmônica é prever a melhor
 análise possível para uma dada sequência de notas. Para isso, um HMM é
@@ -29,7 +32,10 @@ maximiza a probabilidade da sequência de notas observada, ou $
 \argmax{h} \, P(h|N) $, onde $h$ é a análise
 harmônica, $N$ é a sequência de notas e $P(h|N)$ é a probabilidade da
 análise harmônica dado a sequência de notas.
-                                                                   
+
+\section{Simplificações}
+\label{sec:simpl}
+
 Para extrair essa probabilidade, algumas assumições são feitas:    
 \begin{itemize}                                                    
  \item As notas observadas em um dado instante dependem apenas do  
@@ -58,6 +64,9 @@ Nessa implementação faremos ainda outra assumição simplificadora, a de
 que, dado um acorde $h_i$, as notas que o formam são aproximadamente
 independentes entre si, ou seja, para $N_i = \{n_1, \ldots , n_m\}$,
 $P(N_i|h_i) = \prod_{j=1}^m P(n_j|h_i)$.
+
+\section{Algoritmo de Viterbi}
+\label{sec:viterbi}
 
 Por causa da propriedade de independência e por querermos encontrar
 apenas o evento de maior probabilidade a análise pode ser feita em
@@ -89,5 +98,34 @@ M[i,j] &=& \argmax{j'} \{ \log P(N_i|j) + \log P(j|j') + T[i-1,j']\}.
 \label{eq:2}
 \end{eqnarray}
 
+\section{Indução do modelo}
+\label{sec:modelo}
+
+Como foi visto nas seções acima, para fazer a análise harmônica é
+necessário precomputar três funções de probabilidade: $P(N_i|h_i)$,
+que representa a probabilidade de obter as notas de um segmento dado a
+análise do segmento; $P(h_i|h_{i-1})$, que representa a probabilidade
+de um acore $h_{i-1}$ ser seguido por um acorde $h_i$; e $P(h_i)$,
+usada para inicializar o algoritmo.
+
+A princípio, todas essas probabilidades poderiam ser deduzidas apenas
+a partir de uma simples contagem de quantas vezes cada evento desses
+ocorre no corpus de treinamento. Isso, no entanto, apresenta alguns
+problemas, concentrando massa probabilística demais nos eventos
+observados e ignorando os não-observados. Para evitar esse problema
+várias técnicas de \textit{smoothing} podem ser adotadas. A mais
+simples, que se chama \textit{``add-one smoothing''}, consiste em
+simplesmente adicionar $1$ a todas as contagens observadas. Isso, no
+entanto, tem o problema oposto, concentrando massa probabilística
+demais nos eventos não-observados. A ideal de se utilizar se chama
+\textit{``Good-Turing smoothing''}, mas é complicada demais e não foi
+implementada ainda. O smoothing adotado atualmente consiste em usar
+uma função de probabilidade anterior (\textit{prior probability}) que
+é um processo de Dirichlett. Assim, a probabilidade de cada símbolo
+$s$ observado fica $F_s/(\alpha + F)$, onde $\alpha$ é um parâmetro e
+$F_s$ é a frequência em que $s$ aparece e $F$ é o total de
+observações; e a frequência de cada símbolo não-observado fica
+$\alpha/(\alpha + F)$. Isso apresenta resultados razoáveis, como pode
+ser conferido nas visualizações das frequências.
 
 \end{document}
