@@ -128,4 +128,33 @@ observações; e a frequência de cada símbolo não-observado fica
 $\alpha/(\alpha + F)$. Isso apresenta resultados razoáveis, como pode
 ser conferido nas visualizações das frequências.
 
+\section{Simetrias}
+\label{sec:simetrias}
+
+Os modelos induzidos de acordo com as técnicas da seção
+\ref{sec:modelo} ainda apresentam um problema de excessiva
+dimensionalidade. Como existem $96$ notas enarmonicamente distintas na
+codificação utilizada, $6$ modos possíveis para cada acorde, com até
+$4$ opções de sétimas (ignorando outras adições), notas melódicas e
+$3$ variedades de sextas aumentada, o número de acordes possíveis
+$N_h$ é $96 \times 6 \times 24 + 1 + 3 = 2308$. Assim, a tabela de
+probabilidades para $P(h_i|h_{i-1})$ tem $2308 \times 2308 = 5326864$
+entradas. Se cada entrada é um \texttt{double-float}, que ocupa 64
+bits de memória ram, temos $40mb$ de memória apenas para essa tabela,
+sem nenhuma estrutura adicionada. A tabela para $P(N|h_i)$, por sua
+vez, ocuparia $96 \times 2308 = 221568$ unidades, ou $1mb$ na memória.
+
+Para comprimir essas tabelas resolvemos explorar algumas simetrias
+existentes nos acordes.
+
+Para comprimir, assumimos que as notas de um acorde e as transições de
+um acorde para outro dependem linearmente da tônica de cada acorde; ou
+seja: podemos, no treinamento, transpor todos os acordes nas linhas da
+tabela para ter $C$ (\textit{dó}) como a fundamental e guardar na
+tabela apenas as probabilidades das diferenças. Isso diminui o número
+de acordes a ser considerados de $2308$ para $28$, cortando a tabela
+$P(h_i|h_{i-1})$ de $40mb$ para $504kb$ e a tabela $P(N|h_i)$ de $1mb$
+para $21kb$, um corte de duas ordens de magnitude.
+
+
 \end{document}
