@@ -54,6 +54,9 @@ deps:
 train:
 	./rameau algorithms -o train
 
+visuals:
+	./rameau algorithms -o visualize
+
 rameau-deps:
 	$(MAKE) cl-fann rameau
 
@@ -101,7 +104,7 @@ clean-algs:
 	rm -f algorithms/*
 
 clean-analysis:
-	rm -rf analysis
+	rm -f analysis/*
 
 clean-score:
 	rm -f music/*/*.{pdf,ps}
@@ -109,6 +112,9 @@ clean-score:
 
 clean-midi:
 	rm -f music/*/*.midi
+
+clean-visuals:
+	rm -f docs/view-hmm-{note,trans}-probabilities.png
 
 clean-lib:
 	find -name *.fasl -or -name *.o -or -name *.fas -or -name *.lib -or -name *.x86f | xargs rm -f
