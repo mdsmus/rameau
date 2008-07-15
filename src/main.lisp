@@ -136,7 +136,7 @@
           (for seg-number from 1)
           (for answer in (analysis-answer-sheet analysis))
           (for result in (make-result-list analysis))
-          (for comparison = (mapcar (lambda (x) (compare-answer-sheet answer x)) result))
+          (for comparison = (mapcar (lambda (x) (compare-answer-sheet x answer)) result))
           (setf right-answer-list (inc-bool-list comparison right-answer-list))
           (print-line-term options seg-number note dur answer)
           (iter (for res in result)
@@ -193,7 +193,7 @@
               (sum (* (- n a) (- n a))))))
 
 (defun count-hits (res gab)
-  (length (remove-if #'null (mapcar #'compare-answer-sheet gab res))))
+  (length (remove-if #'null (mapcar #'compare-answer-sheet res gab))))
 
 (defcommand collect-data (options analysis)
   (declare (ignore options))
