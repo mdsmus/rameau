@@ -588,7 +588,8 @@
   (setf *algorithms*
         (iter (for alg in *algorithms*)
               (when (find (alg-name alg) (mapcar #'alg-name (arg :algorithms options)) :test #'equalp)
-                (do-options alg options))
+                (do-options alg options)
+                (save-alg alg))
               (collect alg))))
 
 (defcommand web (options &rest ignore)
@@ -667,8 +668,8 @@
               ;;; parse file options
               (setf (arg :files options) (parse-files options))
               ;;; parse algorithms options
-              (setf (arg :algorithms options) (filter-algorithms (arg :algorithms options)))
-              (setf (arg :options options) (process-option-list (arg :options options)))
+              (setf (arg :algorithms options) (mapcar #'load-alg (filter-algorithms (arg :algorithms options)))
+                    (arg :options options) (process-option-list (arg :options options)))
               (for analysis = (analyse-files options))
               (if (and (string= command "analysis")
                        (every #'null (mapcar #'analysis-segments analysis)))

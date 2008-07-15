@@ -347,14 +347,12 @@
 
 
 (defmethod do-options ((alg hmm) options)
-  (let ((alg (load-alg alg)))
-    (when (aget :visualize (arg :options options))
-      (output-prior-images alg)
-      (output-note-images alg)
-      (output-transition-images alg))
-    (when (aget :train (arg :options options))
-      (train-hmm alg))
-    (save-alg alg)))
+  (when (aget :visualize (arg :options options))
+    (output-prior-images alg)
+    (output-note-images alg)
+    (output-transition-images alg))
+  (when (aget :train (arg :options options))
+    (train-hmm alg)))
 
 (defun notes-probabilities (segment notes i j)
   (let ((pitches (mapcar #'event-pitch segment)))
@@ -428,8 +426,7 @@
 
 (defmethod perform-analysis (segments options (alg hmm))
   (declare (ignore options))
-  (let* ((alg (load-alg alg))
-         (result (add-inversions segments (viterbi-decode segments alg))))
+  (let ((result (add-inversions segments (viterbi-decode segments alg))))
     (dbg :hmm-prof "Done...~%")
     result))
 
@@ -447,12 +444,10 @@
           (start-trans alg) (estimate-start-trans chords))))
 
 (defmethod do-options ((alg hmm-bayes) options)
-  (let ((alg (load-alg alg)))
-    (when (aget :visualize (arg :options options))
-      (output-note-images alg))
-    (when (aget :train (arg :options options))
-      (train-hmm-bayes alg))
-    (save-alg alg)))
+  (when (aget :visualize (arg :options options))
+    (output-note-images alg))
+  (when (aget :train (arg :options options))
+    (train-hmm-bayes alg)))
 
 (defun bayes-decode (segments alg)
   (let ((notes (notes alg))
@@ -468,8 +463,7 @@
 
 (defmethod perform-analysis (segments options (alg hmm-bayes))
   (declare (ignore options))
-  (let ((alg (load-alg alg)))
-    (add-inversions segments (bayes-decode segments alg))))
+  (add-inversions segments (bayes-decode segments alg)))
 
 (add-algorithm (make-instance 'hmm-bayes
                               :name "ES-Bay"
