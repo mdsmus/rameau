@@ -77,13 +77,14 @@
   (declare (ignore options))
   (add-inversions coral (mapcar #L(chord-tree-classify alg !1) coral)))
 
-(defun do-train-chord-tree (alg)
-  (multiple-value-bind (corais gabaritos)
-      (unzip *training-data*)
-    (train-chord-tree alg corais gabaritos)))
-
 (defclass tree (rameau-algorithm)
   ((tree :accessor tree-tree :initform nil)))
+
+(defun do-train-chord-tree (alg)
+  (unless (tree-tree alg)
+    (multiple-value-bind (corais gabaritos)
+        (unzip *training-data*)
+      (train-chord-tree alg corais gabaritos))))
 
 (defmethod perform-analysis (segments options (alg tree))
   (do-classification segments options alg))
