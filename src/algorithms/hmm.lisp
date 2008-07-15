@@ -11,6 +11,9 @@
 ;;; usando modelos de Markov escondidos. A descrição do modelo usado
 ;;; está em docs/hmm.tex.
 
+(declaim (optimize (speed 3)
+                   (safety 0)
+                   (debug 0)))
 
 (defclass hmm (rameau-algorithm)
   ((transitions :accessor trans :initform nil)
@@ -21,6 +24,7 @@
 
 (defparameter *chords*
   (iter (for root from 0 to 95)
+        (declare (fixnum root))
         (appending (iter (for mode in '("" "m" "+" "°" "ø" "!"))
                          (appending (iter (for seventh in '("" "7" "7-" "7+"))
                                           (collect (make-chord :root (print-note (code->notename root) 'latin)
@@ -90,6 +94,7 @@
 (defun transpose-96 (data)
   (destructuring-bind (coral gabarito) data
     (iter (for i from 0 to 95)
+          (declare (fixnum i))
           (collect (list (transpose-segmentos coral i)
                          (transpose-chords gabarito i))))))
 
@@ -101,8 +106,8 @@
 
 (defun reroot (prev chord)
   (if (chord-p chord)
-      (make-chord :root (print-note (code->notename (module (- (parse-note (chord-root chord))
-                                                               (parse-note (chord-root prev))))))
+      (make-chord :root (print-note (code->notename (module (- (the fixnum (parse-note (chord-root chord)))
+                                                               (the fixnum (parse-note (chord-root prev)))))))
                   :mode (chord-mode chord)
                   :7th (chord-7th chord))
       (if (listp chord)
@@ -110,17 +115,18 @@
           chord)))
 
 (defun not-zero (value not-zero)
-  (if (= 0 value)
-      not-zero
-      value))
+  (if (= 0d0 value)
+      (the double-float not-zero)
+      (the double-float value)))
 
 (defun dirichlett-smooth (array sizea sizeb)
   (iter (for i from 0 below sizea)
+        (declare (fixnum i))
         (let ((sum (iter (for j from 0 below sizeb) (sum (aref array (+ (* sizeb i) j)))))
               (zeros (iter (for j from 0 below sizeb) (counting (= 0 (aref array (+ (* sizeb i) j)))))))
           (iter (for j from 0 below sizeb)
                 (setf (aref array (+ (* sizeb i) j))
-                      (log (/ (not-zero (aref array (+ (* sizeb i) j)) (/ 1 (+ 0.00000001 zeros))) (1+ sum))))))))
+                      (log (/ (not-zero (aref array (+ (* sizeb i) j)) (/ 1 (+ 0.00000001d0 zeros))) (1+ sum))))))))
 
 (defun estimate-transitions (chords)
   (let ((transitions (make-array (* *nmodes* *nlabels*) :initial-element 0d0 :element-type 'double-float)))
@@ -192,6 +198,7 @@
           (notes alg) (estimate-chord-notes pairs))))
 
 (defun normalize (zero one min max value)
+  (declare (double-float zero one min max value))
   (let ((value (- value min))
         (max (- max min)))
     (+ zero
@@ -240,7 +247,7 @@
                 (iter (for j from 0 below 96)
                       (centered-circle-path (+ 70 (* 30 n))
                                             (+ 7 (* 10 j))
-                                            (normalize 0 4 min max (aref notes (+ (* 96 i) j))))
+                                            (normalize 0d0 4d0 min max (aref notes (+ (* 96 i) j))))
                       (fill-path))
                 (dbg :hmm-prof "One more line --- ~a of ~a ~%" i *nlabels*))
           (dbg :hmm-prof "Now the special chords.~%")
@@ -250,7 +257,7 @@
                 (iter (for j from 0 below 96)
                       (centered-circle-path (+ 70 (* 30 m))
                                             (+ 7 (* 10 j))
-                                            (normalize 0 4 min max (aref specials (+ (* 96 n) j))))
+                                            (normalize 0d0 4d0 min max (aref specials (+ (* 96 n) j))))
                       (fill-path))
                 (dbg :hmm-prof "One more line --- ~a of ~a ~%" i *nlabels*)))
         (save-png (concat *rameau-path* "docs/view-hmm-note-probabilities.png"))))))
@@ -295,7 +302,7 @@
                 (iter (for j from 0 below *nlabels*)
                       (centered-circle-path (+ 40 (* 3 j))
                                             (+ 7 (* 10 i))
-                                            (normalize 0 4 min max (aref tr (+ (* *nlabels* i) j))))
+                                            (normalize 0d0 4d0 min max (aref tr (+ (* *nlabels* i) j))))
                       (fill-path))
                 (dbg :hmm-prof "One more line --- ~a of ~a ~%" i *nlabels*))
           (iter (for n from *nmodes* below (+ *nmodes* *nspecials*))
@@ -303,7 +310,7 @@
                 (iter (for j from 0 below *nlabels*)
                       (centered-circle-path (+ 40 (* 3 j))
                                             (+ 7 (* 10 n))
-                                            (normalize 0 4 min max (aref str (+ (* *nlabels* i) j))))
+                                            (normalize 0d0 4d0 min max (aref str (+ (* *nlabels* i) j))))
                       (fill-path))
                 (dbg :hmm-prof "One more line --- ~a of ~a ~%" i *nlabels*)))
         (save-png (concat *rameau-path* "docs/view-hmm-trans-probabilities.png"))))))
@@ -337,7 +344,7 @@
           (iter (for i from 0 below *nlabels*)
                 (centered-circle-path 70
                                       (+ 7 (* 10 i))
-                                      (normalize 0 4 min max (aref tr i)))
+                                      (normalize 0d0 4d0 min max (aref tr i)))
                 (fill-path)))
         (save-png (concat *rameau-path* "docs/view-hmm-prior-probabilities.png"))))))
         
@@ -357,21 +364,26 @@
 (defun notes-probabilities (segment notes i j)
   (let ((pitches (mapcar #'event-pitch segment)))
     (iter (for p in pitches)
+          (declare (fixnum p))
           (sum (aref notes (+ (* 96 i) (module (- p j))))))))
 
 (defun special-probabilities (segment specials special)
   (let ((pitches (mapcar #'event-pitch segment)))
     (iter (for p in pitches)
+          (declare (fixnum p))
           (sum (aref specials (+ (* 96 special) p))))))
 
 (defparameter *maxmodes* (* 96 *nmodes*))
 
 (defun probabilities (seg notes specials j)
+  (declare (fixnum j *maxmodes* *nmodes*))
   (if (< j *maxmodes*)
       (notes-probabilities seg notes (mod j *nmodes*) (truncate j *nmodes*))
       (special-probabilities seg specials (- j *maxmodes*))))
 
 (defun get-tran (tr str p c)
+  (declare (fixnum p c *maxmodes* *nmodes* *nlabels*)
+           ((array double-float) tr str))
   (if (< p *maxmodes*)
       (let* ((m (mod p *nmodes*))
              (rr2 (+ (* (module (- (truncate c *nmodes*)
@@ -396,12 +408,14 @@
          (m (make-array (list size (+ (* 96 *nmodes*) *nspecials*)) :element-type 'integer)))
     (dbg :hmm-prof "Setting up initial conditions...~%")
     (iter (for note from 0 below *nlabels*)
+          (declare (fixnum note))
           (setf (aref tp 0 note)
                 (+ (probabilities (first segments) notes specials note)
                    (aref start note)))
           (setf cache (clip 10 (insert (list (aref tp 0 note) (aref m 0 note) 0 note) cache :less #'> :key #'first))))
     (dbg :hmm-prof " ... done.~%")
     (iter (for i from 1 below size)
+          (declare (fixnum i))
           (for seg in (cdr segments))
           (dbg :hmm-prof "  Analysing sonority ~a~%" i)
           (for newcache = nil)
@@ -419,7 +433,7 @@
           (setf cache newcache)
           (dbg :hmm-prof "Cache is: ~a~%" (mapcar2 #'number->label #'fourth cache)))
     (dbg :hmm-prof "Backtracking...~%")
-    (let ((chords (list (argmax #L(aref tp (1- size) !1) 0 *nlabels*))))
+    (let ((chords (list (argmax #L(aref tp (1- (the fixnum size)) !1) 0 *nlabels*))))
       (iter (for i from (1- size) downto 1)
             (push (aref m i (first chords)) chords))
       (mapcar #'number->label chords))))
