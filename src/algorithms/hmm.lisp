@@ -11,6 +11,7 @@
 ;;; usando modelos de Markov escondidos. A descrição do modelo usado
 ;;; está em docs/hmm.tex.
 
+
 (defclass hmm (rameau-algorithm)
   ((transitions :accessor trans :initform nil)
    (special-transitions :accessor special-trans :initform nil)
@@ -346,12 +347,14 @@
 
 
 (defmethod do-options ((alg hmm) options)
-  (when (aget :visualize (arg :options options))
-    (output-prior-images alg)
-    (output-note-images alg)
-    (output-transition-images alg))
-  (when (aget :train (arg :options options))
-    (train-hmm alg)))
+  (let ((alg (load-alg alg)))
+    (when (aget :visualize (arg :options options))
+      (output-prior-images alg)
+      (output-note-images alg)
+      (output-transition-images alg))
+    (when (aget :train (arg :options options))
+      (train-hmm alg))
+    (save-alg alg)))
 
 (defun notes-probabilities (segment notes i j)
   (let ((pitches (mapcar #'event-pitch segment)))
@@ -425,7 +428,8 @@
 
 (defmethod perform-analysis (segments options (alg hmm))
   (declare (ignore options))
-  (let ((result (add-inversions segments (viterbi-decode segments alg))))
+  (let* ((alg (load-alg alg))
+         (result (add-inversions segments (viterbi-decode segments alg))))
     (dbg :hmm-prof "Done...~%")
     result))
 
@@ -443,10 +447,12 @@
           (start-trans alg) (estimate-start-trans chords))))
 
 (defmethod do-options ((alg hmm-bayes) options)
-  (when (aget :visualize (arg :options options))
-    (output-note-images alg))
-  (when (aget :train (arg :options options))
-    (train-hmm-bayes alg)))
+  (let ((alg (load-alg alg)))
+    (when (aget :visualize (arg :options options))
+      (output-note-images alg))
+    (when (aget :train (arg :options options))
+      (train-hmm-bayes alg))
+    (save-alg alg)))
 
 (defun bayes-decode (segments alg)
   (let ((notes (notes alg))
@@ -462,7 +468,8 @@
 
 (defmethod perform-analysis (segments options (alg hmm-bayes))
   (declare (ignore options))
-  (add-inversions segments (bayes-decode segments alg)))
+  (let ((alg (load-alg alg)))
+    (add-inversions segments (bayes-decode segments alg))))
 
 (add-algorithm (make-instance 'hmm-bayes
                               :name "ES-Bay"

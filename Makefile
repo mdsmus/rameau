@@ -120,7 +120,7 @@ clean-lib:
 	find -name *.fasl -or -name *.o -or -name *.fas -or -name *.lib -or -name *.x86f | xargs rm -f
 
 clean-cache:
-	rm -f tools/algorithms.store
+	rm -f algorithms/{ES,EC,S}-{Bay,Hmm,Net,Knn,tree}.store
 	rm -f web/cache.store
 
 clean-web:

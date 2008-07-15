@@ -89,8 +89,10 @@
   (do-classification segments options alg))
 
 (defmethod do-options ((alg tree) options)
-  (when (aget :train (arg :options options))
-    (do-train-chord-tree alg)))
+  (let ((alg (load-alg alg)))
+    (when (aget :train (arg :options options))
+      (do-train-chord-tree alg))
+    (save-alg alg)))
 
 (add-algorithm (make-instance 'tree
                               :name "ES-tree"

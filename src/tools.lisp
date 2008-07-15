@@ -9,6 +9,19 @@
   (format nil "~a" (or #+sbcl *default-pathname-defaults*
 		       #+cmu (first (ext:search-list "default:"))
 		       #+clisp (ext:default-directory))))
+
+(defun alg-file-name (alg)
+  (concat *rameau-path* "/algorithms/" (alg-name alg) ".store"))
+
+(defun load-alg (alg)
+  (let (done)
+    (handler-case (cl-store:restore (alg-file-name alg))
+      (simple-error () alg)
+      (error () alg))))
+
+(defun save-alg (alg)
+  (cl-store:store alg (alg-file-name alg)))
+
 (defun rameau-args ()
   "[DONTCHECK]"
   (let ((sbcl-args #+sbcl sb-ext:*posix-argv*)

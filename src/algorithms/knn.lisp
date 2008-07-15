@@ -104,13 +104,16 @@
    (nn :accessor knn-nn :initform (make-alist))))
 
 (defmethod perform-analysis (segments options (alg knn))
-  (prepare-answers-k1 segments options alg))
+  (let ((alg (load-alg alg)))
+    (prepare-answers-k1 segments options alg)))
 
 (defmethod do-options ((alg knn) options)
-  (awhen (aget :k (arg :options options))
-    (setf (knn-k alg) it))
-  (when (aget :train (arg :options options))
-    (train-k1 alg *training-data*)))
+  (let ((alg (load-alg alg)))
+    (awhen (aget :k (arg :options options))
+      (setf (knn-k alg) it))
+    (when (aget :train (arg :options options))
+      (train-k1 alg *training-data*))
+    (save-alg alg)))
 
 (add-algorithm
  (make-instance 'knn :name "ES-Knn"
@@ -179,19 +182,22 @@
    (variance :accessor cknn-variance :initarg :variance :initform 3/2)))
 
 (defmethod perform-analysis (segments options (alg context-knn))
-  (prepare-answers-context segments options alg))
+  (let ((alg (load-alg alg)))
+    (prepare-answers-context segments options alg)))
 
 (defmethod do-options ((alg context-knn) options)
-  (awhen (aget :ck (arg :options options))
-    (setf (cknn-k alg) it))
-  (awhen (aget :before-context (arg :options options))
-    (setf (cknn-before-context alg) it))
-  (awhen (aget :after-context (arg :options options))
-    (setf (cknn-after-context alg) it))
-  (awhen (aget :variance (arg :options options))
-    (setf (cknn-variance alg) it))
-  (when (aget :train (arg :options options))
-    (train-context alg *training-data*)))
+  (let ((alg (load-alg alg)))
+    (awhen (aget :ck (arg :options options))
+      (setf (cknn-k alg) it))
+    (awhen (aget :before-context (arg :options options))
+      (setf (cknn-before-context alg) it))
+    (awhen (aget :after-context (arg :options options))
+      (setf (cknn-after-context alg) it))
+    (awhen (aget :variance (arg :options options))
+      (setf (cknn-variance alg) it))
+    (when (aget :train (arg :options options))
+      (train-context alg *training-data*))
+    (save-alg alg)))
 
 (add-algorithm (make-instance
                 'context-knn

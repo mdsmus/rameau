@@ -215,19 +215,22 @@
 
 (defmethod perform-analysis (segments options (alg chord-net))
   (dbg :neural "Starting neural net...~%")
-  (let ((result (apply-e-chord-net segments options alg)))
+  (let* ((alg (load-alg alg))
+         (result (apply-e-chord-net segments options alg)))
     (dbg :neural "LEaving neural net...~%")
     result))
 
 (defmethod do-options ((alg chord-net) options)
-  (awhen (aget :e-chord-data (arg :options options))
-    (setf (e-chord-data alg) it))
-  (awhen (aget :e-chord-fann (arg :options options))
-    (setf (e-chord-fann alg) it))
-  (awhen (aget :hidden-units (arg :options options))
-    (setf (chord-hidden-units alg) it))
-  (when (aget :train (arg :options options))
-    (train-e-chord-net alg)))
+  (let ((alg (load-alg alg)))
+    (awhen (aget :e-chord-data (arg :options options))
+      (setf (e-chord-data alg) it))
+    (awhen (aget :e-chord-fann (arg :options options))
+      (setf (e-chord-fann alg) it))
+    (awhen (aget :hidden-units (arg :options options))
+      (setf (chord-hidden-units alg) it))
+    (when (aget :train (arg :options options))
+      (train-e-chord-net alg))
+    (save-alg alg)))
 
 (add-algorithm (make-instance 'chord-net
                               :name "ES-Net"
@@ -296,24 +299,25 @@
    (hidden-units :accessor context-hidden-units :initarg :units :initform 22)))
 
 (defmethod perform-analysis (segments options (alg context-net))
-  (apply-context-net segments options alg))
+  (let ((alg (load-alg alg)))
+    (apply-context-net segments options alg)))
 
 (defmethod do-options ((alg context-net) options)
-  (awhen (aget :context-data (arg :options options))
-    (setf (context-data alg) it))
-  (awhen (aget :context-fann (arg :options options))
-    (setf (context-fann alg) it))
-  (awhen (aget :hidden-units (arg :options options))
-    (setf (context-hidden-units alg) it))
-  (awhen (aget :context-before (arg :options options))
-    (setf (net-context-before alg) it))
-  (awhen (aget :context-after (arg :options options))
-    (setf (net-context-after alg) it))
-  (when (aget :train (arg :options options))
-    (train-context-net alg)))
+  (let ((alg (load-alg alg)))
+    (awhen (aget :context-data (arg :options options))
+      (setf (context-data alg) it))
+    (awhen (aget :context-fann (arg :options options))
+      (setf (context-fann alg) it))
+    (awhen (aget :hidden-units (arg :options options))
+      (setf (context-hidden-units alg) it))
+    (awhen (aget :context-before (arg :options options))
+      (setf (net-context-before alg) it))
+    (awhen (aget :context-after (arg :options options))
+      (setf (net-context-after alg) it))
+    (when (aget :train (arg :options options))
+      (train-context-net alg))
+    (save-alg alg)))
 
 (add-algorithm (make-instance 'context-net
                               :name "EC-Net"
                               :description "A neural network classifier that considers surrounding sonorities as well."))
-
-
