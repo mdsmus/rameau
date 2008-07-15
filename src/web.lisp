@@ -95,7 +95,7 @@
             (:div :align "left" :id "algorithms" :class "algorithms"
                   (iter (for alg in (filter-algorithms nil))
                         (htm (:p (:input :type "checkbox" 
-                                         :checked (= 0 (count-subseq "C" (alg-name alg)))
+                                         :checked (/= 0 (count-subseq "Net" (alg-name alg)))
                                          :name (alg-name alg)
                                          :id (alg-name alg))
                                  (:label :for (alg-name alg) (fmt "<b>~a</b>:<i>~a</i>"
@@ -345,7 +345,6 @@ baixo = \\relative c {
 
 
 (defun start-rameau-web ()
-  (rameau-save:load-algorithms)
   (start-server :port 4242))
 
 ;;(start-rameau-web)

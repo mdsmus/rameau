@@ -589,8 +589,7 @@
         (iter (for alg in *algorithms*)
               (when (find (alg-name alg) (mapcar #'alg-name (arg :algorithms options)) :test #'equalp)
                 (do-options alg options))
-              (collect alg)))
-  (store-algorithms))
+              (collect alg))))
 
 (defcommand web (options &rest ignore)
   (declare (ignore ignore options))
@@ -642,8 +641,6 @@
 (defun main (&optional args)
   "You can run main from the REPL with all arguments as a
   string: (main \"analysis chorales -v -f 001\")"
-  ;(format t "Starting rameau... loading algorithms~%")
-  (load-algorithms)
   ;(format t "Done, processing arguments...~%")
   (let* ((*package* (find-package :rameau-main))
          (rameau-args (rameau-args))

@@ -114,7 +114,7 @@ clean-midi:
 	rm -f music/*/*.midi
 
 clean-visuals:
-	rm -f docs/view-hmm-{note,trans}-probabilities.png
+	rm -f docs/view-hmm-{note,trans,prior}-probabilities.png
 
 clean-lib:
 	find -name *.fasl -or -name *.o -or -name *.fas -or -name *.lib -or -name *.x86f | xargs rm -f
