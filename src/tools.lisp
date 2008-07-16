@@ -41,7 +41,6 @@
 				 (sb-profile:profile "RAMEAU-KNN")
          (sb-profile:profile "RAMEAU-HMM")
 				 (sb-profile:profile "RAMEAU-NEURAL")
-				 (sb-profile:profile "RAMEAU-SAVE")
          (sb-profile:profile "RAMEAU-TREE-ENARM")
          (sb-profile:profile "RAMEAU-MAIN")
          (sb-profile:profile "GENOSLIB")
