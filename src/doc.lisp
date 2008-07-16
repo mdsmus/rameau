@@ -21,7 +21,7 @@
          (s (cl-ppcre:regex-replace-all "\\$" s "\\\\$")))
     s))
 
-(defun print-function-doc (package f function)
+(defun print-function-doc (f function)
   (let ((name (function-name function)))
     (format f "\\section{~(~a~)}~%\\label{sec:~(~a~)}~%"
             (escape-latex name)
@@ -44,7 +44,7 @@
             (documentation (find-package pname) t))
     (iter (for s in symbs)
           (when (= 0 (count-subseq "%" (stringify s)))
-            (print-function-doc (find-package pname) f (symbol-function s)))))
+            (print-function-doc f (symbol-function s)))))
     
 
           
@@ -65,8 +65,8 @@
 \\title{Rameau Programmer's Guide}
 \\author{Pedro Kroger and Alexandre Passos}
 
-\\newcommand{\function}[2]{
-  \\noindent\texttt{#1}\\hfill\\textbf{[function]}\\
+\\newcommand{\\function}[2]{
+  \\noindent\\texttt{#1}\\hfill\\textbf{[function]}\\\\
   #2
 \\vspace{2em}
 }
