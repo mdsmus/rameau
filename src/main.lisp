@@ -586,12 +586,9 @@
 
 (defcommand algorithms (options &rest ignore)
   (declare (ignore ignore))
-  (setf *algorithms*
-        (iter (for alg in *algorithms*)
-              (when (find (alg-name alg) (mapcar #'alg-name (arg :algorithms options)) :test #'equalp)
-                (do-options alg options)
-                (save-alg alg))
-              (collect alg))))
+  (iter (for alg in (arg :algorithms options))
+        (do-options alg options)
+        (save-alg alg)))
 
 (defcommand web (options &rest ignore)
   (declare (ignore ignore options))
@@ -705,7 +702,6 @@
         (print-help)))
   #+clisp(ext:exit)
   0)
-
+(format t "Algorithms: ~a~%" (mapcar #'alg-name *algorithms*))
 (main "algorithms -o train")
-
 ;(trace module genoslib::get-system-module)

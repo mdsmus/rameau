@@ -21,7 +21,10 @@
    (special-transitions :accessor special-trans :initform nil)
    (initial-transitions :accessor start-trans :initform nil)
    (chord-notes :accessor notes :initform nil)
-   (special-notes :accessor special-notes :initform nil)))
+   (special-notes :accessor special-notes :initform nil)
+   (version :accessor hmm-version :initform 0)))
+
+(defparameter *version* 1)
 
 (defparameter *chords*
   (iter (for root from 0 to 95)
@@ -359,8 +362,11 @@
     (output-prior-images alg)
     (output-note-images alg)
     (output-transition-images alg))
-  (when (aget :train (arg :options options))
-    (train-hmm alg)))
+  (when (and (aget :train (arg :options options))
+             (not (eql *version* (hmm-version alg))))
+    (format t "Training hmm...~%")
+    (train-hmm alg)
+    (setf (hmm-version alg) *version*)))
 
 (defun notes-probabilities (segment notes i j)
   (let ((pitches (mapcar #'event-pitch segment)))
@@ -461,8 +467,11 @@
 (defmethod do-options ((alg hmm-bayes) options)
   (when (aget :visualize (arg :options options))
     (output-note-images alg))
-  (when (aget :train (arg :options options))
-    (train-hmm-bayes alg)))
+  (when (and (aget :train (arg :options options))
+             (not (eql *version* (hmm-version alg))))
+    (format t "Training bayes...~%")
+    (train-hmm-bayes alg)
+    (setf (hmm-version alg) *version*)))
 
 (defun bayes-decode (segments alg)
   (let ((notes (notes alg))

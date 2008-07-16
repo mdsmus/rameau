@@ -21,6 +21,8 @@
 ;; values are the counts for how many times each class appears.
 
 (defparameter *examples* (make-alist))
+(defparameter *version* 1)
+
 
 (defun process-chord (acorde diff)
   (cond ((chord-p acorde)
@@ -102,7 +104,8 @@
 
 (defclass knn (rameau-algorithm)
   ((k :accessor knn-k :initarg :k :initform 1)
-   (nn :accessor knn-nn :initform (make-alist))))
+   (nn :accessor knn-nn :initform (make-alist))
+   (version :accessor knn-version :initform 0)))
 
 (defmethod perform-analysis (segments options (alg knn))
   (prepare-answers-k1 segments options alg))
@@ -110,8 +113,11 @@
 (defmethod do-options ((alg knn) options)
   (awhen (aget :k (arg :options options))
     (setf (knn-k alg) it))
-  (when (aget :train (arg :options options))
-    (train-k1 alg *training-data*)))
+  (when (and (aget :train (arg :options options))
+             (not (eql *version* (knn-version alg))))
+    (format t "Training knn...~%")
+    (train-k1 alg *training-data*)
+    (setf (knn-version alg) *version*)))
 
 (add-algorithm
  (make-instance 'knn :name "ES-Knn"
@@ -177,7 +183,8 @@
    (nn :accessor cknn-nn :initform (make-alist))
    (before-context :accessor cknn-before-context :initarg :before-context :initform 1)
    (after-context :accessor cknn-after-context :initarg :after-context :initform 0)
-   (variance :accessor cknn-variance :initarg :variance :initform 3/2)))
+   (variance :accessor cknn-variance :initarg :variance :initform 3/2)
+   (version :accessor cknn-version :initform 0)))
 
 (defmethod perform-analysis (segments options (alg context-knn))
   (prepare-answers-context segments options alg))
@@ -191,8 +198,11 @@
     (setf (cknn-after-context alg) it))
   (awhen (aget :variance (arg :options options))
     (setf (cknn-variance alg) it))
-  (when (aget :train (arg :options options))
-    (train-context alg *training-data*)))
+  (when (and (aget :train (arg :options options))
+             (not (eql *version* (cknn-version alg))))
+    (format t "Training cknn...~%")
+    (train-context alg *training-data*)
+    (setf (cknn-version alg) *version*)))
 
 (add-algorithm (make-instance
                 'context-knn

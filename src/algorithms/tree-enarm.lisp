@@ -19,6 +19,7 @@
                             ))
 
 (defparameter *names* '(pitch1 pitch2 pitch3 pitch4))
+(defparameter *version* 1)
 
 (defparameter *chords*
   (loop for modo in '("" "m" "+" "°" "ø" "!")
@@ -79,7 +80,8 @@
   (add-inversions coral (mapcar #L(chord-tree-classify alg !1) coral)))
 
 (defclass tree (rameau-algorithm)
-  ((tree :accessor tree-tree :initform nil)))
+  ((tree :accessor tree-tree :initform nil)
+   (version :accessor tree-version :initform 0)))
 
 (defun do-train-chord-tree (alg)
   (unless (tree-tree alg)
@@ -91,8 +93,11 @@
   (do-classification segments options alg))
 
 (defmethod do-options ((alg tree) options)
-  (when (aget :train (arg :options options))
-    (do-train-chord-tree alg)))
+  (when (and (aget :train (arg :options options))
+             (not (eql *version* (tree-version alg))))
+    (format t "Training tree...~%")
+    (do-train-chord-tree alg)
+    (setf (tree-version alg) *version*)))
 
 (add-algorithm (make-instance 'tree
                               :name "ES-tree"
