@@ -88,6 +88,11 @@ all-png:
 pauta:
 	wget -O pauta.html "http://wiki.genos.mus.br/PautaReuniao"
 
+doc: rameau
+	./rameau doc
+	cd rameau-documentation; \
+	make
+
 clean:
 	rm -f rameau cmurameau eclrameau clisprameau checa-notas
 

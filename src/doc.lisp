@@ -1,5 +1,8 @@
 (in-package :rameau)
 
+#+sbcl (eval-when (:compile-toplevel :load-toplevel :execute)
+         (require 'sb-introspect))
+
 (defun function-name (f)
   (multiple-value-bind (lam closure-p name) (function-lambda-expression f)
     (declare (ignore lam closure-p))
@@ -23,8 +26,8 @@
     (format f "\\section{~(~a~)}~%\\label{sec:~(~a~)}~%"
             (escape-latex name)
             (escape-latex name))
-    (format f "\\texttt{~a}~%~%"
-            (escape-latex (swank:arglist-for-echo-area (list (format nil "~a::~a" (package-name package) name)))))
+    #+sbcl (format f "\\texttt{~(~a~)}~%~%"
+                   (escape-latex (stringify (cons name (sb-introspect:function-arglist function)))))
     (format f "\\begin{tabular}{rp{30em}}~%")
     #+sbcl (awhen (sb-introspect:definition-source-pathname (sb-introspect:find-definition-source function))
              (format f "Defined in &\\textbf{~a}\\\\~%~%" (escape-latex it)))
