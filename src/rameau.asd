@@ -10,7 +10,7 @@
                (:file "musiclib" :depends-on ("utils"))))
 
 (asdf:defsystem :rameau-pkg
-  :depends-on (:rameau-base :genoslib :cl-store :cl-fad)
+  :depends-on (:rameau-base :genoslib :cl-store :cl-fad :swank)
   :serial t
   :components ((:file "packages")
                #+sbcl(:file "sbcl")
@@ -20,6 +20,7 @@
                (:file "parser-grammar")
                (:file "chords")
                (:file "tools")
+               (:file "doc")
                ))
 
 (asdf:defsystem :options

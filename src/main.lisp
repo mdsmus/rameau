@@ -4,7 +4,7 @@
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:import-from #:rameau-options #:parse-file-name)
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
-  (:use :rameau :cl :cl-ppcre :lisp-unit :iterate :rameau-options :rameau-terminal :genoslib :fann :rameau-neural :rameau-lily))
+  (:use :rameau :cl :cl-ppcre :lisp-unit :iterate :rameau-options :rameau-terminal :genoslib :rameau-lily))
 
 (in-package :rameau-main)
 
@@ -597,6 +597,23 @@
 
   (rameau-web::start-rameau-web)
   (loop))
+
+(defcommand document (options &rest ignore)
+  (declare (ignore ignore options))
+  (create-documentation-for :rameau
+                            :rameau-options
+                            :rameau-base
+                            :genoslib
+                            :rameau-web
+                            :rameau-main
+                            :rameau-terminal
+                            :rameau-lily
+                            :rameau-hmm
+                            :rameau-neural
+                            :rameau-knn
+                            :rameau-tree-enarm
+                            :rameau-pardo))
+                            
 
 ;;; Main
 (defun split-command-list (command-list)

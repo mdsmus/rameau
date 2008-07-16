@@ -91,7 +91,7 @@ pauta:
 clean:
 	rm -f rameau cmurameau eclrameau clisprameau checa-notas
 
-cleanall: clean clean-algs clean-web clean-lib
+cleanall: clean clean-algs clean-web clean-lib clean-doc
 
 distclean: cleanall clean-deps clean-analysis clean-score clean-midi clean-cache clean-web clean-deps
 	cd docs/choral-book && $(MAKE) cleanall
@@ -105,6 +105,9 @@ clean-algs:
 
 clean-analysis:
 	rm -f analysis/*
+
+clean-doc:
+	rm -f rameau-documentation/*.tex
 
 clean-score:
 	rm -f music/*/*.{pdf,ps}
