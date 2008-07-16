@@ -69,6 +69,8 @@
 \\maketitle
 "
             pname)
+    (format f "\\begin{abstract}~%~a~%\\end{abstract}~%~%"
+            (documentation (find-package pname) t))
     (iter (for s in symbs)
           (when (= 0 (count-subseq "%" (stringify s)))
             (print-function-doc (find-package pname) f (symbol-function s))))

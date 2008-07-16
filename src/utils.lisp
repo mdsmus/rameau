@@ -35,7 +35,8 @@
    #:it
    #:tempered
    #:tonal
-   ))
+   )
+  (:documentation "The core utilities developed by Genos. Generic lisp functions and musical niceties."))
 
 (in-package :genoslib)
 

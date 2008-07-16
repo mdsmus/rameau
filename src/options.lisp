@@ -3,7 +3,8 @@
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct #:defclass)
   (:use :rameau :genoslib :cl :cl-ppcre :iterate)
-  (:export :type-list :type-integer :*commands*  :parse-file-name))
+  (:export :type-list :type-integer :*commands*  :parse-file-name)
+  (:documentation "The command-line option parser for \\texttt{rameau}"))
 
 (in-package :rameau-options)
 

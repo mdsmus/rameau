@@ -1,7 +1,8 @@
 (defpackage :rameau-pardo
   (:import-from #:arnesi "AIF" "IT" "LAST1")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
-  (:use #:rameau #:cl #:genoslib))
+  (:use #:rameau #:cl #:genoslib)
+  (:documentation "Pardo and Birmingham's algorithm for chord labeling"))
 
 (in-package #:rameau-pardo)
 

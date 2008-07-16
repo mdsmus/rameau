@@ -1,7 +1,8 @@
 (defpackage :rameau-terminal
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
-  (:use :rameau :cl :cl-ppcre :lisp-unit :iterate :rameau-options #:genoslib))
+  (:use :rameau :cl :cl-ppcre :lisp-unit :iterate :rameau-options #:genoslib)
+  (:documentation "Terminal output functions."))
 
 (in-package :rameau-terminal)
 

@@ -1,7 +1,8 @@
 (defpackage :rameau-knn
   (:import-from #:arnesi "AIF" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX" "AWHEN")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
-  (:use #:cl #:rameau #:genoslib #:rameau-options))
+  (:use #:cl #:rameau #:genoslib #:rameau-options)
+  (:documentation "K-Nearest-Neighbor classification for chord labeling."))
 
 (in-package :rameau-knn)
 

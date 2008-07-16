@@ -39,7 +39,8 @@
    )
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defgeneric
                           #:defparameter #:defvar #:defstruct #:defclass)
-  (:use #:genoslib  #:cl #:lisp-unit #:iterate))
+  (:use #:genoslib  #:cl #:lisp-unit #:iterate)
+  (:documentation "The core \\texttt{rameau} framework."))
 
 (in-package :rameau)
 
