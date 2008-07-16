@@ -35,15 +35,25 @@
                                  (mapcar #'function-name (sb-introspect:FIND-FUNCTION-CALLERS function)))
              (format f "Used by & ~{~a~^, ~}\\\\~%~%" (mapcar #'escape-latex it)))
     (format f "\\end{tabular}~%~%")
-    (format f "~a~%" (escape-latex (documentation function t)))))
+    (format f "~a~%~%" (escape-latex (documentation function t)))))
 
 
-(defun write-doc-file (pname symbs)
-  (with-open-file (f (format nil "~a~a~a.tex" *rameau-path* "rameau-documentation/" pname)
+(defun write-doc-package (f pname symbs)
+    (format f "~%\\chapter{~a}~%\\label{sec:~a}~%" pname pname)
+    (format f "\\begin{quote}~%~a~%\\end{quote}~%~%"
+            (documentation (find-package pname) t))
+    (iter (for s in symbs)
+          (when (= 0 (count-subseq "%" (stringify s)))
+            (print-function-doc (find-package pname) f (symbol-function s)))))
+    
+
+          
+(defun create-documentation-for (&rest packages)
+  (with-open-file (f (concat *rameau-path* "/rameau-documentation/rameau.tex")
                      :direction :output
                      :if-exists :supersede)
     (format f "
-\\documentclass{article}
+\\documentclass{book}
 \\usepackage{graphicx}
 \\usepackage{url}
 \\usepackage[utf8x]{inputenc}
@@ -52,11 +62,11 @@
 \\usepackage{color}
 \\usepackage{times}
 
-\\title{Rameau Programmer's Guide---~a}
+\\title{Rameau Programmer's Guide}
 \\author{Pedro Kroger and Alexandre Passos}
 
-\\newcommand{\\function}[2]{
-  \\noindent\\texttt{#1}\\hfill\\textbf{[function]}\\\\
+\\newcommand{\function}[2]{
+  \\noindent\texttt{#1}\\hfill\\textbf{[function]}\\
   #2
 \\vspace{2em}
 }
@@ -65,26 +75,18 @@
   \\par Example: \\texttt{#1} $\\rightarrow$ #2
 }
 
+
 \\begin{document}
 \\maketitle
-"
-            pname)
-    (format f "\\begin{abstract}~%~a~%\\end{abstract}~%~%"
-            (documentation (find-package pname) t))
-    (iter (for s in symbs)
-          (when (= 0 (count-subseq "%" (stringify s)))
-            (print-function-doc (find-package pname) f (symbol-function s))))
-    (format f "~%~%\\end{document}~%")))
-    
-
-          
-(defun create-documentation-for (&rest packages)
-  (iter (for p in (mapcar #'find-package packages))
-        (for pname in packages)
-        (for symbs = (iter (for symb in-package p :external-only t)
-                           (when (is-function symb)
-                             (collect symb))))
-        (format t "Documenting ~a...~%" pname)
-        (write-doc-file pname symbs)))
+\\tableofcontents
+")
+    (iter (for p in (mapcar #'find-package packages))
+          (for pname in packages)
+          (for symbs = (iter (for symb in-package p :external-only t)
+                             (when (is-function symb)
+                               (collect symb))))
+          (format t "Documenting ~a...~%" pname)
+          (write-doc-package f pname symbs))
+    (format f "~%\\end{document}~%")))
 
 ;; (create-documentation-for :genoslib)

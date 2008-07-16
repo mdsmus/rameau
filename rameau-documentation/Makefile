@@ -1,4 +1,4 @@
-NAME = $(patsubst %.tex, %,  $(wildcard *.tex))
+NAME = rameau
 
 USE_PDFLATEX = 1
 

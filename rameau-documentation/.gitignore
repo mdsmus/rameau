@@ -1,4 +1,5 @@
-*.tex
-*.aux
-*.log
-*.pdf
+rameau.tex
+rameau.aux
+rameau.toc
+rameau.log
+rameau.pdf
