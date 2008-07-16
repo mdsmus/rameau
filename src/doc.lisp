@@ -31,7 +31,7 @@
     s))
 
 (defun add-ref (s)
-  (format nil "\\hyperref{~a}{~a}{}{sec:~(~a~)}" (escape-latex s) (escape-latex s) (escape-label s)))
+  (format nil "\\hyperref{~a}{~a (}{)}{sec:~(~a~)}" (escape-latex s) (escape-latex s) (escape-label s)))
 
 (defun print-function-doc (f function)
   (let ((name (function-name function)))
@@ -41,12 +41,16 @@
     #+sbcl (format f "Syntax: \\texttt{~(~a~)}~%~%"
                    (escape-latex (stringify (cons name (sb-introspect:function-arglist function)))))
     (format f "~a~%~%" (escape-latex (documentation function t)))
-    (format f "\\begin{tabular}{rp{30em}}~%")
+    (format f "\\begin{tabular}{p{10em}p{30em}}~%")
     #+sbcl (awhen (sb-introspect:definition-source-pathname (sb-introspect:find-definition-source function))
-             (format f "Defined in &\\textbf{~a}\\\\~%~%" (escape-latex it)))
+             (format f "Defined in &\\textbf{~a.lisp}\\\\~%~%" (escape-latex (pathname-name it))))
     #+sbcl (awhen (remove-if-not #'is-function
                                  (mapcar #'function-name (sb-introspect:FIND-FUNCTION-CALLERS function)))
              (format f "Used by & ~{~a~^, ~}\\\\~%~%" (mapcar #'add-ref it)))
+    #+sbcl (awhen (remove-if-not #'is-function
+                                 (mapcar #'function-name (handler-case (sb-introspect:FIND-FUNCTION-CALLEES function)
+                                                           (t nil))))
+             (format f "Uses & ~{~a~^, ~}\\\\~%~%" (mapcar #'add-ref it)))
     (format f "\\end{tabular}~%~%")
     ))
 
