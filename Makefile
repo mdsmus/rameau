@@ -91,7 +91,7 @@ pauta:
 doc: rameau
 	./rameau doc
 	cd rameau-documentation; \
-	make
+	make html
 
 clean:
 	rm -f rameau cmurameau eclrameau clisprameau checa-notas

@@ -3,3 +3,9 @@ rameau.aux
 rameau.toc
 rameau.log
 rameau.pdf
+rameau.dvi
+rameau.html-stamp
+rameau.html_dir/*
+rameau.out
+rameau.toc.old
+rameau.www_files
