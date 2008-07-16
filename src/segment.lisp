@@ -86,4 +86,5 @@
       musica))
 
 (defun sonorities (musica)
+  "The minimal sonorities in \\texttt{musica}, a note sequence."
   (resplit-segments (group-with-start musica)))

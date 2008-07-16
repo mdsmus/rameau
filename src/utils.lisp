@@ -133,6 +133,7 @@
   (sorted set #'<))
 
 (defun rotations (list)
+  "Get all rotations possible for \\texttt{list}."
   (iter (for i from 0 below (length list))
         (collect (append (last list i)
                          (butlast list i)))))
@@ -329,6 +330,7 @@ null or 'erro."
        (* ,n ,n))))
 
 (defun distance (a b)
+  "The euclidian distance between lists \\texttt{a} and \\texttt{b}."
   (if (and a b)
       (loop for i in a
          for j in b
@@ -340,6 +342,7 @@ null or 'erro."
   (intern (string-upcase string) (find-package :keyword)))
 
 (defun sublist-of-args (list char)
+  "Return the sublist of \\texttt{list} for the arg in \\texttt{char}."
   ;; tem um bug quando repete proxima flag imediatamente: (@a foo @a bar)
   ;; entra em loop recursivo
   (labels ((next-flag (list)
@@ -361,6 +364,8 @@ null or 'erro."
 	   (list list)))))
 
 (defun argmax (function start end)
+  "The maximum \\texttt{n} between \\texttt{start} and \\texttt{end}
+  according to \\texttt{function}."
   (let ((argmax 0)
         (max most-negative-double-float))
     (iter (for column from start below end)

@@ -346,6 +346,7 @@ baixo = \\relative c {
 
 
 (defun start-rameau-web ()
+  "Start the web server for \\texttt{rameau} at port 4242."
   (start-server :port 4242))
 
 ;;(start-rameau-web)

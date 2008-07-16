@@ -11,15 +11,18 @@
 		       #+clisp (ext:default-directory))))
 
 (defun alg-file-name (alg)
+  "The file name used to save an algorithm to disk."
   (concat *rameau-path* "/algorithms/" (alg-name alg) ".store"))
 
 (defun load-alg (alg)
+  "Load \\texttt{alg} from disk, returning \\texttt{alg} itself in case a failure happens."
   (let (done)
     (handler-case (cl-store:restore (alg-file-name alg))
       (simple-error () alg)
       (error () alg))))
 
 (defun save-alg (alg)
+  "Save algorithm \\texttt{alg} to disk."
   (cl-store:store alg (alg-file-name alg)))
 
 (defun rameau-args ()
@@ -33,7 +36,10 @@
           (t (error "algum problema com argumentos")))))
 
 (defun rameau-profile ()
-  "[DONTCHECK]"
+  "[DONTCHECK]
+
+Profile all functions in \\texttt{Rameau}.
+"
   #+sbcl(progn
          (setf sb-profile::*print-functions-not-called* nil)
          (sb-profile:profile "RAMEAU")
@@ -52,22 +58,32 @@
           (profile:profile-all :package "GENOSLIB")))
 
 (defun rameau-report ()
-  "[DONTCHECK]"
+  "[DONTCHECK]
+
+Report the results from a profile.
+"
   #+sbcl(sb-profile:report)
   #+cmu(profile:report-time))
 
 (defun rameau-quit ()
-  "[DONTCHECK]"
+  "[DONTCHECK]
+
+Exit \\texttt{rameau}.
+"
   #+clisp(ext:exit)
   #+sbcl(sb-ext:quit))
 
 (defun getenv (string)
-  "[DONTCHECK]"
+  "[DONTCHECK]
+
+Get environment variable \\texttt{string} from the environment.
+"
   #+sbcl(sb-ext:posix-getenv string)
   #+cmu(cdr (assoc (intern string :keyword) ext:*environment-list*))
   #+clisp(ext:getenv string))
 
 (defun rameau-get-font-path (font)
+  "Find font \\texttt{font} in the font path."
   (let ((result))
    (cl-fad:walk-directory #+linux "/usr/share/fonts/"
 			  #+windows "c:/windows/fonts/"
@@ -77,19 +93,29 @@
    (first result)))
 
 (defun remove-comma-if-needed (text)
-  "[DONTCHECK]"
+  "[DONTCHECK]
+
+Remove the commas from \\texttt{text} and replace them with dots in
+case we a in a portuguese language environment. Needed for fann.
+"
   (if (= 1 (count-subseq "pt" (getenv "LANG")))
       (substitute #\, #\. text)
       text))
   
 (defun unicode-term (f)
-  "[DONTCHECK]"
+  "[DONTCHECK]
+
+Checks if terminal \\texttt{f} supports unicode.
+"
   (or (null f)
       (eq (stream-external-format f) nil)
       (eq (stream-external-format f) #+sbcl :utf-8 #-sbcl :default)))
 
 (defun read-user-config ()
-  "[DONTCHECK]"
+  "[DONTCHECK]
+
+Read and load definitions from a user-set configuration file in \\texttt{~/.rameaurc}.
+"
   (aif (cl-fad:file-exists-p (concat (getenv "HOME") "/.rameaurc"))
        (loop for (var value) in (read-file-as-sexp it) do (setf (symbol-value var) value))))
 
@@ -110,16 +136,11 @@
     ("exemplos" "answer-sheets/examples/")))
 
 (defun files-range (list)
+  "All files in the range specified in \\texttt{list}."
   (loop for x from (parse-integer (first list)) to (parse-integer (second list))
      collect (cond ((< x 10)  (format nil "00~a" x))
                    ((< x 100) (format nil "0~a" x))
                    (t (format nil "~a" x)))))
-
-(defun first-string (string list)
-  (let ((tmp (loop for s in list do
-                  (if (string= (subseq s 0 1) string)
-                      (return s)))))
-    (if tmp tmp string)))
 
 (defun parse-answer-sheet (file item)
   "Parse the answer sheet for song \\texttt{file}. [DONTCHECK]"
@@ -135,6 +156,8 @@
   (first (remove-if-not #L(search substring !1 :test #'equalp) list)))
 
 (defun search-music-dirs (substring dir)
+  "Search for a directory in \\texttt{dir} with \\texttt{substring} in
+  its name." 
   (search-string-in-list substring
                          (mapcar #'namestring
                                 (directory (format nil "~a/~a/*/"
@@ -142,6 +165,7 @@
                                                    dir)))))
 
 (defun new-parse-answer-sheet (file substring)
+  "Find and parse the answer sheet for file \\texttt{file}, if exists."
   (let* ((dir (search-music-dirs substring "answer-sheets"))
          (full-file (concat dir (add-pop-ext file))))
     (when (cl-fad:file-exists-p full-file)

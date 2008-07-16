@@ -30,17 +30,20 @@
   (dur))
 
 (defun extract-note (segment voice)
+  "Extract the first note from \\texttt{segment} that is in the same voice as note \\texttt{voice}."
   (first (remove-if-not
           #L(equal (event-voice-name !1)
                    (event-voice-name voice))
           segment)))
 
 (defun show-octave (octave)
+  "Show octave \\texttt{octave} as lilypond would read it."
   (cond ((= octave 0) "")
         ((< octave 0) (repeat-string (- octave) ","))
         (t (repeat-string octave "'"))))
 
 (defun event-< (x y)
+  "True if \\texttt{x} is lower than \\texttt{y}."
   (let ((a (event-octave x))
         (b (event-octave y)))
     (if (= a b)
@@ -48,22 +51,28 @@
         (< a b))))
 
 (defun print-event-note (e &optional (style 'latin))
+  "Print event \\texttt{e}'s note."
   (when (event-p e)
     (print-note (code->notename (event-pitch e)) style)))
 
 (defun absolute-pitch (e1)
+  "The absolute pitch of event \\texttt{e1}, corrected for octaves."
   (+ (event-pitch e1) (* (get-module) (event-octave e1))))
 
 (defun absolute-interval (e1 e2)
+  "Absolute (counting octaves) interval between events \\texttt{e1}
+  and \\texttt{e2}"
   (- (absolute-pitch e1)
      (absolute-pitch e2)))
 
 (defun absolute-interval-code (e1 e2)
+  "The code for the absolute interval between \\texttt{e1} and \\texttt{e2}."
   (let* ((i (absolute-interval e1 e2))
          (sig (if (< i 0) '- '+)))
     (cons sig (module (abs i)))))
 
 (defun print-absolute-interval (inter)
+  "Print the absolute interval \\texttt{inter}."
   (format nil "~a ~a" (if (eq '+ (first inter)) "up" "down") (print-interval (cdr inter))))
 
 (defun event-equal (x y)
@@ -86,15 +95,20 @@
       (progn (format t "Expected ~a,~% but saw ~a~%" x y)
              nil)))
        
+(defun pitches (segmento)
+  "The pitches of the notes in \\texttt{segmento}."
+  (mapcar #'event-pitch segmento))
+
 (defun list-events (segmento)
+  "Print the notes in \\texttt{segmento} from bass to treble."
   (mapcar (lambda (x)
             (print-note (code->notename (event-pitch x)) 'latin))
           (sorted segmento #'event-<)))
 
-(defun pitches (segmento)
-  (mapcar #'event-pitch segmento))
+
 
 (defun durations (segmento)
+  "The durations of the notes in music \\texttt{segmento}."
   (mapcar (lambda (x) (event-dur (first x))) segmento))
 
 (defun make-note (nota &optional (octave "") igno (dur (make-instance 'dur-node :dur nil))  &rest ignore) 
@@ -113,6 +127,7 @@
    :dur (node-dur dur)))
 
 (defun make-skip (skip igno dur)
+  "Make a skip with length \\texttt{dur}."
   (declare (ignore skip))
   (make-note "s" "" igno dur))
 
@@ -121,17 +136,18 @@
   (setf (event-start event) (+ (event-start event) tempo))
   event)
 
-(defun move-sequence (seq tempo)
+(defun move-sequence :private (seq tempo)
   "[DONTCHECK]"
   (mapcar (lambda (x) (move-event x tempo))
           seq))
 
 
 (defun event-end (event)
+  "The end of event \\texttt{event} in time."
   (+ (event-start event) (event-dur event)))
 
 (defun sequence-expressions (sequencias)
-  "Creates a single sequence from a list of \texttt{note-sequence}s"
+  "Creates a single sequence from a list of \\texttt{note-sequence}s"
   (if (note-sequence-p sequencias)
       sequencias
       (if (cdr sequencias)
@@ -158,7 +174,7 @@
                     (event-start y)))))
   exp1)
 
-(defun merge-exprs (exprs)
+(defun merge-exprs :private (exprs)
   "[DONTCHECK]"
   (if (note-sequence-p exprs)
       exprs
@@ -209,14 +225,17 @@
              (%do-relative (if (null (event-pitch prox-nota)) nota prox-nota)
                            expressao oitava))))
 
-(defun do-relative (nota expressao)
+(defun do-relative :private (nota expressao)
   (let ((expressao (if (listp expressao) (sequence-expressions (remove-if #'null expressao)) expressao)))
     (%do-relative (car (note-sequence-notas nota)) (note-sequence-notas expressao))
     expressao))
 
 
 (defun transpose-segmentos (segmentos valor)
-  "[DONTCHECK]"
+  "[DONTCHECK]
+
+Transpose the sonorities in \\texttt{segmentos} by \\texttt{valor} pitches.
+"
   (loop for notas in segmentos collect
        (loop for n in notas collect
             (make-event :pitch (module (+ (event-pitch n) valor))
@@ -229,7 +248,10 @@
                          :time-sig (event-time-sig n)))))
 
 (defun tempera (nota)
-  "[DONTCHECK]"
+  "[DONTCHECK]
+
+An equivalent tempered version of event \\texttt{nota}.
+"
   (with-system tempered
     (make-event :pitch (module (event-pitch nota))
                  :octave (event-octave nota)
@@ -241,4 +263,5 @@
                  :time-sig (event-time-sig nota))))
 
 (defun temperado (segmentos)
+  "A tempered version of music \\texttt{segmentos}."
   (mapcar (lambda (x) (mapcar #'tempera x)) segmentos))

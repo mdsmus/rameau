@@ -3,17 +3,17 @@
 #+sbcl (eval-when (:compile-toplevel :load-toplevel :execute)
          (require 'sb-introspect))
 
-(defun function-name (f)
+(defun function-name :private (f)
   (multiple-value-bind (lam closure-p name) (function-lambda-expression f)
     (declare (ignore lam closure-p))
     name))
 
-(defun is-function (f)
+(defun is-function :private (f)
   (and (not (listp f))
        (fboundp f)
        (not (listp (function-name (symbol-function f))))))
 
-(defun escape-latex (s)
+(defun escape-latex :private (s)
   (let* ((s (format nil "~a" s))
          (s (cl-ppcre:regex-replace-all "&" s "\\\\&"))
          (s (cl-ppcre:regex-replace-all "#" s "\\\\#"))
@@ -21,7 +21,7 @@
          (s (cl-ppcre:regex-replace-all "\\$" s "\\\\$")))
     s))
 
-(defun escape-label (s)
+(defun escape-label :private (s)
   (let* ((s (format nil "~a" s))
          (s (cl-ppcre:regex-replace-all "&" s "-and-"))
          (s (cl-ppcre:regex-replace-all "#" s "-pound-"))
@@ -30,10 +30,10 @@
          (s (cl-ppcre:regex-replace-all "\\>" s "to-")))
     s))
 
-(defun add-ref (s)
+(defun add-ref :private (s)
   (format nil "\\hyperref{~a}{~a (}{)}{sec:~(~a~)}" (escape-latex s) (escape-latex s) (escape-label s)))
 
-(defun print-function-doc (f function)
+(defun print-function-doc :private (f function)
   (let ((name (function-name function)))
     (format f "\\section{~(~a~)}~%\\label{sec:~(~a~)}~%"
             (escape-latex name)
@@ -55,7 +55,7 @@
     ))
 
 
-(defun write-doc-package (f pname symbs)
+(defun write-doc-package :private (f pname symbs)
     (format f "~%\\chapter{~a}~%\\label{sec:~a}~%" pname pname)
     (format f "\\begin{quote}~%~a~%\\end{quote}~%~%"
             (documentation (find-package pname) t))
@@ -66,6 +66,8 @@
 
           
 (defun create-documentation-for (&rest packages)
+  "Create a file named \\texttt{rameau.tex} with the documentation for
+  packages \\texttt{packages}."
   (with-open-file (f (concat *rameau-path* "/rameau-documentation/rameau.tex")
                      :direction :output
                      :if-exists :supersede)
@@ -104,7 +106,7 @@
                              (when (is-function symb)
                                (collect symb))))
           (format t "Documenting ~a...~%" pname)
-          (write-doc-package f pname symbs))
+          (write-doc-package f pname (sorted symbs #'string-lessp :key #'stringify)))
     (format f "~%\\end{document}~%")))
 
 ;; (create-documentation-for :genoslib)

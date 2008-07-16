@@ -66,10 +66,15 @@
 (defparameter *algorithms* nil)
 
 (defun add-algorithm (alg)
+  "Register algorithm instance \\texttt{alg} with \\texttt{rameau}."
   (push alg *algorithms*))
 
 (defun filter-algorithms (algoritmos)
-  "[DONTCHECK]"
+  "[DONTCHECK]
+
+Filter \\texttt{*algorithms*} so that only the ones specified in
+\\texttt{algoritmos} are returned.
+"
   (if algoritmos
       (remove-duplicates
        (loop for alg in algoritmos

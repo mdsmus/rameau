@@ -61,6 +61,7 @@
   notes)
 
 (defun print-chord (struct stream depth)
+  "Print chord \\texttt{struct} to stream \\texttt{stream}, ignoring \\texttt{depth}."
   (declare (ignore depth))
   (format stream "~:(~a~)~@[~a~]~@[~:(~a~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[/~:(~a~)~]"
           (chord-root struct)
@@ -77,6 +78,8 @@
           (chord-bass struct)))
 
 (defun print-augmented-sixth (struct stream depth)
+  "Print augmented sixth chord \\texttt{struct} to \\texttt{stream}
+  ignoring \\texttt{depth}."
   (declare (ignore depth))
   (format stream "~:(~a+6~)" (augmented-sixth-type struct)))
     
@@ -92,7 +95,7 @@
   template)
 
 (defun chord-interval-code (root bass)
-  "Returns the interval-code of the interval between the root and
+  "Return the interval-code of the interval between the root and
 root. Expects root and bass to be a string."
   (interval->code (interval (parse-note bass)
                             (parse-note root))))
@@ -129,6 +132,8 @@ position."
                       :13th 13th)))))
 
 (defun parse-chord (chord)
+  "Parse symbol or list \\texttt{chord} into a chord or melodic note
+  or augmented sixth."
   (typecase chord
     (list (case (first chord)
             (m! (make-melodic-note :notes (rest chord)))
@@ -136,11 +141,17 @@ position."
     (t (%parse-chord chord))))
 
 (defun read-chords (list)
-  "[DONTCHECK]"
+  "[DONTCHECK]
+
+Parse the chords in list \\texttt{list}.
+"
   (mapcar #'parse-chord (expand-chords list)))
 
 (defun transpose-chord (c n)
-  "[DONTCHECK]"
+  "[DONTCHECK]
+
+Transpose chord \\texttt{c} by \\texttt{n} pitches.
+"
   (if (chord-p c)
       (make-chord :root (print-note (code->notename
                                              (+ n
@@ -176,12 +187,17 @@ position."
            (equal (chord-7th result) (chord-7th answer-sheet)))))
 
 (defun compare-answer-sheet (answer answer-sheet &optional tempered?)
+  "Compare result \\texttt{answer} with answer-sheet
+\\texttt{answer-sheet}. True if they match."
   (if (atom answer-sheet)
       (%compare-answer-sheet answer answer-sheet tempered?)
       (some (lambda (x) (%compare-answer-sheet answer x tempered?)) answer-sheet)))
 
 (defun add-inversion (segmento acorde)
-  "[DONTCHECK]"
+  "[DONTCHECK]
+
+Label the chord \\texttt{acorde} with the inversion found in \\texttt{segmento}.
+"
   (let ((inv (first (list-events segmento))))
     (if (chord-p acorde)
         (make-chord :root (chord-root acorde)
@@ -192,10 +208,15 @@ position."
         acorde)))
 
 (defun add-inversions (segmentos acordes)
-  "[DONTCHECK]"
+  "[DONTCHECK]
+
+Label all chords in \\texttt{acordes} with the appropriate inversion
+according to the music in \\texttt{segmentos}.
+"
   (mapcar #'add-inversion segmentos acordes))
 
 (defun 7th-pitch (chord)
+  "The pitch of chord \\texttt{chord}'s seventh note."
   (let ((root (parse-note (chord-root chord))))
     (module
      (cond ((equal "7+" (chord-7th chord))

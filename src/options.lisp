@@ -67,12 +67,14 @@
   ((arguments :accessor get-args :initform (make-hash-table :test #'eql))))
 
 (defun arg (name options)
+  "Get option named \\texttt{name} from \\texttt{options}."
   (gethash name (get-args options)))
 
 (defsetf arg (name options) (value)
   `(setf (gethash ,name (get-args ,options)) ,value))
 
 (defun make-default-arguments ()
+  "Make default arguments for \\texttt{rameau}."
   (let* ((options (make-instance 'arguments-table)))
     (iter outer (for (k v) in *commands*)
           (iter (for (short long doc init list) in v)
@@ -81,18 +83,22 @@
     options))
 
 (defun get-short-flag-name (command flag)
+  "Return \\texttt{flag}'s short name."
   (second (find-flag command flag)))
 
 (defun get-long-flag-name (command flag)
+  "Return \\texttt{flag}'s long name."
   (second (find-flag-by-name command (subseq flag 2))))
 
 (defun get-default-in-flag :private (command flag)
   (third (find-flag command flag)))
 
 (defun get-type-by-flag (command flag)
+  "Return the argument type of \\texttt{command}."
   (fifth (find-flag command flag)))
 
 (defun get-type-by-name (command name)
+  "Return the type of \\texttt{command} by its name."
   (fifth (find-flag-by-name command name)))
 
 (defun find-flag-by-name :private (command name)
@@ -104,10 +110,12 @@
       (find flag (get-flag-assoc command) :key #'first :test #'string=)))
 
 (defun long-flag? (flag)
+  "True when \\texttt{flag} is a long flag."
   (when (cl-ppcre:scan "^--[a-zA-Z]+" flag)
     t))
 
 (defun short-flag? (flag)
+  "True when \\texttt{flag} is a short flag."
   (when (cl-ppcre:scan "^-[a-zA-Z]+" flag)
     t))
 
@@ -125,6 +133,7 @@
   (get-item item *commands*))
 
 (defun parse-file-name (exp options)
+  "Parse a file name \\texttt{exp} with the options in \\texttt{options}."
   (unless (search ":" exp)
     (error "expression should be in the format <substring>:<expression>"))
   (let* ((tmp (cl-ppcre:split ":" exp))

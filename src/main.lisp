@@ -24,18 +24,19 @@
   (intern (string-upcase string) package))
 
 (defun rameau-args ()
+  "The command-line arguments, minus the first one."
   #+sbcl (rest sb-ext:*posix-argv*)
   #+cmu (subseq cmu-args (1+ (position "cmurameau" extensions:*command-line-strings* :test #'string=)))
   #+clisp ext:*args*)
 
-(defun maptrace (lista-string &optional (trace 'trace))
+(defun maptrace :private (lista-string &optional (trace 'trace))
   (let ((expr (append (list trace) (mapcar2 #'read-from-string #'string-upcase lista-string))))
     (eval expr)))
 
 ;;; Make analysis
 
 
-(defun analyse-files (options)
+(defun analyse-files :private (options)
   (loop
      for file in (arg :files options)
      for segments = (sonorities (parse-file file))
@@ -54,24 +55,24 @@
         :dur (durations segments))))
 
 ;;; Print messages
- (defun print-help ()
+ (defun print-help :private ()
    (iter (for (key value) in *commands*)
       (format t "~%~:@(* ~a~)~%" (substitute #\Space #\- key :test #'equal))
       (iter (for (short long help) in value)
             (format t "~4T~4a--~25a ~a~%" short long (remove #\Newline help))))
    (rameau-quit))
 
-(defun print-warning (message)
+(defun print-warning :private (message)
   (format t "~&WARNING: ~a~%" message))
 
-(defun print-fatal (message)
+(defun print-fatal :private (message)
   (format t "~&FATAL: ~a~%" message))
 
 ;;; Tests
-(defun print-condition (status file expr)
+(defun print-condition :private (status file expr)
   (format t "[~a] ~a: ~a~%" status (pathname-name file) expr))
 
-(defun print-ok/no-list (list options)
+(defun print-ok/no-list :private (list options)
   (destructuring-bind (ok no) list
     (let* ((s2 (length no))
            (no-string
@@ -81,13 +82,13 @@
                   (t no))))
       (format t "  [OK]: ~a [NO]: ~a ~@[~a ~]~%" (length ok) s2 no-string))))
 
-(defun parse-verbose (files)
+(defun parse-verbose :private (files)
   (dolist (file files)
     (handler-case (parse-file file)
       (serious-condition (expr) (print-condition 'no file expr))
       (:no-error (&rest rest) (print-condition 'ok file rest)))))
 
-(defun parse-summary (files)
+(defun parse-summary :private (files)
   (let (ok no)
     (dolist (file files)
       (handler-case (parse-file file)
@@ -99,12 +100,12 @@
           (push (pathname-name file) ok))))
     (list (reverse ok) (reverse no))))
 
-(defun regression (options)
+(defun regression :private (options)
   (if (arg :verbose options)
       (parse-verbose (arg :files options))
       (print-ok/no-list (parse-summary (arg :files options)) options)))
 
-(defun unit (options)
+(defun unit :private (options)
   (let ((string-result
          (with-output-to-string (string)
            (let ((*standard-output* string))
@@ -120,10 +121,10 @@
   (when (arg :regression options) (regression options)))
 
 ;;; Analysis
-(defun make-result-list (analysis)
+(defun make-result-list :private (analysis)
   (apply #'mapcar #'list (analysis-results analysis)))
 
-(defun analysis-terminal (options analysis)
+(defun analysis-terminal :private (options analysis)
   (let* ((number-algorithms (analysis-number-algorithms analysis))
          (size-line (hline-size number-algorithms options)))
     (format t "~2%")
@@ -152,7 +153,7 @@
 
 
 
-(defun analysis-terminal-no-answer (options analysis)
+(defun analysis-terminal-no-answer :private (options analysis)
   (let* ((number-algorithms (analysis-number-algorithms analysis))
          (size-line (hline-size number-algorithms options 'no-answer)))
     (format t "~2%")
@@ -184,16 +185,16 @@
         (when (or (arg :score options) (arg :view-score options))
           (analysis-lily options anal))))
 
-(defun average (r)
+(defun average :private (r)
   (let ((l (length r)))
     (iter (for n in r)
           (sum (/ n (coerce l 'single-float))))))
 
-(defun stddev (r a)
+(defun stddev :private (r a)
   (sqrt (iter (for n in r)
               (sum (* (- n a) (- n a))))))
 
-(defun count-hits (res gab)
+(defun count-hits :private (res gab)
   (length (remove-if #'null (mapcar #'compare-answer-sheet res gab))))
 
 (defcommand collect-data (options analysis)
@@ -221,26 +222,26 @@
           (format t "~6,2f |" (stddev (butlast r) (average (butlast r)))))
     (format t "~%")))
 
-(defun all-chords-single (options anal)
+(defun all-chords-single :private (options anal)
   (declare (ignore options))
   (iter (for chord in (first (analysis-results anal)))
         (for segment in (analysis-segments anal))
         (for i from 0)
         (collect (list chord segment (analysis-file-name anal) i))))
 
-(defun all-chords (options analysis)
+(defun all-chords :private (options analysis)
 	(iter (for anal in analysis)
 				(nconcing
 						(append '(nil nil nil nil nil)
 										(all-chords-single options anal)))))
 
-(defun root-pitch (chord)
+(defun root-pitch :private (chord)
   (parse-note (chord-root chord)))
 
-(defun chord-interval-number (a b)
+(defun chord-interval-number :private (a b)
   (first (interval->code (module (- (root-pitch a) (root-pitch b))))))
 
-(defun remove-repeated-chords (chords)
+(defun remove-repeated-chords :private (chords)
   (let (last-chord)
     (iter (for chord in chords)
           (for prev previous chord)
@@ -252,30 +253,30 @@
                 (collect chord)
                 (setf last-chord chord))))))
 
-(defun prepare-cadence (options anal n)
+(defun prepare-cadence :private (options anal n)
   (butlast (group (remove-repeated-chords (remove-if-not #L(chord-p (first !1)) (all-chords-single options anal)))
                   n)
            (1- n)))
 
-(defun print-roman (number chord)
+(defun print-roman :private (number chord)
   (let* ((mode (chord-mode chord))
          (major? (equal "" mode)))
     (if major?
         (format nil "~@r" number)
         (format nil "~(~@r~a~)" number (if (equal mode "m") "" mode)))))
 
-(defun add-to-cadence-hash (hash chords file-name segno)
+(defun add-to-cadence-hash :private (hash chords file-name segno)
   (let ((root (last1 chords)))
     (push (list file-name segno)
           (gethash (reduce #'concat (mapcar #L(format nil "~4a " (print-roman (chord-interval-number !1 root) !1)) chords))
                    hash))))
 
-(defun make-int (value)
+(defun make-int :private (value)
   (if (integerp value)
       value
       (parse-integer value)))
 
-(defun show-cadence-hash (options cadences)
+(defun show-cadence-hash :private (options cadences)
   (iter (for (cadence  places) in (sorted (iter (for (cadence places) in-hashtable cadences)
                                                 (collect (list cadence places)))
                                           #L(< (length (second !1))
@@ -411,7 +412,7 @@
                    )))))
 
 
-(defun print-report-ambito (notes min max segs chorale voice options)
+(defun print-report-ambito :private (notes min max segs chorale voice options)
   (iter (for next in notes)
         (for segno from 0)
         (for note previous next)
@@ -452,7 +453,7 @@
           (print-report-ambito altos mina maxa (analysis-segments anal) (analysis-file-name anal) "alto" options)
           (print-report-ambito sopranos mins maxs (analysis-segments anal) (analysis-file-name anal) "soprano" options))))
 
-(defun repeated-notes (segmento)
+(defun repeated-notes :private (segmento)
   (/= 4 (length (remove-duplicates (sorted segmento #'event-<)
                                   :test #'equal
                                   :key #L(cons (event-pitch !1) (event-octave !1))))))
@@ -487,7 +488,7 @@
                                :if-exists :supersede)
               (format f "~a" (make-lily-segments options (subseq (analysis-segments anal) min max))))))))
 
-(defun intervals (segment number)
+(defun intervals :private (segment number)
   (iter (for n in segment)
         (for s previous n)
         (when (and n s)
@@ -495,12 +496,12 @@
                    (first (interval->code (module (- (event-pitch n) (event-pitch s))))))
             (return (list s n))))))
 
-(defun get-strong (strong? segments)
+(defun get-strong :private (strong? segments)
   (if strong?
       (remove-if-not #L(integerp (* 4 (event-dur (first !1)))) segments)
       segments))
 
-(defun do-parallel (options analysis number name strong)
+(defun do-parallel :private (options analysis number name strong)
   #+sbcl(declare (sb-ext:muffle-conditions sb-ext::warning))
   (iter (for anal in analysis)
         (iter (for n in (get-strong strong (analysis-segments anal)))
@@ -614,14 +615,14 @@
                             
 
 ;;; Main
-(defun split-command-list (command-list)
+(defun split-command-list :private (command-list)
   (let ((pos (position "and" command-list :test #'string=)))
     (if pos
         (append (list (subseq command-list 0 pos))
                 (split-command-list (subseq command-list (1+ pos))))
         (list command-list))))
 
-(defun parse-options (command list)
+(defun parse-options :private (command list)
   "Parse the list of options to a structure."
   (loop for item in (sublist-of-args list #\-) collect
        (destructuring-bind (flag &rest value) item
@@ -641,14 +642,14 @@
                        (t (first value))))
                    t)))))
 
-(defun process-option-list (options)
+(defun process-option-list :private (options)
   (iter (for op in options)
         (aif (search "=" op)
              (collect (list (make-keyword (subseq op 0 it)) (read-from-string (subseq op (1+ it) (length op)))))
              (collect (list (make-keyword op) t)))))
 
 
-(defun parse-files (options)
+(defun parse-files :private (options)
   (loop for file in (arg :files options) append
        (if (search "/" file)
            (list file)
