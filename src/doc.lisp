@@ -8,7 +8,7 @@
     (declare (ignore lam closure-p))
     name))
 
-(defun is-function :private (f)
+(defun rameau-functionp :private (f)
   (and f
        (not (listp f))
        (fboundp f)
@@ -45,10 +45,10 @@
     (format f "\\begin{tabular}{p{10em}p{30em}}~%")
     #+sbcl (awhen (sb-introspect:definition-source-pathname (sb-introspect:find-definition-source function))
              (format f "Defined in &\\textbf{~a.lisp}\\\\~%~%" (escape-latex (pathname-name it))))
-    #+sbcl (awhen (remove-if-not #'is-function
+    #+sbcl (awhen (remove-if-not #'rameau-functionp
                                  (mapcar #'function-name (sb-introspect:FIND-FUNCTION-CALLERS function)))
              (format f "Used by & ~{~a~^, ~}\\\\~%~%" (mapcar #'add-ref it)))
-    #+sbcl (awhen (remove-if-not #'is-function
+    #+sbcl (awhen (remove-if-not #'rameau-functionp
                                  (mapcar #'function-name (handler-case (sb-introspect:FIND-FUNCTION-CALLEES function)
                                                            (t nil))))
              (format f "Uses & ~{~a~^, ~}\\\\~%~%" (mapcar #'add-ref it)))
@@ -104,7 +104,7 @@
     (iter (for p in (mapcar #'find-package packages))
           (for pname in packages)
           (for symbs = (iter (for symb in-package p :external-only t)
-                             (when (is-function symb)
+                             (when (rameau-functionp symb)
                                (collect symb))))
           (format t "Documenting ~a...~%" pname)
           (write-doc-package f pname (sorted symbs #'string-lessp :key #'stringify)))
