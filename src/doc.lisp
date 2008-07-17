@@ -9,7 +9,8 @@
     name))
 
 (defun is-function :private (f)
-  (and (not (listp f))
+  (and f
+       (not (listp f))
        (fboundp f)
        (not (listp (function-name (symbol-function f))))))
 
