@@ -374,3 +374,11 @@ null or 'erro."
             (setf max v
                   argmax column)))
     (values argmax max)))
+
+(defun normalize (zero one min max value)
+  "Draw a line from \\texttt{zero} = \\texttt{min} to \\texttt{one} = \\texttt{max} and find \\texttt{value} in it." 
+  (let ((value (- value min))
+        (max (- max min)))
+    (+ zero
+       (* one (/ value max)))))
+

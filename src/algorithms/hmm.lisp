@@ -201,13 +201,6 @@
           (start-trans alg) (estimate-start-trans chords)
           (notes alg) (estimate-chord-notes pairs))))
 
-(defun normalize (zero one min max value)
-  (declare (double-float zero one min max value))
-  (let ((value (- value min))
-        (max (- max min)))
-    (+ zero
-       (* one (/ value max)))))
-
 (defun output-note-images (alg)
   ;; chord-notes
   (let ((notes (notes alg))
