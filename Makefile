@@ -1,7 +1,7 @@
 SYSTEM = $(shell uname -s)
 
 ifeq ("$(SYSTEM)", "Linux")
-	SBCL_BIN = /usr/bin/sbcl
+	SBCL_BIN = /usr/local/bin/sbcl
 	LISP_BIN = /usr/bin/lisp
 else ifeq ("$(SYSTEM)", "FreeBSD")
 	SBCL_BIN = /usr/local/bin/sbcl
@@ -101,7 +101,7 @@ cleanall: clean clean-algs clean-web clean-lib clean-doc
 distclean: cleanall clean-deps clean-analysis clean-score clean-midi clean-cache clean-web clean-deps
 	cd docs/choral-book && $(MAKE) cleanall
 
-lispclean:
+lispclean: clean-lib clean
 	rm -rf /var/cache/common-lisp-controller/$$UID/sbcl/local
 	rm -rf ~/lisp/fasl/*
 
