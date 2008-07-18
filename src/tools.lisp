@@ -184,23 +184,7 @@ Read and load definitions from a user-set configuration file in \\texttt{~/.rame
                    (mapcar (lambda (file) (format nil "~a" file))
                            (directory (concat path "*" ext)))))))
 
-(defparameter *training-data*
-  (nconc (loop for f in (parse-file-list "chorales" '("001..10"))
-            for g = (parse-answer-sheet f "chorales")
-            collect (list (sonorities (parse-file f)) g))
-         (loop for f in (parse-file-list "chorales" '("012"))
-            for g = (parse-answer-sheet f "chorales")
-            collect (list (sonorities (parse-file f)) g))
-         (loop for f in (parse-file-list "chorales" '("014"))
-            for g = (parse-answer-sheet f "chorales")
-            collect (list (sonorities (parse-file f)) g))
-         (loop for f in (parse-file-list "chorales" '("017..33"))
-            for g = (parse-answer-sheet f "chorales")
-            collect (list (sonorities (parse-file f)) g))
-         (loop for f in (mapcan (lambda (x) (parse-file-list "exemplos" (list x)))
-                                '("11..13" "23..28"))
-            for g = (parse-answer-sheet f "exemplos")
-            collect (list (sonorities (parse-file f)) g))))
+(defparameter *training-data* nil)
 
 (defun extract-feature-list (segmento diff)
   "Extract the feature list of a sonority givern its \\texttt{diff}."
