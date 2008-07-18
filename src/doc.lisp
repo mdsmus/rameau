@@ -41,7 +41,7 @@
             (escape-label name))
     #+sbcl (format f "Syntax: \\texttt{~(~a~)}~%~%"
                    (escape-latex (stringify (cons name (sb-introspect:function-arglist function)))))
-    (format f "~a~%~%" (escape-latex (documentation function t)))
+    (format f "~a~%~%" (cl-ppcre:regex-replace "\\[DONTCHECK\\]"  (documentation function t) ""))
     (format f "\\begin{tabular}{p{10em}p{30em}}~%")
     #+sbcl (awhen (sb-introspect:definition-source-pathname (sb-introspect:find-definition-source function))
              (format f "Defined in &\\textbf{~a.lisp}\\\\~%~%" (escape-latex (pathname-name it))))

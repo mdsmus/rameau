@@ -648,7 +648,8 @@ If you did, we have a bug, so please report.~%")
                             :rameau-neural
                             :rameau-knn
                             :rameau-tree-enarm
-                            :rameau-pardo))
+                            :rameau-pardo
+                             ))
                             
 
 ;;; Main

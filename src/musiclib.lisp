@@ -88,7 +88,7 @@ system. [DONTCHECK]"
 
 (defun get-accidental (accidental representation)
   "Returns a string with the accidental in a specific
-    representation. \\example{(get-accidental 'sharp 'latin)}{#}"
+    representation. \\example{(get-accidental 'sharp 'latin)}{\\#}"
   (assoc-item accidental
               (assoc-item representation '((lily ((flat "es")
                                                   (sharp "is")))
@@ -106,7 +106,7 @@ system. [DONTCHECK]"
 
 (defun get-interval-name (short)
   "Returns the full name of a chord for the abbreviated
-representation. \\example{(get-interval-name 'dim)}{diminished}.
+representation. \\example{(get-interval-name \\rq dim)}{diminished}.
 [DONTCHECK]"
   (assoc-item short '((min minor)
                       (maj major)
@@ -141,10 +141,10 @@ string. The central octave has the value 8."
 
 (defun number-of-accidentals (acc-string representation)
   "Returns the numeric value of a string of accidentals according to
-representation. For instance, if acc-string is 'eseses' the function
+representation. For instance, if acc-string is ``eseses'' the function
 returns -3. Be careful not to pass a string representing a note as the
 first argument to this function, otherwise it could mistakenly return
--2 for 'ees'."
+-2 for ``ees''."
   (let ((sharp (get-accidental 'sharp representation))
         (flat (get-accidental 'flat representation)))
     (cond ((search sharp acc-string) (count-subseq sharp acc-string))
@@ -153,7 +153,8 @@ first argument to this function, otherwise it could mistakenly return
 
 (defun match-note-representation (note representation)
   "Returns non-nil if a note matches the representation.
-EXAMPLE: (match-note-representation \"cis\" 'latin) returns nil."
+
+EXAMPLE: \\begin{verbatim}(match-note-representation \"cis\" 'latin)\\end{verbatim} returns nil."
   (or (search (get-accidental 'flat representation) note)
       (search (get-accidental 'sharp representation) note)))
 
@@ -162,8 +163,8 @@ EXAMPLE: (match-note-representation \"cis\" 'latin) returns nil."
 
 (defun %parse-note (note representation system)
   "Returns the numeric code for a note according with the representation and system.
-EXAMPLE: (%parse-note \"ces\" 'lily 'tonal) returns 95. This is a low
-level function, you should use parse-note instead."
+EXAMPLE: \\begin{verbatim}(%parse-note \"ces\" 'lily 'tonal)\\end{verbatim} returns 95.
+This is a low level function, you should use parse-note instead."
   (let ((note-code-tonal
          (%my-position (list (string->symbol (subseq note 0 1))
                             (number-of-accidentals (subseq note 1) representation))
@@ -189,12 +190,12 @@ level function, you should use parse-note instead."
 
 (defun parse-note (note)
   "Returns the numeric code of a pitch, given its representation as a
-string. This function is smart enought to know that 'aes' is
-lilypond's representation and 'd#' is latin's representation."
+string. This function is smart enought to know that ``aes'' is
+lilypond's representation and ``d\\#'' is latin's representation."
   (flet ((%note->code (note)
            "Aceita um símbolo representando uma nota e retorna seu
 código numérico. Essa é uma função auxiliar que funciona apenas para
-notas sem acidentes, como 'd', 'e', etc. EXEMPLO: (%note->code \"d\")
+notas sem acidentes, como 'd', 'e', etc. EXEMPLO: (\\%note->code \"d\")
 retorna 14."
            (case *system*
              (tonal (position (list note 0)
