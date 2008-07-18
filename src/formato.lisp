@@ -76,12 +76,11 @@
   (format nil "~a ~a" (if (eq '+ (first inter)) "up" "down") (print-interval (cdr inter))))
 
 (defun event-equal (x y)
+  "True if eventx \\texttt{x} and \\texttt{y} stand for the same note."
   (if 
       (or
        (and (event-p x)
             (event-p y)
-;            (equal (event-octave x)
-;                   (event-octave y))
             (equal (event-pitch x)
                    (event-pitch y))
             (equal (event-dur x)
