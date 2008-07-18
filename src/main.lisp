@@ -37,6 +37,8 @@
 
 
 (defun analyse-files :private (options)
+  (setf (arg :algorithms options) (mapcar #'load-alg (filter-algorithms (arg :algorithms options)))
+        (arg :options options) (process-option-list (arg :options options)))
   (loop
      for file in (arg :files options)
      for segments = (sonorities (parse-file file))
@@ -587,6 +589,8 @@
 
 (defcommand algorithms (options &rest ignore)
   (declare (ignore ignore))
+  ;(setf (arg :algorithms options) (mapcar #'load-alg (filter-algorithms (arg :algorithms options)))
+  ;      (arg :options options) (process-option-list (arg :options options)))
   (iter (for alg in (arg :algorithms options))
         (do-options alg options)
         (save-alg alg)))
@@ -684,8 +688,6 @@
               ;;; parse file options
               (setf (arg :files options) (parse-files options))
               ;;; parse algorithms options
-              (setf (arg :algorithms options) (mapcar #'load-alg (filter-algorithms (arg :algorithms options)))
-                    (arg :options options) (process-option-list (arg :options options)))
               (for analysis = (analyse-files options))
               (if (and (string= command "analysis")
                        (every #'null (mapcar #'analysis-segments analysis)))
