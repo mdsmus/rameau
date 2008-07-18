@@ -35,26 +35,45 @@
 
 ;;; Make analysis
 
+(defun main-perform-analysis (segments options alg)
+  (handler-case (perform-analysis segments options alg)
+    (t ()
+      (format t "Analysis failed for algorithm ~a. Please report a bug.~%" alg)
+      nil)))
+
+(defun main-parse-file (file)
+  (handler-case (parse-file file)
+    (t ()
+      (format t "Could not parse file ~a.
+Please check with lilypond to see if it is valid. If it is, please report a bug.~%"
+              file)
+      (rameau-quit))))
 
 (defun analyse-files :private (options)
   (setf (arg :algorithms options) (mapcar #'load-alg (filter-algorithms (arg :algorithms options)))
         (arg :options options) (process-option-list (arg :options options)))
-  (loop
-     for file in (arg :files options)
-     for segments = (sonorities (parse-file file))
-     collect
-       (make-analysis
-        :segments segments
-        :results (mapcar #L(perform-analysis segments options !1)
-                         (arg :algorithms options))
-        :answer-sheet (new-parse-answer-sheet (pathname-name file) (arg :substring options))
-        :file-name (pathname-name file)
-        :number-algorithms (length (arg :algorithms options))
-        :algorithms (arg :algorithms options)
-        :notes (mapcar #'list-events segments)
-        :ast (file-ast file)
-        :full-path file
-        :dur (durations segments))))
+  (let ((analysis (handler-case (loop
+                                   for file in (arg :files options)
+                                   for segments = (sonorities (main-parse-file file))
+                                   collect
+                                     (make-analysis
+                                      :segments segments
+                                      :results (mapcar #L(main-perform-analysis segments options !1)
+                                                       (arg :algorithms options))
+                                      :answer-sheet (new-parse-answer-sheet (pathname-name file) (arg :substring options))
+                                      :file-name (pathname-name file)
+                                      :number-algorithms (length (arg :algorithms options))
+                                      :algorithms (arg :algorithms options)
+                                      :notes (mapcar #'list-events segments)
+                                      :ast (file-ast file)
+                                      :full-path file
+                                      :dur (durations segments)))
+                    (t () (list (make-analysis :segments (list nil)))))))
+    (when (every #'null (mapcar #'analysis-segments analysis))
+      (format t "ERROR: Couldn't analyse. Did you specify the files and the algorithms?
+If you did, we have a bug, so please report.~%")
+      (rameau-quit))
+    analysis))
 
 ;;; Print messages
  (defun print-help :private ()
