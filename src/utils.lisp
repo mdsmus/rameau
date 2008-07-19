@@ -379,6 +379,8 @@ null or 'erro."
   "Draw a line from \\texttt{zero} = \\texttt{min} to \\texttt{one} = \\texttt{max} and find \\texttt{value} in it." 
   (let ((value (- value min))
         (max (- max min)))
-    (+ zero
-       (* one (/ value max)))))
+    (if (/= 0 max)
+        (+ zero
+           (* one (/ value max)))
+        zero)))
 
