@@ -703,6 +703,92 @@ If you did, we have a bug, so please report.~%")
                                     (event-octave note)))
                       (format t "~%")))))))
 
+(defun answer->mode (answer)
+  (cond ((chord-p answer) (list :chord
+                                (make-keyword (chord-mode answer))
+                                (make-keyword (chord-7th answer))))
+        ((melodic-note-p answer) (list :non-chord-tone))
+        ((augmented-sixth-p answer) (list :aug6 (make-keyword (augmented-sixth-type answer))))
+        (t nil)))
+
+(defun mode->answer (mode)
+  (case (first mode)
+    (:chord (make-chord :root ""
+                        :mode (format nil "~(~a~)" (second mode))
+                        :7th (format nil "~(~a~)" (third mode))))
+    (:non-chor-tone (make-melodic-note))
+    (:aug6 (make-augmented-sixth :type (format nil "~(~a~)" (second mode))))
+    (t "")))
+
+(defcommand report (options)
+  (let* ((analysis (analyse-files options))
+         (algorithms (analysis-algorithms (first analysis)))
+         (confusion-matrix (iter (for a in algorithms)
+                                 (collect (make-hash-table :test #'equal))))
+         (modes (make-hash-table :test #'equal))
+         (matrixes (repeat-list (length algorithms) nil)))
+    (iter (for anal in analysis)
+          (iter (for alg in algorithms)
+                (for r in (analysis-results anal))
+                (for m in confusion-matrix)
+                (iter (for an in r)
+                      (for ga in (analysis-answer-sheet anal))
+                      (let ((ga (if (listp ga) (first ga) ga)))
+                        (unless (rameau::%compare-answer-sheet an ga)
+                          (incf (gethash (list (answer->mode an) (answer->mode ga))
+                                         m
+                                         0))
+                          (setf (gethash (answer->mode an) modes t)
+                                (gethash (answer->mode ga) modes t)))))))
+    (format t "Done counting...~%")
+    (setf modes (iter (for (mode va) in-hashtable modes) (collect mode)))
+    (iter (for a in *algorithms*)
+          (for c in confusion-matrix)
+          (for i from 0)
+          (let ((conf (make-array (list (length modes) (length modes)) :initial-element 0)))
+            (iter (for ((an ga) count) in-hashtable c)
+                  (incf (aref conf (position ga modes :test #'equal) (position an modes :test #'equal)) count))
+            (setf (nth i matrixes) conf)))
+    (format t "Done building confusion matrix...~%")
+    (with-open-file (f (concat *rameau-path* "analysis/report.tex")
+                       :direction :output
+                       :if-exists :supersede)
+      (format f "
+\\documentclass{article}
+\\usepackage{amsmath}
+\\usepackage[utf8x]{inputenc}
+\\usepackage[T1]{fontenc}
+\\usepackage[english]{babel}
+\\usepackage{times}
+\\usepackage{color}
+\\usepackage[displaymath,textmath,sections,graphics,floats,auctex]{preview}
+
+
+\\title{Tabelas de resultados do Rameau}
+\\author{Rameau}
+
+\\begin{document}
+
+\\maketitle
+
+")
+      (iter (for a in algorithms)
+            (for cm in matrixes)
+            (for nmodes = (length modes))
+            (format f "\\begin{table}~%\\begin{center}~%\\begin{sc}~%\\begin{tabular}{r|~{~a~^|~}}~%"
+                    (mapcar (lambda (x) (declare (ignore x)) "l") modes))
+            (format f "       & ~{~a~^ & ~} \\\\ \\hline~%" (mapcar #'mode->answer modes))
+            (iter (for m in modes)
+                  (for n from 0)
+                  (format f " ~a " (mode->answer m))
+                  (iter (for i from 0 below nmodes)
+                        (format f "& $~a$ " (aref cm i n)))
+                  (format f " \\\\ \\hline~%"))
+            (format f "\\end{tabular}~%\\caption{Confusion matrix for ~a}~%\\end{sc}~%\\end{center}~%\\end{table}~%"
+                    (alg-name a)))
+      (format f "~%\\end{document}~%"))))
+                          
+  
 (defun make-training-data (options)
   (setf *training-data*
         (iter (for f in (arg :files options))

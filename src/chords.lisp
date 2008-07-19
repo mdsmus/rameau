@@ -172,7 +172,7 @@ Transpose chord \\texttt{c} by \\texttt{n} pitches.
      collect (transpose-chord (if (listp c) (find-if #'chord-p c) c)
                               n)))
 
-(defun %compare-answer-sheet :private (result answer-sheet &optional tempered?)
+(defun %compare-answer-sheet  (result answer-sheet &optional tempered?)
   (or (and (melodic-note-p result)
            (melodic-note-p answer-sheet))
       (and (augmented-sixth-p result)
