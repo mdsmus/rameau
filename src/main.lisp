@@ -332,9 +332,6 @@ If you did, we have a bug, so please report.~%")
       (- number step)
       (+ number step))) 
 
-(defun random-color ()
-  (min 0.5 (random 1.0)))
-
 (defun make-cadence-figure (cadences name)
   (make-random-state t)
   (dbg :cadence-figure "Setting up...~%")
