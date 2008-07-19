@@ -349,12 +349,12 @@
 ;;(output-transition-images my-hmm)
 ;; (train-hmm my-hmm)
 
-
 (defmethod do-options ((alg hmm) options)
   (when (aget :visualize (arg :options options))
     (output-prior-images alg)
     (output-note-images alg)
-    (output-transition-images alg))
+    (output-transition-images alg)
+    )
   (when (and (aget :train (arg :options options))
              (not (eql *version* (hmm-version alg))))
     (format t "Training hmm...~%")

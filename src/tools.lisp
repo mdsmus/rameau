@@ -204,3 +204,7 @@ Read and load definitions from a user-set configuration file in \\texttt{~/.rame
 (defstruct analysis
   segments results answer-sheet file-name notes dur size-answer-sheet
   number-algorithms ast full-path algorithms title)
+
+(defun random-color ()
+  (min 0.5 (random 1.0)))
+
