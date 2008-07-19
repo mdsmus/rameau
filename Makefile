@@ -1,12 +1,7 @@
 SYSTEM = $(shell uname -s)
 
-ifeq ("$(SYSTEM)", "Linux")
-	SBCL_BIN = /usr/local/bin/sbcl
-	LISP_BIN = /usr/bin/lisp
-else ifeq ("$(SYSTEM)", "FreeBSD")
-	SBCL_BIN = /usr/local/bin/sbcl
-	LISP_BIN = /usr/local/bin/lisp
-endif
+SBCL_BIN = sbcl
+LISP_BIN = lisp
 
 TRAIN_NAME = $(shell git branch | grep "*" | cut -f 2 -d ' ')-$(TRAIN_VERSION)
 RAMEAUDEPS = t
