@@ -119,15 +119,6 @@
           #'>
           :key #'first))
 
-(defun random-stroke-fill-colors ()
-  (let ((red (rameau::random-color))
-        (green (rameau::random-color))
-        (blue (rameau::random-color)))
-    (set-rgb-stroke red green blue)
-    (set-rgb-fill (max 1 (* 1.5 red))
-                  (max 1 (* 1.5 green))
-                  (max 1 (* 1.5 blue)))))
-
 (defun visualize-knn-hash (alg)
   (with-canvas (:width 2000 :height 2000)
     (let ((nn (prepare (knn-nn alg)))

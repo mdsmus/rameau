@@ -16,10 +16,9 @@
 
 (defun load-alg (alg)
   "Load \\texttt{alg} from disk, returning \\texttt{alg} itself in case a failure happens."
-  (let (done)
-    (handler-case (cl-store:restore (alg-file-name alg))
-      (simple-error () alg)
-      (error () alg))))
+  (handler-case (cl-store:restore (alg-file-name alg))
+    (simple-error () alg)
+    (error () alg)))
 
 (defun save-alg (alg)
   "Save algorithm \\texttt{alg} to disk."
@@ -208,3 +207,11 @@ Read and load definitions from a user-set configuration file in \\texttt{~/.rame
 (defun random-color ()
   (min 0.5 (random 1.0)))
 
+(defun random-stroke-fill-colors ()
+  (let ((red (rameau::random-color))
+        (green (rameau::random-color))
+        (blue (rameau::random-color)))
+    (vecto:set-rgb-stroke red green blue)
+    (vecto:set-rgb-fill (max 1 (* 1.5 red))
+                  (max 1 (* 1.5 green))
+                  (max 1 (* 1.5 blue)))))
