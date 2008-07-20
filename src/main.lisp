@@ -446,7 +446,51 @@ If you did, we have a bug, so please report.~%")
                                 sinal
                                 intervalo)))))))))
 
-;; É sempre mais aguda menos a mais grave
+(defcommand view-analysis (options)
+  (let ((analysis (analyse-files options))
+        (colors (make-hash-table :test #'equal)))
+    (iter (for anal in analysis)
+          (iter (for alg in (analysis-results anal))
+                (for name in (mapcar #'alg-name (analysis-algorithms anal)))
+                (for height = (+ 50 (* 20 (length alg))))
+                (for width = 500)
+                (vecto:with-canvas (:width width :height height)
+                  (let ((font (vecto:get-font (rameau-get-font-path "Vera.ttf"))))
+                    (vecto:set-font font 20)
+                    (vecto:rectangle 0 0 width height)
+                    (vecto:set-rgb-fill 0 0 0)
+                    (vecto:fill-path)
+                    (vecto:set-rgb-stroke 1 1 1)
+                    (vecto:string-paths 20 (- height 20) "Pitches")
+                    (vecto:string-paths 260
+                                        (- height 20)
+                                        (format nil "==> Chords by ~a" name))
+                    (vecto:stroke)
+                    (iter (for cur-h from (- height 40) above 0 by 20)
+                          (for seg in (analysis-segments anal))
+                          (for re in alg)
+                          (for vec = (extract-feature-list seg 0))
+                          (for cho = (format nil "~a" re))
+                          (vecto:set-rgb-fill 1 0 0)
+                          (iter (for pitch in vec)
+                                (for i from 2 by 2)
+                                (vecto:centered-circle-path i cur-h (* 5 pitch))
+                                (vecto:fill-path))
+                          (aif (gethash (remove-inversions cho) colors)
+                               (set-stroke-fill-colors it)
+                               (setf (gethash (remove-inversions cho) colors) (rameau::random-stroke-fill-colors)))
+                          (vecto:centered-string-paths 400 (- cur-h 5) cho)
+                          (vecto:fill-and-stroke))
+                    (vecto:save-png (concat *rameau-path*
+                                            "analysis/analysis-"
+                                            (analysis-file-name anal)
+                                            "-"
+                                            name
+                                            ".png"))))))))
+            
+      
+        
+
 (defcommand jumps (options)
   (let ((jumps (make-hash-table :test #'equal))
         (analysis (analyse-files options)))
