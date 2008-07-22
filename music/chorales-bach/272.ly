@@ -1,8 +1,7 @@
-
 \version "2.10.33"
 
 \header {
-  title = "272 - Ich dank dir, lieber Herre"
+  title = "272 - Ich dank' dir, lieber Herre"
   composer = "J. S. Bach"
 }
 
@@ -11,15 +10,24 @@ global =  {
   \key bes \major
 }
 
-soprano = \relative c {
-  \partial 4 bes''4 
+soprano = \relative c'' {
+  \partial 4 
+  bes4 
   bes bes \repeat volta 2 {
     bes c 
     aes g f c' 
     d c bes a8 g 
     a4 g f
   }
-  \alternative {{bes bes bes} {\partial 4 f'}}
+  \alternative {
+    {
+      bes bes bes
+    } 
+    {
+      \partial 4 
+      f'
+    }
+  }
   ees d c bes 
   bes8 c d4 c d 
   ees d c b 
@@ -31,8 +39,9 @@ soprano = \relative c {
 }
 
 
-alto = \relative c {
-  \partial 4 f'4 
+alto = \relative c' {
+  \partial 4 
+  f4 
   g aes
   \repeat volta 2 {
     g g 
@@ -40,7 +49,15 @@ alto = \relative c {
     f e f c4~
     c8 f4 e8 c4
   }
-  \alternative {{f g f}{\partial 4 bes8 a}} 
+  \alternative {
+    {
+      f g f
+    }
+    {
+      \partial 4 
+      bes8 a
+    }
+  } 
   g4 f8 g a4 bes8 aes 
   g4 f f f 
   ees aes8 g4 f8 g4 
@@ -48,12 +65,13 @@ alto = \relative c {
   f g8 a bes4 a8 g 
   f4 g a bes 
   aes g f f8 g 
-  f ees4 d8 d
+  f ees4 d8 d4
 }
 
 
-tenor = \relative c {
-  \partial 4 d'4 
+tenor = \relative c' {
+  \partial 4 
+  d4 
   d8 ees f4
   \repeat volta 2 {
     ees8 d c4 
@@ -61,7 +79,15 @@ tenor = \relative c {
     bes8 a g4 f c' 
     c bes a 
   }
-  \alternative {{bes bes8 c d4}{\partial 4 d8 c }}
+  \alternative {
+    {
+      bes bes8 c d4
+    }
+    {
+      \partial 4 
+      d8 c 
+    }
+  }
   bes c d ees f4 f 
   bes,2 a4 b 
   c4. b8 c4 d 
@@ -73,8 +99,9 @@ tenor = \relative c {
 }
 
 
-baixo = \relative c {
-  \partial 4 bes'8 a 
+baixo = \relative c' {
+  \partial 4 
+  bes8 a 
   g4 d 
   \repeat volta 2 {
     ees e 
@@ -82,7 +109,15 @@ baixo = \relative c {
     bes c d e 
     f c f, 
   } 
-  \alternative {{d' ees bes}{\partial 4 d}}
+  \alternative {
+    {
+      d' ees bes
+    }
+    {
+      \partial 4 
+      d
+    }
+  }
   g bes ees, d 
   ees bes f' d 
   c f8 g aes4 g 
@@ -92,8 +127,6 @@ baixo = \relative c {
   f ees2 d8 ees 
   f4 f, bes 
 }
-
-
 
 \score {
   <<
