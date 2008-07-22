@@ -11,45 +11,6 @@
     "Minor mode for editing and refactoring (Common) Lisp code."
   :lighter " Rameau")
 
-(defun rameau-new-test-snippet (function)
-  (newline 2)
-  (snippet-insert (concat "(define-test " function "\n"
-                          "$>(assert-equal $${resultado} (" function " $${argumentos})$.))")))
-
-(defun rameau-new-test-existing-file (file function)
-  (find-file file)
-  (beginning-of-buffer)
-  (if (word-search-forward (concat "(define-test " function) nil t)
-      (princ 1)
-      (progn
-        (goto-char (point-max))
-        (rameau-new-test-snippet function))))
-      
-(defun rameau-new-test-new-file (file function package)
-  (find-file file)
-  (let ((buffer (get-buffer (buffer-name))))
-    (when package
-      (princ (concat "(in-package " package ")") buffer)
-      (newline))
-    (princ "(use-package :lisp-unit)" buffer)
-    (rameau-new-test-snippet function)
-    (save-buffer)))
-
-(defun rameau-new-test ()
-  (interactive)
-  (let ((buffer (get-buffer (buffer-name))))
-    (end-of-defun)
-    (backward-char)
-    (beginning-of-defun)
-    (forward-whitespace 1)
-    (let ((function (thing-at-point 'symbol)))
-      (end-of-line)
-      (newline-and-indent)
-      (snippet-insert "(assert-equal $${resultado} (" function " $${argumentos}))"))))
-
-(define-key slime-mode-map [(alt control u)] 'rameau-cria-teste-defun)
-(define-key slime-mode-map [(control return)] 'rameau-new-test)
-
 (defvar *rameau-ultimo-tipo* "")
 
 (defun rameau-declare-value-snippet (type)
@@ -87,47 +48,25 @@
 
 (define-key slime-mode-map [(control c) (control d) (control e)] 'rameau-declare)
 
-(defun rameau-get-defun-name ()
-  (beginning-of-defun)
-  (forward-whitespace 1)
-  (thing-at-point 'symbol))
+(defun rameau-new-test-snippet (function)
+  (newline 2)
+  (snippet-insert (concat "(define-test " function "\n"
+                          "$>(assert-equal $${resultado} (" function " $${argumentos})$.))")))
 
-(defun rameau-test-filename ()
-  (let ((file (buffer-file-name)))
-    (concat (file-name-directory file)
-            "test-"
-            (file-name-nondirectory file))))
-
-(defun rameau-cria-teste-defun ()
-  (interactive)
-  (let ((function (rameau-get-defun-name))
-        (file (rameau-test-filename))
-        (buffer (file-name-nondirectory (rameau-test-filename))))
-    (save-excursion
-      (if (search-backward "(in-package" nil t)
-          (progn
-            (forward-whitespace 1)
-            (setq package (thing-at-point 'sexp)))
-          (setq package nil))
-      (if (file-exists-p file)
-          (rameau-new-test-existing-file file function)
-          (rameau-new-test-new-file file function package)))))
-
-;; TODO: terminar
-(defun rameau-run-test ()
-  (interactive)
-  (let ((test-name (rameau-get-defun-name)))
-    (if (word-search-forward (concat "(define-test " function) nil t)
-        (princ 1)
-        (progn
-          (goto-char (point-max))
-          (rameau-new-test-snippet function)))))
+(defun rameau-new-test-existing-file (file function)
+  (find-file file)
+  (goto-char (point-min)) ; beginning-of-buffer
+  (if (word-search-forward (concat "(define-test " function) nil t)
+      (princ 1)
+      (progn
+        (goto-char (point-max))
+        (rameau-new-test-snippet function))))
       
 (defun rameau-new-test-new-file (file function package)
   (find-file file)
   (let ((buffer (get-buffer (buffer-name))))
     (when package
-      (princ (concat "(in-package " package) buffer)
+      (princ (concat "(in-package " package ")") buffer)
       (newline))
     (princ "(use-package :lisp-unit)" buffer)
     (rameau-new-test-snippet function)
@@ -143,7 +82,10 @@
     (let ((function (thing-at-point 'symbol)))
       (end-of-line)
       (newline-and-indent)
-      (snippet-insert (concat "(assert-equal $${resultado} (" function " $${argumentos}))")))))
+      (snippet-insert "(assert-equal $${resultado} (" function " $${argumentos}))"))))
+
+(define-key slime-mode-map [(alt control u)] 'rameau-cria-teste-defun)
+(define-key slime-mode-map [(control return)] 'rameau-new-test)
 
 (defun rameau-get-defun-name ()
   (beginning-of-defun)
@@ -157,7 +99,7 @@
             (file-name-nondirectory file))))
 
 (defun rameau-get-package ()
-  (beginning-of-buffer)
+  (goto-char (point-min)) ;; beginning-of-buffer
   (if (search-forward "(in-package" nil t)
       (progn
         (forward-whitespace 1)
@@ -176,15 +118,24 @@
             (if (file-exists-p test-file)
                 (progn
                   (find-file test-file)
-                  (beginning-of-buffer)
+                  (goto-char (point-min)) ;; beginning-of-buffer
                   (if (word-search-forward (concat "(define-test " function) nil t)
                       (progn
                         (beginning-of-defun)
-                        (copy-sexp-as-kill-nomark))
+                        (copy-sexp))
                       (push "função não tem teste" kill-ring)))
                 (princ "não existe arquivo de teste :-("))))
       (find-file file)
       (princ (first kill-ring)))))
+
+(defun copy-sexp ()
+  "Copy the sexp under the cursor to the kill ring."
+  (interactive)
+  (save-excursion
+    (let ((start (point)))
+      (forward-sexp 1)
+      (kill-ring-save start (point))
+      (message (buffer-substring start (point))))))
 
 (defun rameau-cria-teste-defun ()
   (interactive)
