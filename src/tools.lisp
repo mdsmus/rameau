@@ -170,6 +170,13 @@ Read and load definitions from a user-set configuration file in \\texttt{~/.rame
     (when (cl-fad:file-exists-p full-file)
       (read-chords (read-file-as-sexp full-file)))))
 
+(defun path-parse-answer-sheet (file)
+  "Find and parse the answer sheet for file \\texttt{file}, if exists."
+  (let* ((full-file (cl-ppcre:regex-replace "music" file "answer-sheets"))
+         (full-file (cl-ppcre:regex-replace "\\.ly" full-file ".pop")))
+    (when (cl-fad:file-exists-p full-file)
+      (read-chords (read-file-as-sexp full-file)))))
+
 (defun parse-file-list (item f &optional (ext ".ly"))
   "Parse file list \\texttt{f} into a list of filenames. [DONTCHECK]"
   (let* ((path (concat *rameau-path* (get-item item *lily-dir-list*  #'equal)))

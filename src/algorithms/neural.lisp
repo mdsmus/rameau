@@ -174,7 +174,7 @@
 (defun train-net (net training-data value net-file hidden-units)
   (setf (symbol-value net) (make-net value hidden-units 109))
   (format t "* training the network~%")
-  (train-on-file (symbol-value net) training-data 3500 100 0.1)
+  (train-on-file (symbol-value net) training-data 1500 100 0.1)
   (format t "* saving ~a~%" net-file)
   (save-to-file (symbol-value net) net-file))
 
