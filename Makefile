@@ -29,8 +29,8 @@ neural-path = $(maindir)/algorithms/
 default: rameau 
 
 data:
-	./rameau report -f chor:042 chor:044 chor:046 chor:048 chor:050 chor:53..57
-	./rameau data -f chor:042 chor:044 chor:046 chor:048 chor:050 chor:53..57
+	./rameau report -f chor:042,044,046,048,050 chor:53..57
+	./rameau data -f chor:042,044,046,048,050 chor:53..57
 
 all-rameau: rameau cmurameau clisprameau
 

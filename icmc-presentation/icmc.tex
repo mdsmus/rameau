@@ -137,6 +137,25 @@ Well, they're very good, right?
 \end{frame}
 
 \begin{frame}
+  \frametitle{How good?}
+  \framesubtitle{Average accuracies and standard deviations, per
+    algorithm, on 10 chorales}
+  
+  \begin{center}
+    \begin{tabular}{rrrr}
+      Context-free neural net & 95\% &$\pm$  &  6 \\
+      Context-free Knnn       & 94\% &$\pm$  &  7 \\
+      Context-considering knn & 92\% &$\pm$  &  8 \\ 
+      Context-considering net & 91\% &$\pm$  & 10 \\ 
+      Decision tree           & 89\% &$\pm$  & 14 \\ 
+      Naïve Bayesian          & 88\% &$\pm$  & 19 \\ 
+      Hidden Markov Model     & 83\% &$\pm$  & 16 \\ 
+      Pardo \& Birmingham's   & 82\% &$\pm$  & 21 \\ 
+    \end{tabular}
+  \end{center}
+\end{frame}
+
+\begin{frame}
   \frametitle{Interesting questions}
   Why are context-considering algorithms worse overall?
   
