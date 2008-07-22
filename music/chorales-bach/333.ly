@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -11,22 +10,29 @@ global =  {
   \key d \major
 }
 
-soprano = \relative c {
-  \partial 4 cis''4 
+soprano = \relative c'' {
+  \partial 4 
+  cis4 
   \repeat volta 2 {
     d cis b cis8 d 
     e4 fis e d 
     cis2 r4 e 
     d cis d b 
-    a fis8 g a4 g } 
+    a fis8 g a4 g 
+  } 
   \alternative {
-    { fis2. cis'4 }
-    { fis,2. a4 }}
+    { 
+      fis2. cis'4 
+    }
+    { 
+      fis,2. a4 
+    }
+  }
   g fis e fis 
   d e fis cis' 
   d cis8 b a4 b8 cis 
   d4 e cis fis 
-  e cis8 d e4 b 
+  e8 d cis d e4 b 
   a g fis e 
   a b cis8 d e4 
   d cis b d 
@@ -36,19 +42,26 @@ soprano = \relative c {
 }
 
 
-alto = \relative c {
-  \partial 4 fis'4 
+alto = \relative c' {
+  \partial 4 
+  fis4 
   \repeat volta 2 {
     fis fis8 e d4 a' 
     g fis8 gis a4 b 
     e,2 r4 fis 
     fis e fis d8 e 
-    fis2. e4 }
+    fis2. e4 
+  }
   \alternative {
-  { d2. e4 }
-  { d2. fis4 }}
+    { 
+      d2. e4 
+    }
+    { 
+      d2. fis4 
+    }
+  }
   e d d8 cis d4 
-  d g, a a' 
+  d g, d' a' 
   a g fis fis 
   fis8 b b4 a a 
   a a e8 fis g fis 
@@ -61,24 +74,31 @@ alto = \relative c {
 }
 
 
-tenor = \relative c {
-  \partial 4 ais'4 
+tenor = \relative c' {
+  \partial 4 
+  ais4 
   \repeat volta 2 {
     b ais b a8 b 
     cis4 d e8 fis gis4 
     cis,2 r4 cis 
     b8 a g4 a b8 cis 
-    d2. a4 }
+    d2. a4 
+  }
   \alternative {
-  { a2. ais4 }
-  { a2. a4 }}
+    { 
+      a2. ais4 
+    }
+    { 
+      a2. a4 
+    }
+  }
   a a a a 
-  a b8 cis fis,4 e' 
+  a b8 cis a4 e' 
   d g, d'8 e fis4 
   fis8 d b e e4 d 
   cis8 fis e d cis4 b 
   e, a a a 
-  a e'8 d e d cis4 
+  a e'8 d e d cis4~
   cis8 b cis e d4 e 
   e d e8 a, a4 
   d2. cis4 
@@ -87,16 +107,23 @@ tenor = \relative c {
 
 
 baixo = \relative c {
-  \partial 4 fis4 
+  \partial 4 
+  fis4 
   \repeat volta 2 {
     b, fis' g fis 
     e d cis b 
     a2 r4 ais 
     b e d g 
-    fis b a a, }
+    fis b a a, 
+  }
   \alternative {
-  { d2. cis4 }
-  { d2. d4 }}
+    { 
+      d2. cis4 
+    }
+    { 
+      d2. d4 
+    }
+  }
   d8 cis d4 a d8 e 
   fis4 e d cis 
   d e fis8 e d cis 
