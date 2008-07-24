@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "369 - jesu, der du meine seele"
+  title = "369 - Jesu, der du meine Seele"
   composer = "J. S. Bach"
 }
 

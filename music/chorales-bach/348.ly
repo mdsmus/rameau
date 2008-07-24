@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "348 - Meinen Jesum laß ich nicht, weil er sich für mich gegeben"
+  title = "348 - Meinen Jesum laß ich nicht"
   composer = "J. S. Bach"
 }
 

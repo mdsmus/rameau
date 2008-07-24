@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "350 - Werde munter, mein Gemüte"
+  title = "350 - Jesu, meiner Seelen Wonne"
   composer = "J. S. Bach"
 }
 
@@ -48,7 +48,7 @@ alto = \relative c'' {
 
 tenor = \relative c' {
   \repeat volta 2 {
-    d4 bes8 c8 d4 d4 
+    f4 bes,8 c8 d4 d4 
     ees4 f4 f4 f4 
     f4 ees4 d8 c8 bes4 
     bes4 a4 d2 }

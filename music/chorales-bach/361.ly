@@ -1,8 +1,7 @@
-
 \version "2.10.33"
 
 \header {
-  title = "361 - Du Lebensfurrts, Herr Jesu Christ"
+  title = "361 - Du Lebensfürst, Herr Jesu Christ"
   composer = "J. S. Bach"
 }
 

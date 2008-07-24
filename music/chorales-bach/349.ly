@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "349 - Was mein Gott will, das g'scheh allzeit"
+  title = "349 - Ich hab' in Gottes Herz und Sinn"
   composer = "J. S. Bach"
 }
 

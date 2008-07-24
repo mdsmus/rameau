@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "357 - Warum sollt ich mich denn grämen"
+  title = "357 - Warum sollt' ich mich denn grämen"
   composer = "J. S. Bach"
 }
 

@@ -34,7 +34,7 @@ alto = \relative c'' {
   \repeat volta 2 {
     \partial 4 g4 
     fis4. ais8 b8 ais16 b16 cis4~ 
-    cis8 b4 ais8 fis4 fis4 
+    cis8 b4 ais8 fis4 fis4~
     fis8 e4 dis16 cis16 b8 dis8 e4 
     e8 dis16 cis16 dis4 b4 } r4 
   b4 e4 e4. b8   %5

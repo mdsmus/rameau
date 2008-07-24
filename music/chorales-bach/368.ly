@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "368 - Hilf, Herr Jesu, laß gelingen 2"
+  title = "368 - Hilf, Herr Jesu, laß gelingen"
   composer = "J. S. Bach"
 }
 

@@ -101,7 +101,7 @@ baixo = \relative c' {
   d4 c4 d2 
   g,1 
   g'2 f2   %10
-  bes4 c4 d2~ 
+  bes4 c4 d2
   d4 c4 bes4 d,4 
   ees4 c4 f2 
   bes,1 

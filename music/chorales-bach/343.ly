@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "343 - Ermuntre dich, mein schwacher Geist"
+  title = "343 - Nun lieget alles unter dir"
   composer = "J. S. Bach"
 }
 
@@ -81,10 +81,10 @@ tenor = \relative c {
   a8 g2    %10
   c4 b4. a8 
   g2. 
-  b8 b8 fis8 g8 a8 b8 g8 
-  fis8 e4 e'8 d8 cis8~ 
-  cis4 b8 cis4   %15
-  b2 ais4 
+  b4 fis8 g8 a8 b8 
+  g8 fis8 e4 e'8 d8 
+  cis4. b8 cis4
+  b2 ais4     %15
   b4. fis8 b8 a8 g8 
   fis8 e8 a4 gis8 
   a4 a4 a4 g8 

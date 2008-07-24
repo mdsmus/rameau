@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "354 - Es ist das Heil uns kommen her"
+  title = "354 - Sei Lob und Ehr' dem höchsten Gut"
   composer = "J. S. Bach"
 }
 
@@ -30,9 +30,9 @@ soprano = \relative c'' {
 
 alto = \relative c'' {
   \repeat volta 2 {
-    \partial 4 g4 
-    a4 g8 fis8 g4 c,8 d8 
-    e8 f8 g4 g4 a4 
+    \partial 4 a4 
+    g4 g8 fis8 g4 c,8 d8 
+    e8. f16 g4 g4 a4 
     g4 d4 g8 fis8 e4 
     a8 fis8 g4 fis4 } b4 
   b4 a8 b8 cis4 cis4   %5
@@ -46,8 +46,8 @@ alto = \relative c'' {
 
 tenor = \relative c' {
   \repeat volta 2 {
-    \partial 4 b4 
-    a4 b8 c8 b4 a4 
+    \partial 4 d8 c
+    b4 a b a
     g8 c8 c8 b8 e4 d4 
     d8 c8 b8 a8 g4 a4 
     a8 d4 cis8 d4 } d4 
@@ -60,10 +60,10 @@ tenor = \relative c' {
   
 }
 
-baixo = \relative c' {
+baixo = \relative c {
   \repeat volta 2 {
-    \partial 4 g4 
-    fis4 d4 g,4 a8 b8 
+    \partial 4 fis4 
+    g4 d4 g,4 a8 b8 
     c4 g4 c4 fis4 
     g4. fis8 e8 fis8 g8 a8 
     fis8 d8 a'4 d,4 } g8 a8 

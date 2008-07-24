@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "353 - Allein Gott in der Höh sei Ehr"
+  title = "353 - Der Herr ist mein getreuer Hirt"
   composer = "J. S. Bach"
 }
 
@@ -34,11 +34,11 @@ alto = \relative c' {
     g4 g4 fis4 e8 fis8 
     g4 g8 fis8 g4 g4 
     g4 fis8 g8 a8 g8 fis4 
-    g4. fis8 d4 } d4 
+    g4 g8 fis d4 } d4 
   d4 d4 e4 e4   %5
   e8 c8 f8 e8 e4 fis4 
-  g4 f4 e4 e8 fis8 
-  g4. fis16 e16 dis4 e4 
+  g4 g8 f e4 e8 fis8 
+  g4 g8 fis16 e16 dis4 e4 
   d8 e8 fis8 g8 a8 g4 fis8 
   e8 d8 e8 d8 d4   %10
   

@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "352 - Es woll uns Gott genädig sein 2"
+  title = "352 - Es woll uns Gott genädig sein"
   composer = "J. S. Bach"
 }
 
