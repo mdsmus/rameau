@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "302 - Hilf, Gott, laß mirs gelingen"
+  title = "302 - Hilf, Gott, daß mir's gelinge"
   composer = "J. S. Bach"
 }
 

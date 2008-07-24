@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "294 - Wenn mein Stündlein vorhanden ist 2"
+  title = "294 - Herr Jesu Christ, du höchstes Gut"
   composer = "J. S. Bach"
 }
 
@@ -69,7 +69,7 @@ baixo = \relative c' {
     b8 cis8 d8 e8 fis4 } d4 
   a'4 b4 fis4 e8 fis8   %5
   g8 e8 fis4 b,4 b'4 
-  a4 dis,8 f8 fis4 fis,4 
+  a4 dis,8 eis fis4 fis,4 
   fis'8 e8 d8 e8 a,4 ais4 
   b4 cis4 d4 e8 fis8 
   g8 fis8 e4 fis4 fis,4   %10

@@ -57,9 +57,9 @@ tenor = \relative c' {
   
 }
 
-baixo = \relative c {
+baixo = \relative c' {
   \partial 4 a8  b8 
-    c4 g4 e'4 cis4 
+    c4 a4 e4 cis4 
   d4 dis4 e4 a,4 
   d4 c4 g'4 e4 
   f8 g8 a4 d,4 a'4 

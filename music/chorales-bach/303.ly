@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "303 - Herr Christ, der einge Gottes-Söhn"
+  title = "303 - Herr Christ, der ein'ge Gott'ssohn"
   composer = "J. S. Bach"
 }
 

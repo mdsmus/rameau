@@ -128,8 +128,8 @@ tenor = \relative c' {
   a2 d4 
   c4 e4 d8 c8 
   b2 b4 
-  g4 d'4 d4   %30
-  a4 b4 c4 
+  g4 d'4 e4   %30
+  a,4 b4 c4 
   b4 c4 a4 
   b2 c4 
   c2 b4 

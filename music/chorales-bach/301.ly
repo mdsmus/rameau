@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "301 - Wo Gott, der Herr, nicht bei uns hält"
+  title = "301 - Ach, lieben Christen, seid getrost"
   composer = "J. S. Bach"
 }
 
@@ -36,7 +36,7 @@ alto = \relative c'' {
     d8 c'8 bes8 a8 g4 g8 f8 
     ees4 d8 c8 bes4 } f'4 
   f4 f4 c4. a'8   %5
-  a8 g16 fis16 g4 f4 g4 
+  a8 g16 fis16 g4 fis4 g4 
   g8 f8 ees4 d8 e8 f4 
   f4 e4 c4 d4 
   c8 d8 e8 fis8 g4 g4 
