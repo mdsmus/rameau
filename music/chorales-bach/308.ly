@@ -27,7 +27,7 @@ alto = \relative c' {
   e4 a, d cis
   b e dis dis
   e fis fis8 dis e4~e8 fis dis4 b gis'
-  a cis, fis8 gis a4
+  a cis, fis8 gis ais4
   b a gis fis
   e8 d cis dis e d cis4
   fis e e

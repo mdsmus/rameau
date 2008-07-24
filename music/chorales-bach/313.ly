@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "313 - Allein Gott in der Höh sei Ehr"
+  title = "313 - Allein Gott in der Höh' sei Ehr"
   composer = "J. S. Bach"
 }
 
@@ -32,7 +32,7 @@ alto = \relative c' {
   \repeat volta 2 {
     \partial 4 d8  fis8 
     g4 g4 fis4 e8 fis8 
-    g4 g8 fis8 g4 g4 
+    g4~ g8 fis8 g4 g4 
     g4 fis8 g8 a8 g8 fis4 
     g4. fis8 d4 } d4 
   d4 d4 e4 e4   %5

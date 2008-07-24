@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "311 - Jesus Christ, unser Herre"
+  title = "311 - Dank sei Gott in der Höhe"
   composer = "J. S. Bach"
 }
 

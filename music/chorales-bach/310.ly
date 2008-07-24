@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "310 - Mach's mit mir, Gott, nach deiner Güt"
+  title = "310 - Mach's mit mir, Gott, nach deiner"
   composer = "J. S. Bach"
 }
 
@@ -58,13 +58,13 @@ baixo = \relative c, {
   \repeat volta 2 {
     \partial 4 e4 
     e'4 cis4 gis4 cis4 
-    fis,4 gis8 a8 b4 b'4 
+    fis4 gis8 a b4 b 
     ais4 gis8 fis8 gis8 ais8 b4 
     e,4 fis4 b,4 } e8 dis8 
   cis4 gis4 a4 b4   %5
   cis8 dis8 e4 b4 b4 
   c4 cis4 d4 dis4 
-  e4 b4 e,4 
+  e4 b4 e4 
   
 }
 

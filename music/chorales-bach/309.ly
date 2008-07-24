@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "309 - An Wasserflüssen Babylon"
+  title = "309 - Ein Lämmlein geht und trägt die Schuld"
   composer = "J. S. Bach"
 }
 
@@ -38,7 +38,7 @@ alto = \relative c'' {
   \repeat volta 2 {
     \partial 4 aes4 
     aes4 g4 aes4 g4 
-    f8 aes4 g8 aes4 bes4 
+    f8 aes aes g aes4 bes
     aes4 aes4 aes4 aes4 
     aes4 g4 ees4 } ees4 
   ees8 f8 g4 f4 f8 ees8   %5
@@ -49,10 +49,10 @@ alto = \relative c'' {
   c8 a8 bes4 a4 c4   %10
   bes4 f8 des8 ees8 f8 ges4 
   f4 ees4 des4 bes'4 
-  ees,8 f8 ges4 f8 ees8 f4~ 
-  f8 ees4 d8 ees4 ees8 des8 
-  c8 bes8 aes8 ges8 aes4 aes'4   %15
-  g4 aes4 aes4 aes4~ 
+  ees,8 f8 ges4 f8 ees8 f4
+  f8 ees ees d ees4 ees8 des8 
+  c8 bes8 ees4 ees aes   %15
+  g4 aes2 aes4
   aes4 g4 ees4 
 }
 
@@ -63,17 +63,17 @@ tenor = \relative c' {
     des8 f8 ees4 ees4 ees4 
     ees4 aes,8 bes8 c8 aes8 f'4 
     bes,8 c8 des4 c4 } c4 
-  bes4 ees4 aes,4 bes4~   %5
-  bes8 aes4 g8 aes4 aes4 
+  bes4 ees4 aes,4 bes4   %5
+  bes8 aes aes g aes4 aes4 
   aes4 aes4 aes4 aes4 
   aes8 bes16 c16 bes4 bes4 aes4 
   aes8 ees'8 des8 c8 bes4 f'4 
   f2 f4 f8 ees8   %10
   des8 c8 bes4. a8 bes8 c8 
   a8 bes4 a8 bes4 f8 g8 
-  aes4 ees'8 des8 b4 bes4 
+  aes4 ees'8 des8 ces4 bes4 
   bes4 aes4 g4 g4 
-  aes4 ees'4 ees4 f4   %15
+  aes4 aes8 g aes4 f'   %15
   ees2 f8 ees8 des4 
   ees8 f8 ees8 des8 c4 
 }
@@ -93,7 +93,7 @@ baixo = \relative c' {
   bes4 bes,4 f'4 a,4  %10
   bes8 c8 des8 bes8 ges'4 f8 ees8
   f4 f,4 bes4 bes4
-  c8 d8 ees2 d4
+  c8 d8 ees4 ees d
   ees4 bes4 ees4 c4
   f4 ees4 aes8 g8 f4  %15
   c8 bes8 aes4 des8 c8 bes4

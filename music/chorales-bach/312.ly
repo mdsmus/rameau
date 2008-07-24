@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "312 - Die Wollust dieser Welt"
+  title = "312 - O Gott, du frommer Gott"
   composer = "J. S. Bach"
 }
 

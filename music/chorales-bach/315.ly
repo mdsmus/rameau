@@ -68,11 +68,12 @@ tenor = \relative c' {
 
 baixo = \relative c {
   \repeat volta 2 {
-    e4. d4 c8 b8 c8 
+    \partial 4 e4~
+    e8 d4 c8 b8 c8 
     d4 g,2. 
     g8 a8 b4 c4. b8 
-    a8 g8 d'2 g,4 }
-  g'4. fis8 e8 d8 e4   %5
+    a8 g8 d'2 g,4 } g'4~
+  g8 fis e d e4   %5
   fis4 g2. 
   g,4 g'8 fis8 b8 a8 g8 e8 
   a4 d,2. 
