@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "319 - Heilig, heilig, heilig"
+  title = "319 - Sanctus, Sanctus Dominus Deus Sabaoth"
   composer = "J. S. Bach"
 }
 

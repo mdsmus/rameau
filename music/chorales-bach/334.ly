@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "334 - Ihr Knecht cis Herren allzugleich"
+  title = "334 - Für deinen Thron tret' ich hiermit"
   composer = "J. S. Bach"
 }
 
@@ -14,7 +14,7 @@ global = {
 
 soprano = \relative c'' {
   \partial 4 d4 
-    d2 cis4 
+  d2 cis4 
   b2 a4 
   d4 e2 
   fis2 fis4 
@@ -29,13 +29,13 @@ soprano = \relative c'' {
   fis2 d4 
   e2 g4 
   fis4 e2   %15
-  d2. 
+  d2
   
 }
 
 alto = \relative c'' {
   \partial 4 a4 
-    b2 a4 
+  b2 a4 
   g2 fis4 
   fis4 b4 a4 
   a2 cis4 
@@ -50,13 +50,13 @@ alto = \relative c'' {
   a2 b4 
   a2 a4 
   a4 g2   %15
-  fis2. 
+  fis2
   
 }
 
 tenor = \relative c' {
   \partial 4 fis4 
-    fis2 fis4 
+  fis2 fis4 
   d2 d4 
   d2 cis4 
   d2 cis4 
@@ -71,13 +71,13 @@ tenor = \relative c' {
   fis2 fis4 
   e2 cis4 
   a4 b4 cis4   %15
-  a2. 
+  a2
   
 }
 
 baixo = \relative c {
   \partial 4 d4 
-    b4 d4 fis4 
+  b4 d4 fis4 
   g4 b4 d4 
   b4 g4 a4 
   d,2 ais'4 
@@ -92,7 +92,7 @@ baixo = \relative c {
   d4 cis4 b4 
   cis4 b4 a4 
   d4 g,4 a4   %15
-  d,2. 
+  d,2
   
 }
 

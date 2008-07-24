@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "320 - Meine Seel erhebt den Herren"
+  title = "320 - Gott sei uns gnädig und barmherzig"
   composer = "J. S. Bach"
 }
 
@@ -29,7 +29,7 @@ soprano = \relative c'' {
 
 alto = \relative c' {
   fis2 e2 
-  e4 eis4 fis4 gis4 
+  e4 eis4 eis gis
   fis4 e2 fis4 
   fis2 e2 
   e1   %5

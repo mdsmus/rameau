@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "329 - Es ist das Heil uns kommen Her"
+  title = "329 - Sei Lob Ehr' dem höchsten Gut"
   composer = "J. S. Bach"
 }
 

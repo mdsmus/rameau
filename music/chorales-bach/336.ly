@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "336 - Wo Gott, der Herr, nicht bei uns hält"
+  title = "336 - Wo Gott der Herr nicht bei uns hält"
   composer = "J. S. Bach"
 }
 
@@ -50,7 +50,7 @@ tenor = \relative c' {
     d4 d4 d4 d4 
     d4 cis4 a4 b4 
     e4 e4 d8 cis8 b4 
-    b4 ais8 e'8 d4 } a4 
+    b4 ais8 e'8 d4 } ais4 
   a4 a8 b8 cis4 cis4   %5
   d8 cis8 b4 fis'4 fis4 
   b,4 e4 a,8 b8 cis4 

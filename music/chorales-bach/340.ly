@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "340 - Lobet Gott, unsern Herren"
+  title = "340 - Befiehl du deine Wege"
   composer = "J. S. Bach"
 }
 

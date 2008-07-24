@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "322 - Wenn mein Stündlein vorhanden ist 1"
+  title = "322 - Wenn mein Stündlein vorhanden ist"
   composer = "J. S. Bach"
 }
 

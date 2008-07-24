@@ -31,7 +31,7 @@ soprano = \relative c'' {
 alto = \relative c' {
   \partial 4 d8  fis8 
     g4 fis4 g4 ees4 
-  e4 fis4 d4 d8 ees8 
+  e4 fis4 d4 d8 e8 
   f8 ees8 d8 e8 fis4 fis4 
   g4 g4 g4 a4 
   bes4 bes4 a4 g4   %5

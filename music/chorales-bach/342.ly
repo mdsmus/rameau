@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "342 - Kommt her, ihr lieben Schwesterlein"
+  title = "342 - Lobt Gott, ihr Christen, allzugleich"
   composer = "J. S. Bach"
 }
 
@@ -20,7 +20,7 @@ soprano = \relative c'' {
   e2. e4 
   e4 e4 e8 d8 cis8 d8   %5
   e4 d8 cis8 b4 e4 
-  d4 cis4 b4 b8 cis8 
+  d4 cis4 b4. cis8 
   a8 b8 cis8 d8 e4 e4 
   d4 cis4 b4 b4 
   a2.   %10
@@ -65,7 +65,7 @@ baixo = \relative c' {
   e2. e8 d8 
   cis8 d8 e8 fis8 gis8 e8 a4   %5
   cis,4 d4 e4 cis4 
-  fis8 gis8 a4. gis8 fis8 f8 
+  fis8 gis8 a4. gis8 fis8 eis8 
   fis4 e8 d8 cis4 ais'4 
   b4 fis8 e8 d8 b8 e4 
   a,2.   %10

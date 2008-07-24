@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "318 - Aus tiefer Not schrei ich zu dir 2"
+  title = "318 - Herr, wie du willst, so schick's mit mir"
   composer = "J. S. Bach"
 }
 
@@ -75,7 +75,7 @@ baixo = \relative c {
     d8 b8 e4 a,2 }  %5
   r4 a'2 gis8 fis8 
   eis4 fis8 e8 d8 b8 cis4 
-  fis,2 r4 c'4 
+  fis,2 r4 bis4 
   cis8 b8 a4. gis8 ais4 
   b4. cis8 d2   %10
   r4 gis,4 a8 cis8 fis8 e8 

@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -94,7 +93,7 @@ baixo = \relative c {
   \repeat volta 2 {
   d' c b a 
   g2 c,4 b' 
-  ais b gis a 
+  ais b g a 
   d,2. a'4 
   gis e a fis 
   b2 b4 b 
