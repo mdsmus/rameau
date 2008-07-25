@@ -1,7 +1,7 @@
 (defpackage :rameau-knn
   (:import-from #:arnesi "AIF" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX" "AWHEN")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
-  (:use #:cl #:rameau #:genoslib #:rameau-options #:vecto #:iterate)
+  (:use #:cl #:rameau #:genoslib #:rameau-options #:iterate)
   (:documentation "K-Nearest-Neighbor classification for chord labeling."))
 
 (in-package :rameau-knn)
@@ -120,25 +120,27 @@
           :key #'first))
 
 (defun visualize-knn-hash (alg)
-  (with-canvas (:width 2000 :height 2000)
+  (cl-cairo2:with-png-file ((concat *rameau-path* "analysis/view-knn.png")
+                            'cl-cairo2:format-argb32
+                            2000
+                            2000)
     (let ((nn (prepare (knn-nn alg)))
-           (center (list 1000 1000))
-           (font (get-font (rameau-get-font-path "Vera.ttf"))))
+           (center (list 1000 1000)))
       (destructuring-bind (first-count first-chord first-vector) (first nn)
         (declare (ignore first-chord))
-        (rectangle 0 0 2000 2000)
-        (set-rgb-fill 0 0 0)
-        (fill-path)
+        (cl-cairo2:rectangle 0 0 2000 2000)
+        (cl-cairo2:set-source-rgb 1 1 1)
+        (cl-cairo2:fill-path)
+        (cl-cairo2:select-font-face "Vera" 'cl-cairo2:font-slant-normal 'cl-cairo2:font-weight-normal)
         (iter (for (count chord vector) in  nn)
               (let* ((angle (random (* 2 pi)))
                      (distance (distance first-vector vector))
                      (xpos (+ (first center) (* 700 (/ 1 (1+ (log count))) (/ 1 (1+ distance)) (cos angle))))
                      (ypos (+ (second center) (* 700 (/ 1 (1+ (log count))) (/ 1 (1+ distance)) (sin angle)))))
-                (set-font font (normalize 1 55 0 (log first-count) (log count)))
-                (random-stroke-fill-colors)
-                (centered-string-paths xpos ypos chord)
-                (fill-and-stroke)))
-        (save-png (concat *rameau-path* "analysis/view-knn.png"))))))
+                (cl-cairo2:set-font-size (normalize 1 55 0 (log first-count) (log count)))
+                (cairo-random-stroke-fill-colors)
+                (cl-cairo2:move-to xpos ypos)
+                (cl-cairo2:show-text chord)))))))
       
 
 (defmethod do-options ((alg knn) options)
