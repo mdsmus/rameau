@@ -317,7 +317,7 @@ If you did, we have a bug, so please report.~%")
   (cl-cairo2:set-font-size size)
   (multiple-value-bind (xbear ybear width height)
       (cl-cairo2:text-extents text)
-    (list (/ (- width xbear) 2) (/ (- height ybear) 2))))
+    (list (/ (+ width xbear) 2) (/ (+ height ybear) 2))))
 
 (defun collides (boxa boxb)
   (destructuring-bind ((cxa cya dxa dya &rest foo) (cxb cyb dxb dyb &rest bar))
