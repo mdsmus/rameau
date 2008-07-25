@@ -225,9 +225,19 @@ Read and load definitions from a user-set configuration file in \\texttt{~/.rame
     (vecto:set-rgb-fill redfill greenfill bluefill)
     (list red green blue redfill greenfill bluefill)))
 
+(defun cairo-random-stroke-fill-colors ()
+  (let* ((red (rameau::random-color))
+         (green (rameau::random-color))
+         (blue (rameau::random-color)))
+    (cl-cairo2:set-source-rgb red green blue)
+    (list red green blue)))
+
 (defun set-stroke-fill-colors (colors)
   (vecto:set-rgb-stroke (first colors) (second colors) (third colors))
   (vecto:set-rgb-fill (fourth colors) (fifth colors) (third colors)))
+
+(defun cairo-set-stroke-fill-colors (colors)
+  (cl-cairo2:set-source-rgb (first colors) (second colors) (third colors)))
 
 (defun remove-inversions (chord-string)
   (cl-ppcre:regex-replace-all "/.*" chord-string ""))

@@ -10,7 +10,7 @@
                (:file "musiclib" :depends-on ("utils"))))
 
 (asdf:defsystem :rameau-pkg
-  :depends-on (:rameau-base :genoslib :cl-store :cl-fad :vecto)
+  :depends-on (:rameau-base :genoslib :cl-store :cl-fad :vecto :cl-cairo2)
   :serial t
   :components ((:file "packages")
                #+sbcl(:file "sbcl")
