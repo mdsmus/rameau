@@ -203,7 +203,7 @@ If you did, we have a bug, so please report.~%")
                                           (analysis-file-name anal)
                                           " doesn't exist"))
                    (analysis-terminal-no-answer options anal)))
-          (when (or (arg :score options) (arg :view-score options))
+          (when (or (arg :score options) (arg :view-score options) (arg :lily options))
             (analysis-lily options anal)))))
 
 (defun average :private (r)
