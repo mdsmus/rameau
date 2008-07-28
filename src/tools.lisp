@@ -232,6 +232,9 @@ Read and load definitions from a user-set configuration file in \\texttt{~/.rame
     (cl-cairo2:set-source-rgb red green blue)
     (list red green blue)))
 
+(defun cairo-brighten-source (red green blue)
+  (cl-cairo2:set-source-rgb (* 0.5 red) (* 0.5 green) (* 0.5 blue)))
+
 (defun set-stroke-fill-colors (colors)
   (vecto:set-rgb-stroke (first colors) (second colors) (third colors))
   (vecto:set-rgb-fill (fourth colors) (fifth colors) (third colors)))
