@@ -169,7 +169,10 @@ If you did, we have a bug, so please report.~%")
            (print-footer-term "CORRECT(%)" size-line number-algorithms options)
            (iter (for i in (mapcar (lambda (x) (% x seg-number)) right-answer-list))
                  (print-chord-column options (format nil "~,2f" i)))
-           (format t "~%")))))
+           (format t "~%")
+           (iter (for algo in (arg :algorithms options))
+                 (print-chord-column options (alg-name algo)))
+           (print-hline-term size-line)))))
 
 
 
