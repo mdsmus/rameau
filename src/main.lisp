@@ -37,13 +37,13 @@
 
 (defun main-perform-analysis (segments options alg)
   (handler-case (perform-analysis segments options alg)
-    (t ()
+    (error ()
       (format t "Analysis failed for algorithm ~a. Please report a bug.~%" alg)
       nil)))
 
 (defun main-parse-file (file)
   (handler-case (parse-file file)
-    (t ()
+    (error ()
       (format t "Could not parse file ~a.
 Please check with lilypond to see if it is valid. If it is, please report a bug.~%"
               file)
@@ -68,7 +68,7 @@ Please check with lilypond to see if it is valid. If it is, please report a bug.
                                       :ast (file-ast file)
                                       :full-path file
                                       :dur (durations segments)))
-                    (t () (list (make-analysis :segments (list nil)))))))
+                    (error () (list (make-analysis :segments (list nil)))))))
     (when (every #'null (mapcar #'analysis-segments analysis))
       (format t "ERROR: Couldn't analyse. Did you specify the files and the algorithms?
 If you did, we have a bug, so please report.~%")
@@ -387,10 +387,10 @@ If you did, we have a bug, so please report.~%")
             (add-to-cadence-hash last-cadences (mapcar #'first (last1 prep)) (third (first (last1 prep))) "end")))
     (format t "All cadences:~%")
     (show-cadence-hash options cadences)
-    (make-cadence-figure cadences "cadences")
+    ;;(make-cadence-figure cadences "cadences")
     (format t "Cadences in the end:~%")
     (show-cadence-hash options last-cadences)
-    ;(make-cadence-figure last-cadences "last-cadences")
+    (make-cadence-figure last-cadences "last-cadences")
     ))
 
 (defcommand resolve-seventh (options)
