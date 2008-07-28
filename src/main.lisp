@@ -733,6 +733,22 @@ If you did, we have a bug, so please report.~%")
         ((augmented-sixth-p answer) (list :aug6 (make-keyword (augmented-sixth-type answer))))
         (t nil)))
 
+
+(defun make-precision-table (f name func algorithms answer correct obtained modes)
+  (format f "\\begin{table}~%\\begin{center}~%\\begin{tabular}{r|~{~a~^|~}}~%"
+          (mapcar (lambda (x) (declare (ignore x)) "r") algorithms))
+  (format f "   ~{& ~a~}  \\\\~%" (mapcar #'alg-name algorithms))
+  (iter (for m in modes)
+        (format f " ~a " (mode->answer m))
+        (iter (for a in algorithms)
+              (for re in answer)
+              (for right in correct)
+              (for ob in obtained)
+              (format f "& $~,1f$ " (* 100 (funcall func m re right ob))))
+        (format f " \\\\~%"))
+  (format f "\\end{tabular}~%\\caption{~a matrix}~%\\end{center}~%\\end{table}~%"
+          name))
+
 (defun mode->answer (mode)
   (case (first mode)
     (:chord (format nil "~a~a"
@@ -745,6 +761,51 @@ If you did, we have a bug, so please report.~%")
     (:aug6 (make-augmented-sixth :type (format nil "~(~a~)" (second mode))))
     (t "")))
 
+(defun make-confusion-matrixes (f algorithms matrixes modes)
+  (iter (for a in algorithms)
+        (for cm in matrixes)
+        (for nmodes = (length modes))
+        (format f "\\begin{table}~%\\begin{center}~%\\begin{tabular}{r|~{~a~^|~}}~%"
+                (mapcar (lambda (x) (declare (ignore x)) "r") modes))
+        (format f "       & ~{~a~^ & ~} \\\\ \\hline~%" (mapcar #'mode->answer modes))
+        (iter (for m in modes)
+              (for n from 0)
+              (format f " ~a " (mode->answer m))
+              (iter (for i from 0 below nmodes)
+                    (format f "& $~,1f$ " (if (or (= 0.0 (aref cm n i))
+                                                  (= i n))
+                                              " "
+                                              (aref cm n i))))
+              (format f " \\\\ \\hline~%"))
+        (format f "\\end{tabular}~%\\caption{Confusion matrix for ~a}~%\\end{center}~%\\end{table}~%"
+                (alg-name a))))
+
+(defun build-confusion-matrixes (confusion-matrix countings matrixes modes)
+  (iter (for a in *algorithms*)
+        (for c in confusion-matrix)
+        (for co in countings)
+        (for i from 0)
+        (let ((conf (make-array (list (length modes) (length modes)) :initial-element 0)))
+          (iter (for ((an ga) count) in-hashtable c)
+                (incf (aref conf (position ga modes :test #'equal) (position an modes :test #'equal))
+                      (% count (gethash ga co 0.0000000001))))
+          (setf (nth i matrixes) conf))))
+
+(defun /0 (a b)
+  (if (zerop b) 0 (/ a b)))
+
+(defun precision (m re right ob)
+  (declare (ignore re))
+  (/0 (gethash m right 0) (+ (gethash m right 0) (gethash m ob 0)))))
+
+(defun recall (m re right ob)
+  (declare (ignore ob))
+  (/0 (gethash m right 0) (+ (gethash m right 0) (gethash m re 0)))))
+
+(defun f-measure (m re right ob)
+  (sqrt (* (precision m re right ob)
+           (recall    m re right ob))))
+      
 (defcommand report (options)
   (let* ((analysis (analyse-files options))
          (algorithms (analysis-algorithms (first analysis)))
@@ -753,12 +814,18 @@ If you did, we have a bug, so please report.~%")
          (countings (iter (for a in algorithms)
                           (collect (make-hash-table :test #'equal))))
          (modes (make-hash-table :test #'equal))
-         (matrixes (repeat-list (length algorithms) nil)))
+         (matrixes (repeat-list (length algorithms) nil))
+         (obtained (iter (for i in algorithms) (collect (make-hash-table :test #'equal))))
+         (correct (iter (for i in algorithms) (collect (make-hash-table :test #'equal))))
+         (answer (iter (for i in algorithms) (collect (make-hash-table :test #'equal)))))
     (iter (for anal in analysis)
           (iter (for alg in algorithms)
                 (for r in (analysis-results anal))
                 (for m in confusion-matrix)
                 (for co in countings)
+                (for re in answer)
+                (for ob in obtained)
+                (for right in correct)
                 (iter (for an in r)
                       (for ga in (analysis-answer-sheet anal))
                       (let ((ga (if (listp ga) (first ga) ga)))
@@ -767,21 +834,15 @@ If you did, we have a bug, so please report.~%")
                                          0))
                         (setf (gethash (answer->mode an) modes) t
                               (gethash (answer->mode ga) modes) t)
-                        (unless (rameau::%compare-answer-sheet an ga)
-                          (incf (gethash (list (answer->mode an) (answer->mode ga))
-                                         m
-                                         0)))))))
+                        (incf (gethash (list (answer->mode an) (answer->mode ga)) m 0))
+                        (if  (rameau::%compare-answer-sheet an ga)
+                          (incf (gethash (answer->mode an) right 0))
+                          (progn
+                            (incf (gethash (answer->mode ga) re 0))
+                            (incf (gethash (answer->mode an) ob 0))))))))
     (format t "Done counting...~%")
     (setf modes (iter (for (mode va) in-hashtable modes) (collect mode)))
-    (iter (for a in *algorithms*)
-          (for c in confusion-matrix)
-          (for co in countings)
-          (for i from 0)
-          (let ((conf (make-array (list (length modes) (length modes)) :initial-element 0)))
-            (iter (for ((an ga) count) in-hashtable c)
-                  (incf (aref conf (position ga modes :test #'equal) (position an modes :test #'equal))
-                        (% count (gethash ga co 0.0000000001))))
-            (setf (nth i matrixes) conf)))
+    (build-confusion-matrixes confusion-matrix countings matrixes modes)
     (format t "Done building confusion matrix...~%")
     (with-open-file (f (concat *rameau-path* "analysis/report.tex")
                        :direction :output
@@ -805,20 +866,28 @@ If you did, we have a bug, so please report.~%")
 \\maketitle
 
 ")
-      (iter (for a in algorithms)
-            (for cm in matrixes)
-            (for nmodes = (length modes))
-            (format f "\\begin{table}~%\\begin{center}~%\\begin{tabular}{r|~{~a~^|~}}~%"
-                    (mapcar (lambda (x) (declare (ignore x)) "r") modes))
-            (format f "       & ~{~a~^ & ~} \\\\ \\hline~%" (mapcar #'mode->answer modes))
-            (iter (for m in modes)
-                  (for n from 0)
-                  (format f " ~a " (mode->answer m))
-                  (iter (for i from 0 below nmodes)
-                        (format f "& $~,1f$ " (if (= 0.0 (aref cm i n)) " " (aref cm i n))))
-                  (format f " \\\\ \\hline~%"))
-            (format f "\\end{tabular}~%\\caption{Confusion matrix for ~a}~%\\end{center}~%\\end{table}~%"
-                    (alg-name a)))
+      (make-confusion-matrixes f algorithms matrixes modes)
+      (make-precision-table f "Precision"
+                            #'precision
+                            algorithms
+                            answer
+                            correct
+                            obtained
+                            modes)
+      (make-precision-table f "Recall"
+                            #'recall
+                            algorithms
+                            answer
+                            correct
+                            obtained
+                            modes)
+      (make-precision-table f "F-measure"
+                            #'f-measure
+                            algorithms
+                            answer
+                            correct
+                            obtained
+                            modes)
       (format f "~%\\end{document}~%")
       (format t "Modes: ~s~%" modes))))
 
