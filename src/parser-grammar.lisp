@@ -8,6 +8,7 @@
   (:terminals (NEW-STAFF
                NEW-SCORE
                NEW-VOICE
+               NEW-PAPER
                NEW
                DUR
                NOTE
@@ -53,10 +54,18 @@
   
   (ignorable-list
    (IGNORE #'do-nothing)
+   (paper #'do-nothing)
+   (with #'do-nothing)
    (ignorable-list IGNORE #'parser-ign))
   
   (lilypond-header
    (HEADER ignorable |{| expression |}|))
+
+  (paper
+   (NEW-PAPER ignorable |{| scheme-list |}|))
+
+  (with
+   (NEW-WITH ignorable |{| scheme-list |}|))
 
   (expression
    (ignorable expression-list ignorable #'return-second))
@@ -183,5 +192,8 @@
    DUR
    OCTAVE
    NUMBER
+   PONTO
+   MULTIPLICA
+   =
    scheme-sexp)
 )

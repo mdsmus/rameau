@@ -29,7 +29,7 @@
   ("(\\[|\\])" (return (values 'ignore lexer:%0)))
   ("(-|\\\\|\\+)[<>]" (return (values 'ignore lexer:%0)))
   ("(\\\\|-|_|\\^|~|\\?|!)(\\.|\\^|\\+|\\||!|_|\\\\<|\\\\>|-|\"[^\"]*\")?" (return (values 'ignore lexer:%0)))
-  ("[:alpha:]+"
+  ("([:alpha:]|-)+"
    (if (or (note? lexer:%0) (rest? lexer:%0))
        (return (values 'NOTE lexer:%0))
        (return (values 'VARNAME lexer:%0))))
@@ -82,6 +82,8 @@
   ("\\\\new" (return (values 'NEW "foobar")))
   ("\\\\(R|r)elative" (return (values 'RELATIVE lexer:%0)))
   ("\\\\(S|s)core" (return (values 'NEW-SCORE lexer:%0)))
+  ("\\\\(P|p)paper" (return (values 'NEW-PAPER lexer:%0)))
+  ("\\\\(W|w)ith" (return (values 'NEW-WITH lexer:%0)))
   ("\\\\(S|s)imultaneous" (return (values 'SIMULT lexer:%0)))
   ("<<" (return (values '|<<| lexer::%0)))
   (">>" (return (values '|>>| '|>>|)))
@@ -480,7 +482,7 @@ with the other ones.
          seq))))
 
 (defmethod process-ast :around ((node voice))
-  (let ((notes (call-next-method)))
+  (let ((notes (sequence-expressions (call-next-method))))
     (loop for n in (note-sequence-notas notes)
        do (setf (event-voice-name n) (voice-name node)))
     notes))
