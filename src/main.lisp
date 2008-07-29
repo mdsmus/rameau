@@ -796,11 +796,11 @@ If you did, we have a bug, so please report.~%")
 
 (defun precision (m re right ob)
   (declare (ignore re))
-  (/0 (gethash m right 0) (+ (gethash m right 0) (gethash m ob 0)))))
+  (/0 (gethash m right 0) (+ (gethash m right 0) (gethash m ob 0))))
 
 (defun recall (m re right ob)
   (declare (ignore ob))
-  (/0 (gethash m right 0) (+ (gethash m right 0) (gethash m re 0)))))
+  (/0 (gethash m right 0) (+ (gethash m right 0) (gethash m re 0))))
 
 (defun f-measure (m re right ob)
   (sqrt (* (precision m re right ob)
