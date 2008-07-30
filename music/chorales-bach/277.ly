@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "277 - Herzlich lieb hab ich dich, o Herr"
+  title = "277 - Herzlich lieb hab'ich dich, o Herr"
   composer = "J. S. Bach"
 }
 

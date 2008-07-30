@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "275 - O Welt, ich muß dich lassen"
+  title = "275 - O Welt, sieh hier dein Leben"
   composer = "J. S. Bach"
 }
 
@@ -14,7 +14,7 @@ global = {
 
 soprano = \relative c'' {
   \partial 4 cis4 
-    a4 b4 cis8 d8 e4 
+  a4 b4 cis8 d8 e4 
   d2 cis4 cis8 d8 
   e4 e4 b4 cis4 
   a2 gis4 e4 
@@ -31,7 +31,7 @@ soprano = \relative c'' {
 
 alto = \relative c'' {
   \partial 4 gis4 
-    fis4 e4 e4 e4 
+  fis4 e4 e4 e4 
   fis4 e4 e4 a4 
   a8 gis8 a4 gis8 fis4 e8 
   e4 dis4 e4 e8 d8 
@@ -48,7 +48,7 @@ alto = \relative c'' {
 
 tenor = \relative c' {
   \partial 4 cis4 
-    cis4 b4 a4 a4 
+  cis4 b4 a4 a4 
   a4 gis4 a4 e'4 
   e4 e4 e4 gis,4 
   fis8 gis8 a4 b4 gis4 
@@ -65,7 +65,7 @@ tenor = \relative c' {
 
 baixo = \relative c {
   \partial 4 eis4 
-    fis4 gis4 a4 cis,4 
+  fis4 gis4 a4 cis,4 
   b4 e4 a,4 a'4 
   cis,4 cis8 d8 e4 cis4 
   fis2 e4 e4 

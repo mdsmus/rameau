@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "292 - Vater unser im Himmelreich"
+  title = "292 - Nimm von uns, Herr, du treuer Gott"
   composer = "J. S. Bach"
 }
 
@@ -14,7 +14,7 @@ global = {
 
 soprano = \relative c'' {
   \partial 4 a4 
-    a4 f4 g4 a4 
+  a4 f4 g4 a4 
   f4 e4 d4 a'4 
   a4 g4 c4 a4 
   f4 g4 a4 a4 
@@ -31,7 +31,7 @@ soprano = \relative c'' {
 
 alto = \relative c' {
   \partial 4 f4 
-    e4 d4 d4 d4 
+  e4 d4 d4 d4 
   d4 cis4 a4 f'4 
   f4 g8 f8 e4 f4 
   d4 d4 cis4 d4 
@@ -48,7 +48,7 @@ alto = \relative c' {
 
 tenor = \relative c' {
   \partial 4 d4 
-    a4 a4 bes4 a4 
+  a4 a4 bes4 a4 
   bes4 e,4 f4 d'4 
   c4 c4 c4 c4 
   bes4 d,4 e4 f4 
@@ -65,7 +65,7 @@ tenor = \relative c' {
 
 baixo = \relative c {
   \partial 4 d4 
-    cis4 d4 bes'4 f4 
+  cis4 d4 bes'4 f4 
   g4 a4 d,4 d8 e8 
   f4 e4 a4 f4 
   bes4 bes,4 a4 d4 

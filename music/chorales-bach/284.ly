@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "284 - Wenn einer schon ein Haus aufbaut"
+  title = "284 - Herr Jesu Christ, wahr'r Mensch und Gott"
   composer = "J. S. Bach"
 }
 

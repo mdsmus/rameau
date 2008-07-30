@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "260 - Nun freut euch, lieben Christen, g'mein 2"
+  title = "260 - Es ist gewißlich an der Zeit"
   composer = "J. S. Bach"
 }
 
@@ -24,7 +24,7 @@ soprano = \relative c'' {
   bes4 a4 bes4 f4 
   bes4 c4 d4 bes8 c8 
   d4 ees4 f8 ees8 d4 
-  c2 bes2   %10
+  c2 bes4   %10
   
 }
 
@@ -40,7 +40,7 @@ alto = \relative c' {
   a8 g8 g8 fis8 g4 d4 
   d4 g4 fis4 d4 
   g4 g4 f4 f4 
-  g4 f8 ees8 d2   %10
+  g4 f8 ees8 d4   %10
   
 }
 
@@ -55,8 +55,8 @@ tenor = \relative c' {
   d8 ees8 f4 f4 d4 
   d4 d4 d4 d8 c8 
   bes8 a8 g4 a4 g8 a8 
-  bes4 bes4 bes4 bes4 
-  bes4 a4 f2   %10
+  bes4 bes bes bes 
+  bes a f   %10
   
 }
 
@@ -72,7 +72,7 @@ baixo = \relative c {
   g4 d4 g8 a8 bes8 a8 
   g8 f8 ees4 d4 g,4 
   g'4 f8 ees8 d8 c8 bes4 
-  ees4 f4 bes,2   %10
+  ees f bes,   %10
   
 }
 

@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "279 - Ach Gott und Herr, wie groß und schwer"
+  title = "279 - Ach Gott und Herr"
   composer = "J. S. Bach"
 }
 
@@ -14,7 +14,7 @@ global = {
 
 soprano = \relative c'' {
   \partial 4 bes4 
-    a4 g4 f4 f4 
+  a4 g4 f4 f4 
   g4 a4 bes4 c4 
   bes4 a4 g4 a8 bes8 
   g2 f4 bes4 
@@ -29,7 +29,7 @@ soprano = \relative c'' {
 
 alto = \relative c' {
   \partial 4 f4 
-    f4 e4 c4 c4 
+  f4 e4 c4 c4 
   f4 fis4 g4 a4 
   g4 f4 c4 c4 
   c2 c4 d4 
@@ -44,7 +44,7 @@ alto = \relative c' {
 
 tenor = \relative c' {
   \partial 4 d4 
-    c4 c8 bes8 a4 a4 
+  c4 c8 bes8 a4 a4 
   bes4 ees4 d4 d4 
   d4 d4 e4 f4 
   f8 e16 d16 e4 a,4 f4 
@@ -59,7 +59,7 @@ tenor = \relative c' {
 
 baixo = \relative c {
   \partial 4 bes4 
-    f'4 c4 f,4 ees'4 
+  f'4 c4 f,4 ees'4 
   des4 c4 g'4 fis4 
   g4 d'8 c8 bes8 a8 g8 f8 
   c'4 c,4 f4 d4 

@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "268 - Nun lob, mein Seel, den Herren"
+  title = "268 - Nun lob', mein' Seel', den Herren"
   composer = "J. S. Bach"
 }
 

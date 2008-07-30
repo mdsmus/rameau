@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "273 - Ein feste Burg ist unser Gott"
+  title = "273 - Ein' feste Burg ist unser Gott"
   composer = "J. S. Bach"
 }
 
@@ -70,7 +70,7 @@ baixo = \relative c' {
   \repeat volta 2 {
     \partial 4 d8  cis8 
     b4 a8 g8 fis8 g8 fis8 e8 
-    d4 e4 a,4 b4 
+    fis4 e4 a,4 b4 
     cis8 d8 e4 fis4 g8 a8 
     b8 g8 a8 a,8 d4 } d8 e8 
   fis4 gis4 a8 d,8 e4   %5

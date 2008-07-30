@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "255 - Die Wollust dieser Welt"
+  title = "255 - Was frag' ich nach der Welt"
   composer = "J. S. Bach"
 }
 

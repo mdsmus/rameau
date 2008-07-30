@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "270 - Herzlich tut mich verlangen"
+  title = "270 - Befiehl du deine Wege"
   composer = "J. S. Bach"
 }
 
@@ -67,7 +67,7 @@ baixo = \relative c {
   \repeat volta 2 {
     \partial 4 e4 
     f4 g4 a,8 b8 c4 
-    f2 e4 e4 
+    f,2 e4 e'4 
     a8 g8 f8 e8 d8 b8 e4 
     a,2. } a'4 
   d,4 e4 f4 d4   %5
@@ -77,7 +77,7 @@ baixo = \relative c {
   e'4 b4 c8 d8 e4 
   f2 e4 a4   %10
   d,4 a8 g8 f8 fis8 g4 
-  gis4 a4 e'4 
+  gis4 a4 e4 
 }
 
 \score {

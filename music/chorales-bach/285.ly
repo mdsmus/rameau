@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "285 - Wo Gott der Herr nicht bei uns hält"
+  title = "285 - Wär' Gott nicht mit uns diese Zeit"
   composer = "J. S. Bach"
 }
 

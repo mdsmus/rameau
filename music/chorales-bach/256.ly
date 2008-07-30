@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "256 - Wie nach einer Wasserquelle"
+  title = "256 - Jesu, deine tiefen Wunden"
   composer = "J. S. Bach"
 }
 

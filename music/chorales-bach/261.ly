@@ -17,10 +17,9 @@ soprano = \relative c'' {
     \partial 4 b4
     ais4 b8 cis8 d4 e4
     d4 cis4 b4 b4
-    g4 a4 b4 a8 g8
-    \time 3/4
+    g4 a4 b4 a8[ g]
+    \partial 2.
     fis2 e4 }
-  \time 4/4
   e4 g4 a4 e4   %5
   g4 a4 b4 b4 
   e4 dis4 e4 fis4 
@@ -33,15 +32,14 @@ soprano = \relative c'' {
 }
 
 alto = \relative c'' {
- 
+  
   \repeat volta 2 {
     \partial 4 g4
     fis4 fis8 ais8 b4 cis4
     b4 ais4 fis4 fis4
     e4 d4 d4 e4
-    \time 3/4
+    \partial 2.
     e4 dis4 b4 }
-  \time 4/4
   b4 e8 d8 e4 c4   %5
   b4 a4 g4 d'4 
   g4 fis4 e4 b'4 
@@ -59,9 +57,8 @@ tenor = \relative c' {
     cis4 d8 e8 fis4 fis4
     fis4 fis8 e8 dis4 b4
     b4 a4 g8 a8 b4
-    \time 3/4
+    \partial 2.
     c4 b8 a8 g4 } 
-  \time 4/4
   g4 g4 c4 a4   %5
   g4 d'4 d4 b4 
   b4 a4 b4 b4 
@@ -79,9 +76,8 @@ baixo = \relative c {
     fis8 e8 d8 cis8 b4 ais4
     b4 fis'4 b,4 dis4
     e4 fis4 g4 e4
-    \time 3/4
+    \partial 2.
     a,4 b4 e,4 } 
-  \time 4/4
   e'8 d8 c8 b8 a8 b8 c8 d8   %5
   e4 fis4 g4 g4 
   e4 fis4 g4 d8 e8 

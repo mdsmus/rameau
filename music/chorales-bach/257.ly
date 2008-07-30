@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "257 - Nun laßt uns Gott dem Herren"
+  title = "257 - Nun laßt uns Gott, dem Herren"
   composer = "J. S. Bach"
 }
 
@@ -14,7 +14,7 @@ global = {
 
 soprano = \relative c'' {
   \partial 4 bes4 
-    bes2 a4 
+  bes2 a4 
   g4 a4 bes4 
   c2. 
   bes2 bes4 
@@ -29,13 +29,13 @@ soprano = \relative c'' {
   ees2 d4 
   c4 d8 c8 bes4~ 
   bes8 c8 c4. bes8   %15
-  bes2. 
+  bes2
   
 }
 
 alto = \relative c' {
   \partial 4 f4 
-    g2 f4 
+  g2 f4 
   ees4 f4 f4 
   g4 f2 
   f2 f4 
@@ -50,13 +50,13 @@ alto = \relative c' {
   bes4 c4 f,4 
   g4 a4 d,8 ees8 
   f4 g4 f4   %15
-  f2. 
+  f2
   
 }
 
 tenor = \relative c' {
   \partial 4 d4 
-    d2 d8 c8 
+  d2 d8 c8 
   bes4 c4 bes4 
   bes2 a4 
   d2 d4 
@@ -71,13 +71,13 @@ tenor = \relative c' {
   d4 c4 bes4 
   bes4 a4 bes4 
   bes2 a4   %15
-  d2. 
+  d2 
   
 }
 
 baixo = \relative c' {
   \partial 4 bes4 
-    g2 d4 
+  g2 d4 
   ees2 d4 
   ees4 f2 
   bes,2 bes'4 
@@ -92,7 +92,7 @@ baixo = \relative c' {
   g4 a4 bes4 
   e,4 fis4 g4 
   d4 ees4 f4   %15
-  bes,2. 
+  bes,2
   
 }
 

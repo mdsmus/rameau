@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "258 - Meine Augen schließ ich jetzt in Gottes Namen zu"
+  title = "258 - Meine Augen schieß' ich jetzt"
   composer = "J. S. Bach"
 }
 
@@ -14,7 +14,7 @@ global = {
 
 soprano = \relative c'' {
   \partial 4 g4 
-    g4 d4 g4 a4 
+  g4 d4 g4 a4 
   b2 r4 d4 
   e4 d4 c4. d8 
   b2 r4 d4 
@@ -35,7 +35,7 @@ soprano = \relative c'' {
 
 alto = \relative c' {
   \partial 4 d4 
-    d4 a4 d4 e8 fis8 
+  d4 a4 d4 e8 fis8 
   g2 r4 g4~ 
   g8 fis8 g4. fis16 e16 fis4 
   g2 r4 g4~ 
@@ -56,7 +56,7 @@ alto = \relative c' {
 
 tenor = \relative c' {
   \partial 4 b8  a8 
-    g4 fis4 g4 c4 
+  g4 fis4 g4 c4 
   d2 r4 d4 
   c4 d4 e8 d16 c16 d4 
   d2 r4 b4 
@@ -77,7 +77,7 @@ tenor = \relative c' {
 
 baixo = \relative c {
   \partial 4 g8  a8 
-    b8 c8 d8 c8 b4 a4 
+  b8 c8 d8 c8 b4 a4 
   g2 r4 b4 
   c4. b8 a4 d,4 
   g2 r4 g4 
