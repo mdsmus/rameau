@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "223 - Ich dank dir Gott für alle Wohltat"
+  title = "223 - Ich dank' dir, Gott für all' Wohltat"
   composer = "J. S. Bach"
 }
 
@@ -14,7 +14,7 @@ global = {
 
 soprano = \relative c'' {
   \partial 4 g4 
-    e4 fis4 g4 g4 
+  e4 fis4 g4 g4 
   e4 d4 c4 c4 
   g'4 g4 a4 b4 
   c4 b4 a4 a4 
@@ -34,7 +34,7 @@ soprano = \relative c'' {
 
 alto = \relative c' {
   \partial 4 c4 
-    c4 c4 b4 d4~ 
+  c4 c4 b4 d4~ 
   d8 c4 b8 g4 g4 
   d'4 e4. fis8 g4~ 
   g8 fis8 g2~ g8 fis8 
@@ -54,7 +54,7 @@ alto = \relative c' {
 
 tenor = \relative c {
   \partial 4 e8  f8 
-    g4 a4 d,4 g4 
+  g4 a4 d,4 g4 
   g4~ g8. f16 e4 e4 
   g4 c4 c4 d4 
   c4 d4 e4 d8. c16 
@@ -74,7 +74,7 @@ tenor = \relative c {
 
 baixo = \relative c {
   \partial 4 c4 
-    bes4 a4 g4 b4 
+  bes4 a4 g4 b4 
   c4 g4 c,4 c'4 
   b4 c8 b8 a4 g4 
   e'4 d4 c4 d4 

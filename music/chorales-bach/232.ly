@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "232 - O höchster Gott, o unser lieber Herre"
+  title = "232 - Die Sonn' hat sich mit ihrem Glanz"
   composer = "J. S. Bach"
 }
 

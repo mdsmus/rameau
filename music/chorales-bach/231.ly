@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "231 - Die Nacht ist kommen, drin wir ruhen sollen"
+  title = "231 - Die Nacht ist Kommen"
   composer = "J. S. Bach"
 }
 

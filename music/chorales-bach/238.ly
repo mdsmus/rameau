@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "238 - Es wird schier der letzte Tag herkommen"
+  title = "238 - Es wird schier der letzte Tag"
   composer = "J. S. Bach"
 }
 

@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "234 - Gott lebet noch, Seele, was verzagst du doch?"
+  title = "234 - Gott lebet noch"
   composer = "J. S. Bach"
 }
 

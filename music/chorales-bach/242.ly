@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "242 - Wie bist du, Seele, in mir so gar betrübt"
+  title = "242 - Wie bist du, Seele"
   composer = "J. S. Bach"
 }
 
@@ -14,7 +14,7 @@ global = {
 
 soprano = \relative c'' {
   \partial 4 b4 
-    b4 a4 g2 
+  b4 a4 g2 
   fis4 g4 a4 g4 
   fis4 fis4 e4 fis4 
   g4 a4 b2 
@@ -24,13 +24,13 @@ soprano = \relative c'' {
   g4 a4 b2 
   a4 fis4 g4 a4 
   b4 b4 a4 g8 fis8   %10
-  fis2 e2 
+  fis2 e4
   
 }
 
 alto = \relative c' {
   \partial 4 e8  dis8 
-    e8 b8 cis8 dis8 e8 dis8 e4 
+  e8 b8 cis8 dis8 e8 dis8 e4 
   e8 dis8 e4. dis8 e4 
   e4 dis4 b4 dis4 
   e4 d8 c8 b8 d8 g4 
@@ -40,13 +40,13 @@ alto = \relative c' {
   d8 e8 fis4 g4 d4 
   d4 fis4 b,8 e8 d8 c8 
   b4 e4. dis8 e4   %10
-  e4 dis4 b2 
+  e4 dis4 b
   
 }
 
 tenor = \relative c' {
   \partial 4 g8  a8 
-    b8 e4 a,8 b2 
+  b8 e4 a,8 b2 
   b4 b4 a8 b16 c16 b4 
   cis8 fis,8 b8 a8 g4 b4 
   b8 c8 b8 a8 g8 b8 d4 
@@ -56,13 +56,13 @@ tenor = \relative c' {
   b4 c4 d4 g,4~ 
   g8 fis8 b8 a8 g4 d'4~ 
   d8 f8 e8 d8 c4 cis4   %10
-  b4. a8 gis2 
+  b4. a8 gis4
   
 }
 
 baixo = \relative c {
   \partial 4 e8  fis8 
-    g4. fis8 e8 fis8 g8 e8 
+  g4. fis8 e8 fis8 g8 e8 
   b4 e4 fis4 g8 e8 
   ais,4 b4 e,4 b'4 
   e4 fis4 g4 g,8 b8 
@@ -72,7 +72,7 @@ baixo = \relative c {
   b8 c8 b8 a8 g8 a8 b8 c8 
   d4 dis4 e4 fis4 
   g4 gis4 a4 a4   %10
-  b4 b,4 e2 
+  b4 b,4 e
   
 }
 

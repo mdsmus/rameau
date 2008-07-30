@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "235 - Heilig, heilig, heilig"
+  title = "235 - Heilig, heilig"
   composer = "J. S. Bach"
 }
 
@@ -65,13 +65,13 @@ tenor = \relative c' {
   d4. e16 f16 e2 
   f4 f4 d4 c4 
   c4 bes8 d8 c4. bes8   %10
-  a2 r4 c4 
+  a2 r4 c4~
   c4. bes8 a4 g4 
   d'4 d4 c4 c4 
   d4. c4 b16 a16 b4 
   g2 a4 a4   %15
   bes8 a8 g4 f8 a8 d4~ 
-  d8 bes8 g8 c8 a2 
+  d8 bes8 g8 c16 bes a2 
   
 }
 

@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "220 - Lasset uns den Herren preisen"
+  title = "220 - Sollt' ich meinem Gott nicht singen"
   composer = "J. S. Bach"
 }
 

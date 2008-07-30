@@ -33,8 +33,8 @@ soprano = \relative c'' {
 }
 
 alto = \relative c'' {
-  g8 a16 bes16 a4. g4 fis8 
-  d8 g16 f16 f4 d4 a4 
+  g8 a16 bes16 a4~ a8 g~ g fis
+  d8 g16 f16 ees4 d a 
   bes8 c8 d4 g,4 g'4 
   a4. g8 fis2 
   fis4 g8 a4 g4 fis8   %5

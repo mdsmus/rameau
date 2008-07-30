@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -106,8 +105,8 @@ tenor = \relative c {
   \time 3/4
   g2 d'4 
   c bes aes 
-  a2 bes4 
-  b c2~
+  a2 bes4(
+  b) c2~
   c4 bes4 bes 
   bes aes8 bes c d 
   ees4 f d 

@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "241 - Was willst du dich, o meine Seele, kränken"
+  title = "241 - Was willst du dich, o meine Seele"
   composer = "J. S. Bach"
 }
 
@@ -14,7 +14,7 @@ global = {
 
 soprano = \relative c'' {
   \partial 4 a4 
-    d,4. e8 f4 g4 
+  d,4. e8 f4 g4 
   a8 b8 c4 b4 a4 
   a4 gis4 a4 a4 
   g4 g4 c4 a4 
@@ -44,7 +44,7 @@ soprano = \relative c'' {
 
 alto = \relative c' {
   \partial 4 a4 
-    a4 b8 cis8 d8 f4 e8 
+  a4 b8 cis8 d8 f4 e8 
   f8 g8 g8 a8 g8 f8 e4 
   f4 e4 e4 e8 f8~ 
   f8 e16 d16 e8 f8 g8 e8 f4 
@@ -74,7 +74,7 @@ alto = \relative c' {
 
 tenor = \relative c {
   \partial 4 f8  g8 
-    a4 g4 a4 c4 
+  a4 g4 a4 c4 
   c8 d8 e4 d4. c8 
   b4. d8 c4 c4 
   d8 g,8 c4 c4 c4 
@@ -104,7 +104,7 @@ tenor = \relative c {
 
 baixo = \relative c {
   \partial 4 d8  e8 
-    f8 g8 f8 e8 d4 c4 
+  f8 g8 f8 e8 d4 c4 
   f4 e8 fis8 g8 gis8 a8 c,8 
   d8 b8 e4 a,4 a4 
   b4 c8 d8 e8 c8 f8 ees8 
