@@ -1,8 +1,7 @@
-
 \version "2.10.33"
 
 \header {
-  title = "87 - Du geballtes Weltgebäude"
+  title = "87 - Du, o schönes Weltgebäude"
   composer = "J. S. Bach"
 }
 

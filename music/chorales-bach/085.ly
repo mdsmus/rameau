@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "85 - Die Wollust dieser Welt"
+  title = "85 - O Gott, du frommer Gott"
   composer = "J. S. Bach"
 }
 
@@ -14,7 +14,7 @@ global = {
 
 soprano = \relative c'' {
   \partial 4 b4 
-    gis4 fis8 e8 b'4 b4 
+  gis4 fis8 e8 b'4 b4 
   cis2 r4 cis4 
   fis,4 fis4 b4 a4 
   gis4 fis4 e4 b'4 
@@ -34,7 +34,7 @@ soprano = \relative c'' {
 
 alto = \relative c' {
   \partial 4 e4 
-    e4 dis4 e8 fis8 gis4 
+  e4 dis4 e8 fis8 gis4 
   a2 r4 fis8 e8 
   dis8 cis8 dis4 e4 fis4 
   e4 dis4 b4 e4 
@@ -54,7 +54,7 @@ alto = \relative c' {
 
 tenor = \relative c' {
   \partial 4 gis8  a8 
-    b4 a4 b4 e4 
+  b4 a4 b4 e4 
   e2 r4 cis4 
   b4 b4 b4 b4 
   b4. a8 gis4 b4 
@@ -74,7 +74,7 @@ tenor = \relative c' {
 
 baixo = \relative c {
   \partial 4 e4 
-    e4 fis4 gis4 fis8 e8 
+  e4 fis4 gis4 fis8 e8 
   a2 r4 ais4 
   b4 a4 gis4 dis4 
   e4 b4 e4 gis4 

@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "80 - Herzlich tut mich verlangen"
+  title = "80 - O Haupt voll Blut und Wunden"
   composer = "J. S. Bach"
 }
 
@@ -26,7 +26,7 @@ soprano = \relative c' {
   cis8 d8 e4 d4 cis4 
   b2 cis4 fis,4   %10
   g4 fis4 e4 a4 
-  fis1 
+  fis2.
   
 }
 
@@ -44,7 +44,7 @@ alto = \relative c' {
   e4 e4 fis8 gis8 a4 
   a4 gis4 a4 d,8 cis8   %10
   b8 cis8 d4 d8 b8 cis4 
-  d1 
+  d2.
   
 }
 
@@ -62,7 +62,7 @@ tenor = \relative c' {
   a4 b4 a8 b8 cis8 a8 
   fis'4 e4 e4 a,4   %10
   g4 a4 a4 a4 
-  a1 
+  a2.
   
 }
 
@@ -80,7 +80,7 @@ baixo = \relative c {
   a4 gis4 fis4 e4 
   dis4 e4 a,4 d4   %10
   e4 fis8 g8 a4 a,4 
-  d1 
+  d2.
   
 }
 

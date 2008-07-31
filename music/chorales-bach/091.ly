@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "91 - Gib unsern Fürsten und aller Obrigkeit (ending)"
+  title = "91 - Werleih' uns Frieden gnädiglich"
   composer = "J. S. Bach"
 }
 
@@ -14,7 +14,7 @@ global = {
 
 soprano = \relative c' {
   \partial 4 fis4 
-    fis4 fis4 f4 fis8 gis8 
+  fis4 fis4 eis4 fis8 gis8 
   a4 gis4 fis4 a4 
   b4 b4 cis8 b8 a4 
   b2 cis4 cis4 
@@ -39,29 +39,29 @@ soprano = \relative c' {
   e4 fis8 gis8 a4 fis4 
   fis2. e4 
   fis4 gis4 a4 gis4   %25
-  fis2. f4 
+  fis2. eis4 
   fis2. 
   
 }
 
 alto = \relative c' {
   \partial 4 cis4 
-    d4 d4 cis2 
-  cis8 fis8 fis8 f8 cis4 fis4 
+  d4 d4 cis2 
+  cis8 fis8 fis8 eis8 cis4 fis4 
   e8 fis8 gis4 a2 
   a8 gis16 fis16 gis4 a4 a4 
-  a4 f8 fis8 gis4 fis4   %5
-  fis4 e4 dis4 dis8 f8 
-  fis4 fis4 gis8 fis8 f4 
+  a4 eis8 fis8 gis4 fis4   %5
+  fis4 e4 dis4 dis8 eis8 
+  fis4 fis4 gis8 fis8 eis4 
   fis8 e8 d4 cis4 e4 
   e4 e4 d8 e8 fis4 
-  fis4 f4 cis4 cis4   %10
+  fis4 eis4 cis4 cis4   %10
   cis4 cis4 d4 d4 
   cis4 cis4 fis4 e4 
   e2 b'2 
   e,4 fis4 e4 e4 
   e2. gis4   %15
-  a8 gis8 fis4 fis4 fis8 f8 
+  a8 gis8 fis4 fis4 fis8 eis8 
   fis2 gis8 b8 b8 a8 
   a8 gis8 a8 gis8 a8 b8 cis4 
   cis8 b8 a4 e4 e4 
@@ -78,7 +78,7 @@ alto = \relative c' {
 
 tenor = \relative c' {
   \partial 4 a4 
-    a4 a4 gis8 b8 a8 gis8 
+  a4 a4 gis8 b8 a8 gis8 
   fis4 cis'8 b8 a4 cis4 
   b4 e4 e4. d16 cis16 
   b4 e4 e4 e4 
@@ -110,7 +110,7 @@ tenor = \relative c' {
 
 baixo = \relative c {
   \partial 4 fis8  e8 
-    d4 cis8 b8 cis4 dis8 eis8 
+  d4 cis8 b8 cis4 dis8 eis8 
   fis8 b,8 cis4 fis4 fis4 
   gis4 fis8 e8 a8 gis8 fis8 e8 
   d4 e4 a,4 a'8 gis8 

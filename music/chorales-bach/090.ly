@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "90 - Hast du denn, Liebster, dein Angesicht"
+  title = "90 - Hast du denn, Jesu, dein Angesicht"
   composer = "J. S. Bach"
 }
 
