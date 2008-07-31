@@ -2,11 +2,12 @@
 
 #+cmu(setf ext::*complain-about-illegal-switches* nil)
 
-#+sbcl(declaim (optimize (compilation-speed 0)
-                         (debug 3)
-                         (safety 3)
-                         (space 1)
-                         (speed 1)))
+#+sbcl(proclaim '(optimize
+                  (compilation-speed 0)
+                  (debug 0)
+                  (safety 0)
+                  (space 0)
+                  (speed 3)))
 
 #+(or sbcl ecl) (require 'asdf)
 
@@ -31,7 +32,7 @@
 (asdf:oos 'asdf:load-op :rameau :verbose nil)
 ;(asdf:oos 'asdf:load-op :rameau-test :verbose nil)
 
-#+sbcl(sb-ext:save-lisp-and-die "rameau" :executable t :toplevel #'rameau-main:main)
+#+sbcl(sb-ext:save-lisp-and-die "rameau" :purify t :executable t :toplevel #'rameau-main:main)
 
 #+cmu(extensions:save-lisp "cmurameau" :init-function #'rameau-main:main)
 
