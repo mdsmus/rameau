@@ -94,6 +94,7 @@ doc: rameau
 
 clean:
 	rm -f rameau cmurameau eclrameau clisprameau checa-notas
+	rm -f web/cache.store
 
 cleanall: clean clean-algs clean-web clean-lib clean-doc
 
