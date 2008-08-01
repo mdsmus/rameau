@@ -4,6 +4,7 @@ SBCL_BIN = sbcl
 LISP_BIN = lisp
 
 GIT_COMMIT = $(shell git log --pretty=format:%H -n 1)
+KERNEL_INFO = $(shell uname -a)
 TRAIN_NAME = $(shell git branch | grep "*" | cut -f 2 -d ' ')-$(TRAIN_VERSION)
 RAMEAUDEPS = t
 hostname = $(shell hostname)
@@ -63,6 +64,7 @@ rameau-deps:
 rameau: $(lisp-files) rameau-deps
 	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" \
 	--eval "(defparameter *git-commit* \"${GIT_COMMIT}\")" \
+	--eval "(defparameter *kernel-info* \"${KERNEL_INFO}\")" \
 	--load "tools/make-image.lisp"
 
 checa-notas: tools/read-notes.lisp

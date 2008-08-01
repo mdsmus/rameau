@@ -987,7 +987,7 @@ If you did, we have a bug, so please report.~%")
 (defun print-about ()
   (format t
           "Rameau ~a was compiled with ~a, version ~a, in ~a by ~a,
-  at least using commit ~a~%"
+  at least using commit ~a, on the system: ~%  ~a~%"
           *rameau-version*
           (lisp-implementation-type)
           (lisp-implementation-version)
@@ -995,6 +995,9 @@ If you did, we have a bug, so please report.~%")
           (getenv "USER")
           (if (boundp cl-user::*git-commit*)
               cl-user::*git-commit*
+              "")
+          (if (boundp cl-user::*kernel-info*)
+              cl-user::*kernel-info*
               ""))
   (rameau-quit))
 
