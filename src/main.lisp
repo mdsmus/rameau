@@ -982,16 +982,20 @@ If you did, we have a bug, so please report.~%")
 (defun print-date (date)
   (multiple-value-bind (second minute hour date month year day daylight-p zone)
       (decode-universal-time date)
-    (format nil "~a-~a-~a" year month date)))
+    (format nil "~a-~a-~a ~a:~a" year month date hour minute)))
 
 (defun print-about ()
   (format t
-          "Rameau ~a was compiled with ~a, version ~a, in ~a by ~a~%"
+          "Rameau ~a was compiled with ~a, version ~a, in ~a by ~a,
+  at least using commit ~a~%"
           *rameau-version*
           (lisp-implementation-type)
           (lisp-implementation-version)
           (print-date *compilation-date*)
-          (getenv "USER"))
+          (getenv "USER")
+          (if (boundp cl-user::*git-commit*)
+              cl-user::*git-commit*
+              ""))
   (rameau-quit))
 
 (defun main (&optional args)

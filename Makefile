@@ -3,6 +3,7 @@ SYSTEM = $(shell uname -s)
 SBCL_BIN = sbcl
 LISP_BIN = lisp
 
+GIT_COMMIT = $(shell git log --pretty=format:%H -n 1)
 TRAIN_NAME = $(shell git branch | grep "*" | cut -f 2 -d ' ')-$(TRAIN_VERSION)
 RAMEAUDEPS = t
 hostname = $(shell hostname)
@@ -60,7 +61,9 @@ rameau-deps:
 	$(MAKE) cl-fann rameau
 
 rameau: $(lisp-files) rameau-deps
-	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" --load "tools/make-image.lisp" ;\
+	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" \
+	--eval "(defparameter *git-commit* \"${GIT_COMMIT}\")" \
+	--load "tools/make-image.lisp"
 
 checa-notas: tools/read-notes.lisp
 	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" --load "tools/make-image-read-notes.lisp"
