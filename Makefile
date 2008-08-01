@@ -5,6 +5,11 @@ LISP_BIN = lisp
 
 GIT_COMMIT = $(shell git log --pretty=format:%H -n 1)
 KERNEL_INFO = $(shell uname -a)
+LIBC_VERSION = $(shell /lib/libc.so.6 | grep -o "release version [0-9]\+\.[0-9]\+" | awk '{print $$3}')
+RAMEAU_VERSION = $(shell grep "\* Rameau [0-9]\+\.[0-9]\+" RELEASE -m 1 -o | awk '{print $$3}')
+COMPILATION_DATE = $(shell date)
+USER = $(shell echo $$USER)
+
 TRAIN_NAME = $(shell git branch | grep "*" | cut -f 2 -d ' ')-$(TRAIN_VERSION)
 RAMEAUDEPS = t
 hostname = $(shell hostname)
@@ -65,6 +70,10 @@ rameau: $(lisp-files) rameau-deps
 	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" \
 	--eval "(defparameter *git-commit* \"${GIT_COMMIT}\")" \
 	--eval "(defparameter *kernel-info* \"${KERNEL_INFO}\")" \
+	--eval "(defparameter *libc-version* \"${LIBC_VERSION}\")" \
+	--eval "(defparameter *rameau-version* \"${RAMEAU_VERSION}\")" \
+	--eval "(defparameter *compilation-date* \"${COMPILATION_DATE}\")" \
+	--eval "(defparameter *user* \"${USER}\")" \
 	--load "tools/make-image.lisp"
 
 checa-notas: tools/read-notes.lisp

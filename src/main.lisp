@@ -13,9 +13,6 @@
 
 (defparameter *command-names* nil)
 
-(defvar *compilation-date* (get-universal-time))
-(defvar *rameau-version* 4.0)
-
 (defmacro defcommand (name (&rest args) &body body)
   "Wrapper to defun. Store the name of the command in *commands-names."
   `(progn
@@ -978,28 +975,23 @@ If you did, we have a bug, so please report.~%")
            (list file)
            (parse-file-name file options))))
 
-
-(defun print-date (date)
-  (multiple-value-bind (second minute hour date month year day daylight-p zone)
-      (decode-universal-time date)
-    (format nil "~a-~a-~a ~a:~a" year month date hour minute)))
-
 (defun print-about ()
-  (format t
-          "Rameau ~a was compiled with ~a, version ~a, in ~a by ~a,
-  at least using commit ~a, on the system: ~%  ~a~%"
-          *rameau-version*
-          (lisp-implementation-type)
-          (lisp-implementation-version)
-          (print-date *compilation-date*)
-          (getenv "USER")
-          (if (boundp cl-user::*git-commit*)
-              cl-user::*git-commit*
-              "")
-          (if (boundp cl-user::*kernel-info*)
-              cl-user::*kernel-info*
-              ""))
-  (rameau-quit))
+  (macrolet ((get-info (info)
+               `(when (boundp ',info)
+                  ,info)))
+    (format t
+            "Rameau ~@[~a~] was compiled with ~@[~a~], version ~@[~a~], in ~@[~a~] by ~@[~a~],
+  at least using commit ~@[~a~], on the system:~%  ~@[~a~],
+  using libc version ~@[~a~]~%"
+            (get-info cl-user::*rameau-version*)
+            (lisp-implementation-type)
+            (lisp-implementation-version)
+            (get-info cl-user::*compilation-date*)
+            (get-info cl-user::*user*)
+            (get-info cl-user::*git-commit*)
+            (get-info cl-user::*kernel-info*)
+            (get-info cl-user::*libc-version*))
+    (rameau-quit)))
 
 (defun main (&optional args)
   "You can run main from the REPL with all arguments as a
