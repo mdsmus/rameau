@@ -13,6 +13,9 @@
 
 (defparameter *command-names* nil)
 
+(defvar *compilation-date* (get-universal-time))
+(defvar *rameau-version* 4.0)
+
 (defmacro defcommand (name (&rest args) &body body)
   "Wrapper to defun. Store the name of the command in *commands-names."
   `(progn
@@ -76,7 +79,7 @@ If you did, we have a bug, so please report.~%")
     analysis))
 
 ;;; Print messages
- (defun print-help :private ()
+(defun print-help :private ()
    (iter (for (key value) in *commands*)
       (format t "~%~:@(* ~a~)~%" (substitute #\Space #\- key :test #'equal))
       (iter (for (short long help) in value)
@@ -975,10 +978,26 @@ If you did, we have a bug, so please report.~%")
            (list file)
            (parse-file-name file options))))
 
+
+(defun print-date (date)
+  (multiple-value-bind (second minute hour date month year day daylight-p zone)
+      (decode-universal-time date)
+    (format nil "~a-~a-~a" year month date)))
+
+(defun print-about ()
+  (format t
+          "Rameau ~a was compiled with ~a, version ~a, in ~a by ~a~%"
+          *rameau-version*
+          (lisp-implementation-type)
+          (lisp-implementation-version)
+          (print-date *compilation-date*)
+          (getenv "USER"))
+  (rameau-quit))
+
 (defun main (&optional args)
   "You can run main from the REPL with all arguments as a
   string: (main \"analysis chorales -v -f 001\")"
-  ;(format t "Done, processing arguments...~%")
+                                        ;(format t "Done, processing arguments...~%")
   (let* ((*package* (find-package :rameau-main))
          (rameau-args (rameau-args))
          (arguments (if rameau-args rameau-args (cl-ppcre:split " " args)))
@@ -987,8 +1006,8 @@ If you did, we have a bug, so please report.~%")
         (iter (for command-list in (split-command-list arguments))
               (for cmd = (first command-list))
               (for command = (search-string-in-list cmd *command-names*))
-              ;;; revert to default arguments
-              ;;; apply command-line options
+              ;; revert to default arguments
+              ;; apply command-line options
               (iter (for (key value) in (parse-options command (rest command-list)))
                     (if key
                         (setf (arg key options) value)
@@ -1001,16 +1020,18 @@ If you did, we have a bug, so please report.~%")
               (awhen (arg :trace options)
                 (maptrace it))
               (when (or (arg :help options) (string= cmd "-h")) (print-help))
-              ;;; parse file options
+              (when (or (arg :about options) (string= cmd "-A"))
+                (print-about))
+              ;; parse file options
               (setf (arg :files options) (parse-files options))
-              ;;; parse algorithms options
+              ;; parse algorithms options
               (let ((fn (%string->symbol command)))
                 (if (fboundp fn)
                     (funcall fn options)
                     (print-fatal (concat cmd " is not a rameau command."))))
               (when (arg :profile options)
                 (rameau-report)))
-              ;;(dbg 'main "~a" (print-slots options))
+        ;;(dbg 'main "~a" (print-slots options))
         
         (print-help)))
   #+clisp(ext:exit)
