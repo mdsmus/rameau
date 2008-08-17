@@ -1,0 +1,107 @@
+; -*- org -*-
+
+* References
+  Read Norvig and Pitman's "Tutorial on Good Lisp Programming Style"
+* Writing code
+** indentation
+   Don't ever NEVER (did I say never?) use tabs to indent expressions.
+   Use good old spaces. Make sure you have something like
+
+   (setq indent-tabs-mode nil)
+
+   in your .emacs
+
+   We prefer to use iterate instead of loop, but if you use loop,
+   put the following definitions in your .emacs:
+
+   (setq lisp-simple-loop-indentation 1
+         lisp-loop-keyword-indentation 6
+         lisp-loop-forms-indentation 6)
+
+   Don't forget to use common-lisp indentation in emacs:
+
+   (setq lisp-indent-function 'common-lisp-indent-function)
+** spacing
+   Use just one blank line between each function definition. There is
+   no need to use more space to guide the code. Use things in emacs
+   like code navigation, outlining, and ..................
+** documentation and tests cases
+   You don't write code just for yourself, it will be read long after
+   you wrote it by others. Write documentation strings to make clean
+   what the function does and provide information about the input and
+   output. Whatever is possible, write test cases. They serve not
+   only to test the program, but as an example of use. In fact, the
+   first test is shown in the pdf documentation.
+
+   Read the session about documentation in Norvig and Pitman's
+   "Tutorial on Good Lisp Programming Style"
+
+   In long documents, create headers inside comments to separate the
+   document in sections. Outline mode can display just the sections
+   make it easy to navigate through the document.
+
+   ;;; Header 1
+   .... code ...
+   ;;; Header 2
+** language
+   All code, comments and documentation should be in English.
+** comments
+   Comments are good, docstrings are better. Write comments for
+   anything that is complicated, tricky, or easy to forget (or
+   difficult to remember) but is to low level to be in the docstring.
+   Don't put your name and date in the comments, although Norvig
+   recommends it. We use version control.
+** use short functions
+   A function shouldn't be bigger than a page (roughly 35-39 lines). If
+   a function is too big you always can abstract it better in smaller
+   functions.
+** don't pollute the "global" namespace with one-time functions
+   Usually is better to use labels or flet to encapsulate related
+   functions in one bigger function.
+
+   [FIXME: cor em labels]
+** loops
+*** use iterate instead of loop
+    There is no harm in using loop, but since we use iterate in so
+    many places is good to use iterate only for consistency
+*** don't use loop (or iterate) as a shorthand for mapcar
+    when mapping a list with a function with more than one argument,
+    or that has to do some operation on the argument it is not
+    possible to write (mapcar #'bar list); a lambda expression has to
+    be used:
+
+    (mapcar (lambda (x) (bar (1+ x))) list)
+
+    Some people prefer to use loop instead of the lambda
+    expression:
+
+    (loop for x in list collect (bar (1+ x)))
+
+    In rameau we prefer to use the sharp-L macro:
+
+    (mapcar #L(bar (1+ !1)) list)
+
+    Please always write the #L in uppercase.
+*** let inside loop or iterate
+    It is better to use the built-in loop and iterate assignment than
+    to use a let inside the loop or iterate. The loop and iterate
+    assignment aligns better and is simpler to read:
+
+    ;; god
+    (iter (for x from 1 to 10)
+          (with y = 100)
+          (with z = 320)
+          (collect (list x y z)))
+
+    ;; bad
+    (iter (for x from 1 to 10)
+          (let ((y 100)
+                (z 320)))
+          (collect (list x y z)))
+          
+    
+* Makefile
+** every thing created automatically must have a target in the makefile to clean it
+
+* Documentation
+all text files must have a .txt extension
