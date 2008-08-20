@@ -174,7 +174,8 @@ If you did, we have a bug, so please report.~%")
            (iter (for i in (mapcar (lambda (x) (% x seg-number)) right-answer-list))
                  (print-chord-column options (format nil "~,2f" i)))
            (format t "~%")
-           (print-hline-term size-line)))))
+           (print-hline-term size-line)
+           (format t "~%")))))
 
 
 
@@ -195,8 +196,9 @@ If you did, we have a bug, so please report.~%")
                 (print-chord-column options res))
           (finally
            (print-hline-term size-line)
-	   (when (arg :sonorities options)
-	     (format t "~&TOTAL SONORITIES: ~a~%" seg-number))))))
+           (when (arg :sonorities options)
+             (format t "~&TOTAL SONORITIES: ~a~%" seg-number))
+           (format t "~%")))))
 
 (defcommand analysis (options)
   (let ((analysis (analyse-files options)))
