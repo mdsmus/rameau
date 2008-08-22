@@ -94,6 +94,9 @@
             (:a :href "javascript:void(0)" :onClick "toggle_visible(document.getElementById(\"algorithms\"));"
                 "Choose Algorithms")
             (:div :align "left" :id "algorithms" :class "algorithms"
+                  (:a :class "closebutton"
+                      :href "javascript:void(0)" :onClick "toggle_visible(document.getElementById(\"algorithms\"));"
+                      "X")
                   (iter (for alg in (filter-algorithms nil))
                         (htm (:p (:input :type "checkbox" 
                                          :checked (/= 0 (count-subseq "Net" (alg-name alg)))

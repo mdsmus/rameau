@@ -137,3 +137,10 @@ div.cache {
 div.cache p {
  margin: 0;
 }
+
+a.closebutton {
+ float: right;
+ font-family: monospace;
+ border: thin solid #000088;
+ margin: 0em 1em 0em 1em;
+}
