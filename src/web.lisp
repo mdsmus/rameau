@@ -155,7 +155,7 @@
                 (collect (format nil "~(~x~)" i)))))
 
 (defun get-params-alg ()
-  (iter (for alg in (filter-algorithms nil))
+  (iter (for alg in (mapcar #'load-alg (filter-algorithms nil)))
         (when (parameter (alg-name alg))
           (collect alg))))
 
