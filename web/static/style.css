@@ -47,6 +47,12 @@ textarea {
  background: #e0e0f0;
  padding: 0.5em;
  -moz-border-radius: 2em;
+ padding-left: 2.5em;
+ margin-left: 2em;
+}
+
+div.coralbox {
+ padding-left: 2em;
 }
 
 div.coralbox label {
