@@ -53,7 +53,8 @@
             (:div :id "coral" :style "max-width: 40em;" :class "coralbox"
                   (:p (:label :for "key" "Key:")
                       (:select :name "key" :id "key"
-                               (iter (for root in '("a" "b" "c" "d" "e" "f" "g"))
+                               (:option :value "" "")
+                               (iter (for root in '("c" "d" "e" "f" "g" "a" "b"))
                                      (iter (for suffix in '("is" "es" ""))
                                            (iter (for mode in '("major" "minor"))
                                                  (htm (:option :value (format nil
@@ -69,6 +70,7 @@
                                                                     mode))))))))
                   (:p (:label :for "sig" "Time:")
                       (:select :name "sig" :id "sig"
+                               (:option :value "" "")
                                (iter (for sig in '("3/4" "4/4" "6/8" "9/8" "12/8" "3/2" "1/2" "2/4" "4/1"))
                                      (htm (:option :value sig (str sig))))))
                   (:p (:label :for "soprano" "Soprano:")
