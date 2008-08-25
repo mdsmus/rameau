@@ -917,6 +917,7 @@ If you did, we have a bug, so please report.~%")
 
   (let ((port (arg :port options)))
    (format t "Starting rameau web on port ~a.~%" port)
+   (write-line "Open http://localhost:4242/rameau/index.html on your browser")
    (rameau-web::start-rameau-web port))
   (loop))
 
