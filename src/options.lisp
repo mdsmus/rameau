@@ -45,6 +45,8 @@
       ("" "gv" "roda gv")
       ("" "png" "gera png")
       ("-S" "view-score" "gera score, roda lily e gv")))
+    ("web"
+     (("" "port" "define the port number for rameau web" 4242 type-integer)))
     ("cadences"
      (("-z" "cadence-number" "number of chords to consider" 4 type-integer)))
     ("jumps")

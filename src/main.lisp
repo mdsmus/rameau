@@ -915,7 +915,9 @@ If you did, we have a bug, so please report.~%")
 (defcommand web (options &rest ignore)
   (declare (ignore ignore options))
 
-  (rameau-web::start-rameau-web)
+  (let ((port (arg :port options)))
+   (format t "Starting rameau web on port ~a.~%" port)
+   (rameau-web::start-rameau-web port))
   (loop))
 
 (defcommand document (options &rest ignore)
