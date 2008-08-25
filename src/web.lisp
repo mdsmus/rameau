@@ -85,13 +85,16 @@
                         (iter (for f in (parse-file-name "chor:1..371" (make-default-arguments)))
                               (let ((name (pathname-name f)))
                                 (htm (:option :value name (str name)))))))
-           ;;; FIXME: space should be defined in the css file
+           ;; FIXME: space should be defined in the css file
            (:br)
            (:p (:label :for "answer" "Answer:")
                (:input :id "answer" :type "text" :name "answer"))
+           ;; FIXME: space should be defined in the css file
            (:br)
            (:div :id "submit"
                  (:input :type "submit" :value "Analyze"))
+           ;; FIXME: space should be defined in the css file
+           (:br)
            (:a :href "javascript:void(0)" :onClick "toggle_visible(document.getElementById(\"algorithms\"));"
                "Choose Algorithms")
            (:div :align "center" :id "algorithms" :class "algorithms"
