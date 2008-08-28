@@ -32,12 +32,12 @@
                     :href "/favicon.ico")
              (:script :type "text/javascript" :src "/scripts.js")
              (:link :rel "stylesheet" :href "/style.css"))
-            (:body :align "center"
+            (:body :align "right"
              (:div :id "title" :align "center"
                    (:p (:h1 "Rameau - Automated Harmonic Analysis")))
-             (:div :id "main" :align "center"
-                   (:div :id "nav"  :class "nav" :align "center"
-                         (:p (:h2 (:a :href "/rameau/index.htm" "Perform Analysis"))
+             (:div :id "main"
+                   (:div :id "nav"  :class "nav"
+                         (:p (:h2 (:a :href "/rameau/index.html" "Perform Analysis"))
                              " | "
                              (:h2 (:a :href "/rameau/results.htm" "Browse Results"))))
                    (:div :id "content" :class "content" ,@body))))))
@@ -45,74 +45,81 @@
 (defun an-form ()
   (with-html-output-to-string (*standard-output* nil :prologue t :indent t)
     (:form :action "/analysis" :method "post" :class "analise" :id "analise"
-           (:center
-            
-            (:p (:input :type "radio" :name "escolha" :value "input" :onchange "habilita_input()" :checked "")
-                (:label :for "escolha-1"
-                        "Enter the notes for each voice..."))
-            (:div :id "coral" :style "max-width: 40em;" :class "coralbox"
-                  (:p (:label :for "key" "Key:")
-                      (:select :name "key" :id "key"
-                               (iter (for root in '("a" "b" "c" "d" "e" "f" "g"))
-                                     (iter (for suffix in '("is" "es" ""))
-                                           (iter (for mode in '("major" "minor"))
-                                                 (htm (:option :value (format nil
-                                                                              "~a~a \\~a"
-                                                                              root
-                                                                              suffix
-                                                                              mode)
-                                                               (fmt "~a~a ~a"
-                                                                    (string-upcase root)
-                                                                    (cond ((equal "is" suffix) "#")
-                                                                          ((equal "es" suffix) "b")
-                                                                          (t ""))
-                                                                    mode))))))))
-                  (:p (:label :for "sig" "Time:")
-                      (:select :name "sig" :id "sig"
-                               (iter (for sig in '("3/4" "4/4" "6/8" "9/8" "12/8" "3/2" "1/2" "2/4" "4/1"))
-                                     (htm (:option :value sig (str sig))))))
-                  (:p (:label :for "soprano" "Soprano:")
-                      (:input :id "soprano" :type "text" :name "soprano"))
-                  (:p (:label :for "alto" "Alto:")
-                      (:input :id "alto" :type "text" :name "alto"))
-                  (:p (:label :for "tenor" "Tenor:")
-                      (:input :id "tenor" :type "text" :name "tenor"))
-                  (:p (:label :for "bass" "Bass:")
-                      (:input :id "bass" :type "text" :name "bass"))
-                  (:div :style "clear: both"))
-           (:center
-            (:p (:input :type "radio" :name "escolha" :value "chor" :onchange "habilita_chor()")
-                (:label :for "escolha-2" "...or choose one of Bach's 371 Chorales")
-                (:select :name "chorale" :id "chorale"  :disabled t
-                         (iter (for f in (parse-file-name "chor:1..371" (make-default-arguments)))
-                               (let ((name (pathname-name f)))
-                                 (htm (:option :value name (str name)))))))
-            (:p (:label :for "answer" "Answer:")
-                (:input :id "answer" :type "text" :name "answer"))
-            (:div :id "submit"
-                  (:input :type "submit" :value "Analyze")))
-            (:a :href "javascript:void(0)" :onClick "toggle_visible(document.getElementById(\"algorithms\"));"
-                "Choose Algorithms")
-            (:div :align "left" :id "algorithms" :class "algorithms"
-                  (iter (for alg in (filter-algorithms nil))
-                        (htm (:p (:input :type "checkbox" 
-                                         :checked (/= 0 (count-subseq "Net" (alg-name alg)))
-                                         :name (alg-name alg)
-                                         :id (alg-name alg))
-                                 (:label :for (alg-name alg) (fmt "<b>~a</b>:<i>~a</i>"
-                                                                  (alg-name alg)
-                                                                  (alg-description alg))))))
-                  (:div :align "center"
-                        (:a :href "javascript: void(0)" :onClick "toggle_visible(document.getElementById(\"algorithms\"));"
-                      "Close")))
-            ))))
+           (:p (:input :type "radio" :name "escolha" :value "input" :onchange "habilita_input()" :checked "")
+               (:label :for "escolha-1"
+                       "Enter the notes for each voice..."))
+           (:div :id "coral" :style "max-width: 40em;" :class "coralbox"
+                 (:p (:label :for "key" "Key:")
+                     (:select :name "key" :id "key"                              (:option :value "" "")
+                              (iter (for root in '("c" "d" "e" "f" "g" "a" "b"))
+                                    (iter (for suffix in '("is" "es" ""))
+                                          (iter (for mode in '("major" "minor"))
+                                                (htm (:option :value (format nil
+                                                                             "~a~a \\~a"
+                                                                             root
+                                                                             suffix
+                                                                             mode)
+                                                              (fmt "~a~a ~a"
+                                                                   (string-upcase root)
+                                                                   (cond ((equal "is" suffix) "#")
+                                                                         ((equal "es" suffix) "b")
+                                                                         (t ""))
+                                                                   mode))))))))
+                 (:p (:label :for "sig" "Time:")
+                     (:select :name "sig" :id "sig"
+                              (:option :value "" "")
+                              (iter (for sig in '("3/4" "4/4" "6/8" "9/8" "12/8" "3/2" "1/2" "2/4" "4/1"))
+                                    (htm (:option :value sig (str sig))))))
+                 (:p (:label :for "soprano" "Soprano:")
+                     (:input :id "soprano" :type "text" :name "soprano"))
+                 (:p (:label :for "alto" "Alto:")
+                     (:input :id "alto" :type "text" :name "alto"))
+                 (:p (:label :for "tenor" "Tenor:")
+                     (:input :id "tenor" :type "text" :name "tenor"))
+                 (:p (:label :for "bass" "Bass:")
+                     (:input :id "bass" :type "text" :name "bass"))
+                 (:div :style "clear: both"))
+           (:p (:input :type "radio" :name "escolha" :value "chor" :onchange "habilita_chor()")
+               (:label :for "escolha-2" "...or choose one of Bach's 371 Chorales")
+               (:select :name "chorale" :id "chorale"  :disabled t
+                        (iter (for f in (parse-file-name "chor:1..371" (make-default-arguments)))
+                              (let ((name (pathname-name f)))
+                                (htm (:option :value name (str name)))))))
+           ;; FIXME: space should be defined in the css file
+           (:br)
+           (:p (:label :for "answer" "Answer:")
+               (:input :id "answer" :type "text" :name "answer"))
+           ;; FIXME: space should be defined in the css file
+           (:br)
+           (:div :id "submit"
+                 (:input :type "submit" :value "Analyze"))
+           ;; FIXME: space should be defined in the css file
+           (:br)
+           (:a :href "javascript:void(0)" :onClick "toggle_visible(document.getElementById(\"algorithms\"));"
+               "Choose Algorithms")
+           (:div :align "center" :id "algorithms" :class "algorithms"
+                 (:a :class "closebutton"
+                     :href "javascript:void(0)" :onClick "toggle_visible(document.getElementById(\"algorithms\"));"
+                     "X")
+                 (iter (for alg in (filter-algorithms nil))
+                       (htm (:p (:input :type "checkbox" 
+                                        :checked (/= 0 (count-subseq "Net" (alg-name alg)))
+                                        :name (alg-name alg)
+                                        :id (alg-name alg))
+                                (:label :for (alg-name alg) (fmt "<b>~a</b>:<i>~a</i>"
+                                                                 (alg-name alg)
+                                                                 (alg-description alg))))))
+                 (:div :align "center"
+                       (:a :href "javascript: void(0)" :onClick "toggle_visible(document.getElementById(\"algorithms\"));"
+                           "Close")))
+            )))
 
 
 (defun rameau-web ()
   (standard-page (:title "Rameau")
     (str (an-form))))
 
-(push (create-prefix-dispatcher "/rameau/index.htm" 'rameau-web) *dispatch-table*)
+(push (create-prefix-dispatcher "/rameau/index.html" 'rameau-web) *dispatch-table*)
 
 (defun favicon ()
   (setf (content-type) "image/gif")
@@ -152,7 +159,7 @@
                 (collect (format nil "~(~x~)" i)))))
 
 (defun get-params-alg ()
-  (iter (for alg in (filter-algorithms nil))
+  (iter (for alg in (mapcar #'load-alg (filter-algorithms nil)))
         (when (parameter (alg-name alg))
           (collect alg))))
 
@@ -320,17 +327,17 @@ baixo = \\relative c {
           (iter (for (k v) in-hashtable *results*)
                 (htm (:div :align "right" :class "cache" 
                            (:div :align "center" (str (analysis-title v)))
-                           (:p :style "float:left"
+                           (:p :style "float:center"
                                (:a :href (format nil "/show-analysis?analysis=~a"  k)
                                    "View"))
                            (:p :style "float:right"
                                (:a :href (format nil "/rameau/clear-cache?page=~a" k)
                                    "Clear from cache"))
-                           (:p :style "clear: both;" :align "left"
+                           (:p :style "clear: both;" :align "center"
                                (:b "Algorithms:")
                                (iter (for alg in (analysis-algorithms v))
                                      (htm (:i (str (alg-name alg)))))))))
-          (:div :style "clear: left"))))
+          (:div :style "clear: center"))))
 
 (push (create-prefix-dispatcher "/rameau/results.htm" 'show-results) *dispatch-table*)
 
@@ -345,8 +352,8 @@ baixo = \\relative c {
 
 
 
-(defun start-rameau-web ()
-  "Start the web server for \\texttt{rameau} at port 4242."
-  (start-server :port 4242))
+(defun start-rameau-web (port)
+  "Start the web server for \\texttt{rameau}."
+  (start-server :port port))
 
 ;;(start-rameau-web)

@@ -47,6 +47,12 @@ textarea {
  background: #e0e0f0;
  padding: 0.5em;
  -moz-border-radius: 2em;
+ padding-left: 2.5em;
+ margin-left: 2em;
+}
+
+div.coralbox {
+ padding-left: 2em;
 }
 
 div.coralbox label {
@@ -136,4 +142,11 @@ div.cache {
 
 div.cache p {
  margin: 0;
+}
+
+a.closebutton {
+ float: right;
+ font-family: monospace;
+ border: thin solid #000088;
+ margin: 0em 1em 0em 1em;
 }

@@ -12,7 +12,7 @@
 ;;; usando modelos de Markov escondidos. A descrição do modelo usado
 ;;; está em docs/hmm.tex.
 
-(declaim (optimize (speed 3)
+(declaim (optimize (speed 0)
                    (safety 0)
                    (debug 0)))
 

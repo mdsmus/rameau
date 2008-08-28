@@ -116,7 +116,7 @@ distclean: cleanall clean-deps clean-analysis clean-score clean-midi clean-cache
 	cd docs/choral-book && $(MAKE) cleanall
 
 lispclean: clean-lib clean
-	rm -rf /var/cache/common-lisp-controller/$$UID/sbcl/local
+	bash -c "rm -rf /var/cache/common-lisp-controller/\$${UID}/sbcl/local"
 	rm -rf ~/lisp/fasl/*
 
 clean-algs:
