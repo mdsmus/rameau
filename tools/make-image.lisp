@@ -3,10 +3,10 @@
 
 #+sbcl(proclaim '(optimize
                   (compilation-speed 0)
-                  (debug 0)
-                  (safety 0)
+                  (debug 2)
+                  (safety 2)
                   (space 0)
-                  (speed 3)))
+                  (speed 2)))
 
 #+(or sbcl ecl) (require 'asdf)
 
