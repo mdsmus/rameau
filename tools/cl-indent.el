@@ -506,8 +506,7 @@ If nil, indent backquoted lists as data, i.e., like quoted lists."
            (defpackage  (4 2))
            (defstruct   ((&whole 4 &rest (&whole 2 &rest 1))
                          &rest (&whole 2 &rest 1)))
-           (destructuring-bind
-                        ((&whole 6 &rest 1) 4 &body))
+           (destructuring-bind ((&whole 6 &rest 1) 4 &body))
            (do          lisp-indent-do)
            (do* . do)
            (dolist      ((&whole 4 2 1) &body))
@@ -594,7 +593,12 @@ If nil, indent backquoted lists as data, i.e., like quoted lists."
 ;                3))))))
 
 
-;(put 'while    'common-lisp-indent-function 1)
+(put 'awhen    'common-lisp-indent-function 1)
+(put 'switch   'common-lisp-indent-function 1)
+(put 'deftemplates   'common-lisp-indent-function 1)
+;;(put 'cl-ppcre:register-groups-bind 'common-lisp-indent-function 1)
+(put 'register-groups-bind 'common-lisp-indent-function '((&whole 6 &rest 1) 4 &body))
+
 ;(put 'defwrapper'common-lisp-indent-function ...)
 ;(put 'def 'common-lisp-indent-function ...)
 ;(put 'defflavor        'common-lisp-indent-function ...)

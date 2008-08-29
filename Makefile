@@ -27,7 +27,6 @@ else
 endif
 
 lisp-files = $(wildcard src/*asd src/*.lisp src/lib/*.lisp tools/*.lisp src/algorithms/*.lisp)
-
 neural-path = $(maindir)/algorithms/
 
 
@@ -97,6 +96,12 @@ coral:
 all-png:
 	./rameau anal -f music/chorales-bach/*.ly -a es-net -s > /dev/null
 	cd analysis ; lilypond --png *.ly 2> /dev/null
+
+indent:
+	for file in $(lisp-files) ;\
+	do \
+	emacs --batch $$file -q --load "${maindir}/tools/cl-indent" --load "${maindir}/tools/enforce-style" -f rameau-style ;\
+	done
 
 pauta:
 	wget -O pauta.html "http://wiki.genos.mus.br/PautaReuniao"
