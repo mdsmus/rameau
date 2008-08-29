@@ -2,6 +2,7 @@
 
 * References
   Read Norvig and Pitman's "Tutorial on Good Lisp Programming Style"
+  at norvig.com/luv-slides.ps.
 * Writing code
 ** indentation
    Don't ever NEVER (did I say never?) use tabs to indent expressions.
@@ -27,10 +28,11 @@
    defuns blocks correctly use the cl-indent.el file in the tools
    directory and load it in your .emacs *before* you load slime.
 
+   Use 'make indent' if you want to re-indent all lisp files at once.
 ** spacing
    Use just one blank line between each function definition. There is
    no need to use more space to guide the code. Use things in emacs
-   like code navigation, outlining, and narrowing
+   like code navigation, outlining, and narrowing.
 ** documentation and tests cases
    You don't write code just for yourself, it will be read long after
    you wrote it by others. Write documentation strings to make clean
@@ -54,7 +56,7 @@
 ** comments
    Comments are good, docstrings are better. Write comments for
    anything that is complicated, tricky, or easy to forget (or
-   difficult to remember) but is to low level to be in the docstring.
+   difficult to remember) but is too low level to be in the docstring.
    Don't put your name and date in the comments, although Norvig
    recommends it. We use version control.
 ** use short functions
@@ -100,13 +102,14 @@
           (collect (list x y z)))
 
     ;; bad
-    (iter (for x from 1 to 10)
-          (let ((y 100)
-                (z 320)))
-          (collect (list x y z)))
+    (let ((y 100)
+          (z 320))
+      (iter (for x from 1 to 10)
+            (collect (list x y z))))
 ** predicates
    Common lisp is not scheme. Write predicates with the termination
-   "p" or "-p" and not "?".
+   "p" or "-p" and not "?". [We are SICP junkies, so sometimes we may
+   be guilty of using "?", but we shuldn't]
 * Makefile
 ** every thing created automatically must have a target in the makefile to clean it
 * Documentation
