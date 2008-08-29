@@ -24,9 +24,9 @@
 
    We have use a definition of defun that accept keys in the same
    syntax as defmethod (but the keys are different), to indent the
-   defuns blocks correctly put the following in your .emacs:
+   defuns blocks correctly use the cl-indent.el file in the tools
+   directory and load it in your .emacs *before* you load slime.
 
-   (put 'defun 'common-lisp-indent-function 'lisp-indent-defmethod)
 ** spacing
    Use just one blank line between each function definition. There is
    no need to use more space to guide the code. Use things in emacs
