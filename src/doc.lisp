@@ -1,5 +1,4 @@
 (in-package :rameau)
-
 #+sbcl (eval-when (:compile-toplevel :load-toplevel :execute)
          (require 'sb-introspect))
 
@@ -55,17 +54,14 @@
     (format f "\\end{tabular}~%~%")
     ))
 
-
 (defun write-doc-package :private (f pname symbs)
-    (format f "~%\\chapter{~a}~%\\label{sec:~a}~%" pname pname)
-    (format f "\\begin{quote}~%~a~%\\end{quote}~%~%"
-            (documentation (find-package pname) t))
-    (iter (for s in symbs)
-          (when (= 0 (count-subseq "%" (stringify s)))
-            (print-function-doc f (symbol-function s)))))
-    
+  (format f "~%\\chapter{~a}~%\\label{sec:~a}~%" pname pname)
+  (format f "\\begin{quote}~%~a~%\\end{quote}~%~%"
+          (documentation (find-package pname) t))
+  (iter (for s in symbs)
+        (when (= 0 (count-subseq "%" (stringify s)))
+          (print-function-doc f (symbol-function s)))))
 
-          
 (defun create-documentation-for (&rest packages)
   "Create a file named \\texttt{rameau.tex} with the documentation for
   packages \\texttt{packages}."
@@ -95,7 +91,6 @@
 \\newcommand{\\example}[2]{
   \\par Example: \\texttt{#1} $\\rightarrow$ #2
 }
-
 
 \\begin{document}
 \\maketitle

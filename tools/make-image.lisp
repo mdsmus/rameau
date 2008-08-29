@@ -1,5 +1,4 @@
 ;;#+sbcl(declaim (sb-ext:muffle-conditions warning style-warning sb-ext:compiler-note))
-
 #+cmu(setf ext::*complain-about-illegal-switches* nil)
 
 #+sbcl(proclaim '(optimize
@@ -27,10 +26,10 @@
 
 (when *use-rameau-deps*
   (loop for p in *packages* do
-       (push (format nil "~a" p) asdf:*central-registry*)))
+        (push (format nil "~a" p) asdf:*central-registry*)))
 
 (asdf:oos 'asdf:load-op :rameau :verbose nil)
-;(asdf:oos 'asdf:load-op :rameau-test :verbose nil)
+                                        ;(asdf:oos 'asdf:load-op :rameau-test :verbose nil)
 
 #+sbcl(sb-ext:save-lisp-and-die "rameau" :purify t :executable t :toplevel #'rameau-main:main)
 
@@ -50,7 +49,7 @@
                                 "src/segmento.lisp"
                                 "src/temperley.lisp"
                                 "src/utils.lisp")
-               do (compile-file file :system-p t))
+                  do (compile-file file :system-p t))
             (c:build-program "eclrameau"
                              :lisp-files '("/home/kroger/lisp/site/arnesi/libarnesi.so"
                                            "src/rameau-base.o"

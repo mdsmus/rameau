@@ -1,5 +1,4 @@
 (declaim (optimize (debug 3) (safety 3)))
-
 (in-package #:rameau)
 
 (defun group-by :private (start resto)
@@ -13,7 +12,7 @@
            nil
            resto))
       (values nil nil)))
-  
+
 (defun group-with-start :private (musica)
   "Group \\texttt{music} by the on-set times of the notes. [DONTCHECK]"
   (when musica
@@ -21,7 +20,7 @@
            (start (event-start primeiro))
            (resto (cdr musica)))
       (multiple-value-bind (grupo restante) (group-by start resto)
-        
+
         (cons (cons primeiro grupo)
               (group-with-start restante))))))
 
@@ -32,11 +31,11 @@
   (let* ((sobras nil)
          (proximo-event (if proximo (event-start (first proximo))))
          (proximo-start (if proximo
-                             (min proximo-event
-                                  (+ (smallest segmento #'event-dur)
-                                     (event-start (first segmento))))
-                             (+ (smallest segmento #'event-dur)
-                                     (event-start (first segmento)))))
+                            (min proximo-event
+                                 (+ (smallest segmento #'event-dur)
+                                    (event-start (first segmento))))
+                            (+ (smallest segmento #'event-dur)
+                               (event-start (first segmento)))))
          (tamanho (- proximo-start (event-start (first segmento)))))
     (values (mapcar (lambda (nota)
                       (if (= (event-dur nota) tamanho)
@@ -78,9 +77,9 @@
           (correct-segments (first musica) (second musica))
         (let* ((sobras-acumuladas (nconc sobras (second musica)))
                (segmentos (nconc (group-with-start (sort sobras-acumuladas
-                                                       (lambda (x y)
-                                                         (< (event-start x)
-                                                            (event-start y)))))
+                                                         (lambda (x y)
+                                                           (< (event-start x)
+                                                              (event-start y)))))
                                  (cddr musica))))
           (cons segmento (resplit-segments segmentos))))
       musica))

@@ -1,5 +1,4 @@
 (in-package #:rameau)
-
 (enable-sharp-l-syntax)
 
 (defparameter *current-key* '("c" "major"))
@@ -78,22 +77,22 @@
 (defun event-equal (x y)
   "True if eventx \\texttt{x} and \\texttt{y} stand for the same note."
   (if 
-      (or
-       (and (event-p x)
-            (event-p y)
-            (equal (event-pitch x)
-                   (event-pitch y))
-            (equal (event-dur x)
-                   (event-dur y))
-            (equal (event-start x)
-                   (event-start y)))
-       (and (listp x)
-            (listp y)
-            (every #'event-equal x y)))
-      t
-      (progn (format t "Expected ~a,~% but saw ~a~%" x y)
-             nil)))
-       
+   (or
+    (and (event-p x)
+         (event-p y)
+         (equal (event-pitch x)
+                (event-pitch y))
+         (equal (event-dur x)
+                (event-dur y))
+         (equal (event-start x)
+                (event-start y)))
+    (and (listp x)
+         (listp y)
+         (every #'event-equal x y)))
+   t
+   (progn (format t "Expected ~a,~% but saw ~a~%" x y)
+          nil)))
+
 (defun pitches (segmento)
   "The pitches of the notes in \\texttt{segmento}."
   (mapcar #'event-pitch segmento))
@@ -103,8 +102,6 @@
   (mapcar (lambda (x)
             (print-note (code->notename (event-pitch x)) 'latin))
           (sorted segmento #'event-<)))
-
-
 
 (defun durations (segmento)
   "The durations of the notes in music \\texttt{segmento}."
@@ -140,7 +137,6 @@
   (mapcar (lambda (x) (move-event x tempo))
           seq))
 
-
 (defun event-end (event)
   "The end of event \\texttt{event} in time."
   (+ (event-start event) (event-dur event)))
@@ -164,7 +160,7 @@
 
 (defun %expmerge :private (exp1 exp2)
   (setf (note-sequence-dur exp1) (max (note-sequence-dur exp1)
-                                           (note-sequence-dur exp2)))
+                                      (note-sequence-dur exp2)))
   (setf (note-sequence-notas exp1)
         (merge 'list
                (note-sequence-notas exp1)
@@ -214,22 +210,20 @@
                       (+ oa 1)
                       oa)))))))
 
-
 (defun %do-relative :private (nota expressao &optional oitava)
-         (when expressao
-           (let* ((prox-nota (first expressao))
-                  (oitava (if oitava oitava
-                              (event-octave nota)))
-                  (expressao (rest expressao)))
-             (setf (event-octave prox-nota) (modificador-oitava nota prox-nota))
-             (%do-relative (if (null (event-pitch prox-nota)) nota prox-nota)
-                           expressao oitava))))
+  (when expressao
+    (let* ((prox-nota (first expressao))
+           (oitava (if oitava oitava
+                       (event-octave nota)))
+           (expressao (rest expressao)))
+      (setf (event-octave prox-nota) (modificador-oitava nota prox-nota))
+      (%do-relative (if (null (event-pitch prox-nota)) nota prox-nota)
+                    expressao oitava))))
 
 (defun do-relative :private (nota expressao)
   (let ((expressao (if (listp expressao) (sequence-expressions (remove-if #'null expressao)) expressao)))
     (%do-relative (car (note-sequence-notas nota)) (note-sequence-notas expressao))
     expressao))
-
 
 (defun transpose-segmentos (segmentos valor)
   "[DONTCHECK]
@@ -237,15 +231,15 @@
 Transpose the sonorities in \\texttt{segmentos} by \\texttt{valor} pitches.
 "
   (loop for notas in segmentos collect
-       (loop for n in notas collect
-            (make-event :pitch (module (+ (event-pitch n) valor))
-                         :octave (event-octave n)
-                         :dur (event-dur n)
-                         :start (event-start n)
-                         :voice-name (event-voice-name n)
-                         :key (event-key n)
-                         :original-event (event-original-event n)
-                         :time-sig (event-time-sig n)))))
+        (loop for n in notas collect
+              (make-event :pitch (module (+ (event-pitch n) valor))
+                          :octave (event-octave n)
+                          :dur (event-dur n)
+                          :start (event-start n)
+                          :voice-name (event-voice-name n)
+                          :key (event-key n)
+                          :original-event (event-original-event n)
+                          :time-sig (event-time-sig n)))))
 
 (defun tempera (nota)
   "[DONTCHECK]
@@ -254,13 +248,13 @@ An equivalent tempered version of event \\texttt{nota}.
 "
   (with-system tempered
     (make-event :pitch (module (event-pitch nota))
-                 :octave (event-octave nota)
-                 :dur (event-dur nota)
-                 :start (event-start nota)
-                 :voice-name (event-voice-name nota)
-                 :key (event-key nota)
-                 :original-event (event-original-event nota)
-                 :time-sig (event-time-sig nota))))
+                :octave (event-octave nota)
+                :dur (event-dur nota)
+                :start (event-start nota)
+                :voice-name (event-voice-name nota)
+                :key (event-key nota)
+                :original-event (event-original-event nota)
+                :time-sig (event-time-sig nota))))
 
 (defun temperado (segmentos)
   "A tempered version of music \\texttt{segmentos}."

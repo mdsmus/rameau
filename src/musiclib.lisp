@@ -1,5 +1,4 @@
 (in-package #:genoslib)
-
 (export '(a b c d e f g
           a# b# c# d# e# f# g#
           ab bb cb db eb fb gb
@@ -102,7 +101,7 @@ system. [DONTCHECK]"
               (assoc-item representation '((lily ((down ",")
                                                   (up "'")))
                                            (latin ((down "-1")
-                                                  (up "1")))))))
+                                                   (up "1")))))))
 
 (defun get-interval-name (short)
   "Returns the full name of a chord for the abbreviated
@@ -167,13 +166,13 @@ EXAMPLE: \\begin{verbatim}(%parse-note \"ces\" 'lily 'tonal)\\end{verbatim} retu
 This is a low level function, you should use parse-note instead."
   (let ((note-code-tonal
          (%my-position (list (string->symbol (subseq note 0 1))
-                            (number-of-accidentals (subseq note 1) representation))
-                   (get-system-notes 'tonal)
-                   :test #'equal))
+                             (number-of-accidentals (subseq note 1) representation))
+                       (get-system-notes 'tonal)
+                       :test #'equal))
         (note-code-tempered
          (+ (%my-position (list (string->symbol (subseq note 0 1)) 0)
-                      (get-system-notes 'tempered)
-                      :test #'equal)
+                          (get-system-notes 'tempered)
+                          :test #'equal)
             (number-of-accidentals (subseq note 1) representation))))
     (case system
       (tonal note-code-tonal)
@@ -303,7 +302,7 @@ rotation, and so on. This function is cyclic."
 (defun set-transpose-to-0 (set)
   "Transpose a set so it begins with 0. Only on a tempered system."
   (set-transpose set (- (first set))))
-  
+
 (defun set-intervals (set)
   "Retuns a list with the intervals between the consecutive notes of a set.
 EXAMPLE: (set-intervals '(0 3 7)) returns (3 4 5). In this list 5 is
@@ -322,15 +321,15 @@ the inverval between the second and first note. This format is used to
 determine the normal and prime form. EXAMPLE: (set-form-list '(0 3 7))
 returns (((0 3 7) 7 3) ((3 7 0) 9 4) ((7 0 3) 8 5))."
   (loop
-     for rotation in (set-rotate (sort-set (remove-duplicates set)))
-     for set-size = (interval (last1 rotation) (first rotation))
-     for set-beg-size = (interval (second rotation) (first rotation))
-     collect (list rotation (module set-size) (module set-beg-size))))
+        for rotation in (set-rotate (sort-set (remove-duplicates set)))
+        for set-size = (interval (last1 rotation) (first rotation))
+        for set-beg-size = (interval (second rotation) (first rotation))
+        collect (list rotation (module set-size) (module set-beg-size))))
 
 (defun sort-form-list (set)
   "Sort a form-list by the overall interval of the set."
   (sorted set #'< :key #'cadr))
-  
+
 (defun smaller-sets (sorted-list)
   "Retuns a new form-list with the smaller rotations."
   (remove-if #'(lambda (x) (> x (cadar sorted-list))) sorted-list :key #'cadr))
@@ -378,11 +377,10 @@ EXAMPLE: (equal-sets? '(0 3 7) '(8 1 4)) returns T."
               t))
     (prime (when (equal (prime-form set1) (prime-form set2)) t))))
 
-
 (defmacro deftemplates (name &body templates)
   "[DONTCHECK]"
   `(defparameter ,name ',templates))
 
 (defparameter *notas-interessantes-tonal*
   (loop for i in '(0 14 28 41 55 69  83)
-     append (mapcar #'module (list (- i 2) (- i 1) i (+ i 1) (+ i 2)))))
+        append (mapcar #'module (list (- i 2) (- i 1) i (+ i 1) (+ i 2)))))

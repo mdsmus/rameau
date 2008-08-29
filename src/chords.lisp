@@ -1,5 +1,4 @@
 (in-package #:rameau)
-
 (defparameter *augmented-sixth-templates* '((al (0 28 55 70))
                                             (it (0 28 70))
                                             (fr (0 28 42 70))))
@@ -43,7 +42,7 @@
       (if (and (listp atual) (eq '* (first atual)))
           (nconc
            (reduce #'append (repeat-list (second atual)
-                                        (expand-multiplications (rest (rest atual)))))
+                                         (expand-multiplications (rest (rest atual)))))
            (expand-multiplications resto))
           (cons atual (expand-multiplications resto))))))
 
@@ -82,7 +81,7 @@
   ignoring \\texttt{depth}."
   (declare (ignore depth))
   (format stream "~:(~a+6~)" (augmented-sixth-type struct)))
-    
+
 (defstruct (chord (:print-function print-chord))
   root 7th 9th 11th 13th bass inversion mode)
 
@@ -126,7 +125,7 @@ position."
                       :7th (if (and (string= 7th "7") (string= mode "°"))
                                "7-"
                                (or 7th ""))
-                  
+
                       :9th 9th
                       :11th 11th
                       :13th 13th)))))
@@ -154,10 +153,10 @@ Transpose chord \\texttt{c} by \\texttt{n} pitches.
 "
   (if (chord-p c)
       (make-chord :root (print-note (code->notename
-                                             (+ n
-                                                (parse-note
-                                                 (chord-root c))))
-                                        'latin)
+                                     (+ n
+                                        (parse-note
+                                         (chord-root c))))
+                                    'latin)
                   :bass (chord-bass c)
                   :mode (chord-mode c)
                   :inversion (chord-inversion c)
@@ -169,8 +168,8 @@ Transpose chord \\texttt{c} by \\texttt{n} pitches.
 
 (defun transpose-chords (chords n)
   (loop for c in chords
-     collect (transpose-chord (if (listp c) (find-if #'chord-p c) c)
-                              n)))
+        collect (transpose-chord (if (listp c) (find-if #'chord-p c) c)
+                                 n)))
 
 (defun %compare-answer-sheet  (result answer-sheet &optional tempered?)
   (or (and (melodic-note-p result)
@@ -226,5 +225,3 @@ according to the music in \\texttt{segmentos}.
                      (equal "7" (chord-7th chord))))
             (+ root (code->interval '(7 dim))))
            (t (+ root (code->interval '(7 min))))))))
-
-

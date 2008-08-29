@@ -127,10 +127,10 @@
 
 (defun get-commands-assoc :private ()
   (remove "common-flags" (mapcar #'first *commands*)))
-  
+
 (defun get-command-slots :private (command)
   (mapcar #'second (get-flag-assoc command)))
-  
+
 (defun get-flag-assoc :private (item)
   "Works for commands only"
   (get-item item *commands*))
@@ -151,4 +151,3 @@
                    (cl-ppcre:split "," file-or-range))
                   (t (search " " file-or-range)
                      (cl-ppcre:split " " file-or-range))))))
-

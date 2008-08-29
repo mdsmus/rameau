@@ -2,7 +2,7 @@
 (use-package :yacc)
 
 (yacc:define-parser *expression-parser*
-  (:start-symbol start)
+    (:start-symbol start)
   (:precedence ((:left note-expr notes-list notes expression-atom expression-list expression ignorable)))
   (:muffle-conflicts t)
   (:terminals (NEW-STAFF
@@ -44,20 +44,20 @@
 
   (start
    (lilypond #'identity))
-  
+
   (lilypond
    (expression #'parse-lilypond))
 
   (ignorable
    ()
    (ignorable-list))
-  
+
   (ignorable-list
    (IGNORE #'do-nothing)
    (paper #'do-nothing)
    (with #'do-nothing)
    (ignorable-list IGNORE #'parser-ign))
-  
+
   (lilypond-header
    (HEADER ignorable |{| expression |}|))
 
@@ -69,11 +69,11 @@
 
   (expression
    (ignorable expression-list ignorable #'return-second))
-  
+
   (expression-list
    ()
    (expression-atom ignorable expression-list #'parser-cons))
-  
+
   (expression-atom
    (lilypond-header #'do-nothing)
    (markup-expr #'do-nothing)
@@ -108,7 +108,7 @@
 
   (variable-block
    (VARIABLE #'parse-variable-block))
-   
+
   (music-block
    (|{| ignorable |}| #'do-nothing)
    (|{| expression |}| #'parse-music-block))
@@ -133,7 +133,7 @@
    (NEW-VOICE ignorable = ignorable STRING ignorable expression-atom #'parse-voice-block-string)
    (CONTEXT ignorable VOICE ignorable = ignorable VARNAME ignorable expression-atom #'parse-context-voice)
    (CONTEXT ignorable VOICE ignorable = ignorable STRING ignorable expression-atom #'parse-context-voice))
-  
+
   (relative-block
    (RELATIVE ignorable note-expr ignorable expression-atom #'parse-relative-block))
 
@@ -145,11 +145,11 @@
 
   (notes
    (ignorable notes-list ignorable #'return-second))
-  
+
   (notes-list
    ()
    (note-expr ignorable notes-list #'parser-cons))
-  
+
   (note-expr
    (NOTE octave-expr ignorable dur-expr  #'make-note)
    (SKIP ignorable dur-expr #'make-skip)
@@ -164,7 +164,6 @@
    (DUR #'parse-dur)
    (dur-expr PONTO #'parse-dur-ponto)
    (dur-expr MULTIPLICA #'parse-dur-multiplica))
-  
 
   (scheme-code
    (HASH ignorable scheme-sexp))
@@ -196,4 +195,4 @@
    MULTIPLICA
    =
    scheme-sexp)
-)
+  )

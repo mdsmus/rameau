@@ -77,11 +77,10 @@ equivalents that export symbols by default.")
            (export ',(intern (concatenate 'string (symbol-name name) "-P")))
            (export ',(intern (concatenate 'string "MAKE-" (symbol-name name))))
            (export ',(loop for slot in (rest args) collect
-                          (intern (concatenate 'string
-                                               (symbol-name name)
-                                               "-"
-                                               (symbol-name (if (listp slot)
-                                                                (first slot)
-                                                                slot))))))
+                           (intern (concatenate 'string
+                                                (symbol-name name)
+                                                "-"
+                                                (symbol-name (if (listp slot)
+                                                                 (first slot)
+                                                                 slot))))))
            (cl:defstruct ,@args)))))
-

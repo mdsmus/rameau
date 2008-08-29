@@ -1,5 +1,4 @@
 (in-package #:cl-user)
-
 (defpackage #:rameau
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:import-from #:alexandria "SWITCH" "FLATTEN")
@@ -47,9 +46,9 @@
 (enable-sharp-l-syntax)
 
 (defclass rameau-algorithm ()
-    ((name :accessor alg-name :initarg :name)
-     (tempered? :accessor alg-tempered? :initarg :tempered?)
-     (description :accessor alg-description :initarg :description)))
+  ((name :accessor alg-name :initarg :name)
+   (tempered? :accessor alg-tempered? :initarg :tempered?)
+   (description :accessor alg-description :initarg :description)))
 
 (defgeneric perform-analysis (segments options algorithm)
   (:documentation "Perform harmonic analysis"))
@@ -62,7 +61,7 @@
   (:documentation "Process algorithm-specific options"))
 
 (defmethod do-options ((algorithm rameau-algorithm) options))
-  
+
 (defparameter *algorithms* nil)
 
 (defun add-algorithm (alg)
@@ -78,7 +77,7 @@ Filter \\texttt{*algorithms*} so that only the ones specified in
   (if algoritmos
       (remove-duplicates
        (loop for alg in algoritmos
-          append (loop for i in *algorithms*
-                    when (> (count-subseq alg (string-downcase (alg-name i))) 0)
-                    collect i)))
-    *algorithms*))
+             append (loop for i in *algorithms*
+                          when (> (count-subseq alg (string-downcase (alg-name i))) 0)
+                          collect i)))
+      *algorithms*))

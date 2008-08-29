@@ -12,10 +12,10 @@
 (enable-sharp-l-syntax)
 
 (defparameter *attributes* (list
-                           (cons 'pitch1 (loop for i from 0 to 95 collect i))
-                           (cons 'pitch2 (loop for i from 0 to 95 collect i))
-                           (cons 'pitch3 (loop for i from 0 to 95 collect i))
-                           (cons 'pitch4 (loop for i from 0 to 95 collect i))
+                            (cons 'pitch1 (loop for i from 0 to 95 collect i))
+                            (cons 'pitch2 (loop for i from 0 to 95 collect i))
+                            (cons 'pitch3 (loop for i from 0 to 95 collect i))
+                            (cons 'pitch4 (loop for i from 0 to 95 collect i))
                             ))
 
 (defparameter *names* '(pitch1 pitch2 pitch3 pitch4))
@@ -23,20 +23,20 @@
 
 (defparameter *chords*
   (loop for modo in '("" "m" "+" "°" "ø" "!")
-     append
-       (loop for setima in '("" "7" "7-" "7+")
-          append
-            (loop for root from 0 to 95 collect
-                 (make-chord :root (print-note (code->notename root))
-                             :mode modo
-                             :7th setima)))))
+        append
+        (loop for setima in '("" "7" "7-" "7+")
+              append
+              (loop for root from 0 to 95 collect
+                    (make-chord :root (print-note (code->notename root))
+                                :mode modo
+                                :7th setima)))))
 
 (defparameter *chord-classes* (mapcar #'string->symbol (mapcar #'stringify (append (list '— 'al+6 'fr+6 'it+6)
                                                                                    *chords*))))
 
 (defun prepare-sonority (segmento)
   (loop for nota in segmento
-     for n in *names* collect (cons n (event-pitch nota))))
+        for n in *names* collect (cons n (event-pitch nota))))
 
 (defun extract-class (acorde)
   (if (and (chord-p acorde)
@@ -50,20 +50,19 @@
           (string->symbol "—")
           (string->symbol (stringify acorde)))))
 
-
 (defun prepare-training-sample (coral gabarito)
   (loop for s in coral
-     for g in gabarito
-     collect (make-example :name "foo"
-                           :class (extract-class g)
-                           :values (prepare-sonority s))))
+        for g in gabarito
+        collect (make-example :name "foo"
+                              :class (extract-class g)
+                              :values (prepare-sonority s))))
 
 (defun prepare-training-song (corais gabaritos)
-   (loop for c in corais
-      for g in gabaritos
-      nconc (loop for i in *notas-interessantes-tonal*
-               nconc (prepare-training-sample (transpose-segmentos c i)
-                                                        (transpose-chords g i)))))
+  (loop for c in corais
+        for g in gabaritos
+        nconc (loop for i in *notas-interessantes-tonal*
+                    nconc (prepare-training-sample (transpose-segmentos c i)
+                                                   (transpose-chords g i)))))
 
 (defun train-chord-tree (alg corais gabaritos)
   (setf (tree-tree alg)

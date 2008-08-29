@@ -1,5 +1,4 @@
 (in-package :rameau)
-
 ;;; As funções dependentes de implementação devem ficar aqui
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -7,8 +6,8 @@
 
 (defparameter *rameau-path*
   (format nil "~a" (or #+sbcl *default-pathname-defaults*
-		       #+cmu (first (ext:search-list "default:"))
-		       #+clisp (ext:default-directory))))
+                       #+cmu (first (ext:search-list "default:"))
+                       #+clisp (ext:default-directory))))
 
 (defun alg-file-name (alg)
   "The file name used to save an algorithm to disk."
@@ -40,16 +39,16 @@
 Profile all functions in \\texttt{Rameau}.
 "
   #+sbcl(progn
-         (setf sb-profile::*print-functions-not-called* nil)
-         (sb-profile:profile "RAMEAU")
-         (sb-profile:profile "RAMEAU-PARDO")
-				 (sb-profile:profile "RAMEAU-KNN")
-         (sb-profile:profile "RAMEAU-HMM")
-				 (sb-profile:profile "RAMEAU-NEURAL")
-         (sb-profile:profile "RAMEAU-TREE-ENARM")
-         (sb-profile:profile "RAMEAU-MAIN")
-         (sb-profile:profile "GENOSLIB")
-         )
+          (setf sb-profile::*print-functions-not-called* nil)
+          (sb-profile:profile "RAMEAU")
+          (sb-profile:profile "RAMEAU-PARDO")
+          (sb-profile:profile "RAMEAU-KNN")
+          (sb-profile:profile "RAMEAU-HMM")
+          (sb-profile:profile "RAMEAU-NEURAL")
+          (sb-profile:profile "RAMEAU-TREE-ENARM")
+          (sb-profile:profile "RAMEAU-MAIN")
+          (sb-profile:profile "GENOSLIB")
+          )
   #+cmu (progn
           (profile:profile-all :package "RAMEAU")
           (profile:profile-all :package "RAMEAU-PARDO")
@@ -84,12 +83,12 @@ Get environment variable \\texttt{string} from the environment.
 (defun rameau-get-font-path (font)
   "Find font \\texttt{font} in the font path."
   (let ((result))
-   (cl-fad:walk-directory #+linux "/usr/share/fonts/"
-			  #+windows "c:/windows/fonts/"
-			  (lambda (path) (push path result))
-			  :test (lambda (path) (search font (file-namestring path))))
+    (cl-fad:walk-directory #+linux "/usr/share/fonts/"
+                           #+windows "c:/windows/fonts/"
+                           (lambda (path) (push path result))
+                           :test (lambda (path) (search font (file-namestring path))))
 
-   (first result)))
+    (first result)))
 
 (defun remove-comma-if-needed (text)
   "[DONTCHECK]
@@ -100,7 +99,7 @@ case we a in a portuguese language environment. Needed for fann.
   (if (= 1 (count-subseq "pt" (getenv "LANG")))
       (substitute #\, #\. text)
       text))
-  
+
 (defun unicode-term (f)
   "[DONTCHECK]
 
@@ -122,7 +121,6 @@ Read and load definitions from a user-set configuration file in \\texttt{~/.rame
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
 (defparameter *lily-dir-list*
   '(("chorales" "music/chorales-bach/")
     ("kostka" "music/kostka-payne/")
@@ -137,9 +135,9 @@ Read and load definitions from a user-set configuration file in \\texttt{~/.rame
 (defun files-range (list)
   "All files in the range specified in \\texttt{list}."
   (loop for x from (parse-integer (first list)) to (parse-integer (second list))
-     collect (cond ((< x 10)  (format nil "00~a" x))
-                   ((< x 100) (format nil "0~a" x))
-                   (t (format nil "~a" x)))))
+        collect (cond ((< x 10)  (format nil "00~a" x))
+                      ((< x 100) (format nil "0~a" x))
+                      (t (format nil "~a" x)))))
 
 (defun parse-answer-sheet (file item)
   "Parse the answer sheet for song \\texttt{file}. [DONTCHECK]"
@@ -159,9 +157,9 @@ Read and load definitions from a user-set configuration file in \\texttt{~/.rame
   its name." 
   (search-string-in-list substring
                          (mapcar #'namestring
-                                (directory (format nil "~a/~a/*/"
-                                                   *rameau-path*
-                                                   dir)))))
+                                 (directory (format nil "~a/~a/*/"
+                                                    *rameau-path*
+                                                    dir)))))
 
 (defun new-parse-answer-sheet (file substring)
   "Find and parse the answer sheet for file \\texttt{file}, if exists."
@@ -198,14 +196,13 @@ Read and load definitions from a user-set configuration file in \\texttt{~/.rame
         (n (length segmento))
         (feature-list (repeat-list (get-module) 0)))
     (loop for nota in segmento
-       do (incf (nth nota feature-list) (/ 1 n)))
+          do (incf (nth nota feature-list) (/ 1 n)))
     feature-list))
 
 (defun extract-diff (segmento)
   "Extract the diff of a sonority."
   (let ((segmento (sorted segmento #'event-<)))
     (event-pitch (first segmento))))
-
 
 (defstruct analysis
   segments results answer-sheet file-name notes dur size-answer-sheet

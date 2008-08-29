@@ -63,7 +63,6 @@
             (cons (first list) (insert element (rest list) :key key :less less))))
       (list element)))
 
-
 ;;; Norvig's functions for debugging in PAIP, p. 124
 
 (defvar *dbg-ids* nil "identifiers used by dbg")
@@ -116,7 +115,7 @@
              (cons 'list
                    (loop for s in symbols unless (and (symbolp s)
                                                       (eql #\&  (aref (symbol-name s) 0)))
-                      collect (if (atom s) s (first s))))))
+                         collect (if (atom s) s (first s))))))
     (let ((cache (gensym)))
       `(let ((,cache (make-hash-table :test #'equal)))
          (defun ,funcname ,args
@@ -171,7 +170,6 @@
   (let ((*package* (find-package :rameau)))
     (intern (string-upcase string) :rameau)))
 
-
 (defun destringify (coisa)
   "Reverses the operation of stringify in a few interesting cases."
   (let ((*package* (find-package :rameau)))
@@ -218,7 +216,7 @@ returning two values: the string and the number of bytes read. [DONTCHECK]"
 (defun firstn (list n)
   "Return the first \\texttt{n} elements of \\texttt{list}, or \\texttt{n} nulls."
   (loop for i from 0 to (1- n) collect
-       (nth i list)))
+        (nth i list)))
 
 (defun repeat-list (n list)
   "Repeat \\texttt{n} times the element \\texttt{list}, forming a list."
@@ -234,9 +232,9 @@ returning two values: the string and the number of bytes read. [DONTCHECK]"
 (defun unzip (lista)
   "Transform the list of pairs \\texttt{lista} in a pair of lists."
   (loop for el in lista
-     nconc (list (first el)) into lista1
-     nconc (list (second el)) into lista2
-     finally (return (values lista1 lista2))))
+        nconc (list (first el)) into lista1
+        nconc (list (second el)) into lista2
+        finally (return (values lista1 lista2))))
 
 (defun get-item (item lista &optional (test #'equal))
   "Get item keyed by \\texttt{item} in alist \\texttt{lista}. It uses
@@ -333,8 +331,8 @@ null or 'erro."
   "The euclidian distance between lists \\texttt{a} and \\texttt{b}."
   (if (and a b)
       (loop for i in a
-         for j in b
-         sum (square (- i j)))
+            for j in b
+            sum (square (- i j)))
       most-positive-fixnum))
 
 (defun make-keyword (string)
@@ -346,22 +344,22 @@ null or 'erro."
   ;; tem um bug quando repete proxima flag imediatamente: (@a foo @a bar)
   ;; entra em loop recursivo
   (labels ((next-flag (list)
-	     (iter (for item in (rest list))
-		   (unless (consp item)
-		     (let ((x (if (stringp item)
-				  item
-				  (symbol-name item))))
-		       (if (and (< 0 (length x)) (equal char (aref x 0)))
-			   (return item))))))
+             (iter (for item in (rest list))
+                   (unless (consp item)
+                     (let ((x (if (stringp item)
+                                  item
+                                  (symbol-name item))))
+                       (if (and (< 0 (length x)) (equal char (aref x 0)))
+                           (return item))))))
            (pos (list flag)
-	     (let ((pos (position flag list :test #'equalp)))
-	       (aif pos pos 0))))
+             (let ((pos (position flag list :test #'equalp)))
+               (aif pos pos 0))))
     (when list
       (aif (next-flag list)
-	   (let ((p (pos list it)))
-	     (cons (subseq list 0 p)
-		   (sublist-of-args (nthcdr p list) char)))
-	   (list list)))))
+           (let ((p (pos list it)))
+             (cons (subseq list 0 p)
+                   (sublist-of-args (nthcdr p list) char)))
+           (list list)))))
 
 (defun argmax (function start end)
   "The maximum \\texttt{n} between \\texttt{start} and \\texttt{end}
@@ -383,4 +381,3 @@ null or 'erro."
         (+ zero
            (* one (/ value max)))
         zero)))
-

@@ -1,5 +1,4 @@
 (in-package #:rameau)
-
 (defparameter *filename* nil)
 (defparameter *dur* 0)
 (defparameter *environment* nil)
@@ -19,7 +18,7 @@
 ;; for spaces.
 
 (lexer:deflexer string-lexer
-  ("('|,)+" (return (values 'OCTAVE lexer:%0)))
+    ("('|,)+" (return (values 'OCTAVE lexer:%0)))
   ("(V|v)oice" (return (values 'VOICE lexer:%0)))
   ("((P|p)iano)?(S|s)taff" (return (values 'STAFF lexer:%0)))
   ("(S|s)core" (return (values 'SCORE lexer:%0)))
@@ -142,9 +141,9 @@
   "[DONTCHECK]"
   (when dur
     (dolist (i (butlast (remove-if #'null (expand-if-list chord))))
-        (setf (note-sequence-dur i) (node-dur dur))
-        (dolist (j (note-sequence-notas i))
-          (setf (event-dur j) (node-dur dur)))))
+      (setf (note-sequence-dur i) (node-dur dur))
+      (dolist (j (note-sequence-notas i))
+        (setf (event-dur j) (node-dur dur)))))
   (make-instance 'chord-lily :expr chord :text (list a chord b igno dur)))
 
 (defun parse-simultaneous :private (a simultaneous b)
@@ -264,14 +263,13 @@ Parse an empty duration.
                             (read-from-string file))
                     (read-from-string file)))))
     (make-note-sequence :notas notas
-                             :start 0
-                             :text-repr (list a b file)
-                             :dur (+ (event-start (last1 notas)) (event-dur (last1 notas))))))
+                        :start 0
+                        :text-repr (list a b file)
+                        :dur (+ (event-start (last1 notas)) (event-dur (last1 notas))))))
 
 (defun empty-octave :private ()
   "[DONTCHECK]"
   "")
-
 
 ;; Funçoes problematicas:
 
@@ -318,7 +316,7 @@ with the other ones.
 ;; Metodos para processar a ast
 
 (defgeneric correct-durations (tree) 
-    (:documentation "Acerta as durações das notas em uma música"))
+  (:documentation "Acerta as durações das notas em uma música"))
 
 (defmethod correct-durations ((tree ast-node))
   (correct-durations (node-expr tree))
@@ -403,7 +401,7 @@ with the other ones.
 
 (defmethod children ((node ast-node))
   (expand-if-list (node-expr node)))
-   
+
 (defmethod children ((node music-list))
   (cons (car (node-expr node)) (children (cdr (node-expr node)))))
 
@@ -421,14 +419,13 @@ with the other ones.
 (defmethod expand-if-list ((node music-list))
   (nconc (expand-if-list (car (node-expr node))) (expand-if-list (cdr (node-expr node)))))
 
-
 (defgeneric %get-children-by-type (node type)
   (:documentation "List the childs of \\textt{node} that are of type \\texttt{type}"))
 
 (defmethod %get-children-by-type ((node ast-node) type)
   (if (typep node type)
       (list node)
-    (%get-children-by-type (node-expr node) type)))
+      (%get-children-by-type (node-expr node) type)))
 
 (defmethod %get-children-by-type ((node list) type)
   (when node
@@ -444,7 +441,7 @@ with the other ones.
   "The child nodes of \\texttt{ast} having type \\texttt{type}."
   (if (and (listp ast) (numberp (car ast)))
       (remove-if #'null (flatten (%get-children-by-type (cdr ast) type)))
-    (remove-if #'null (flatten (%get-children-by-type ast type)))))
+      (remove-if #'null (flatten (%get-children-by-type ast type)))))
 
 (defgeneric process-ast (astnode)
   (:documentation "Process an AST node and extract the notes. [DONTCHECK]"))
@@ -484,9 +481,9 @@ with the other ones.
 (defmethod process-ast :around ((node voice))
   (let ((notes (sequence-expressions (call-next-method))))
     (loop for n in (note-sequence-notas notes)
-       do (setf (event-voice-name n) (voice-name node)))
+          do (setf (event-voice-name n) (voice-name node)))
     notes))
-    
+
 (defmethod process-ast ((node simultaneous))
   (merge-exprs (alexandria:flatten (process-trees (node-expr node)))))
 
@@ -523,7 +520,7 @@ with the other ones.
 (defun get-parsed-notes (ast)
   "Get the notes in the ast \\texttt{ast}."
   (let ((anacruz (first ast))
-         (ast (rest ast)))
+        (ast (rest ast)))
     (move-sequence (remove-if (lambda (x) (null (event-pitch x)))
                               (aif (sequence-expressions (alexandria:flatten (process-ast ast)))
                                    (note-sequence-notas it)
@@ -553,5 +550,3 @@ Parse lilypond file \\texttt{filename} as an ast.
     (let ((*filename* filename))
       (declare (special *filename*))
       (get-ast-string (file-string filename)))))
-
-

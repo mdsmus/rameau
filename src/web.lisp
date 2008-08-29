@@ -7,7 +7,6 @@
 
 (in-package :rameau-web)
 
-
 (enable-sharp-l-syntax)
 
 (setf *catch-errors-p* nil)
@@ -20,7 +19,7 @@
 
 (defmacro standard-page ((&key title) &body body)
   `(with-html-output-to-string (*standard-output* nil :prologue t :indent t)
-	   (:html :xmlns "http://www.w3.org/1999/xhtml"
+     (:html :xmlns "http://www.w3.org/1999/xhtml"
             :xml\:lang "en" 
             :lang "en"
             (:head 
@@ -33,14 +32,14 @@
              (:script :type "text/javascript" :src "/scripts.js")
              (:link :rel "stylesheet" :href "/style.css"))
             (:body :align "right"
-             (:div :id "title" :align "center"
-                   (:p (:h1 "Rameau - Automated Harmonic Analysis")))
-             (:div :id "main"
-                   (:div :id "nav"  :class "nav"
-                         (:p (:h2 (:a :href "/rameau/index.html" "Perform Analysis"))
-                             " | "
-                             (:h2 (:a :href "/rameau/results.htm" "Browse Results"))))
-                   (:div :id "content" :class "content" ,@body))))))
+                   (:div :id "title" :align "center"
+                         (:p (:h1 "Rameau - Automated Harmonic Analysis")))
+                   (:div :id "main"
+                         (:div :id "nav"  :class "nav"
+                               (:p (:h2 (:a :href "/rameau/index.html" "Perform Analysis"))
+                                   " | "
+                                   (:h2 (:a :href "/rameau/results.htm" "Browse Results"))))
+                         (:div :id "content" :class "content" ,@body))))))
 
 (defun an-form ()
   (with-html-output-to-string (*standard-output* nil :prologue t :indent t)
@@ -112,12 +111,11 @@
                  (:div :align "center"
                        (:a :href "javascript: void(0)" :onClick "toggle_visible(document.getElementById(\"algorithms\"));"
                            "Close")))
-            )))
-
+           )))
 
 (defun rameau-web ()
   (standard-page (:title "Rameau")
-    (str (an-form))))
+                 (str (an-form))))
 
 (push (create-prefix-dispatcher "/rameau/index.html" 'rameau-web) *dispatch-table*)
 
@@ -150,7 +148,6 @@
   (binary-file-string (concat *rameau-web-dir* "static/scripts.js")))
 
 (push (create-prefix-dispatcher "/scripts.js" 'javascript) *dispatch-table*)
-
 
 (defun make-md5 (string)
   (setf *data* string)
@@ -277,7 +274,7 @@ baixo = \\relative c {
                     (with-open-file (f full-path :direction :output :if-exists :supersede)
                       (format f "~a" code))
                     (analysis-lily options analysis))))
-                (redirect (format nil "/show-analysis?analysis=~a&chorale=~a" md5 (or (parameter "chorale") ""))))))))
+            (redirect (format nil "/show-analysis?analysis=~a&chorale=~a" md5 (or (parameter "chorale") ""))))))))
 
 (push (create-prefix-dispatcher "/analysis" 'do-analysis) *dispatch-table*)
 
@@ -302,42 +299,41 @@ baixo = \\relative c {
     (when anal
       (setf *data* (parameter "analysis"))
       (standard-page (:title "Analysis results")
-        (:center :class "results"
-                 (:h1 "Analysis results")
-                 (iter (for i from 0)
-                       (for file in (list-pngs md5))
-                       (htm (:img :src (format nil "/image?md5=~a&n=~a" md5 i))))
-                 (iter (for r in (analysis-results anal))
-                       (for a in (analysis-algorithms anal))
-                       (htm (:div :class "gabarito"
-                                  (:a :href "javascript: void(0);"
-                                      :onclick (format nil "toggle_visible(document.getElementById(\"~a\"));"
-                                                       (alg-name a))
-                                      (fmt "Gabarito de ~a" (alg-name a)))
-                                  (:div :class "inv"
-                                        :id (alg-name a)
-                                        (fmt "~{~a ~}" r))))))))))
-
+                     (:center :class "results"
+                              (:h1 "Analysis results")
+                              (iter (for i from 0)
+                                    (for file in (list-pngs md5))
+                                    (htm (:img :src (format nil "/image?md5=~a&n=~a" md5 i))))
+                              (iter (for r in (analysis-results anal))
+                                    (for a in (analysis-algorithms anal))
+                                    (htm (:div :class "gabarito"
+                                               (:a :href "javascript: void(0);"
+                                                   :onclick (format nil "toggle_visible(document.getElementById(\"~a\"));"
+                                                                    (alg-name a))
+                                                   (fmt "Gabarito de ~a" (alg-name a)))
+                                               (:div :class "inv"
+                                                     :id (alg-name a)
+                                                     (fmt "~{~a ~}" r))))))))))
 
 (push (create-prefix-dispatcher "/show-analysis" 'show-analysis) *dispatch-table*)
 
 (defun show-results ()
   (standard-page (:title "Browse Results")
-    (:div :class "browse-results"
-          (iter (for (k v) in-hashtable *results*)
-                (htm (:div :align "right" :class "cache" 
-                           (:div :align "center" (str (analysis-title v)))
-                           (:p :style "float:center"
-                               (:a :href (format nil "/show-analysis?analysis=~a"  k)
-                                   "View"))
-                           (:p :style "float:right"
-                               (:a :href (format nil "/rameau/clear-cache?page=~a" k)
-                                   "Clear from cache"))
-                           (:p :style "clear: both;" :align "center"
-                               (:b "Algorithms:")
-                               (iter (for alg in (analysis-algorithms v))
-                                     (htm (:i (str (alg-name alg)))))))))
-          (:div :style "clear: center"))))
+                 (:div :class "browse-results"
+                       (iter (for (k v) in-hashtable *results*)
+                             (htm (:div :align "right" :class "cache" 
+                                        (:div :align "center" (str (analysis-title v)))
+                                        (:p :style "float:center"
+                                            (:a :href (format nil "/show-analysis?analysis=~a"  k)
+                                                "View"))
+                                        (:p :style "float:right"
+                                            (:a :href (format nil "/rameau/clear-cache?page=~a" k)
+                                                "Clear from cache"))
+                                        (:p :style "clear: both;" :align "center"
+                                            (:b "Algorithms:")
+                                            (iter (for alg in (analysis-algorithms v))
+                                                  (htm (:i (str (alg-name alg)))))))))
+                       (:div :style "clear: center"))))
 
 (push (create-prefix-dispatcher "/rameau/results.htm" 'show-results) *dispatch-table*)
 
@@ -349,8 +345,6 @@ baixo = \\relative c {
     (redirect "/rameau/results.htm")))
 
 (push (create-prefix-dispatcher "/rameau/clear-cache" 'clear-cache) *dispatch-table*)
-
-
 
 (defun start-rameau-web (port)
   "Start the web server for \\texttt{rameau}."

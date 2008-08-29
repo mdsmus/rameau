@@ -47,9 +47,9 @@
   (let ((notes (cl-ppcre:split #\Space
                                (clean (get-block name (file-string file))))))
     (loop
-       for note in notes
-       for n = (parse-note note)
-       when (consp n) collect n)))
+          for note in notes
+          for n = (parse-note note)
+          when (consp n) collect n)))
 
 (defun toca-nota (nota-list)
   (flet ((play (nota)
@@ -74,13 +74,13 @@
   (let ((string"~a/music/chorales-bach/~a.ly"))
     (format t "~a~%"
             (loop
-               for nota in
-                 (subseq (get-notes voz (format nil string *rameau-path* coral))
-                         de
-                         ate)
-               collect nota
-               do (toca-nota nota)))))
-  
+                  for nota in
+                  (subseq (get-notes voz (format nil string *rameau-path* coral))
+                          de
+                          ate)
+                  collect nota
+                  do (toca-nota nota)))))
+
 (defun main ()
   (if (< (length sb-ext:*posix-argv*) 3)
       (format t "USO: checa-notas <voz> <coral> [de] [ate]")

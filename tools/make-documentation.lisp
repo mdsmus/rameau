@@ -7,5 +7,5 @@
                      get-flat get-interval-name get-interval-quantity
                      )))
     (loop for function in functions do
-         (format stream "\\function{~(~a~)}" function)
-         (format stream "{~a}~%~%" (clean-up (documentation function 'function))))))
+          (format stream "\\function{~(~a~)}" function)
+          (format stream "{~a}~%~%" (clean-up (documentation function 'function))))))

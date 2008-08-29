@@ -1,4 +1,4 @@
-; Main
+                                        ; Main
 ;;; Define rameau-main package
 (defpackage :rameau-main
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
@@ -18,7 +18,7 @@
   `(progn
      (push (string-downcase (symbol-name ',name)) *command-names*)
      (defun ,name ,args
-     ,@body)))
+       ,@body)))
 
 (defun %string->symbol (string &optional (package #+sbcl(sb-int:sane-package) #-sbcl *package*))
   (intern (string-upcase string) package))
@@ -53,21 +53,21 @@ Please check with lilypond to see if it is valid. If it is, please report a bug.
   (setf (arg :algorithms options) (mapcar #'load-alg (filter-algorithms (arg :algorithms options)))
         (arg :options options) (process-option-list (arg :options options)))
   (let ((analysis (handler-case (loop
-                                   for file in (arg :files options)
-                                   for segments = (sonorities (main-parse-file file))
-                                   collect
-                                     (make-analysis
-                                      :segments segments
-                                      :results (mapcar #L(main-perform-analysis segments options !1)
-                                                       (arg :algorithms options))
-                                      :answer-sheet (path-parse-answer-sheet file)
-                                      :file-name (pathname-name file)
-                                      :number-algorithms (length (arg :algorithms options))
-                                      :algorithms (arg :algorithms options)
-                                      :notes (mapcar #'list-events segments)
-                                      :ast (file-ast file)
-                                      :full-path file
-                                      :dur (durations segments)))
+                                      for file in (arg :files options)
+                                      for segments = (sonorities (main-parse-file file))
+                                      collect
+                                      (make-analysis
+                                       :segments segments
+                                       :results (mapcar #L(main-perform-analysis segments options !1)
+                                                        (arg :algorithms options))
+                                       :answer-sheet (path-parse-answer-sheet file)
+                                       :file-name (pathname-name file)
+                                       :number-algorithms (length (arg :algorithms options))
+                                       :algorithms (arg :algorithms options)
+                                       :notes (mapcar #'list-events segments)
+                                       :ast (file-ast file)
+                                       :full-path file
+                                       :dur (durations segments)))
                     (error () (list (make-analysis :segments (list nil)))))))
     (when (every #'null (mapcar #'analysis-segments analysis))
       (format t "ERROR: Couldn't analyse. Did you specify the files and the algorithms?
@@ -77,11 +77,11 @@ If you did, we have a bug, so please report.~%")
 
 ;;; Print messages
 (defun print-help :private ()
-   (iter (for (key value) in *commands*)
-      (format t "~%~:@(* ~a~)~%" (substitute #\Space #\- key :test #'equal))
-      (iter (for (short long help) in value)
-            (format t "~4T~4a--~25a ~a~%" short long (remove #\Newline help))))
-   (rameau-quit))
+  (iter (for (key value) in *commands*)
+        (format t "~%~:@(* ~a~)~%" (substitute #\Space #\- key :test #'equal))
+        (iter (for (short long help) in value)
+              (format t "~4T~4a--~25a ~a~%" short long (remove #\Newline help))))
+  (rameau-quit))
 
 (defun print-warning :private (message)
   (format t "~&WARNING: ~a~%" message))
@@ -177,8 +177,6 @@ If you did, we have a bug, so please report.~%")
            (print-hline-term size-line)
            (format t "~%")))))
 
-
-
 (defun analysis-terminal-no-answer :private (options analysis)
   (let* ((number-algorithms (analysis-number-algorithms analysis))
          (size-line (hline-size number-algorithms options 'no-answer)))
@@ -258,10 +256,10 @@ If you did, we have a bug, so please report.~%")
         (collect (list chord segment (analysis-file-name anal) i))))
 
 (defun all-chords :private (options analysis)
-	(iter (for anal in analysis)
-				(nconcing
-						(append '(nil nil nil nil nil)
-										(all-chords-single options anal)))))
+  (iter (for anal in analysis)
+        (nconcing
+         (append '(nil nil nil nil nil)
+                 (all-chords-single options anal)))))
 
 (defun root-pitch :private (chord)
   (parse-note (chord-root chord)))
@@ -377,15 +375,14 @@ If you did, we have a bug, so please report.~%")
             (cairo-brighten-source red green blue)
             (cl-cairo2:fill-path)))))
 
-
 (defcommand cadences (options)
   (let ((analysis (analyse-files options))
         (cadences (make-hash-table :test #'equal))
         (last-cadences (make-hash-table :test #'equal)))
     (iter (for anal in analysis)
           (let ((prep (prepare-cadence options
-                                      anal
-                                      (arg :cadence-number options))))
+                                       anal
+                                       (arg :cadence-number options))))
             (iter (for chords in prep)
                   (add-to-cadence-hash cadences (mapcar #'first chords) (third (first chords)) (fourth (first chords))))
             (add-to-cadence-hash last-cadences (mapcar #'first (last1 prep)) (third (first (last1 prep))) "end")))
@@ -413,7 +410,7 @@ If you did, we have a bug, so please report.~%")
                                            (- (absolute-pitch nota2) (absolute-pitch nota3))))
                            (sinal (and diferenca (if (< diferenca 0) "+" "-")))
                            (intervalo (and diferenca (interval->code (module diferenca)))))
-                    
+
                       (when intervalo
                         (with-open-file (f (concat *rameau-path* (format nil "analysis/seventh-~a-~a.ly"
                                                                          (third chord)
@@ -482,9 +479,6 @@ If you did, we have a bug, so please report.~%")
                              (setf (gethash (equivalent-pitch re) pitch-colors) (cairo-random-stroke-fill-colors)))
                         (cl-cairo2:move-to 400 (- cur-h 5))
                         (cl-cairo2:show-text cho)))))))
-            
-      
-        
 
 (defcommand jumps (options)
   (let ((jumps (make-hash-table :test #'equal))
@@ -493,12 +487,12 @@ If you did, we have a bug, so please report.~%")
           (let ((notes (parse-file (analysis-full-path anal)))
                 (voices nil))
             (iter (for note in notes)
-                (setf voices (union voices (list (event-voice-name note)))))
+                  (setf voices (union voices (list (event-voice-name note)))))
             (iter (for voice in voices)
                   (let* ((ns (iter (for note in notes)
                                    (if (equal (event-voice-name note) voice)
                                        (collect note))))
-                       (total (length ns)))
+                         (total (length ns)))
                     (iter (for n in ns)
                           (for i from 0)
                           (for p previous n)
@@ -554,7 +548,6 @@ If you did, we have a bug, so please report.~%")
                             (+ 3 (event-octave max)))
                     ))))))
 
-
 (defun print-report-ambito :private (notes min max segs chorale voice options)
   (iter (for next in notes)
         (for segno from 0)
@@ -573,9 +566,9 @@ If you did, we have a bug, so please report.~%")
                                                            chorale
                                                            voice
                                                            segno))
-                                         :direction :output
-                                         :if-exists :supersede)
-                        (format f "~a" (make-lily-segments options (list pseg seg nseg)))))))
+                             :direction :output
+                             :if-exists :supersede)
+            (format f "~a" (make-lily-segments options (list pseg seg nseg)))))))
 
 (defcommand kostka-amb (options)
   (iter (for anal in (analyse-files options))
@@ -598,8 +591,8 @@ If you did, we have a bug, so please report.~%")
 
 (defun repeated-notes :private (segmento)
   (/= 4 (length (remove-duplicates (sorted segmento #'event-<)
-                                  :test #'equal
-                                  :key #L(cons (event-pitch !1) (event-octave !1))))))
+                                   :test #'equal
+                                   :key #L(cons (event-pitch !1) (event-octave !1))))))
 
 (defcommand cruzamento (options)
   (iter (for anal in (analyse-files options))
@@ -659,9 +652,9 @@ If you did, we have a bug, so please report.~%")
                        (f1 (find-if #L(equal (event-voice-name !1) v1) n))
                        (f2 (find-if #L(equal (event-voice-name !1) v2) n))
                        (d1 (when f1 (- (event-pitch f1)
-                                      (event-pitch n1))))
+                                       (event-pitch n1))))
                        (d2 (when f2 (- (event-pitch f2)
-                                      (event-pitch n2)))))
+                                       (event-pitch n2)))))
                   (when (and f1 f2 (= d1 d2) (not (= d1 0)))
                     (unless strong
                       (with-open-file (f (concat *rameau-path* (format nil "analysis/parallel-~a-~a-~a.ly"
@@ -708,26 +701,26 @@ If you did, we have a bug, so please report.~%")
                                                            (analysis-file-name anal)
                                                            ini
                                                            fim))
-                                         :direction :output
-                                         :if-exists :supersede)
-                        (format f "~a"
-                                (make-lily-segments
-                                 options
-                                 (remove-if #'null (firstn (nthcdr ini (analysis-segments anal))
-                                                           (min (- fim ini) (length (analysis-segments anal))))))))
+                             :direction :output
+                             :if-exists :supersede)
+            (format f "~a"
+                    (make-lily-segments
+                     options
+                     (remove-if #'null (firstn (nthcdr ini (analysis-segments anal))
+                                               (min (- fim ini) (length (analysis-segments anal))))))))
           (iter (for seg in (analysis-segments anal))
                 (for i from 0)
                 (when (<= ini i fim)
-                    (let ((s (sorted seg #'event-<)))
-                      (format t "   ~3a ~3a      "
-                              i
-                              (event-dur (first seg)))
-                      (iter (for note in s)
-                            (format t "~9a ~2a~2a, "
-                                    (event-voice-name note)
-                                    (print-event-note note)
-                                    (event-octave note)))
-                      (format t "~%")))))))
+                  (let ((s (sorted seg #'event-<)))
+                    (format t "   ~3a ~3a      "
+                            i
+                            (event-dur (first seg)))
+                    (iter (for note in s)
+                          (format t "~9a ~2a~2a, "
+                                  (event-voice-name note)
+                                  (print-event-note note)
+                                  (event-octave note)))
+                    (format t "~%")))))))
 
 (defun answer->mode (answer)
   (cond ((chord-p answer) (list :chord
@@ -736,7 +729,6 @@ If you did, we have a bug, so please report.~%")
         ((melodic-note-p answer) (list :non-chord-tone))
         ((augmented-sixth-p answer) (list :aug6 (make-keyword (augmented-sixth-type answer))))
         (t nil)))
-
 
 (defun make-precision-table (f name func algorithms answer correct obtained modes)
   (format f "\\begin{table}~%\\begin{center}~%\\begin{tabular}{r|~{~a~^|~}}~%"
@@ -809,7 +801,7 @@ If you did, we have a bug, so please report.~%")
 (defun f-measure (m re right ob)
   (sqrt (* (precision m re right ob)
            (recall    m re right ob))))
-      
+
 (defcommand report (options)
   (let* ((analysis (analyse-files options))
          (algorithms (analysis-algorithms (first analysis)))
@@ -834,16 +826,16 @@ If you did, we have a bug, so please report.~%")
                       (for ga in (analysis-answer-sheet anal))
                       (let ((ga (if (listp ga) (first ga) ga)))
                         (incf (gethash (answer->mode ga)
-                                         co
-                                         0))
+                                       co
+                                       0))
                         (setf (gethash (answer->mode an) modes) t
                               (gethash (answer->mode ga) modes) t)
                         (incf (gethash (list (answer->mode an) (answer->mode ga)) m 0))
                         (if  (rameau::%compare-answer-sheet an ga)
-                          (incf (gethash (answer->mode an) right 0))
-                          (progn
-                            (incf (gethash (answer->mode ga) re 0))
-                            (incf (gethash (answer->mode an) ob 0))))))))
+                             (incf (gethash (answer->mode an) right 0))
+                             (progn
+                               (incf (gethash (answer->mode ga) re 0))
+                               (incf (gethash (answer->mode an) ob 0))))))))
     (format t "Done counting...~%")
     (setf modes (iter (for (mode va) in-hashtable modes) (collect mode)))
     (build-confusion-matrixes confusion-matrix countings matrixes modes)
@@ -860,7 +852,6 @@ If you did, we have a bug, so please report.~%")
 \\usepackage{times}
 \\usepackage{color}
 \\usepackage[displaymath,textmath,sections,graphics,floats,auctex]{preview}
-
 
 \\title{Tabelas de resultados do Rameau}
 \\author{Rameau}
@@ -916,9 +907,9 @@ If you did, we have a bug, so please report.~%")
   (declare (ignore ignore options))
 
   (let ((port (arg :port options)))
-   (format t "Starting rameau web on port ~a.~%" port)
-   (write-line "Open http://localhost:4242/rameau/index.html on your browser")
-   (rameau-web::start-rameau-web port))
+    (format t "Starting rameau web on port ~a.~%" port)
+    (write-line "Open http://localhost:4242/rameau/index.html on your browser")
+    (rameau-web::start-rameau-web port))
   (loop))
 
 (defcommand document (options &rest ignore)
@@ -936,8 +927,7 @@ If you did, we have a bug, so please report.~%")
                             :rameau-knn
                             :rameau-tree-enarm
                             :rameau-pardo
-                             ))
-                            
+                            ))
 
 ;;; Main
 (defun split-command-list :private (command-list)
@@ -950,22 +940,22 @@ If you did, we have a bug, so please report.~%")
 (defun parse-options :private (command list)
   "Parse the list of options to a structure."
   (loop for item in (sublist-of-args list #\-) collect
-       (destructuring-bind (flag &rest value) item
-         (list (cond ((long-flag? flag)
-                      (make-keyword (get-long-flag-name command flag)))
-                     ((short-flag? flag)
-                      (make-keyword (get-short-flag-name command flag))))
-               (if value
-                   (let ((type (cond ((long-flag? flag)
-                                      ;; FIXME: that's ugly
-                                      (get-type-by-name command (remove #\- flag :count 2)))
-                                     ((short-flag? flag)
-                                      (get-type-by-flag command flag)))))
-                     (case type
-                       (type-list value)
-                       (type-integer (parse-integer (first value)))
-                       (t (first value))))
-                   t)))))
+        (destructuring-bind (flag &rest value) item
+          (list (cond ((long-flag? flag)
+                       (make-keyword (get-long-flag-name command flag)))
+                      ((short-flag? flag)
+                       (make-keyword (get-short-flag-name command flag))))
+                (if value
+                    (let ((type (cond ((long-flag? flag)
+                                       ;; FIXME: that's ugly
+                                       (get-type-by-name command (remove #\- flag :count 2)))
+                                      ((short-flag? flag)
+                                       (get-type-by-flag command flag)))))
+                      (case type
+                        (type-list value)
+                        (type-integer (parse-integer (first value)))
+                        (t (first value))))
+                    t)))))
 
 (defun process-option-list :private (options)
   (iter (for op in options)
@@ -973,12 +963,11 @@ If you did, we have a bug, so please report.~%")
              (collect (list (make-keyword (subseq op 0 it)) (read-from-string (subseq op (1+ it) (length op)))))
              (collect (list (make-keyword op) t)))))
 
-
 (defun parse-files :private (options)
   (loop for file in (arg :files options) append
-       (if (search "/" file)
-           (list file)
-           (parse-file-name file options))))
+        (if (search "/" file)
+            (list file)
+            (parse-file-name file options))))
 
 (defun print-about ()
   (macrolet ((get-info (info)
@@ -1036,11 +1025,11 @@ If you did, we have a bug, so please report.~%")
               (when (arg :profile options)
                 (rameau-report)))
         ;;(dbg 'main "~a" (print-slots options))
-        
+
         (print-help)))
   #+clisp(ext:exit)
   0)
 (format t "Algorithms: ~a~%" (mapcar #'alg-name *algorithms*))
 (main "algorithms -o train -a net -f chor:1..6 exa:11..13 exa:23..28")
 (main "algorithms -o train -a hmm tree bay knn -f chor:1..10 exa:11..13 exa:23..28 chor:12 chor:14 chor:17..33 ")
-;(trace module genoslib::get-system-module)
+                                        ;(trace module genoslib::get-system-module)

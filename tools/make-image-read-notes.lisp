@@ -1,5 +1,4 @@
 #+(or sbcl ecl) (require 'asdf)
-
 (defparameter *packages* '("cl-fad-0.6.0"
                            "cl-ppcre-1.3.2"
                            "lisp-unit"))
@@ -9,7 +8,7 @@
 
 (when *use-rameau-deps*
   (loop for p in *packages* do
-       (push (concatenate 'string (main-path) "rameau-deps/" p "/") asdf:*central-registry*)))
+        (push (concatenate 'string (main-path) "rameau-deps/" p "/") asdf:*central-registry*)))
 
 (mapcar #'require '(cl-ppcre cl-fad))
 (load "tools/read-notes.lisp")

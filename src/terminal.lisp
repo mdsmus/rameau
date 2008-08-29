@@ -81,4 +81,3 @@
 
 (defun print-hline-term (size)
   (format t "~&~a" (repeat-string size "-")))
-

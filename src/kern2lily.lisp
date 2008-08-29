@@ -11,10 +11,10 @@
 (defun read-kern-file (file)
   (with-open-file (f file :direction :input)
     (loop for line = (read-line f nil)
-       while line append
-         (if (plusp (length line))
-             (unless (char-equal (char line 0) #\!)
-               (cl-ppcre:split #\Tab line))))))
+          while line append
+          (if (plusp (length line))
+              (unless (char-equal (char line 0) #\!)
+                (cl-ppcre:split #\Tab line))))))
 
 (defun delete-all (itens string)
   (if (null itens)
@@ -58,26 +58,25 @@
         ((and (search "M" string) (not (search "MM" string))) (concat "\\time " (subseq string 2)))
         (t "")))
 
-
 ;; por enquanto ignora sinais de repetição
 (defun gera-lily ()
   (with-open-file (stream "/tmp/da.ly" :direction :output :if-exists :supersede)
     (format stream "{~%")
     (let (primeiro-compasso dur)
       (loop
-         for x in (read-kern-file file)
-         for s = (char x 0) do
-           (cond ((equal s #\*) (format stream "~a ~%" (processa-asterisco x)))
-                 ((or (equal x "=1") (equal x "=1-"))
-                  (setf primeiro-compasso t))
-                 ((equal s #\=) (format stream "~%"))
-                 (t (if primeiro-compasso
-                        (multiple-value-bind (s d) (kern-to-list x dur)
-                          (format stream "~a " s)
-                          (setf dur d))
-                        (multiple-value-bind (s d) (kern-to-list x dur)
-                          (format stream "\\partial ~a ~a~%" d s)))))))
-       (format stream "}~%") ))
+            for x in (read-kern-file file)
+            for s = (char x 0) do
+            (cond ((equal s #\*) (format stream "~a ~%" (processa-asterisco x)))
+                  ((or (equal x "=1") (equal x "=1-"))
+                   (setf primeiro-compasso t))
+                  ((equal s #\=) (format stream "~%"))
+                  (t (if primeiro-compasso
+                         (multiple-value-bind (s d) (kern-to-list x dur)
+                           (format stream "~a " s)
+                           (setf dur d))
+                         (multiple-value-bind (s d) (kern-to-list x dur)
+                           (format stream "\\partial ~a ~a~%" d s)))))))
+    (format stream "}~%") ))
 ;; =:|!|:
 ;; ==:|!
 ;; *-

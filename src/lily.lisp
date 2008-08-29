@@ -3,7 +3,7 @@
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
   (:use :rameau :cl :cl-ppcre :lisp-unit :iterate :rameau-options  :genoslib :fann :rameau-neural)
   (:documentation "Code to generate lilypond files from \\texttt{rameau}'s output."
-   ))
+                  ))
 
 (in-package :rameau-lily)
 
@@ -29,19 +29,18 @@
       (- (event-start (first s2))
          (event-end (first s1)))))
 
-
 (defun make-lily-sonorities :private (notes)
   (make-variable "sonorities" 
                  (concat " \\lyricmode {
  \\set Stanza = \"Sonority\""
                          (make-lily-list
                           (loop for x from 1
-                             for s = notes then (rest s)
-                             unless s return res
-                             collect (format nil "\"~a\" " x) into res))
-                             ;unless (= 0 (intervalo (first s) (second s)))
-                             ;collect "\" \" " into res))
-                               
+                                for s = notes then (rest s)
+                                unless s return res
+                                collect (format nil "\"~a\" " x) into res))
+                                        ;unless (= 0 (intervalo (first s) (second s)))
+                                        ;collect "\" \" " into res))
+
                          "}")))
 
 (defun frac->dur-lily :private (dur)
@@ -54,10 +53,10 @@
 
 (defun print-duracoes :private (segmento)
   (values (loop for s = segmento then (rest s)
-            unless s return res
-            collect (concat "c" (frac->dur-lily (event-dur (first (first s))))) into res
-            unless (= 0 (intervalo (first s) (second s)))
-            collect (concat "r" (frac->dur-lily (intervalo (first s) (second s)))) into res)
+                unless s return res
+                collect (concat "c" (frac->dur-lily (event-dur (first (first s))))) into res
+                unless (= 0 (intervalo (first s) (second s)))
+                collect (concat "r" (frac->dur-lily (intervalo (first s) (second s)))) into res)
           (when (< 0 (event-start (first (first segmento))))
             (let ((n (frac->dur-lily (abs (event-start (first (first segmento)))))))
               (if (listp n)
@@ -66,10 +65,10 @@
 
 (defun make-devnull-var :private (sonorities)
   (multiple-value-bind (durs first-rest) (print-duracoes sonorities)
-        (make-variable "texto"
-                       (if first-rest
-                           (format nil "{~{s~a ~} ~{~a ~}}~%~%" first-rest durs)
-                           (format nil "{~{~a ~}}~%~%" durs)))))
+    (make-variable "texto"
+                   (if first-rest
+                       (format nil "{~{s~a ~} ~{~a ~}}~%~%" first-rest durs)
+                       (format nil "{~{~a ~}}~%~%" durs)))))
 
 (defun make-devnull-voice :private ()
   "\\new Devnull = \"nowhere\" \\texto")
@@ -79,25 +78,25 @@
                  (concat " \\lyricmode {
  \\set stanza = \""
                          (substitute #\Space #\- name)
-           "\"
+                         "\"
 "
-           (make-lily-list
-            (loop for al in analysis
-               for ans =  answer then (rest ans)
-               for an = (first ans)
-               collect (if (or (null answer) (compare-answer-sheet al an))
-                           (concat "\"" (format nil "~a" al) "\"")
-                           (if (arg :no-color options)
-                               (concat "\\markup { \\roman \\italic \\bold \""
-                                       (format nil "~a" al)
-                                       "\"}")
-                               (concat "\\markup { \\roman \\italic \\bold \\with-color #(x11-color '"
-                                       (substitute #\Space #\- (arg :wrong-answer-color options))
-                                       ") "
-                                       "\""
-                                       (format nil "~a" al)
-                                       "\"}")))))
-           "}
+                         (make-lily-list
+                          (loop for al in analysis
+                                for ans =  answer then (rest ans)
+                                for an = (first ans)
+                                collect (if (or (null answer) (compare-answer-sheet al an))
+                                            (concat "\"" (format nil "~a" al) "\"")
+                                            (if (arg :no-color options)
+                                                (concat "\\markup { \\roman \\italic \\bold \""
+                                                        (format nil "~a" al)
+                                                        "\"}")
+                                                (concat "\\markup { \\roman \\italic \\bold \\with-color #(x11-color '"
+                                                        (substitute #\Space #\- (arg :wrong-answer-color options))
+                                                        ") "
+                                                        "\""
+                                                        (format nil "~a" al)
+                                                        "\"}")))))
+                         "}
 ")))
 
 (defun make-answer-sheet :private (answer)
@@ -108,8 +107,6 @@
                          "}
 
 ")))
-
-
 
 (defun make-note-list :private (notes)
   (let (notelist
@@ -168,7 +165,6 @@
   \\midi {}
 }
 
-
  \\paper {
   paper-width = ~a\\cm
   paper-height = ~a\\cm
@@ -189,7 +185,6 @@
             baixos
             (arg :paper-width options)
             (arg :paper-height options))))
-
 
 (defun analysis-lily (options analysis)
   (let* ((ast (analysis-ast analysis))
@@ -230,7 +225,7 @@
 }
 ")))
     (let* ((result-dir (concat *rameau-path* "/analysis/"))
-	   (result-file (make-pathname :directory result-dir
+           (result-file (make-pathname :directory result-dir
                                        :name (concat "analysis-" (pathname-name (analysis-full-path analysis)))
                                        :type (pathname-type (analysis-full-path analysis))))
            (ps-file (make-pathname :directory result-dir
@@ -240,12 +235,12 @@
       (with-open-file (f result-file :direction :output :if-exists :supersede)
         (format f "~a" (print-ast (cdr ast))))
       (when (or (arg :lily options) (arg :view-score options))
-	#+sbcl (progn
-		 (sb-posix:chdir result-dir)
-		 (sb-ext:run-program "/usr/bin/lilypond" (list "-f"
-							       "ps"
-							       (when (arg :png options) "--png")
-							       (file-namestring result-file)))))
+        #+sbcl (progn
+                 (sb-posix:chdir result-dir)
+                 (sb-ext:run-program "/usr/bin/lilypond" (list "-f"
+                                                               "ps"
+                                                               (when (arg :png options) "--png")
+                                                               (file-namestring result-file)))))
       (when (or (arg :gv options) (arg :view-score options))
-	#+sbcl (sb-ext:run-program "/usr/bin/gv" (list (file-namestring ps-file))))
+        #+sbcl (sb-ext:run-program "/usr/bin/gv" (list (file-namestring ps-file))))
       )))

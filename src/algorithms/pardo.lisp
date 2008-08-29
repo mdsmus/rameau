@@ -60,13 +60,13 @@
 (defun final-score (template sonority nota)
   (let ((note-symb (string->symbol (print-note nota 'latin))))
     (make-pardo-grade :root note-symb
-                     :template template
-                     :result (score-template
-                                 (set-transpose
-                                  template
-                                  (notename->code nota))
-                                 sonority)
-                     :sonority sonority)))
+                      :template template
+                      :result (score-template
+                               (set-transpose
+                                template
+                                (notename->code nota))
+                               sonority)
+                      :sonority sonority)))
 
 (defun score-sonority-notes (template sonority notas)
   (loop for nota in notas collect (final-score template sonority nota)))
@@ -76,7 +76,6 @@
          (weight (assoc-item (parse-note root-note)
                              (pardo-grade-sonority res))))
     (or weight 0)))
-
 
 (defun template-prob (nota)
   (let ((template (rest (pardo-grade-answer nota))))
@@ -99,7 +98,7 @@
     (or (find-if
          (lambda (x)
            (equal nota (stringify (pardo-grade-root x))))
-              sonority)
+         sonority)
         (first sonority))))
 
 (defun tie-break (sonority resto)
@@ -116,30 +115,28 @@
                    (car max-root)))))
      resto)))
 
-
-
 (defun score-sonority (template sonority)
   "Gera as notas de um sonority comparado com todas as transposições de
    um template."
   (let ((results
          (mostn (lambda (x)
-                          (pardo-grade-result x))
-                        (score-sonority-notes (second template)
-                                               sonority
-                                               (mapcar #'code->notename *notas-interessantes-tonal*)))))
+                  (pardo-grade-result x))
+                (score-sonority-notes (second template)
+                                      sonority
+                                      (mapcar #'code->notename *notas-interessantes-tonal*)))))
     (dolist (r results)
       (setf (pardo-grade-answer r) (cons (stringify (pardo-grade-root r))
-                                          (first template))))
+                                         (first template))))
     results))
 
 (defun pardo (sonority &optional (templates *pardo-templates*))
   (mostn (lambda (x) (pardo-grade-result x))
-                 (reduce #'append
-                         (mapcar
-                          (lambda (x) (score-sonority
-                                       x
-                                       (segment-to-template sonority)))
-                          templates))))
+         (reduce #'append
+                 (mapcar
+                  (lambda (x) (score-sonority
+                               x
+                               (segment-to-template sonority)))
+                  templates))))
 
 (defun augmented-sixth-template? (template)
   (let ((modo (second template)))
