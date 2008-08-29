@@ -32,7 +32,12 @@
 ** spacing
    Use just one blank line between each function definition. There is
    no need to use more space to guide the code. Use things in emacs
-   like code navigation, outlining, and narrowing.
+   like code navigation, outlining, and narrowing. One of us is
+   intolerant to spaces and freak out if there are more spaces or
+   blank lines than necessary.
+** package names
+   The name of packages should be simple and short. Please, don't use
+   java-style foo.bar.bla.org package names.
 ** documentation and tests cases
    You don't write code just for yourself, it will be read long after
    you wrote it by others. Write documentation strings to make clean
