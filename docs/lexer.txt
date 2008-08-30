@@ -1,0 +1,39 @@
+Caso o erro seja no lexer, ele retornará uma mensagem de erro
+ "STRING-LEXER lexing failure (no token recognized) in ..."
+Dentro do emacs essa mensagem de erro é praticamente inútil, mas,
+escrita na saída padrão, depois do texto do arquivo, está o número do
+caracter onde o lexer não conseguiu encontrar o token. Identifique
+esse número, abra o arquivo no emacs, M-x goto-char <numero> e olhe
+exatamente qual a cara da região errada. Dali dá pra extrair um teste
+de regressão facilmente, normalmente.
+
+Caso o erro seja no parser, a mensagem será algo do tipo
+  "Unexpected terminal OCTAVE (value "'")"
+ou algo parecido. Nesse caso é mais complicado. O cl-yacc não fornece
+nenhum meio de introspecção nos seus interiores, então não dá pra
+saber qual dos tokens daquele tipo foi o responsável pelo erro.
+Mas isso é contornável. Com a maior parte dos tipos de token, o valor
+é inicialmente menos importante (ie, o valor em si só é usado na hora
+de gerar o código, e não na hora de ler o texto). Então tem como
+hackear isso usando o lexer. Seguindo esse exemplo, eu tenho um token
+de oitava errado. Eu vou na linha do lexer que define esse token,
+     ("('|,)+" (return (values 'OCTAVE %0)))
+e edito, trocando %0 por LEXER::START, fazendo
+    ("('|,)+" (return (values 'OCTAVE LEXER::START)))
+. Feito isso, rode de novo o compilador no arquivo problemático. A
+mensagem de erro agora será
+    Unexpected terminal OCTAVE (value 9)
+. Esse número que aparece agora como valor do token é a posição onde
+ele está no texto. Abra o arquivo no emacs, M-x goto-char <número> e
+olhe a região em torno dele pra tentar perceber por que exatamente o
+parser não conseguiu entender aquilo, ou então simplesmente copie a
+região em torno para um outro arquivo e repita o processo até isolar
+um pequeno teste de regressão.
+Isolado o teste a mudança no lexer pode ser desfeita.
+
+
+(explicação técnica: como o lexer é mal feito, ele deixa esse símbolo,
+lexer::start, vazar na macro. Esse símbolo é uma variável que guarda o
+valor da posição onde o lexer está lendo o token atual. Esse
+comportamento não é documentado, mas é útil, já que essa droga de
+lexer não fornece nenhum outro jeito de extrair essa informação dele)
