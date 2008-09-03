@@ -1,37 +1,38 @@
-- eu vou ter mais tempo (não escrevo projetos ate o fim do ano)
-- final do projeto fapesb
-- projetos cnpq/postdoc/pq (?)
-- projeto top
-- marcos como chefe ja (mesmo se postdoc inicia no meio de 2009)
-- definir status novatos
-- aproveitar givaldo como bolsista
 - musicologia computacional: (novo "branch" da pesquisa)
   - melhor linguagem de queue
   - motivos (grazieno), viewpoints
   - forma/estruturas, cadencias, resoluçoes, etc
   - harmonia comparativa (e.g. conklin, tom jobim (sbc 2007), etc)
+  - abstrair buscas
 - novas codificaçoes (fazer artigo comparativo)
 - binarios instalaveis (releases), problema home hardcoded em .data
 - documentação usuario
-- percentagem acerto gabaritos
 - documentação api (terminar)
+- cl lily
 - codigo: estilo, refatora funcoes gigantes (horizontal e vertical),
   tira stuff de main
 - gui tk (com tudo, web clean)
 - termina baby proof
 - suporte abc (ou outro, guido?)
-- suporte kern, musedata
 - analise funcional (suporte inicial)
 - web page melhor
 - contactar illescas, taube
+- internacionalizar rameau
 - implementa segmentação
 - corais corrigidos (edicao "genos)
   - usar edição "autoritativa"
   - corais corrigidos por ????
 - usar corpus kostka
+  - corpus anotado pardo
 - teorias de analise harmonica (formalizar)
+  - rameau
+  - joel lester
+  - riemman
   - schenker
   - schonberg
   - livros-texto
   - lerdahl
   - o que significa "analise harmonica" (i.e. analise é mais geral)
+- percentagem acerto gabaritos
+- definir status novatos
+- suporte kern, musedata
