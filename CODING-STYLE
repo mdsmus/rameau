@@ -4,6 +4,27 @@
   Read Norvig and Pitman's "Tutorial on Good Lisp Programming Style"
   at norvig.com/luv-slides.ps.
 * Writing code
+** changelog
+   We don't write Gnu style ChangeLog. The git log message is our
+   changelog. Please write a short message in the first line that
+   sumarizes the change in your commit. If you want to give more
+   detail, skip a line and describe the changes you made. You can use
+   itemization to separate changes. Here is an example of this log
+   format:
+
+commit eb3072ce3805da5d5a31ca1ef9984f62f7510aad
+Author: Pedro Kroger <pedro.kroger@gmail.com>
+Date:   Thu Apr 17 11:53:55 2008 -0300
+
+    translate and (minor) refactor cifras and rename file names
+    
+    * cifras is now chords.lisp
+    * segmento is now segment.lisp
+    * uses chord-p instead of chordp
+    * fundamental now is root in a chord (to save screen space)
+    * compara-gabarito-temperado and compara-gabarito-tonal are merged in a single function compare-answer-sheet
+    * functions to print a structure are defined separatelly
+
 ** indentation
    Don't ever NEVER (did I say never?) use tabs to indent expressions.
    Use good old spaces. Make sure you have something like
