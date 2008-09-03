@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "188 - Ach Herre Gott, mich treibt die Not"
+  title = "188 - Ich dank' dir schon durch deinen Sohn"
   composer = "J. S. Bach"
 }
 

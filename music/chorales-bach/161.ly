@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "161 - Ihr Gestirn, ihr hohen Lüfte"
+  title = "161 - Ihr Gestirn', ihr hohlen Lüfte"
   composer = "J. S. Bach"
 }
 
@@ -42,7 +42,7 @@ alto = \relative c' {
     a4. g8 f8 e8 
     f2 e4 
     c2. }
-  e4 f4 g4 
+  e4 f4 g4~ 
   g8 f4 e8 f4   %10
   f4 e8 d8 e4 
   f2 f4 

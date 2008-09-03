@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "159 - Als der gütige Gott vollenden wollt sein Wort"
+  title = "159 - Als der gütige Gott"
   composer = "J. S. Bach"
 }
 
@@ -23,7 +23,7 @@ soprano = \relative c' {
   g4 c4 b4 a4 
   g2 a4 a4 
   b4 c4 b4 a4 
-  g1   %10
+  g2.   %10
   
 }
 
@@ -38,7 +38,7 @@ alto = \relative c' {
   fis8 e8 g8 a4 g4 fis8 
   g4. fis16 e16 fis4 fis4 
   g4 g4 g4. fis8 
-  d1   %10
+  d2.   %10
   
 }
 
@@ -53,7 +53,7 @@ tenor = \relative c' {
   b4 e8 d8 d4. d16 c16 
   b8 a8 b8 cis8 d4 d4 
   d4 c8 e8 d4 d8. c16 
-  b1   %10
+  b2.  %10
   
 }
 
@@ -68,7 +68,7 @@ baixo = \relative c' {
   e4. fis8 g4 d4 
   e2 d4 d4 
   g4 e8 c8 d4 d,4 
-  g1   %10
+  g2.  %10
   
 }
 

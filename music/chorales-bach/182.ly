@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "182 - Wär Gott nicht mit uns diese Zeit"
+  title = "182 - Wär' Gott nicht mit uns diese Zeit"
   composer = "J. S. Bach"
 }
 
@@ -24,7 +24,7 @@ soprano = \relative c'' {
   c4 b4 c4 d8 c8 
   bes8 a8 g4 f4 f4 
   bes4 c4 d4 c8 bes8 
-  a8 g8 a4 g2   %10
+  a8 g8 a4 g   %10
   
 }
 
@@ -40,7 +40,7 @@ alto = \relative c' {
   g8 aes8 g8 f8 ees4 d8 fis8 
   g8 d4 cis8 d4 d4 
   d4 g4 fis8 d8 g4 
-  g4 fis4 d2   %10
+  g4 fis4 d   %10
   
 }
 
@@ -56,7 +56,7 @@ tenor = \relative c' {
   c4 d4 g,8 a8 bes8 a8 
   g8 a8 bes8 a8 a4 bes4 
   bes8 a8 g4 a8 bes16 c16 d4 
-  d4. c8 b2   %10
+  d4. c8 b4  %10
   
 }
 
@@ -72,7 +72,7 @@ baixo = \relative c {
   ees4 d4 c4 g4 
   g'8 f8 e8 a,8 d4 bes'8 a8 
   g8 f8 ees8 d8 c8 bes8 a8 g8 
-  d'4 d,4 g2   %10
+  d'4 d,4 g   %10
   
 }
 

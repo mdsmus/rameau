@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "151 - Jesus ist mein Aufenthalt"
+  title = "151 - Meinen Jesum laß'ich nicht, Jesus"
   composer = "J. S. Bach"
 }
 

@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "183 - Nun freut euch, lieben Christen, g'mein 1"
+  title = "183 - Nun freut euch, lieben Christen, g'mein"
   composer = "J. S. Bach"
 }
 
@@ -24,7 +24,7 @@ soprano = \relative c'' {
   e4 c4 d4. c8 
   b4 a4 g4 b4 
   a4 d,4 g4 c4 
-  b4 a4 g2   %10
+  b4 a4 g   %10
   
 }
 
@@ -34,13 +34,13 @@ alto = \relative c' {
     d4 a4 d4 a'4 
     d,4 d8. c16 b4 b8 cis8 
     d8 f8 e8 fis8 g4 d8 a16 b16 
-    c4 c4 b4 } d4 
+    c2 b4 } d4 
   g8 a4 g16 fis16 e4 a8 fis8   %5
   e8 g4 fis16 e16 fis4 g4 
   g4 g4 a8 fis8 g8 a8~ 
   a8 g4 fis8 e4 e4~ 
   e8 d16 c16 b4 e8 d8 e8 fis8 
-  g4. fis8 d2   %10
+  g4. fis8 d4   %10
   
 }
 
@@ -56,7 +56,7 @@ tenor = \relative c' {
   d8 c16 b16 c8 e8 d8 c8 b8 a8 
   b16 c16 d4 c8 b4 g4 
   a4 g8 a8 b4 a4 
-  d4~ d8. c16 b2   %10
+  d4~ d8. c16 b4   %10
   
 }
 
@@ -72,7 +72,7 @@ baixo = \relative c {
   c8 d8 e4 fis8 d8 e8 fis8 
   g4 d4 e4 e4 
   fis4 g8 fis8 e4 a,4 
-  b8 c8 d4 g,2   %10
+  b8 c8 d4 g,  %10
   
 }
 

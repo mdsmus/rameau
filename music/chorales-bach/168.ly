@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "168 - Heut ist, o Mensch, ein großer Trauertag"
+  title = "168 - Heut' ist, o Mensch, ein großer"
   composer = "J. S. Bach"
 }
 
@@ -22,7 +22,7 @@ soprano = \relative c' {
   d2 r4 a'4 
   bes4 c4 d4 d4 
   c4 g8 a8 bes4 a4 
-  g1 
+  g2.
   
 }
 
@@ -36,7 +36,7 @@ alto = \relative c' {
   bes2 r4 c4 
   d8 f8 g8 a8 bes4 g8 f8 
   ees8 f8 g4 g4. fis8 
-  d1 
+  d2.
   
 }
 
@@ -50,7 +50,7 @@ tenor = \relative c' {
   f2 r4 f4 
   f'4 ees4 f4 d4 
   g,4 c4 d4. c8 
-  b1 
+  b2.
   
 }
 
@@ -64,7 +64,7 @@ baixo = \relative c {
   bes2 r4 f'8 ees8 
   d4 c4 bes4 b4 
   c8 d8 ees4 bes8 c8 d4 
-  g,1 
+  g,2. 
   
 }
 

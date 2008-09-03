@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "199 - Hilf, Gott laß mirs gelingen"
+  title = "199 - Hilf, Gott, laß mir's gelingen"
   composer = "J. S. Bach"
 }
 
@@ -73,7 +73,7 @@ tenor = \relative c' {
     a2 g8 f8 
     c'2 c4 
     d4. c8 bes8 a8     %5
-    g8 fis8 g4 d'4 
+    g8 fis8 g a d4 
     ees4 d8 a8 d8 c8 
     bes2 } c8 bes8 
   a4 bes4 c4~ 

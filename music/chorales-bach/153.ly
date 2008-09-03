@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "153 - Alle Menschen müssen sterben 1"
+  title = "153 - Alle Menschen müssen sterben"
   composer = "J. S. Bach"
 }
 
@@ -68,7 +68,7 @@ baixo = \relative c {
     d4 b4 fis4 g4 
     a4 a4 d,4 d4 
     d'4 d4 e4 fis4 
-    g8 fis8 a8 a,8 d2 }
+    g8 e a8 a,8 d2 }
   a4 a4 d4 fis8 e8   %5
   d4 e4 a,2 
   e'2 b8 cis8 d8 e8 

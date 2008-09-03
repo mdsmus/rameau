@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "171 - Schaut, ihr Sünder! Ihr macht mir große Pein"
+  title = "171 - Schaut, ihr Sünder"
   composer = "J. S. Bach"
 }
 

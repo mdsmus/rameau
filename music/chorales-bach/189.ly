@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "189 - Herr Jesu Christ, wahr' Mensch und Gott"
+  title = "189 - Herr Jesu Christ, wahr'r Mensch und Gott"
   composer = "J. S. Bach"
 }
 

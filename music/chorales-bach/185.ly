@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "185 - Ihr lieben Christen, freut euch nun"
+  title = "185 - Nun freut euch, Gottes Kinder all'"
   composer = "J. S. Bach"
 }
 
@@ -21,7 +21,7 @@ soprano = \relative c' {
   c4 a4 f4 d4   %5
   e4 d4 cis4 e4 
   g8 f8 e4 f4 d4 
-  e4. e8 d2 
+  e4. e8 d4
   
 }
 
@@ -31,10 +31,10 @@ alto = \relative c' {
   e4 e4 e4 g4 
   g4 g4 g4. f16 e16 
   d4 e4 fis4 g8 f8 
-  e4 c4 c4 bes4   %5
-  b8 a8 b4 a4 cis4 
-  d4 a4 a4 bes4 
-  b8 d4 cis8 a2 
+  e4 c4 c4 bes4~   %5
+  bes8 a8 b4 a4 cis4 
+  d4 a4 a4 bes4~
+  bes8 d4 cis8 a4
   
 }
 
@@ -47,7 +47,7 @@ tenor = \relative c {
   g,4. f8 f4 f4   %5
   g4 f8 e8 e4 a4 
   g4. g8 f4 f4 
-  g8 bes8 a8. g16 fis2 
+  g8 bes8 a8. g16 fis4
   
 }
 
@@ -60,7 +60,7 @@ baixo = \relative c {
   c8 e8 f4 a,8 f8 bes8 a8   %5
   g4 gis4 a4 a4 
   b4 cis4 d8 c8 bes8 a8 
-  g4 a4 d,2 
+  g4 a4 d,
   
 }
 

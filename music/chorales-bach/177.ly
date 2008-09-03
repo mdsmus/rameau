@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "177 - Danket dem Herrn heut und allzeit"
+  title = "177 - Ach bleib bei uns, Herr Jesu Chris"
   composer = "J. S. Bach"
 }
 

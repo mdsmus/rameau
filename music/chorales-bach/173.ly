@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "173 - O Herzensangst, o Bangigkeit und Zagen"
+  title = "173 - O Herzensangst"
   composer = "J. S. Bach"
 }
 
@@ -71,7 +71,7 @@ tenor = \relative c' {
   g2 d'4 
   c4 c4 c4 
   c2 b4 
-  g2 des4   %15
+  g2 des'4   %15
   c8 bes8 c4 bes4 
   bes2 bes4 
   bes2. 
@@ -88,8 +88,8 @@ baixo = \relative c {
   bes2 bes'4 
   a4 aes4 g4 
   f4 ees4 f4 
-  f2.   %10
-  bes8 aes8 g8 f8 ees8 d8 
+  bes,2.   %10
+  bes'8 aes8 g8 f8 ees8 d8 
   c2 b4 
   c4. bes8 aes4 
   g4 f4 g4 

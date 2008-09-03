@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "174 - Jesus Christus, unser Heiland, der den Tod überwandt"
+  title = "174 - Jesus Christus, unser Heiland, der den Tod"
   composer = "J. S. Bach"
 }
 

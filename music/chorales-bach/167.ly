@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "167 - Du großer Schmerzensmann, vom Vater so fischlagen"
+  title = "167 - Du großer Schmerzensmann"
   composer = "J. S. Bach"
 }
 
@@ -29,7 +29,7 @@ soprano = \relative c'' {
   b4 d4 c4 b4 
   a2 r4 a4 
   b4 a4 g4 fis4   %15
-  e1 
+  e2.
   
 }
 
@@ -50,7 +50,7 @@ alto = \relative c' {
   g4 g4. fis8 g4 
   fis2 r4 fis4~ 
   fis8 e8 fis4. e4 dis8   %15
-  b1 
+  b2.
   
 }
 
@@ -71,7 +71,7 @@ tenor = \relative c' {
   e4 d4 e8 d8 d4 
   d2 r4 d8 c8 
   b2. b8. a16   %15
-  g1 
+  g2.
   
 }
 
@@ -92,7 +92,7 @@ baixo = \relative c {
   e8 d8 c8 b8 a4 g4 
   d'2 r4 d4 
   dis8 cis8 dis8 b8 e4 b4   %15
-  e,1 
+  e,2. 
   
 }
 

@@ -20,16 +20,16 @@ soprano = \relative c'' {
   a4 b4 c8 b8 a4   %5
   a8 g8 f4 e2 
   d4 cis4 d4 e8 f8 
-  g4 f4 e2 
+  g4( f4) e2 
   a4 a4 a4 g4 
   f4 e4 d2   %10
   g4 a4 b4 c4 
-  d4 e4 d4 c4 
+  d4( e4 d4 c4)
   b2 a4 b4 
   c8 b8 a4 a8 g8 f4 
   e2 d4 cis4   %15
-  d4 e8 f8 g4 a4 
-  g4 f4 e2 
+  d4 e8 f8 g4( a4 
+  g4 f4) e2 
   
 }
 
@@ -83,7 +83,7 @@ baixo = \relative c {
   f8 e8 d4 e4 f4   %5
   cis4 d4 a2 
   bes4 a8 g8 f4 e8 d8~ 
-  d8 cis8 e8 f8 a2 
+  d8 cis8 d8 f8 a2 
   f8 g8 a8 bes8 c4. cis8 
   d4 a4 d,2   %10
   e'4 fis4 g8 f8 e4 

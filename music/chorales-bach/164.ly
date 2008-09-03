@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "164 - Ihr Knecht des Herren allzugleich"
+  title = "164 - Herr Gott, dich loben alle wir"
   composer = "J. S. Bach"
 }
 
@@ -29,7 +29,7 @@ soprano = \relative c'' {
   d2 bes4 
   c2 ees4 
   d4 c2   %15
-  bes2. 
+  bes2 
   
 }
 
@@ -50,7 +50,7 @@ alto = \relative c' {
   f2 g4 
   f2 f4 
   f4 g4 f8 ees8   %15
-  d2. 
+  d2 
   
 }
 
@@ -71,7 +71,7 @@ tenor = \relative c' {
   d2 d4 
   a2 a4 
   bes2 a4   %15
-  f2. 
+  f2 
   
 }
 
@@ -92,7 +92,7 @@ baixo = \relative c {
   bes8 c8 bes8 a8 g8 f8 
   ees8 g8 f8 ees8 d8 c8 
   bes8 d8 ees8 c8 f8 f,8   %15
-  bes2. 
+  bes2 
   
 }
 

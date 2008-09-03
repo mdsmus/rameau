@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "157 - Wo Gott zum Haus nicht gibt sein Gunst"
+  title = "157 - Wo Gott zum Haus nicht gibt"
   composer = "J. S. Bach"
 }
 
@@ -21,7 +21,7 @@ soprano = \relative c' {
   d4 d4 a4 c4   %5
   bes4 bes4 a4 f'4 
   e4 d4 c4. d8 
-  bes8 a8 g4 f2 
+  bes8 a8 g4 f
   
 }
 
@@ -34,7 +34,7 @@ alto = \relative c' {
   f4 f4 c4. a'8~   %5
   a8 g16 fis16 g4. fis8 a4 
   a8 g8 f8 g8 a8 g8 f4 
-  f4. e8 c2 
+  f4. e8 c4
   
 }
 
@@ -47,7 +47,7 @@ tenor = \relative c' {
   bes4 f8 g8 a4 f'8 ees8   %5
   d4 d4 d4 d4 
   c4 d8 e8 f4 a,4 
-  bes4. c16 bes16 a2 
+  bes4. c16 bes16 a4
   
 }
 
@@ -60,7 +60,7 @@ baixo = \relative c {
   bes,8 c8 d8 e8 f8 g8 a8 fis8   %5
   g8 a8 bes8 c8 d4 d,4 
   a'4 bes4 f8 e8 d4 
-  g4 c,4 f2 
+  g4 c,4 f
   
 }
 

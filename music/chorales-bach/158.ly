@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "158 - Der Tag der ist so freudenreich"
+  title = "158 - Der Tag, der ist so freudenreich"
   composer = "J. S. Bach"
 }
 
@@ -30,7 +30,7 @@ soprano = \relative c'' {
   a4 a4 e4 fis4 
   g8 fis8 e4 d4 f4 
   e4 c4 e4 fis4   %15
-  g4 a4 g2 
+  g4 a4 g
   
 }
 
@@ -52,7 +52,7 @@ alto = \relative c' {
   d4 d4 cis4 d4 
   d4 cis4 a4 d4 
   c4 g4 c4 d4   %15
-  d4. c8 b2 
+  d4. c8 b4
   
 }
 
@@ -74,7 +74,7 @@ tenor = \relative c' {
   fis8 g8 a4 a4 a4 
   b4 e,8 a16 g16 fis4 g4 
   g4 e4 a4 a4   %15
-  g4 fis4 g2 
+  g4 fis4 g 
   
 }
 
@@ -96,7 +96,7 @@ baixo = \relative c' {
   d8 e8 fis8 g8 a8 g8 fis4 
   e4 a4 d4 b4 
   c4. b8 a4 d8 c8   %15
-  b8 g8 d'4 g,2 
+  b8 g8 d'4 g,
   
 }
 

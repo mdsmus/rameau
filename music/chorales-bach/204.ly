@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "204 - Wer nur den lieben Gott läßt walten"
+  title = "204 - Wer weiß, wie nahe mir"
   composer = "J. S. Bach"
 }
 

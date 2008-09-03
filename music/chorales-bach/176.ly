@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "176 - Erstanden ist der heilig Christ"
+  title = "176 - Erstanden ist der heil'ge Christ"
   composer = "J. S. Bach"
 }
 
@@ -29,7 +29,7 @@ soprano = \relative c' {
   g8 f8 g8 a8 bes4 
   a2 g4 
   f2 e4   %15
-  f2. 
+  f2 
   
 }
 
@@ -50,7 +50,7 @@ alto = \relative c' {
   d4 e8 f8 d8 e8 
   f2 e4~ 
   e4 d4 c4   %15
-  c2. 
+  c2 
   
 }
 
@@ -71,7 +71,7 @@ tenor = \relative c' {
   g4 c4 d8 g,8 
   a8 bes8 c4. bes8 
   a4 bes8 a8 g8 bes8   %15
-  a2. 
+  a2 
   
 }
 
@@ -92,7 +92,7 @@ baixo = \relative c, {
   bes4. a8 g4 
   f8 g8 a8 bes8 c4 
   d8 c8 bes4 c4   %15
-  f,2. 
+  f,2 
   
 }
 
