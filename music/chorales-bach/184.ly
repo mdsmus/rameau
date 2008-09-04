@@ -8,79 +8,82 @@
 
 global = {
   \time 4/4
-  \key e \minor
+  \key d \minor
 }
 
 
 soprano = \relative c'' {
   \repeat volta 2 {
-    \partial 4 b4 
-    ais4 b8 cis8 d4 e4 
-    d4 cis4 b4 b4 
-    g4 a4 b4 a8 g8 
-    fis8 e8 fis4 e4 } r4 
-  e8 fis8 g4 a4 e8 fis8   %5
-  g4 a4 b4 b4 
-  e4 dis4 e4 fis8 e8 
-  d4 cis4 b4 cis4 
-  d4 b8 cis8 d4 a4 
-  g4 fis4 e2   %10
-  b'4 a4 g2 
-  fis2 e2 
+    \partial 4  a 
+    gis a8 b c4 d 
+    c b a a 
+    f g a g8 f 
+    e d e4 d 
+  }  r 
+  d8 e f4 g d8 e 
+  f4 g a a 
+  d cis d e8 d 
+  c4 b a b 
+  c a8 b c4 g 
+  f e d2 
+  a'4 g f2 
+  e d 
   
 }
 
-alto = \relative c'' {
+alto = \relative c' {
   \repeat volta 2 {
-    \partial 4 g4 
-    fis4 fis4 fis4 fis4 
-    fis4 fis8 e8 dis4 fis4 
-    e4 d4 d8 dis8 e4 
-    e4 dis4 b4 } r4 
-  b4 e4 e4. dis8   %5
-  e4 d4 d4 g8 a8 
-  b4 a4 b4 fis4 
-  fis4 fis8 e8 d4 e4 
-  fis4 d4 g4 fis4 
-  fis8 e8 e8 dis8 e2   %10
-  d8 e8 fis4. dis8 e4~ 
-  e4 dis4 b2 
-  
+    \partial 4 f4 
+    e e e e 
+    e e8 d cis4 e 
+    d c c8 cis d4 
+    d cis a 
+  }  r 
+  a d d4. cis8 
+  d4 c c f8 g 
+  a4 g a e 
+  e e8 d c4 d 
+  e c f e 
+  e8 d d cis d2 
+  c8 d e4~ e8 cis d4~  
+  d cis a2 
 }
 
 tenor = \relative c' {
   \repeat volta 2 {
-    \partial 4 e8  d8 
-    cis4 d8 ais8 b4 cis4 
-    b4 ais4 fis4 b4 
-    b8 c8 b8 a8 g8 a8 b4 
-    c4 fis,8 a8 g4 } r4 
-  g8 a8 b4 a8 b8 c4   %5
-  b4 a4 g4 d'4 
-  g4 fis4 e8 d8 cis4 
-  b4 ais4 fis4 g4 
-  a4 g4 g4 d'8 c8 
-  b4 a4 g2   %10
-  g4 fis8 b8 b4 c4~ 
-  c4 b8 a8 gis2 
+    \partial 4 d8 c 
+    b4 c8 gis a4 b 
+    a gis e a 
+    a8 bes a g f g a4 
+    bes e,8 g f4 
+  }  r 
+  f8 g a4 g8 a bes4 
+  a g f c'
+  f e d8 c b4 
+  a gis e f 
+  g f f c'8 bes 
+  a4 g f2 
+  f4 e8 a a4 bes~  
+  bes a8 g fis2 
   
 }
 
 baixo = \relative c {
   \repeat volta 2 {
-    \partial 4 e4 
-    fis8 e8 d8 cis8 b4 ais4 
-    b4 fis4 b4 dis4 
-    e4 fis4 g8 fis8 e4 
-    a,8 b16 c16 b4 e,4 } r4 
-  e'4. d8 c8 b8 a4   %5
-  e'4 fis4 g4 g8 fis8 
-  e4 fis4 gis4 ais4 
-  b4 fis4 b,4 e4 
-  d4 g4 b,8 c8 d4 
-  e4 b4 c2   %10
-  g'4 dis4 e4 c4 
-  a4 b4 e,2 
+    \partial 4  d4 
+    e8 d c b a4 gis 
+    a e a cis 
+    d e f8 e d4 
+    g,8 a16 bes a4 d, 
+  }  r 
+  d'4. c8 bes a g4 
+  d' e f f8 e 
+  d4 e fis gis 
+  a e a, d 
+  c f a,8 bes c4 
+  d a bes2 
+  f'4 cis d bes 
+  g a d,2 
   
 }
 
