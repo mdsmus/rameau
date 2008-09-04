@@ -118,9 +118,57 @@ alto = \relative c' {
 }
 
 
-tenor = \relative c {
-  \partial 4 
-
+tenor = \relative c' {
+  \partial 4 g4
+  b d g,~ g8 f
+  e2 r4 c'8 d
+  e d d4 e16 d c4 d16 c
+  b2. \repeat volta 2 {e4~
+  e8 d16 c d4~ d c8 d16 c   %% 05
+  b8 e16 d cis4 d e
+  d4. c16 b a8 g f4
+  g8 e' d8. c16 b4} \repeat volta 2 {g4~
+  g8 a16 b c8 a~ a gis16 fis gis4
+  e2.} e'8 dis   %% 10
+  e4 e d e8 a,~
+  a d16 c b8 c16 b a8 b16 c d4
+  g,8 e' d8. c16 b4 \repeat volta 2 { c
+  g~ g8 d' d4 d
+  d4. cis8 d4 f,8 g   %% 15
+  a f g4~ g8 fis d'4
+  c8 e d8. c16 b4} \repeat volta 2 {d4
+  a8 e'~ e d16 c b4 e
+  d e d a8 bes
+  c4 c c c~   %% 20
+  c4. b8 g4} a
+  g c,8 g' g4 g8 d
+  a'4~ a8 d, d4 b'
+  c8 d e c a c d16 e f8
+  f e d a a4 e %% 25
+  d a'8 g g4 g
+  c,8 a' g8. f16 e4 e8 f
+  g4 c8 bes a f~ f g16 a
+  bes4 a a a
+  g g g g %% 30
+  f8 a g8. f16 e4 e8 f
+  g a bes4 c d8. c16
+  bes8 a a4 a a
+  g8 a16 b c8 b a b16 c d4
+  c16 b a g a8 f' e4 c8 d %% 35
+  e d~ d c~ c d g, a
+  b c4 b8 g4 \repeat volta 2 { c
+  d a8 f'~ f e16 d e8 a,
+  g fis g4 d' c~
+  c8 bes bes4 a8 g f4   %% 40
+  e8 g bes4 a} a8 g
+  f4~ f8 g16 a bes8 c16 bes a8 f
+  bes g a4 a a
+  bes bes c bes
+  bes a8 gis a4 g   %% 45
+  g e f2
+  e4 b'~ b a~
+  a gis8 fis g2
+  
 }
 
 
