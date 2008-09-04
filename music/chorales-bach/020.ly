@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "20 - Ein feste Burg ist unser Gott"
+  title = "20 - Ein' feste Burg ist unser Gott"
   composer = "J. S. Bach"
 }
 

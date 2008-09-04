@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "29 - Wie nach einer Wasserquelle"
+  title = "29 - Freu' dich sehr, o meine Seele"
   composer = "J. S. Bach"
 }
 
@@ -80,7 +80,7 @@ baixo = \relative c' {
   c8 b8 a4 g8 a8 b8 g8   %10
   c2 g'4 fis4 
   e8 fis8 g4 c,4 b8 c8 
-  d4 d,4 g2 
+  d2 g,
   
 }
 

@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "49 - Mit Fried und Freud ich fahr dahin"
+  title = "49 - Mit Fried' und Freud' ich fahr' dahin"
   composer = "J. S. Bach"
 }
 
@@ -37,7 +37,7 @@ alto = \relative c' {
   c2. g'4 
   g4 g4 g4 f4   %5
   e8 d8 cis4 a4 e'8 d8 
-  e8 cis8 e8 f8 a,4 bes4 
+  e8 cis8 d e8 a,4 bes4 
   a2 e'4 d4 
   c8 g'4 f8 e8 d8 cis8 d8 
   e4 e4 d8 c8 b4   %10

@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "35 - Gott cis Himmels und der Erden"
+  title = "35 - Gott des Himmels und der Erden"
   composer = "J. S. Bach"
 }
 
@@ -46,7 +46,7 @@ tenor = \relative c' {
     a4. gis8 cis2 }
   e4. dis8 e8 d8 cis8 b8   %5
   a8 b8 cis8 dis8 e4 e4 
-  ais,8 b4. a4 a4~ 
+  ais,8 b b4 a4 a4~ 
   a8 b8 gis8 d'8 cis8 b8 cis4 
   
 }

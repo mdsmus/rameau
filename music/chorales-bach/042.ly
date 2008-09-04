@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "42 - Du Friedefürst, Herr Jesu Christ"
+  title = "42 - Du Friedensfürst, Herr Jesu Christ"
   composer = "J. S. Bach"
 }
 
@@ -23,7 +23,7 @@ soprano = \relative c'' {
   a4 b4 gis4 gis4 
   a4 b4 cis4 b8 cis8 
   d4 cis4 b2 
-  a1 
+  a2.
   
 }
 
@@ -38,7 +38,7 @@ alto = \relative c'' {
   fis4 gis4 eis4 eis4 
   fis4 gis4 a4 e4 
   a4 a4 a4 gis4 
-  a1 
+  e2. 
   
 }
 
@@ -53,22 +53,22 @@ tenor = \relative c' {
   cis4 d4 cis4 cis4 
   cis4 e4 e2 
   d4 e4 fis4 e8 d8 
-  cis1 
+  cis2. 
   
 }
 
-baixo = \relative c {
+baixo = \relative c' {
   \repeat volta 2 {
     \partial 4 a4 
     d8 cis8 b4 a4 gis4 
-    fis4 gis4 a4 cis4 
+    fis4 gis4 a4 cis,4 
     fis8 gis8 a4 d,4 e4 
     a,2. } e'8 fis8 
   gis4 e4 a4 e4   %5
   fis4 b,4 cis4 cis4 
   fis4 e4 a4 gis4 
   fis4 e4 d4 e4 
-  a,1 
+  a,2.
   
 }
 

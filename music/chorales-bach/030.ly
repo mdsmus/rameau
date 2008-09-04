@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "30 - Jesus Christus, unser Heiland, der von uns den Gottes Zorn wandt"
+  title = "30 - Jesus Christus, unser Heiland"
   composer = "J. S. Bach"
 }
 
@@ -24,7 +24,7 @@ soprano = \relative c' {
   g2 r4 d'4 
   e4 d8 c8 b8 a8 g8 a8   %10
   b4 a4 g4 fis4 
-  e1 
+  e2.
   
 }
 
@@ -40,7 +40,7 @@ alto = \relative c' {
   d2 r4 g8 f8 
   e4 fis4 g8 dis8 e8 d8~   %10
   d8 g4 fis4 e4 dis8 
-  b1 
+  b2.
   
 }
 
@@ -56,7 +56,7 @@ tenor = \relative c' {
   b2 r4 d4 
   c8 b8 a4 g8 c8 b8 a8   %10
   g8 d'8 e8 b8 b4 c8 b16 a16 
-  gis1 
+  gis2. 
   
 }
 
@@ -72,7 +72,7 @@ baixo = \relative c {
   g,2 r4 b4 
   c4 d4 e4. fis8   %10
   g8 b,8 cis8 dis8 e8 g,8 a8 b8 
-  e,1 
+  e,2.
   
 }
 

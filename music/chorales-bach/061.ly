@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "61 - Jesu Kreuz, Leiden und Pein"
+  title = "61 - Jesu Leiden, Pein un Tod"
   composer = "J. S. Bach"
 }
 
@@ -83,7 +83,7 @@ baixo = \relative c {
   c8 f8 d8 bes8 ees2 
   c4 bes8 aes8 g8 g'4 f8~ 
   f8 e8 f4 c2   %10
-  f8 g8 aes4 g4 fis4 
+  f8 g8 aes4 g4 ges4 
   f8 ees8 f4 bes,2 
   d8 bes8 ees4. c8 g'4~ 
   g8 f8 g8 aes8 bes2 

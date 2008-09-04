@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "50 - O Welt, ich muß dich lassen"
+  title = "50 - In allen meinen Taten"
   composer = "J. S. Bach"
 }
 
@@ -25,7 +25,7 @@ soprano = \relative c'' {
   c4 c4 g4 a8 g8 
   f2 e4 c4   %10
   f4 g4 a4 g8 a16 bes16 
-  a4 g4 f2 
+  a4 g4 f
   
 }
 
@@ -42,7 +42,7 @@ alto = \relative c' {
   f4 f4 e8 d8 c4 
   c4 b4 c4 g4   %10
   c4 bes4 a8 c8 f4 
-  f4 e4 c2 
+  f4 e4 c 
   
 }
 
@@ -59,7 +59,7 @@ tenor = \relative c' {
   c8 bes8 c8 d8 e4 f4 
   f,8 a8 g8 f8 g4 e4   %10
   f8 c'8 d8 e8 f8 c8 bes8 f8 
-  c'4. bes8 a2 
+  c'4. bes8 a4
   
 }
 
@@ -76,7 +76,7 @@ baixo = \relative c {
   a8 g8 a8 bes8 c4 f,8 e8 
   d8 c8 d4 c4 bes4   %10
   a4 g4 f4 d'4 
-  c8 bes8 c4 f,2 
+  c8 bes8 c4 f,
   
 }
 

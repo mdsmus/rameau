@@ -5,7 +5,6 @@
   composer = "J. S. Bach"
 }
 
-
 global = {
   \time 4/4
   \key bes \major
@@ -127,6 +126,8 @@ baixo = \relative c' {
   ees8 c8 f4 bes,2 
   
 }
+
+
 
 \score {
   <<

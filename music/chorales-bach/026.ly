@@ -32,13 +32,13 @@ alto = \relative c' {
     \partial 4 c4 
     f4 e4 f4 a4 
     bes8 a8 g4 a4 c,4 
-    f4 g4 g4 f4 
-    f8 e8 f4 e4 e4 
-    e4 d4 d8 e8 f4     %5
+    f4 g4~ g4 f4~
+    f8 e8 f4 e4 e4~
+    e4 d4 d8 e8 f4~     %5
     f4 e4 c4 } f4 
-  g4 g4 fis4 g4 
+  g4 g4 fis4 g4~ 
   g4 fis4 d4 f4 
-  f4 c'8 bes8 a8 g8 f4 
+  f4 c'8 bes8 a8 g8 f4~
   f4 e4 c4 
 }
 

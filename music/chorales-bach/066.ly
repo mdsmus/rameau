@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "66 - Es woll uns Gott genädig sein 1"
+  title = "66 - Christ, unser Herr, zum Jordan kam"
   composer = "J. S. Bach"
 }
 
@@ -28,7 +28,7 @@ soprano = \relative c' {
   f4 g4 a8 g8 f4 
   g8 f8 e4 d4 d'4 
   d4 d4 e4 d4 
-  c4 b4 a2 
+  c4( b4) a
   
 }
 
@@ -48,7 +48,7 @@ alto = \relative c' {
   d4 e4 e8 cis8 d4 
   e8 d8 cis4 a4 a'4 
   g4 g4 g4 a8 d,8 
-  e4. d8 cis2 
+  e4. d8 cis4
   
 }
 
@@ -68,7 +68,7 @@ tenor = \relative c {
   d8 f8 bes4 a4 bes4~ 
   bes4 e,8 f16 g16 f4 d4 
   b'8 c8 d8 b8 c8 b8 a4 
-  a4 gis4 e2 
+  a4 gis4 e
   
 }
 
@@ -88,7 +88,7 @@ baixo = \relative c {
   bes8 a8 g4 f4 bes8 a8 
   g4 a4 d,4 fis'4 
   g8 a8 b8 g8 c,4 f4 
-  e8 d8 e4 a,2 
+  e8 d8 e4 a,
   
 }
 

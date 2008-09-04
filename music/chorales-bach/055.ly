@@ -2,7 +2,7 @@
 \version "2.10.33"
 
 \header {
-  title = "55 - Wir Christenleut"
+  title = "55 - Wir Christenleut'"
   composer = "J. S. Bach"
 }
 
@@ -23,7 +23,7 @@ soprano = \relative c {
   e d cis cis 
   d d e e 
   fis fis e d 
-  cis2 b 
+  cis2 b4 
 }
 
 
@@ -39,7 +39,7 @@ alto = \relative c {
   gis4 a8 b a4 a 
   a8 g fis4 b8 a gis4 
   cis b8 ais b4 b 
-  b ais fis2 
+  b ais fis
 }
 
 
@@ -55,7 +55,7 @@ tenor = \relative c {
   b, fis'8 e e4 e 
   fis8 e d cis b4 e 
   e d8 cis b cis d e 
-  fis4. e8 dis2 
+  fis4. e8 dis4
 }
 
 
@@ -71,7 +71,7 @@ baixo = \relative c {
   e fis8 gis a4 a8 g 
   fis4 b8 a gis4 cis8 b 
   ais4 d gis,8 ais b4 
-  fis2 b, 
+  fis2 b,4
 }
 
 

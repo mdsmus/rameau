@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "75 - Das walt' mein Gott, Vater, Sohn und heiliger Geist"
+  title = "75 - Das walt' mein Gott"
   composer = "J. S. Bach"
 }
 
@@ -24,7 +24,7 @@ soprano = \relative c' {
   g4 g4 g4 g4 
   a2 a4 f4 
   e4 d4 d4 cis4   %10
-  d1 
+  d2.
   
 }
 
@@ -40,7 +40,7 @@ alto = \relative c' {
   e4 d4 e4 e4 
   e8 d8 e8 cis8 d4 d8 c8 
   bes4 a4 bes4 a4   %10
-  a1 
+  a2.
   
 }
 
@@ -56,7 +56,7 @@ tenor = \relative c' {
   c4 b4 c4 c4 
   cis8 b8 a8 g8 f4 a4 
   g4. f8 e4. g8   %10
-  fis1 
+  fis2. 
   
 }
 
@@ -72,7 +72,7 @@ baixo = \relative c {
   c8 e8 g8 f8 e8 d8 c8 bes8 
   a8 b8 cis8 a8 d4 d4~ 
   d8 cis8 d8 f,8 g8 e8 a4   %10
-  d,1 
+  d,2.
   
 }
 

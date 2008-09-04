@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "58 - Herzlich lieb hab ich dich, o Herr"
+  title = "58 - Herzlich lieb hab' ich dich, o Herr"
   composer = "J. S. Bach"
 }
 
@@ -33,7 +33,7 @@ soprano = \relative c'' {
   g8 fis8 e4 fis8 e8 d4 
   d4 cis4 d4 d4 
   d4 d4 e4 d4 
-  d4 cis4 d2 
+  d4 cis4 d
   
 }
 
@@ -41,7 +41,7 @@ alto = \relative c' {
   \repeat volta 2 {
     \partial 4 fis4 
     e8 fis8 g8 fis8 e4 d4 
-    d4 d4 d4 fis8 f8 
+    d4 d4 d4 fis8 eis8 
     fis8 e8 d8 e8 fis8 e8 d8 fis8 
     fis4 f4 fis4 fis8 e8 
     d8 b'8 a8 g8 fis8 g8 a8 b8     %5
@@ -58,7 +58,7 @@ alto = \relative c' {
   b4 b8 a8 a4 a4 
   e4 fis4 fis4 a4 
   a4 g8 fis8 g4 fis4 
-  e8 d8 e4 fis2 
+  e8 d8 e4 fis
   
 }
 
@@ -83,7 +83,7 @@ tenor = \relative c' {
   d4 e4 d4 d8 cis8 
   b4 cis4 b4 d8 c8 
   b4 b4 b8 a8 a4 
-  a4 a4 a2 
+  a4 a4 a
   
 }
 
@@ -102,13 +102,13 @@ baixo = \relative c {
   b8 cis8 d8 e8 fis4 dis4   %10
   e4 a8 g8 fis4 b8 a8 
   gis4 a4 d,4 e4 
-  fis8 gis8 a4 f4 fis8 f8 
+  fis8 gis8 a4 eis4 fis8 eis8 
   dis4 e4 a,4 d4 
   cis4 b4 fis'4 ais4   %15
   b4 cis4 d4 fis,4 
   gis4 ais4 b4 fis4 
   g8 a8 b4 cis,4 d4 
-  a'4 a,4 d2 
+  a'4 a,4 d
   
 }
 

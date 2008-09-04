@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "57 - O Traurigkeit, o Herzeleid"
+  title = "57 - O Traurigkeit"
   composer = "J. S. Bach"
 }
 
@@ -20,7 +20,7 @@ soprano = \relative c'' {
   d2 c2 
   b4 c4 d4 e4   %5
   d4 c4 b2 
-  a4 b4 c4 d8 c8 
+  a4 b4 c4 d8 e8 
   b2 a2 
   
 }

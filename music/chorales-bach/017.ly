@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "17 - Am Sabbat früh Marien drei 2"
+  title = "17 - Erschienen ist der herrliche Tag"
   composer = "J. S. Bach"
 }
 

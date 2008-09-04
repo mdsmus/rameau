@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "31 - Wo Gott der Herr nicht bei uns hält"
+  title = "31 - Ach lieben Christen, seid getrost"
   composer = "J. S. Bach"
 }
 
@@ -24,7 +24,7 @@ soprano = \relative c'' {
   d4 a8 b8 c4 b4 
   a16 b16 c8 a4 g4 c4 
   b4 a8 b8 c4 d8 c8 
-  b2 a2   %10
+  b2 a4   %10
   
 }
 
@@ -40,7 +40,7 @@ alto = \relative c' {
   a8 g8 fis4 e4 d8 g8 
   g8 e8 fis4 d4 e4 
   d8 e8 fis8 f8 e4 a4~ 
-  a4 gis4 e2   %10
+  a4 gis4 e   %10
   
 }
 
@@ -56,7 +56,7 @@ tenor = \relative c' {
   a,4 d4 g,8 a8 b8 d8 
   e4 d8 c8 b4 g8 a8 
   b8 c8 d4 c8 b8 a8 c8 
-  f8 d8 b8 e8 cis2   %10
+  f8 d8 b8 e8 cis4   %10
   
 }
 
@@ -72,7 +72,7 @@ baixo = \relative c' {
   fis8 e8 d4 e8 fis8 g4 
   c,4 d4 g,4 e'8 fis8 
   g4 fis8 gis8 a8 g8 f8 e8 
-  d8 b8 e4 a,2   %10
+  d8 b8 e4 a,   %10
   
 }
 

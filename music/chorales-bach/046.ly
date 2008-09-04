@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "46 - Vom Himmel hoch, da komm ich her"
+  title = "46 - Vom Himmel hoch, da komm' ich her"
   composer = "J. S. Bach"
 }
 

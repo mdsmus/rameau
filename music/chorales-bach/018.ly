@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "18 - Menschenkind, merk eben"
+  title = "18 - Gottes Sohn ist kommen"
   composer = "J. S. Bach"
 }
 

@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "34 - Erbarm dich mein, o Herre Gott"
+  title = "34 - Erbarm' dich mein, o Herre Gott"
   composer = "J. S. Bach"
 }
 
@@ -36,17 +36,17 @@ alto = \relative c' {
     \partial 4 b4 
     e4 e4 e4 f8 e8 
     e8 a4 gis8 e4 e8 f8 
-    g8 a4 g16 f16 g4. f8~ 
+    g8 a a g16 f16 g4. f8~ 
     f8 e4 d16 c16 b4 } c4 
-  f4 f4. e16 d16 e8 fis8   %5
+  f4 f4 f8 e16 d16 e8 fis8   %5
   g16 d16 g4 fis8 d4 e4 
-  e4. d8 c8 b8 cis8 d8 
-  e4. d4 cis8 c4 
+  e4 e8 d8 c8 b8 cis8 d8 
+  e4. d8~ d cis8 c4 
   c8 ees4 d8 d4 c4 
   c4. b8 g4 g4   %10
   d'4 e8 d8 c4 d4 
   e8 f8 g8 e8 f4. e8~ 
-  e8 d8 d8 c8 b4
+  e8 d8~ d8 c8 b4
   
 }
 
@@ -71,14 +71,15 @@ tenor = \relative c' {
 
 baixo = \relative c {
   \repeat volta 2 {
-    e4. f8 e8 d8 c8 a'8~ 
+    \partial 4 e4~
+    e8 f8 e8 d8 c8 a'8~ 
     a8 gis8 a8 c,8 d8 e8 a,4 
     e'8 d8 c4 d8 g8 e8 c8 
     f4 c4 d4 e4 }
   a8 g8 f8 e8 d8 c8 b8 c8   %5
   b8 a8 g8 b8 c8 d8 g,4 
   c8 b8 a8 b8 c8 e,8 f8 g8 
-  a8 b8 cis8 a8 d8 d,8 a'4 
+  a8 b8 cis8 a8 d4 a4 
   a'8 g8 f4 fis4 g4 
   a8 g8 f8 d8 g8 g,8 c4   %10
   c4 b4 c8 b8 a4 

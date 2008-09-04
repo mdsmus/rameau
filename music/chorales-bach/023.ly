@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "23 - Helft mir Gotts Güte preisen"
+  title = "23 - Zeuch ein zu deinen Toren"
   composer = "J. S. Bach"
 }
 
@@ -34,7 +34,7 @@ alto = \relative c' {
     \partial 4 e4 
     e4 e4 e4 d4 
     d4 g8 fis8 g4 e4 
-    e4 a4 a4 gis4 
+    e4 a4~ a4 gis4 
     e2. } a4~ 
   a8 gis8 a4~ a8 gis a8 a,8 %5
   e'2 r4 gis4
@@ -53,7 +53,7 @@ tenor = \relative c' {
     g8 fis8 g8 a8 b4 b4 
     a8 b8 c4 f4 e8 d8 
     c2. } c4 
-  d4 e4 f8 e8 e8 d8   %5
+  d4 e4 f8 e8~ e8 d8   %5
   gis,2 r4 e'4 
   e4 d4 c8 d8 e4 
   a,4 d4 d4 d4 

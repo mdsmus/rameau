@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "60 - O stilles Gotteslamm"
+  title = "60 - Ich freue mich in dir"
   composer = "J. S. Bach"
 }
 

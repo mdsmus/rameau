@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "37 - Wachet doch, erwacht, ihr Schläfer"
+  title = "37 - Jesu, der du meine Seele"
   composer = "J. S. Bach"
 }
 
@@ -34,8 +34,8 @@ alto = \relative c'' {
     a8 b8 c4 b4 a8 gis8 
     a8 b8 a4. gis8 e4 
     e4 a8 g8 f8 e4 d8 
-    d8 e16 f16 e8 fis8 gis2 
-    gis4 } a4 a4 g4   %5
+    d8 e16 f16 e8 fis8 gis2 }
+    gis4 a4 a4 g4   %5
   g8 fis8 g4 fis4 d4 
   c4 g'4 g4 a8 g8 
   a8 b8 c4 b4 g4 

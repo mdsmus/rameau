@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "41 - Was mein Gott will, das g'scheh allzeit"
+  title = "41 - Was mein Gott will, das"
   composer = "J. S. Bach"
 }
 
@@ -28,7 +28,7 @@ soprano = \relative c' {
   g4 c4 c4 b4 
   c4 c4 b4 a4 
   d4. c8 b4 c4 
-  b2 a2 
+  b2 a4
   
 }
 
@@ -48,7 +48,7 @@ alto = \relative c' {
   e4 e4 a4 g4 
   g4 a4 a8 g8 g8 f8 
   f4. e8 d4 c8 d8 
-  e2 e2 
+  e2 e4 
   
 }
 
@@ -68,7 +68,7 @@ tenor = \relative c' {
   b4 c4 d4 d4 
   e4 e4 f8 e8 e8 d8 
   d8 c8 b8 a8 e'2~ 
-  e8 a,8 gis4 cis2 
+  e8 a,8 gis4 cis
   
 }
 
@@ -88,7 +88,7 @@ baixo = \relative c {
   e4 a8 g8 fis4 g4 
   c,4 a4 d8 e8 f4 
   b,8 c8 d4 gis,8 e'8 c8 a8 
-  e'2 a,2 
+  e'2 a,4
   
 }
 

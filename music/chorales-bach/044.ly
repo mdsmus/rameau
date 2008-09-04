@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "44 - Mach's mit mir, Gott, nach deiner Güt"
+  title = "44 - Mach's mit mir, Gott, nach deiner Güt'"
   composer = "J. S. Bach"
 }
 
@@ -22,7 +22,7 @@ soprano = \relative c' {
   d4 cis4 b4 a4   %5
   g4 fis4 e4 a4 
   g4 fis4 e8 fis8 g4 
-  fis4 e4 d2 
+  fis4 e4 d
   
 }
 
@@ -36,7 +36,7 @@ alto = \relative c' {
   fis4 e4 d8 e8 fis4   %5
   e4 a,8 b8 cis4 fis8 e8 
   d8 e4 d4 cis8 d4 
-  d4 cis4 a2 
+  d4 cis4 a 
   
 }
 
@@ -50,7 +50,7 @@ tenor = \relative c {
   a8 fis8 g8 a8 b4 b4   %5
   b8 cis8 d4 a4 cis4 
   b8 a8 a4 a4 g4 
-  a4. g8 fis2 
+  a4. g8 fis4
   
 }
 
@@ -64,7 +64,7 @@ baixo = \relative c {
   fis8 d8 e8 fis8 g8 fis8 e8 dis8   %5
   e4 fis8 gis8 a4 fis4 
   b,8 cis8 d4 a4 b4 
-  a8 g8 a4 d,2 
+  a8 g8 a4 d, 
   
 }
 

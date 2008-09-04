@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "74 - Herzlich tut mich verlangen"
+  title = "74 - O Haupt voll Blut un Wunden"
   composer = "J. S. Bach"
 }
 

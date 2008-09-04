@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "76 - Wie nach einer Wasserquelle"
+  title = "76 - Freu' dich sehr, o meine Seele"
   composer = "J. S. Bach"
 }
 

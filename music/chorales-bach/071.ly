@@ -73,8 +73,8 @@ baixo = \relative c {
   \repeat volta 2 {
     \partial 4 dis4 
     e2~ e8 fis8 g8 fis8 
-    e8 d8 c4 b4 e4 
-    fis4 g4 c,8 d8 c8 b8 
+    e8 d8 c4 b4 e,4 
+    fis4 g4 c8 d8 c8 b8 
     a2 e4 } b'4 
   c4 d4 dis4 e4   %5
   d8 c8 d4 g,4 g'4 
@@ -84,7 +84,7 @@ baixo = \relative c {
   d4 d8 c8 b4 c8 b8   %10
   a8 g8 f4 e4 a4 
   b4 cis8 dis8 e8 fis8 g8 a8 
-  b4 b,4 e4
+  b4 b,4 e,4
   
 }
 
