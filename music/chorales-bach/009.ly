@@ -34,13 +34,13 @@ alto = \relative c' {
     \partial 4 d4 
     e4 fis4 d8 e8 fis4 
     e8 fis8 g4 fis4 fis4 
-    e4 d8 e8 fis4 g4 
+    e4 d8 e8 fis4 g4~ 
     g4 fis4 d4 } fis8 g8 
   a4. gis8 a8 gis8 a4   %5
   a4 gis4 e4 e8 dis8 
   e4 e4 e8 fis8 g8 fis8 
   fis8 g8 a4 g4 a4 
-  g8 a8 b4 b8 a8 a8 g8 
+  g8 a8 b4~ b8 a8~ a8 g8 
   g2 fis4 g8 fis8   %10
   e4 fis4 g8 a8 d,4 
   e4 d4 d4 
@@ -56,7 +56,7 @@ tenor = \relative c' {
   fis8 e8 d4 e4 fis4   %5
   b,4 e8 d8 c4 g8 a8 
   b8 c8 d8 e8 c4 cis4 
-  b4 b4 b4 d8 c8 
+  b4 b4 b4 d4 
   d4 g4 g,8 a8 b4 
   e8 d8 e8 cis8 d4 d4~   %10
   d8 c8 c8 b8 b8 a8 g4 

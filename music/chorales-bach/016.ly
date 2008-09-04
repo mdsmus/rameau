@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "16 - Es woll uns Gott genädig sein 2"
+  title = "16 - Es woll' uns Gott genadig sein"
   composer = "J. S. Bach"
 }
 
@@ -31,7 +31,7 @@ soprano = \relative c'' {
   d4 cis4 b4 d4 
   cis4 b4 a8 g8 fis8 g8   %15
   a4 g4 fis2~ 
-  fis1 
+  fis2.
   
 }
 
@@ -54,7 +54,7 @@ alto = \relative c' {
   fis8 gis8 a4 gis4 fis4 
   e8 fis8 g4 fis8 e8 d4   %15
   e2. d4~ 
-  d4 cis8 b8 cis2 
+  d4 cis8 b8 cis4
   
 }
 
@@ -77,7 +77,7 @@ tenor = \relative c' {
   cis8 b8 e4 e4 a,8 b8 
   cis4 d4 d4 a4   %15
   a4 b4 cis4 b4~ 
-  b4 ais8 gis8 ais2 
+  b4 ais8 gis8 ais4
   
 }
 
@@ -100,7 +100,7 @@ baixo = \relative c {
   b4 cis8 dis8 e4 fis8 gis8 
   a4 b8 cis8 d4 d,4   %15
   c4 b4 ais4 b4 
-  fis1 
+  fis2.
   
 }
 

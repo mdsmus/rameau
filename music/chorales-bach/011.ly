@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -21,7 +20,7 @@ soprano = \relative c {
     d d d e 
     c2 c4 c 
     b c d d 
-    c2. } e4
+    c2. } b4
   b b b b 
   c2 c4 b 
   b b b b 
@@ -93,23 +92,28 @@ tenor = \relative c {
     b a b c d4 c8 bes 
     bes4 a8 g a4 e' 
     d c2 b4 
-    g2. } c4
+    g2. } d'4
   d8 e fis4 e e 
   e2 e4 f 
   f e8 f g4 f4~
   \partial 2.  f e8 d e4
   \time 3/4
   \partial 4 c 
-  c d e d2 g4 c,2 
-  d4 e2 g4 
-  g f e f 
-  e2 d 
-  e4 f2 c4 
-  b e2 a,4 
-  b c2 b8 a 
-  b4 c2 a4 
-  a2 d4 e2 e4 a, d 
-  bes
+  c d e 
+  d2 g4 
+  c,2 d4 
+  e2 g4 
+  g f e 
+  f e2 
+  d e4 
+  f2 c4 
+  b e2 
+  a,4 b c~
+  c b8 a b4 
+  c2 a4 
+  a2 d4 
+  e2 e4 
+  a, d bes
   \partial 2 a2
   \time 4/4
   \partial 4 c4 
@@ -130,7 +134,7 @@ baixo = \relative c {
     g'8 fis g a b g c4 
     f,2 f4 e8 f 
     g4 a8 g f4 g8 g, 
-    c2. } c4
+    c2. } g4
   g'8 fis e dis e d c b 
   a2 a4 d 
   e8 f g a g[ f e d]

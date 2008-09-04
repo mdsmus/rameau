@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "8 - Freuet euch, ihr Christen alle"
+  title = "8 - Freuet euch, ihr Christen"
   composer = "J. S. Bach"
 }
 
@@ -91,8 +91,8 @@ baixo = \relative c {
   des4 ees4 aes,2 
   des4 c8 bes8 c4 des4   %5
   bes4 c4 f,2 
-  f'8 g8 a8 f8 bes,8 c8 des8 bes8 
-  ees8 f8 g8 ees8 aes4 aes4 
+  f'8 g8 a8 f8 bes8 c8 des8 bes8 
+  ees,8 f8 g8 ees8 aes4 aes4 
   des,8 ees8 f8 des8 bes8 c8 des8 bes8 
   ees8 c8 f4 bes,2   %10
   bes'4 aes4 g4 f4 

@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "10 - Aus tiefer Not schrei ich zu dir 1"
+  title = "10 - Aus tiefer Not schrei' ich zu dir"
   composer = "J. S. Bach"
 }
 

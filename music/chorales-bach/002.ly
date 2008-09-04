@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "2 - Ich dank dir, lieber Herre"
+  title = "2 - Ich dank' dir, lieber Herre"
   composer = "J. S. Bach"
 }
 
