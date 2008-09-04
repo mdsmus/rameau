@@ -19,7 +19,7 @@
 (defparameter *mode-length* 5)
 (defparameter *7th-length* 4)
 (defparameter *value* 96)
-(defparameter *neural-version* "-006-")
+(defparameter *neural-version* "-007-")
 (defparameter *neural-path* (concat *rameau-path* "algorithms/master-" *neural-version* "-"))
 
 ;;; general functions
@@ -165,7 +165,7 @@
 (defun write-data-set (data training-data value)
   (let ((size (length data)))
     (format t "* writing training data ~a~%" training-data)
-    (with-open-file (f training-data :direction :output :if-exists :supersede)
+    (with-open-file (f (concat *neural-path* training-data) :direction :output :if-exists :supersede)
       (iter (initially (format f "~a ~a ~a~%" size value 109))
             (for d in data)
             (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
@@ -174,9 +174,9 @@
 (defun train-net (net training-data value net-file hidden-units)
   (setf (symbol-value net) (make-net value hidden-units 109))
   (format t "* training the network~%")
-  (train-on-file (symbol-value net) training-data 1500 100 0.1)
+  (train-on-file (symbol-value net) (concat *neural-path* training-data) 1500 100 0.1)
   (format t "* saving ~a~%" net-file)
-  (save-to-file (symbol-value net) net-file))
+  (save-to-file (symbol-value net) (concat *neural-path* net-file)))
 
 ;;; e-chord
 (defun e-chord-training-data ()
@@ -188,9 +188,9 @@
 (defun train-e-chord-net (alg)
   (let (net)
     (declare (special net))
-    (unless (cl-fad:file-exists-p (e-chord-data alg))
+    (unless (cl-fad:file-exists-p (concat *neural-path* (e-chord-data alg)))
       (e-chord-data-set alg))
-    (unless (cl-fad:file-exists-p (e-chord-fann alg))
+    (unless (cl-fad:file-exists-p (concat *neural-path* (e-chord-fann alg)))
       (train-net 'net 
                  (e-chord-data alg)
                  *value*
@@ -198,11 +198,11 @@
                  (chord-hidden-units alg)))))
 
 (defun apply-e-chord-net (inputs options alg)
-  (let ((fann-file (e-chord-fann alg))
+  (let ((fann-file (concat *neural-path* (e-chord-fann alg)))
         net)
     (if (cl-fad:file-exists-p fann-file)
         (progn
-          (setf net (load-from-file (e-chord-fann alg)))
+          (setf net (load-from-file fann-file))
           (add-inversions inputs (mapcar #L(run-my-net !1 net #'extract-diff #'make-sonority-pattern)
                                          inputs)))
         (progn
@@ -210,9 +210,10 @@
           (apply-e-chord-net inputs options alg)))))
 
 (defclass chord-net (rameau-algorithm)
-  ((chord-data :accessor e-chord-data :initarg :data :initform (concat *neural-path* "chord-data.fann"))
-   (chord-fann :accessor e-chord-fann :initarg :fann :initform (concat *neural-path* "chord.fann"))
-   (hidden-units :accessor chord-hidden-units :initarg :units :initform 30)))
+  ((chord-data :accessor e-chord-data :initarg :data :initform "chord-data.fann")
+   (chord-fann :accessor e-chord-fann :initarg :fann :initform "chord.fann")
+   (hidden-units :accessor chord-hidden-units :initarg :units :initform 30)
+   (version)))
 
 (defmethod perform-analysis (segments options (alg chord-net))
   (dbg :neural "Starting neural net...~%")
@@ -269,7 +270,7 @@
                  (context-hidden-units alg)))))
 
 (defun apply-context-net (inputs options alg)
-  (let* ((fann-file (context-fann alg))
+  (let* ((fann-file (concat *neural-path* (context-fann alg)))
          (context-before (net-context-before alg))
          (context-after (net-context-after alg))
          (context (butlast (contextualize inputs context-before context-after)
@@ -290,11 +291,12 @@
             (apply-context-net inputs options alg))))))
 
 (defclass context-net (rameau-algorithm)
-  ((context-data :accessor context-data :initarg :data :initform (concat *neural-path* "context-train.data" ))
-   (context-fann :accessor context-fann :initarg :fann :initform (concat *neural-path* "context.fann" ))
+  ((context-data :accessor context-data :initarg :data :initform "context-train.data" )
+   (context-fann :accessor context-fann :initarg :fann :initform "context.fann" )
    (context-before :accessor net-context-before :initarg :context-before :initform 1)
    (context-after :accessor net-context-after :initarg :context-after :initform 0)
-   (hidden-units :accessor context-hidden-units :initarg :units :initform 22)))
+   (hidden-units :accessor context-hidden-units :initarg :units :initform 22)
+   (version)))
 
 (defmethod perform-analysis (segments options (alg context-net))
   (apply-context-net segments options alg))
