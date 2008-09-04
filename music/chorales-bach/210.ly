@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "210 - Christe, du Beistand deiner Kreuz-gemeine"
+  title = "210 - Christe, du Beistand deiner Kreuzgemeine"
   composer = "J. S. Bach"
 }
 
@@ -28,7 +28,7 @@ soprano = \relative c' {
   g4 g4 g4 fis4 
   g2 r4 e4 
   f4 g4 e2 
-  d1   %15
+  d2.   %15
   
 }
 
@@ -48,7 +48,7 @@ alto = \relative c' {
   d4 d4 ees4 d4 
   d2 r4 cis4 
   d4 d2 cis4 
-  a1   %15
+  a2.   %15
   
 }
 
@@ -68,7 +68,7 @@ tenor = \relative c {
   g4. f8 ees8 bes'8 a8 c8 
   bes2 r4 a4 
   a4 g8 bes8 a8 e8 a8 g8 
-  fis1   %15
+  fis2.   %15
   
 }
 
@@ -88,7 +88,7 @@ baixo = \relative c {
   bes4 b4 c4 d4 
   g,2 r4 a4 
   d8 c8 bes8 g8 a2 
-  d1   %15
+  d2.   %15
   
 }
 \score {

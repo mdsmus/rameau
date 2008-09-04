@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "219 - Ach, wie groß ist Gottes Güt und Wohltat"
+  title = "219 - O wie selig seid ihr doch, ihr Frommen"
   composer = "J. S. Bach"
 }
 

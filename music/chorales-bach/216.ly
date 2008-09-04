@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "216 - Es ist genug"
+  title = "216 - Es ist genug, so nimm, Herr"
   composer = "J. S. Bach"
 }
 

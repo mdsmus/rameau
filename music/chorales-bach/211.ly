@@ -45,7 +45,7 @@ alto = \relative c' {
   g2 g4. fis8   %10
   g8 a8 b4 a8 g8 fis4 
   g2 a4 g8 a8 
-  b8 a8 g8 f8 e4 f4 
+  b8 a8 g8 f8 e4 fis4 
   g2 g8 f8 e4~ 
   e8 fis8 g4 a4. g8~   %15
   g8 f16 e16 f8 e16 d16 e2 

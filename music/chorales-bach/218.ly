@@ -1,8 +1,7 @@
-
 \version "2.10.33"
 
 \header {
-  title = "218 - Herr, dein Ohren zu mir neige"
+  title = "218 - Laß, o Herr, dein Ohr sich neigen"
   composer = "J. S. Bach"
 }
 

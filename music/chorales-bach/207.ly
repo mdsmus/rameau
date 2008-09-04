@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "207 - Spiritus sancti gratia"
+  title = "207 - Des heil'gen Geistes reiche Gnad'"
   composer = "J. S. Bach"
 }
 

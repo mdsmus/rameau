@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "217 - Herr Jesu Christ, meins Lebens Licht"
+  title = "217 - Ach Gott, wie manches Herzeleid"
   composer = "J. S. Bach"
 }
 
