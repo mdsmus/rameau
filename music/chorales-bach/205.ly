@@ -1,4 +1,3 @@
-
 \version "2.10.33"
 
 \header {
@@ -167,13 +166,62 @@ tenor = \relative c' {
   bes a8 gis a4 g   %% 45
   g e f2
   e4 b'~ b a~
-  a gis8 fis g2
+  a gis8 fis gis2
   
 }
 
 
-baixo = \relative c {
-  \partial 4 
+baixo = \relative c, {
+  \partial 4 e4
+  e' d c d
+  a2 r4 a'
+  e8 fis g4 c, d
+  g,2. \repeat volta 2 { e'4
+  a d,8 e16 fis g4. fis8    %% 05
+  g e a4 d, cis
+  d e f8 e d4
+  c d g,} \repeat volta 2 { c
+  b a8 f' d b e4
+  a,2.} e'8 fis    %% 10
+  g fis e4 b cis
+  d g f8 e d4 
+  c d g, \repeat volta 2 { e'8 d
+  c d e fis g4 d
+  g, a d, d'8 e    %% 15
+  f4 e d g8 f
+  e c d4 g,} \repeat volta 2 {d'
+  cis d e4. fis8
+  g4 cis, d f
+  a,8 bes c4 f,8 g a b    %% 20
+  c4 g c} f,
+  g a8 b c4 b
+  a d g, g'8 f
+  e d c4 f8 g16 a bes4~
+  bes8 cis, d4 a a  %% 25
+  b a8 b c4 g
+  f g c c8 d
+  e4 c f, bes8 a
+  g4 d' a d8 c
+  b8 a g4 c g    %% 30
+  a8 f g4 c, c'8 d
+  e f g4 f8 e d4
+  d8 cis d4 a a'
+  e8 d c4 f8 e d4
+  a'8 g f d a'4 a,8 b   %% 35
+  c d e4. d8 e f
+  g f g g, c4 \repeat volta 2 { a
+  d c8 d e f g f
+  e d cis4 d f8 e
+  d4 e f a,8 b    %% 40
+  c4 g a} d
+  d8 c bes a g4 f
+  e d a' d8 c
+  bes a g4 f8 g16 a bes4~
+  bes8 g d'4 a b    %% 45
+  c2. b8 a
+  gis4. e8 a b c d
+  e2 e,
+
 
 }
 
