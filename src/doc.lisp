@@ -19,6 +19,11 @@
     (serious-condition () (list function-name))
     (:no-error (expr) (mapcar #'first expr))))
 
+(defun functions-used-by :private (function-name)
+  (handler-case (swank-backend:list-callers function-name)
+    (serious-condition () (list function-name))
+    (:no-error (expr) (mapcar #'first expr))))
+
 (defun get-package-name :private (symbol)
   (package-name (symbol-package symbol)))
 
@@ -43,7 +48,8 @@
         (documentation symbol 'function)
         (find-source-file-of-function symbol)
         (when (eql type :function)
-          (remove-functions-not-in-rameau (function-uses symbol)))))
+          (remove-functions-not-in-rameau (function-uses symbol))
+          (remove-functions-not-in-rameau (functions-used-by symbol)))))
 
 (defun create-documentation-sexp :private (package)
   (iter (for symbol in-package package :external-only t)
