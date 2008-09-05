@@ -2,43 +2,42 @@
 (defpackage #:rameau
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:import-from #:alexandria "SWITCH" "FLATTEN")
-  (:export
-   #:tonal
-   #:tempered
-   #:a
-   #:b
-   #:c
-   #:d
-   #:e
-   #:f
-   #:g
-   #:aes
-   #:bes
-   #:ces
-   #:des
-   #:ees
-   #:fes
-   #:gis
-   #:ais
-   #:bis
-   #:cis
-   #:dis
-   #:eis
-   #:fis
-   #:gis
-   #:staff
-   #:score
-   #:no-op-node
-   #:ast-node
-   #:layout
-   #:node-text
-   #:node-expr
-   #:alg-name
-   #:alg-description
-   )
+  (:export #:tonal
+           #:tempered
+           #:a
+           #:b
+           #:c
+           #:d
+           #:e
+           #:f
+           #:g
+           #:aes
+           #:bes
+           #:ces
+           #:des
+           #:ees
+           #:fes
+           #:gis
+           #:ais
+           #:bis
+           #:cis
+           #:dis
+           #:eis
+           #:fis
+           #:gis
+           #:staff
+           #:score
+           #:no-op-node
+           #:ast-node
+           #:layout
+           #:node-text
+           #:node-expr
+           #:alg-name
+           #:alg-description
+           )
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defgeneric
                           #:defparameter #:defvar #:defstruct #:defclass)
-  (:use #:genoslib  #:cl #:lisp-unit #:iterate)
+  (:use #:genoslib #:cl #:lisp-unit #:iterate #:cl-who)
   (:documentation "The core \\texttt{rameau} framework."))
 
 (in-package :rameau)
