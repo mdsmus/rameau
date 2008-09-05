@@ -1,108 +1,51 @@
 (in-package :rameau)
-#+sbcl (eval-when (:compile-toplevel :load-toplevel :execute)
-         (require 'sb-introspect))
 
-(defun function-name :private (f)
-  (multiple-value-bind (lam closure-p name) (function-lambda-expression f)
-    (declare (ignore lam closure-p))
-    name))
+(defparameter *rameau-packages*
+  '("RAMEAU-OPTIONS" "RAMEAU-BASE" "GENOSLIB" "RAMEAU-WEB"
+    "RAMEAU-MAIN" "RAMEAU-TERMINAL" "RAMEAU-LILY" "RAMEAU-HMM"
+    "RAMEAU-NEURAL" "RAMEAU-KNN" "RAMEAU-TREE-ENARM" "RAMEAU-PARDO"))
 
-(defun rameau-functionp :private (f)
-  (and f
-       (not (listp f))
-       (fboundp f)
-       (not (listp (function-name (symbol-function f))))))
+(defun find-source-file-of-function :private (function-name)
+  (pathname-name (cadadr (swank-backend:find-source-location (symbol-function function-name)))))
 
-(defun escape-latex :private (s)
-  (let* ((s (format nil "~a" s))
-         (s (cl-ppcre:regex-replace-all "&" s "\\\\&"))
-         (s (cl-ppcre:regex-replace-all "#" s "\\\\#"))
-         (s (cl-ppcre:regex-replace-all "%" s "\\\\%"))
-         (s (cl-ppcre:regex-replace-all "\\$" s "\\\\$")))
-    s))
+(defun function-uses :private (function-name)
+  (handler-case (swank-backend:list-callees function-name)
+    (serious-condition () (list function-name))
+    (:no-error (expr) (mapcar #'first expr))))
 
-(defun escape-label :private (s)
-  (let* ((s (format nil "~a" s))
-         (s (cl-ppcre:regex-replace-all "&" s "-and-"))
-         (s (cl-ppcre:regex-replace-all "#" s "-pound-"))
-         (s (cl-ppcre:regex-replace-all "%" s "percent-"))
-         (s (cl-ppcre:regex-replace-all "\\$" s "-dollar-"))
-         (s (cl-ppcre:regex-replace-all "\\>" s "to-")))
-    s))
+(defun get-package-name :private (symbol)
+  (package-name (symbol-package symbol)))
 
-(defun add-ref :private (s)
-  (format nil "\\hyperref{~a}{~a (}{)}{sec:~(~a~)}" (escape-latex s) (escape-latex s) (escape-label s)))
+(defun rameau-package-p :private (item)
+  (flet ((get-package-name (el)
+           (if (listp el)
+               (unless (listp (second el))
+                 (get-package-name (second el)))
+               (get-package-name el))))
+    (when (member (get-package-name item) *rameau-packages* :test #'equalp)
+      t)))
 
-(defun print-function-doc :private (f function)
-  (let ((name (function-name function)))
-    (format f "\\section{~(~a~)}~%\\label{sec:~(~a~)}~%"
-            (escape-latex name)
-            (escape-label name))
-    #+sbcl (format f "Syntax: \\texttt{~(~a~)}~%~%"
-                   (escape-latex (stringify (cons name (sb-introspect:function-arglist function)))))
-    (format f "~a~%~%" (cl-ppcre:regex-replace "\\[DONTCHECK\\]"  (documentation function t) ""))
-    (format f "\\begin{tabular}{p{10em}p{30em}}~%")
-    #+sbcl (awhen (sb-introspect:definition-source-pathname (sb-introspect:find-definition-source function))
-             (format f "Defined in &\\textbf{~a.lisp}\\\\~%~%" (escape-latex (pathname-name it))))
-    #+sbcl (awhen (remove-if-not #'rameau-functionp
-                                 (mapcar #'function-name (sb-introspect:FIND-FUNCTION-CALLERS function)))
-             (format f "Used by & ~{~a~^, ~}\\\\~%~%" (mapcar #'add-ref it)))
-    #+sbcl (awhen (remove-if-not #'rameau-functionp
-                                 (mapcar #'function-name (handler-case (sb-introspect:FIND-FUNCTION-CALLEES function)
-                                                           (t nil))))
-             (format f "Uses & ~{~a~^, ~}\\\\~%~%" (mapcar #'add-ref it)))
-    (format f "\\end{tabular}~%~%")
-    ))
+(defun remove-functions-not-in-rameau :private (list)
+  (mapcar #'(lambda (item) (if (listp item) (second item) item))
+          (remove-if-not #'rameau-package-p list)))
 
-(defun write-doc-package :private (f pname symbs)
-  (format f "~%\\chapter{~a}~%\\label{sec:~a}~%" pname pname)
-  (format f "\\begin{quote}~%~a~%\\end{quote}~%~%"
-          (documentation (find-package pname) t))
-  (iter (for s in symbs)
-        (when (= 0 (count-subseq "%" (stringify s)))
-          (print-function-doc f (symbol-function s)))))
+(defun document-function-or-macro :private (symbol &optional (type :function))
+  (list (get-package-name symbol)
+        (stringify symbol)
+        type
+        (stringify (swank-backend:arglist symbol))
+        (documentation symbol 'function)
+        (find-source-file-of-function symbol)
+        (when (eql type :function)
+          (remove-functions-not-in-rameau (function-uses symbol)))))
 
-(defun create-documentation-for (&rest packages)
-  "Create a file named \\texttt{rameau.tex} with the documentation for
-  packages \\texttt{packages}."
-  (with-open-file (f (concat *rameau-path* "/rameau-documentation/rameau.tex")
-                     :direction :output
-                     :if-exists :supersede)
-    (format f "
-\\documentclass{book}
-\\usepackage{graphicx}
-\\usepackage{url}
-\\usepackage[utf8x]{inputenc}
-\\usepackage[T1]{fontenc}
-\\usepackage[english]{babel}
-\\usepackage{color}
-\\usepackage{times}
-\\usepackage{html}
+(defun create-documentation-sexp :private (package)
+  (iter (for symbol in-package package :external-only t)
+        (when (fboundp symbol)
+          (collect (if (macro-function symbol)
+                       (document-function-or-macro symbol :macro)
+                       (document-function-or-macro symbol :function))))))
 
-\\title{Rameau Programmer's Guide}
-\\author{Pedro Kroger and Alexandre Passos}
 
-\\newcommand{\\function}[2]{
-  \\noindent\\texttt{#1}\\hfill\\textbf{[function]}\\\\
-  #2
-\\vspace{2em}
-}
-
-\\newcommand{\\example}[2]{
-  \\par Example: \\texttt{#1} $\\rightarrow$ #2
-}
-
-\\begin{document}
-\\maketitle
-\\tableofcontents
-")
-    (iter (for p in (mapcar #'find-package packages))
-          (for pname in packages)
-          (for symbs = (iter (for symb in-package p :external-only t)
-                             (when (rameau-functionp symb)
-                               (collect symb))))
-          (format t "Documenting ~a...~%" pname)
-          (write-doc-package f pname (sorted symbs #'string-lessp :key #'stringify)))
-    (format f "~%\\end{document}~%")))
-
-;; (create-documentation-for :genoslib)
+(defun creat-documentation-for-all-packages ()
+  (mapcar #'create-documentation-sexp *rameau-packages*))
