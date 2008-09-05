@@ -6,6 +6,8 @@
   - abstrair buscas
 - novas codificaçoes (fazer artigo comparativo)
 - binarios instalaveis (releases), problema home hardcoded em .data
+  - erro se nao tem libfann (lidar com erro)
+  - erro se nao tem lilypond (mostrar na gui)
 - documentação usuario
 - documentação api (terminar)
 - cl lily
