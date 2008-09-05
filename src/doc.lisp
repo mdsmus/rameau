@@ -1,6 +1,12 @@
-(in-package :rameau)
+(defpackage :rameau-doc
+  (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
+  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
+  (:use :rameau :cl :iterate :rameau-options :genoslib))
+
+(in-package :rameau-doc)
 
 (defparameter *rameau-packages*
+  ;;; falta rameau e rameau-doc
   '("RAMEAU-OPTIONS" "RAMEAU-BASE" "GENOSLIB" "RAMEAU-WEB"
     "RAMEAU-MAIN" "RAMEAU-TERMINAL" "RAMEAU-LILY" "RAMEAU-HMM"
     "RAMEAU-NEURAL" "RAMEAU-KNN" "RAMEAU-TREE-ENARM" "RAMEAU-PARDO"))
@@ -45,7 +51,6 @@
           (collect (if (macro-function symbol)
                        (document-function-or-macro symbol :macro)
                        (document-function-or-macro symbol :function))))))
-
 
 (defun creat-documentation-for-all-packages ()
   (mapcar #'create-documentation-sexp *rameau-packages*))
