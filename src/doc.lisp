@@ -1,7 +1,7 @@
 (defpackage :rameau-doc
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
-  (:use :rameau :cl :iterate :rameau-options :genoslib))
+  (:use :rameau :cl :iterate :genoslib))
 
 (in-package :rameau-doc)
 
@@ -49,7 +49,8 @@
         (find-source-file-of-function symbol)
         (when (eql type :function)
           (remove-functions-not-in-rameau (function-uses symbol))
-          (remove-functions-not-in-rameau (functions-used-by symbol)))))
+          ;;(remove-functions-not-in-rameau (functions-used-by symbol))
+          )))
 
 (defun create-documentation-sexp :private (package)
   (iter (for symbol in-package package :external-only t)
