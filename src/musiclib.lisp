@@ -13,6 +13,10 @@
      (declare (special *system*))
      ,@body))
 
+(defmacro deftemplates (name &body templates)
+  "[DONTCHECK]"
+  `(defparameter ,name ',templates))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun get-system-item (item)
@@ -135,7 +139,8 @@ string. The central octave has the value 8."
           (t 0))))
 
 (defun code->notename (number)
-  "Returns a note nome given its numeric code."
+  "Returns a note nome in the format (name accidentals) given its
+numeric code."
   (nth (module number) (get-system-notes *system*)))
 
 (defun number-of-accidentals (acc-string representation)
@@ -152,8 +157,7 @@ first argument to this function, otherwise it could mistakenly return
 
 (defun match-note-representation (note representation)
   "Returns non-nil if a note matches the representation.
-
-EXAMPLE: \\begin{verbatim}(match-note-representation \"cis\" 'latin)\\end{verbatim} returns nil."
+EXAMPLE: (match-note-representation \"cis\" 'latin) returns nil."
   (or (search (get-accidental 'flat representation) note)
       (search (get-accidental 'sharp representation) note)))
 
@@ -377,9 +381,41 @@ EXAMPLE: (equal-sets? '(0 3 7) '(8 1 4)) returns T."
               t))
     (prime (when (equal (prime-form set1) (prime-form set2)) t))))
 
-(defmacro deftemplates (name &body templates)
-  "[DONTCHECK]"
-  `(defparameter ,name ',templates))
+;;; Tonal functions
+
+(defun get-scale-mode (mode)
+  (case mode
+    (:major '(0 14 28 41 55 69 83))
+    (:minor '(0 14 27 41 55 68 82))
+    (t (error "I don't know mode ~a. Tonal modes are usualy major or
+    minor." mode))))
+
+(defun roman->number (roman-string)
+  "Convert a roman numeral from i to vii (writen as string) to it's
+correspondent arabic number. It will return NIL for numbers larger
+than vii because we don't use that in functional analysis. It doen't
+accept iiii for 4, only iv."
+  (let* ((roman-numbers '("i" "ii" "iii" "iv" "v" "vi" "vii"))
+        (number (position roman-string roman-numbers :test #'equalp)))
+    (when number (1+ number))))
+
+(defun get-function-degree (tonal-function center mode)
+  "Return the tonal code of the functional degree of a key. The
+question that this function returns is 'what is the V degree of C
+major?' tonal-function and center must be strings, although case
+doesn't matter. mode should be a keyword. tonal-function can have a b
+or # as a prefix (as in bvi or #iii). EXAMPLE: (get-function-degree
+\"iv\" \"a\" :major) will return 14, that is D."
+  (flet ((%get-function-number (string)
+           (nth (1- (roman->number string)) (get-scale-mode mode))))
+    (with-system tonal
+      (module (+ (parse-note center)
+                 (switch ((char tonal-function 0))
+                   (#\b (1- (%get-function-number (subseq tonal-function 1))))
+                   (#\# (1+ (%get-function-number (subseq tonal-function 1))))
+                   (t (%get-function-number tonal-function))))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defparameter *notas-interessantes-tonal*
   (loop for i in '(0 14 28 41 55 69  83)
