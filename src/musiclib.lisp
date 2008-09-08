@@ -220,7 +220,7 @@ accidental) as code->notename would return."
 
 (defun enharmonicaly-equal-p (notea noteb)
   "Compare if two notes are enarmonically equivalent. Both notes
-shoulbe be represented as strings."
+should be represented as strings."
   (with-system tempered
     (equal (parse-note notea) (parse-note noteb))))
 
@@ -386,9 +386,13 @@ EXAMPLE: (equal-sets? '(0 3 7) '(8 1 4)) returns T."
 (defun get-scale-mode (mode)
   (case mode
     (:major '(0 14 28 41 55 69 83))
-    (:minor '(0 14 27 41 55 68 82))
+    (:minor '(0 14 27 41 55 68 83))
     (t (error "I don't know mode ~a. Tonal modes are usualy major or
     minor." mode))))
+
+(defun number->roman (number)
+  "Return an upercase roman numeral."
+  (format nil "~@R" number))
 
 (defun roman->number (roman-string)
   "Convert a roman numeral from i to vii (writen as string) to it's
@@ -414,6 +418,29 @@ or # as a prefix (as in bvi or #iii). EXAMPLE: (get-function-degree
                    (#\b (1- (%get-function-number (subseq tonal-function 1))))
                    (#\# (1+ (%get-function-number (subseq tonal-function 1))))
                    (t (%get-function-number tonal-function))))))))
+
+(defun number->accidental (number &optional (representation 'latin))
+  "Convert a number to it's representation as accidents.
+  EXAMPLE: (number->accidental -3) => \"bbb\""
+  (cond ((plusp number)
+         (repeat-string number (get-accidental 'sharp representation)))
+        ((minusp number)
+         (repeat-string number (get-accidental 'flat representation)))
+        ((zerop number) "")))
+
+(defun get-roman-function (fundamental chord-mode center scale-mode)
+  "Return the roman function of a fundamental in given center.
+  fundamental and center must be strings while mode must be a keyword.
+  get-roman-function is smart enough to understand different inputs
+  for notes such as cis and c#."
+  (with-system tonal
+    (let* ((interval (interval (parse-note fundamental) (parse-note center)))
+           (interval-code (interval->code interval))
+           (base-note (nth (1- (first interval-code)) (get-scale-mode scale-mode)))
+           (fn (if (eql chord-mode :minor) #'string-downcase #'identity)))
+      (format nil "~a~a"
+              (number->accidental (- interval base-note))
+              (funcall fn (number->roman (first interval-code)))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
