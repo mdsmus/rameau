@@ -1,7 +1,4 @@
 (in-package #:rameau)
-(defparameter *augmented-sixth-templates* '((al (0 28 55 70))
-                                            (it (0 28 70))
-                                            (fr (0 28 42 70))))
 
 (defun expand-non-chord-tones :private (stream char)
   "[DONTCHECK]"
@@ -85,13 +82,17 @@
 (defstruct (chord (:print-function print-chord))
   root 7th 9th 11th 13th bass inversion mode)
 
+(defun %get-augmented-sixth :private (type)
+  (get-item type '((al (0 28 55 70))
+                   (it (0 28 70))
+                   (fr (0 28 42 70)))))
+
 (defstruct (augmented-sixth
-             (:constructor make-augmented-sixth
-                           (&key type (template (second (assoc type *augmented-sixth-templates*)))))
+             (:constructor make-augmented-sixth (&key type))
              (:print-function print-augmented-sixth))
   type
   key
-  template)
+  (template (%get-augmented-sixth type)))
 
 (defun chord-interval-code (root bass)
   "Return the interval-code of the interval between the root and
