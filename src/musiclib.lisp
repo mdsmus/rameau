@@ -430,9 +430,9 @@ or # as a prefix (as in bvi or #iii). EXAMPLE: (get-function-degree
 
 (defun get-roman-function (fundamental chord-mode center scale-mode)
   "Return the roman function of a fundamental in given center.
-  fundamental and center must be strings while mode must be a keyword.
-  get-roman-function is smart enough to understand different inputs
-  for notes such as cis and c#."
+  fundamental and center must be strings while chord-mode and
+  scale-mode must be keywords. get-roman-function is smart enough to
+  understand different inputs for notes such as cis and c#."
   (with-system tonal
     (let* ((interval (interval (parse-note fundamental) (parse-note center)))
            (interval-code (interval->code interval))

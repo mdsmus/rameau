@@ -1,6 +1,7 @@
 (defpackage :genoslib
   (:import-from #:arnesi "AIF" "IT" "LAST1")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
+  (:import-from #:alexandria "SWITCH" "FLATTEN")
   (:use #:cl #:iterate)
   (:export
    #:maj
