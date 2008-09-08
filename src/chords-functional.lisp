@@ -30,11 +30,12 @@
         ("(iii|ii|iv|i|v|vi|vii|III|II|IV|I|V|VI|VII)(.*)?" function)
       (destructuring-bind (&optional inversion 7th)
           (match-inversion (cl-ppcre:split "\\." rest))
+        ;;; TODO usar center-function para achar centro real
         (make-fchord :root nil
                      :bass nil
                      :7th 7th
                      :inversion inversion
-                     :mode (if (upper-case-p (char roman-function 0)) 'major 'minor)
+                     :mode (if (upper-case-p (char roman-function 0)) :major :minor)
                      :function (1+ (position roman-function *roman-functions* :test #'equalp))
                      :center center)))))
 
@@ -51,4 +52,20 @@
         (for chords = (rest item))
         (nconcing (parse-fchords chords center))))
 
-(read-fchords (read-file-as-sexp (concat *rameau-path* "answer-sheets/examples/001.fun") :preserve))
+(defmethod chord->fchord ((chord chord) center scale-mode)
+  "Convert a chord of type 'chord' to a functional chord according to
+center. center must be a string and scale-mode a keyword."
+  (make-fchord :root (chord-root chord)
+               :bass (chord-bass chord)
+               :inversion (chord-inversion chord)
+               :mode (chord-mode chord)
+               :7th (chord-7th chord)
+               :9th (chord-9th chord)
+               :11th (chord-11th chord)
+               :13th (chord-13th chord)
+               :function (get-roman-function (chord-root chord)
+                                             (chord-mode chord)
+                                             center
+                                             scale-mode)))
+
+;;(read-fchords (read-file-as-sexp (concat *rameau-path* "answer-sheets/examples/001.fun") :preserve))
