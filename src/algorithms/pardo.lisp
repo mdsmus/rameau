@@ -1,10 +1,12 @@
 (defpackage :rameau-pardo
-  (:import-from #:arnesi "AIF" "IT" "LAST1")
+  (:import-from #:arnesi "AIF" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
   (:use #:rameau #:cl #:genoslib)
   (:documentation "Pardo and Birmingham's algorithm for chord labeling"))
 
 (in-package #:rameau-pardo)
+
+(enable-sharp-l-syntax)
 
 (deftemplates *pardo-templates* 
   (("" "") (0 4 7))
@@ -200,6 +202,17 @@
 (defmethod perform-analysis (segments options (alg es-pardo))
   (incf-pardo-classify segments options alg))
 
-(add-algorithm (make-instance 'es-pardo
+(defmethod functional-analysis (segments options (alg es-pardo))
+  (let* ((analysis (incf-pardo-classify segments options alg))
+         (first-chord (first analysis))
+         (root (chord-root first-chord))
+         (mode (if (or (equal (chord-mode first-chord) "") (null (chord-mode first-chord)))
+                   :major
+                   :minor)))
+    (mapcar #L(rameau::chord->fchord !1 root mode) analysis)))
+
+(let ((es-pb (make-instance 'es-pardo
                               :name "ES-PB"
-                              :description "Our extension of Pardo and Birmingham's algorithm."))
+                              :description "Our extension of Pardo and Birmingham's algorithm.")))
+  (add-algorithm es-pb)
+  (add-falgorithm es-pb))

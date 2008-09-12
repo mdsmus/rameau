@@ -62,7 +62,7 @@
 
 (defmethod functional-analysis (segments options (algorithm rameau-algorithm))
   (declare (ignore options algorithm))
-  (mapcar #L(make-fchord :function 1 :center (print-event-note (first !1))) segments))
+  (mapcar #L(make-fchord :function 1 :center (event-pitch (first !1)) :key-mode :major) segments))
 
 (defgeneric do-options (algorithm options)
   (:documentation "Process algorithm-specific options"))

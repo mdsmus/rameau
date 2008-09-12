@@ -16,6 +16,7 @@
 (defun print-fchord (struct stream depth)
   "Print \\texttt{struct} to \\texttt{stream}."
   (declare (ignore depth))
+  (unless (stringp (fchord-center struct))
   (let* ((roman (nth (1- (fchord-function struct)) *roman-functions*))
          (mode (case (fchord-mode struct)
                  (:major (string-upcase roman))
@@ -29,6 +30,7 @@
          (accidents (if (< (fchord-accidents struct) 0) "b" "#"))
          (accidents (repeat-string (abs (fchord-accidents struct)) accidents)))
     (format stream "~a:~a~a" center accidents mode)))
+  )
          
 (defstruct (fchord (:print-function print-fchord))
   root 7th 9th 11th 13th bass inversion mode function center accidents key-mode)
@@ -66,7 +68,6 @@
                (center-mode (if (upper-case-p (char center 0)) :major :minor))
                (root (+ center-pitch (nth (1- tonal-function) (get-scale-mode center-mode))))
                (mode (parse-mode (char roman-function 0) mode-symbol 7th)))
-        ;;; TODO usar center-function para achar centro real
           (if center-function
               (%parse-fchord function (make-center root mode))
               (make-fchord :root root
@@ -129,5 +130,5 @@ center. center must be a string and scale-mode a keyword."
 
 ;; (read-fchords (read-file-as-sexp (concat *rameau-path* "answer-sheets/chorales-bach/006.fun") :preserve))
 ;; (path-parse-functional-answer-sheet "/home/top/programas/analise-harmonica/music/chorales-bach/006.ly")
-;; (%parse-fchord '|vi6| "F")
-;; (fchord-function (chord->fchord (make-chord :root "a" :mode :major) "B" :minor))
+;; (%parse-fchord "vi6" "F")
+;; (fchord-function (chord->fchord (make-chord :root "a" :mode "") "B" :minor))
