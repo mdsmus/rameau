@@ -47,10 +47,14 @@
           chords))
 
 (defun read-fchords (list)
-  (iter (for item in (sublist-of-args list #\@))
-        (for center = (subseq (symbol-name (first item)) 1))
-        (for chords = (rest item))
-        (nconcing (parse-fchords chords center))))
+  (iter (for chord in (iter (for item in (sublist-of-args list #\@))
+                            (for center = (subseq (symbol-name (first item)) 1))
+                            (for chords = (rest item))
+                            (nconcing (parse-fchords chords center))))
+        (with last-chord = nil)
+        (when chord
+          (setf last-chord chord))
+        (collect last-chord)))
 
 (defmethod chord->fchord ((chord chord) center scale-mode)
   "Convert a chord of type 'chord' to a functional chord according to
@@ -68,5 +72,5 @@ center. center must be a string and scale-mode a keyword."
                                              center
                                              scale-mode)))
 
-;;(read-fchords (read-file-as-sexp (concat *rameau-path* "answer-sheets/chorales-bach/006.fun") :preserve))
+;; (read-fchords (read-file-as-sexp (concat *rameau-path* "answer-sheets/chorales-bach/006.fun") :preserve))
 ;; (%parse-fchord '|vi6| "F")
