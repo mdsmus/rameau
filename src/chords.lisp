@@ -1,5 +1,7 @@
 (in-package #:rameau)
 
+(enable-sharp-l-syntax)
+
 (defun expand-non-chord-tones :private (stream char)
   "[DONTCHECK]"
   (declare (ignore char))
@@ -172,19 +174,30 @@ Transpose chord \\texttt{c} by \\texttt{n} pitches.
         collect (transpose-chord (if (listp c) (find-if #'chord-p c) c)
                                  n)))
 
-(defun %compare-answer-sheet  (result answer-sheet &optional tempered?)
-  (or (and (melodic-note-p result)
-           (melodic-note-p answer-sheet))
-      (and (augmented-sixth-p result)
-           (augmented-sixth-p answer-sheet)
-           (equalp (stringify (augmented-sixth-type result))
-                   (stringify (augmented-sixth-type answer-sheet))))
-      (and (chord-p result)
-           (chord-p answer-sheet)
-           (funcall (if tempered? #'enharmonicaly-equal-p #'equalp)
-                    (chord-root result) (chord-root answer-sheet))
-           (equalp (chord-mode result) (chord-mode answer-sheet))
-           (equal (chord-7th result) (chord-7th answer-sheet)))))
+(defgeneric %compare-answer-sheet (answer answer-sheet &optional tempered?)
+  (:documentation "Compare an answer sheet"))
+
+(defmethod %compare-answer-sheet (result (answer-sheet list) &optional tempered?)
+  (some #'identity (mapcar #L(%compare-answer-sheet result !1 tempered?) answer-sheet)))
+
+(defmethod %compare-answer-sheet (result answer-sheet &optional tempered?)
+  (declare (ignore result answer-sheet tempered?))
+  nil)
+
+(defmethod %compare-answer-sheet ((result chord) (answer-sheet chord) &optional tempered?)
+  (and (funcall (if tempered? #'enharmonicaly-equal-p #'equalp)
+                (chord-root result) (chord-root answer-sheet))
+       (equalp (chord-mode result) (chord-mode answer-sheet))
+       (equal (chord-7th result) (chord-7th answer-sheet))))
+
+(defmethod %compare-answer-sheet ((result melodic-note) (answer melodic-note) &optional tempered?)
+  (declare (ignore tempered?))
+  t)
+
+(defmethod %compare-answer-sheet ((result augmented-sixth) (answer-sheet augmented-sixth) &optional tempered?)
+  (declare (ignore tempered?))
+  (equalp (stringify (augmented-sixth-type result))
+          (stringify (augmented-sixth-type answer-sheet))))
 
 (defun compare-answer-sheet (answer answer-sheet &optional tempered?)
   "Compare result \\texttt{answer} with answer-sheet

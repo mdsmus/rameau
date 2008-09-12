@@ -56,6 +56,10 @@
   (declare (ignore options algorithm))
   (mapcar #L(make-chord :root (print-event-note (first !1))) segments))
 
+
+(defgeneric functional-analysis (segments options algorithm)
+  (:documentation "Perform functional harmonic analysis"))
+
 (defmethod functional-analysis (segments options (algorithm rameau-algorithm))
   (declare (ignore options algorithm))
   (mapcar #L(make-fchord :function 1 :center (print-event-note (first !1))) segments))
@@ -89,3 +93,4 @@ Filter \\texttt{*algorithms*} so that only the ones specified in
 
 (defun add-falgorithm (alg)
   (push alg *functional-algorithms*))
+

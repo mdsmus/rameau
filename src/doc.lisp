@@ -59,5 +59,5 @@
                        (document-function-or-macro symbol :macro)
                        (document-function-or-macro symbol :function))))))
 
-(defun creat-documentation-for-all-packages ()
+(defun create-documentation-for-all-packages ()
   (mapcar #'create-documentation-sexp *rameau-packages*))

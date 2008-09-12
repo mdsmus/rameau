@@ -41,6 +41,13 @@
       (format t "Analysis failed for algorithm ~a. Please report a bug.~%" alg)
       nil)))
 
+
+(defun main-perform-functional-analysis (segments options alg)
+  (handler-case (functional-analysis segments options alg)
+    (error ()
+      (format t "Analysis failed for algorithm ~a. Please report a bug.~%" alg)
+      nil)))
+
 (defun main-parse-file (file)
   (handler-case (parse-file file)
     (error ()
@@ -74,6 +81,33 @@ Please check with lilypond to see if it is valid. If it is, please report a bug.
 If you did, we have a bug, so please report.~%")
       (rameau-quit))
     analysis))
+
+(defun functional-analyse-files :private (options)
+  (setf (arg :algorithms options) (mapcar #'load-alg (filter-algorithms (arg :algorithms options) *functional-algorithms*))
+        (arg :options options) (process-option-list (arg :options options)))
+  (let ((analysis (handler-case (loop
+                                      for file in (arg :files options)
+                                      for segments = (sonorities (main-parse-file file))
+                                      collect
+                                      (make-analysis
+                                       :segments segments
+                                       :results (mapcar #L(main-perform-functional-analysis segments options !1)
+                                                        (arg :algorithms options))
+                                       :answer-sheet (path-parse-functional-answer-sheet file)
+                                       :file-name (pathname-name file)
+                                       :number-algorithms (length (arg :algorithms options))
+                                       :algorithms (arg :algorithms options)
+                                       :notes (mapcar #'list-events segments)
+                                       :ast (file-ast file)
+                                       :full-path file
+                                       :dur (durations segments)))
+                    (error () (list (make-analysis :segments (list nil)))))))
+    (when (every #'null (mapcar #'analysis-segments analysis))
+      (format t "ERROR: Couldn't analyse. Did you specify the files and the algorithms?
+If you did, we have a bug, so please report.~%")
+      (rameau-quit))
+    analysis))
+
 
 ;;; Print messages
 (defun print-help :private ()
@@ -200,6 +234,20 @@ If you did, we have a bug, so please report.~%")
 
 (defcommand analysis (options)
   (let ((analysis (analyse-files options)))
+    (iter (for anal in analysis)
+          (cond ((arg :dont-compare options) (analysis-terminal-no-answer options anal))
+                ((analysis-answer-sheet anal)
+                 (analysis-terminal options anal))
+                (t (print-warning (concat "the answer sheet for "
+                                          (analysis-file-name anal)
+                                          " doesn't exist"))
+                   (analysis-terminal-no-answer options anal)))
+          (when (or (arg :score options) (arg :view-score options) (arg :lily options))
+            (analysis-lily options anal)))))
+
+(defcommand functional (options)
+  (format t "Algorithms: ~a~%" *functional-algorithms*)
+  (let ((analysis (functional-analyse-files options)))
     (iter (for anal in analysis)
           (cond ((arg :dont-compare options) (analysis-terminal-no-answer options anal))
                 ((analysis-answer-sheet anal)
@@ -943,20 +991,7 @@ If you did, we have a bug, so please report.~%")
 
 (defcommand document (options &rest ignore)
   (declare (ignore ignore options))
-  (create-documentation-for :rameau
-                            :rameau-options
-                            :rameau-base
-                            :genoslib
-                            :rameau-web
-                            :rameau-main
-                            :rameau-terminal
-                            :rameau-lily
-                            :rameau-hmm
-                            :rameau-neural
-                            :rameau-knn
-                            :rameau-tree-enarm
-                            :rameau-pardo
-                            ))
+  (rameau-doc:create-documentation-for-all-packages))
 
 ;;; Main
 (defun split-command-list :private (command-list)

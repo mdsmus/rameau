@@ -6,7 +6,7 @@
                   (debug 2)
                   (safety 2)
                   (space 0)
-                  (speed 2)))
+                  (speed 0)))
 
 #+(or sbcl ecl) (require 'asdf)
 

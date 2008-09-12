@@ -13,7 +13,16 @@
   "The format is ((<inversion 'code'>) => <inversion number> <7 if the
   chord has a seventh>.")
 
-(defstruct fchord
+(defun print-fchord (struct stream depth)
+  "Print \\texttt{struct} to \\texttt{stream}."
+  (declare (ignore depth))
+  (let* ((roman (nth (1- (fchord-function struct)) *roman-functions*))
+         (mode (if (eq :major (fchord-mode struct))
+                   (string-upcase roman)
+                   roman)))
+    (format stream "~a:~a" (fchord-center struct) mode)))
+         
+(defstruct (fchord (:print-function print-fchord))
   root 7th 9th 11th 13th bass inversion mode function center)
 
 (defun match-inversion (inversion-list)
@@ -70,7 +79,13 @@ center. center must be a string and scale-mode a keyword."
                :function (get-roman-function (chord-root chord)
                                              (chord-mode chord)
                                              center
-                                             scale-mode)))
+                                             scale-mode)
+               :center center))
+
+(defmethod %compare-answer-sheet ((answer fchord) (sheet fchord) &optional tempered?)
+  (declare (ignore tempered?))
+  (and (equal (fchord-function answer) (fchord-function sheet))
+       (equal (fchord-center answer) (fchord-center sheet))))
 
 ;; (read-fchords (read-file-as-sexp (concat *rameau-path* "answer-sheets/chorales-bach/006.fun") :preserve))
 ;; (%parse-fchord '|vi6| "F")
