@@ -246,7 +246,6 @@ If you did, we have a bug, so please report.~%")
             (analysis-lily options anal)))))
 
 (defcommand functional (options)
-  (format t "Algorithms: ~a~%" *functional-algorithms*)
   (let ((analysis (functional-analyse-files options)))
     (iter (for anal in analysis)
           (cond ((arg :dont-compare options) (analysis-terminal-no-answer options anal))

@@ -45,6 +45,25 @@
       ("" "gv" "roda gv")
       ("" "png" "gera png")
       ("-S" "view-score" "gera score, roda lily e gv")))
+    ("functional"
+     (("" "dont-compare" "don't compare the results with the answer sheet")
+      ("" "sonorities" "print total number of sonorities")
+      ("-u" "show-dur" "")
+      ("-n" "show-notes" "")
+      ("-i" "ignore" "ignora (não imprime) corais sem gabaritos")
+      ("-c" "no-color" "don't use color in the answer")
+      ("-s" "score" "generate annotated scores as answer")
+      ("-z" "column-chord-size" "" "7")
+      ("" "column-number-size" "" "3")
+      ("" "column-notes-size" "" "12")
+      ("" "column-dur-size" "" "4")
+      ("" "column-separator" "" "|")
+      ("" "wrong-answer-color" "" "red")
+      ("" "lily" "roda lilypond")
+      ("" "gv" "roda gv")
+      ("" "png" "gera png")
+      ("-S" "view-score" "gera score, roda lily e gv")))
+
     ("web"
      (("" "port" "define the port number for rameau web" 4242 type-integer)))
     ("cadences"
