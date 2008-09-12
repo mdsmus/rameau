@@ -17,9 +17,12 @@
   "Print \\texttt{struct} to \\texttt{stream}."
   (declare (ignore depth))
   (let* ((roman (nth (1- (fchord-function struct)) *roman-functions*))
-         (mode (if (eq :major (fchord-mode struct))
-                   (string-upcase roman)
-                   roman)))
+         (mode (case (fchord-mode struct)
+                 (:major (string-upcase roman))
+                 (:minor roman)
+                 (:half-diminished (format nil "~aø" roman))
+                 (:diminished-triad (format nil "~a°" roman))
+                 (:fully-diminished (format nil "~a°7" roman)))))
     (format stream "~a:~a" (fchord-center struct) mode)))
          
 (defstruct (fchord (:print-function print-fchord))
@@ -30,21 +33,32 @@
                    *inversions-template*
                    :test #'equalp)))
 
+(defun parse-mode (function mode-symbol 7th)
+  (cond ((upper-case-p function) :major)
+        ((null mode-symbol) :minor)
+        ((equal mode-symbol "ø") :half-diminished)
+        ((and (null 7th) (equal mode-symbol "°")) :diminished-triad)
+        ((and (equal 7th "7-") (equal mode-symbol "°")) :fully-diminished)
+        ((equal mode-symbol "+") :augmented)
+        (t (error "Chord-type not recognized: ~a ~a ~a~%" function mode-symbol 7th))))
+        
+
 (defun %parse-fchord (symbol center)
   (let* ((function-string (symbol-name symbol))
          (split-secondary (cl-ppcre:split "/" function-string))
          (function (first split-secondary))
          (center-function (second split-secondary)))
-    (cl-ppcre:register-groups-bind (roman-function rest)
-        ("^(iii|ii|iv|i|v|vi|vii|III|II|IV|I|V|VI|VII)([0-9](\\.[0-9])*)?$" function)
+    (declare (ignore center-function))
+    (cl-ppcre:register-groups-bind (roman-function mode-symbol figured-bass)
+        ("^(iii|ii|iv|i|v|vi|vii|III|II|IV|I|V|VI|VII)(°|ø|\\+)?([0-9](\\.[0-9])*)?$" function)
       (destructuring-bind (&optional inversion 7th)
-          (match-inversion (cl-ppcre:split "\\." rest))
+          (match-inversion (cl-ppcre:split "\\." figured-bass))
         ;;; TODO usar center-function para achar centro real
         (make-fchord :root nil
                      :bass nil
                      :7th 7th
                      :inversion inversion
-                     :mode (if (upper-case-p (char roman-function 0)) :major :minor)
+                     :mode (parse-mode (char roman-function 0) mode-symbol 7th) 
                      :function (1+ (position roman-function *roman-functions* :test #'equalp))
                      :center center)))))
 
@@ -88,4 +102,5 @@ center. center must be a string and scale-mode a keyword."
        (equal (fchord-center answer) (fchord-center sheet))))
 
 ;; (read-fchords (read-file-as-sexp (concat *rameau-path* "answer-sheets/chorales-bach/006.fun") :preserve))
+;; (path-parse-functional-answer-sheet "/home/top/programas/analise-harmonica/music/chorales-bach/006.ly")
 ;; (%parse-fchord '|vi6| "F")
