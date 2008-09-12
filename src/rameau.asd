@@ -18,6 +18,7 @@
                (:file "parser")
                (:file "parser-grammar")
                (:file "chords")
+               (:file "chords-functional")
                (:file "tools")
                (:file "doc")
                ))
