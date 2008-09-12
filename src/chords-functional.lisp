@@ -25,8 +25,10 @@
                  (:fully-diminished (format nil "~a°7" roman))
                  (t (format nil "~a~a" roman (fchord-mode struct)))))
          (center (print-note (code->notename (fchord-center struct))))
-         (center (if (eq :major (fchord-key-mode struct)) (string-upcase center) center)))
-    (format stream "~a:~a" center mode)))
+         (center (if (eq :major (fchord-key-mode struct)) (string-upcase center) center))
+         (accidents (if (< (fchord-accidents struct) 0) "b" "#"))
+         (accidents (repeat-string (abs (fchord-accidents struct)) accidents)))
+    (format stream "~a:~a~a" center accidents mode)))
          
 (defstruct (fchord (:print-function print-fchord))
   root 7th 9th 11th 13th bass inversion mode function center accidents key-mode)
@@ -55,8 +57,8 @@
   (let* ((split-secondary (cl-ppcre:split "/" function-string))
          (function (first split-secondary))
          (center-function (second split-secondary)))
-    (cl-ppcre:register-groups-bind (roman-function mode-symbol figured-bass)
-        ("^(iii|ii|iv|i|v|vi|vii|III|II|IV|I|V|VI|VII)(°|ø|\\+)?([0-9](\\.[0-9])*)?$" function)
+    (cl-ppcre:register-groups-bind (accidents roman-function mode-symbol figured-bass)
+        ("^(#|b)*(iii|ii|iv|i|v|vi|vii|III|II|IV|I|V|VI|VII)(°|ø|\\+)?([0-9](\\.[0-9])*)?$" function)
       (destructuring-bind (&optional inversion 7th)
           (match-inversion (cl-ppcre:split "\\." figured-bass))
         (let* ((tonal-function (1+ (position roman-function *roman-functions* :test #'equalp)))
@@ -72,7 +74,7 @@
                            :7th 7th
                            :inversion inversion
                            :mode mode
-                           :accidents 0
+                           :accidents (number-of-accidentals (or accidents "") 'latin)
                            :function tonal-function
                            :center center-pitch
                            :key-mode center-mode)))))))
