@@ -387,8 +387,7 @@ EXAMPLE: (equal-sets? '(0 3 7) '(8 1 4)) returns T."
   (case mode
     (:major '(0 14 28 41 55 69 83))
     (:minor '(0 14 27 41 55 68 83))
-    (t (error "I don't know mode ~a. Tonal modes are usualy major or
-    minor." mode))))
+    (t (error "I don't know mode ~a. Tonal modes are usualy major or minor." mode))))
 
 (defun number->roman (number)
   "Return an upercase roman numeral."

@@ -16,13 +16,14 @@
 (defun print-fchord (struct stream depth)
   "Print \\texttt{struct} to \\texttt{stream}."
   (declare (ignore depth))
-  (let* ((roman (nth (1- (fchord-function struct)) *roman-functions*))
+  (let* ((roman (nth (1- (roman->number (fchord-function struct))) *roman-functions*))
          (mode (case (fchord-mode struct)
                  (:major (string-upcase roman))
                  (:minor roman)
                  (:half-diminished (format nil "~aø" roman))
                  (:diminished-triad (format nil "~a°" roman))
-                 (:fully-diminished (format nil "~a°7" roman)))))
+                 (:fully-diminished (format nil "~a°7" roman))
+                 (t (format nil "~a~a" roman (fchord-mode struct))))))
     (format stream "~a:~a" (fchord-center struct) mode)))
          
 (defstruct (fchord (:print-function print-fchord))
@@ -41,7 +42,9 @@
         ((and (equal 7th "7-") (equal mode-symbol "°")) :fully-diminished)
         ((equal mode-symbol "+") :augmented)
         (t (error "Chord-type not recognized: ~a ~a ~a~%" function mode-symbol 7th))))
-        
+
+(defun move-root (tonal-center primary-function secondary-function)
+  )
 
 (defun %parse-fchord (symbol center)
   (let* ((function-string (symbol-name symbol))
@@ -59,7 +62,7 @@
                      :7th 7th
                      :inversion inversion
                      :mode (parse-mode (char roman-function 0) mode-symbol 7th) 
-                     :function (1+ (position roman-function *roman-functions* :test #'equalp))
+                     :function (number->roman (1+ (position roman-function *roman-functions* :test #'equalp)))
                      :center center)))))
 
 (defun parse-fchords (chords center)
@@ -78,6 +81,7 @@
         (when chord
           (setf last-chord chord))
         (collect last-chord)))
+
 
 (defmethod chord->fchord ((chord chord) center scale-mode)
   "Convert a chord of type 'chord' to a functional chord according to
@@ -104,3 +108,4 @@ center. center must be a string and scale-mode a keyword."
 ;; (read-fchords (read-file-as-sexp (concat *rameau-path* "answer-sheets/chorales-bach/006.fun") :preserve))
 ;; (path-parse-functional-answer-sheet "/home/top/programas/analise-harmonica/music/chorales-bach/006.ly")
 ;; (%parse-fchord '|vi6| "F")
+;; (fchord-function (chord->fchord (make-chord :root "a#" :mode "°") "B" :minor))
