@@ -68,4 +68,4 @@ center. center must be a string and scale-mode a keyword."
                                              center
                                              scale-mode)))
 
-;;(read-fchords (read-file-as-sexp (concat *rameau-path* "answer-sheets/examples/001.fun") :preserve))
+;;(read-fchords (read-file-as-sexp (concat *rameau-path* "answer-sheets/chorales-bach/006.fun") :preserve))

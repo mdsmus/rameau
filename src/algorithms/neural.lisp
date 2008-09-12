@@ -163,9 +163,10 @@
     (get-class-chord-net d (run-net net (funcall fn x d)))))
 
 (defun write-data-set (data training-data value)
-  (let ((size (length data)))
+  (let ((size (length data))
+        (training-data (concat *neural-path* training-data)))
     (format t "* writing training data ~a~%" training-data)
-    (with-open-file (f (concat *neural-path* training-data) :direction :output :if-exists :supersede)
+    (with-open-file (f training-data :direction :output :if-exists :supersede)
       (iter (initially (format f "~a ~a ~a~%" size value 109))
             (for d in data)
             (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
@@ -175,7 +176,7 @@
   (setf (symbol-value net) (make-net value hidden-units 109))
   (format t "* training the network~%")
   (train-on-file (symbol-value net) (concat *neural-path* training-data) 1500 100 0.1)
-  (format t "* saving ~a~%" net-file)
+  (format t "* saving ~a~%" (concat *neural-path* net-file))
   (save-to-file (symbol-value net) (concat *neural-path* net-file)))
 
 ;;; e-chord
@@ -260,9 +261,9 @@
         (data-file (context-data alg))
         net)
     (declare (special net))
-    (unless (cl-fad:file-exists-p data-file)
+    (unless (cl-fad:file-exists-p (concat *neural-path* data-file))
       (context-data-set alg))
-    (unless (cl-fad:file-exists-p fann-file)
+    (unless (cl-fad:file-exists-p (concat *neural-path* fann-file))
       (train-net 'net
                  data-file
                  (* (+ 1 (net-context-after alg) (net-context-before alg)) *value*)
