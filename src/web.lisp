@@ -100,7 +100,7 @@
                  (:a :class "closebutton"
                      :href "javascript:void(0)" :onClick "toggle_visible(document.getElementById(\"algorithms\"));"
                      "X")
-                 (iter (for alg in (filter-algorithms nil))
+                 (iter (for alg in (filter-algorithms nil *algorithms*))
                        (htm (:p (:input :type "checkbox" 
                                         :checked (/= 0 (count-subseq "Net" (alg-name alg)))
                                         :name (alg-name alg)
@@ -156,7 +156,7 @@
                 (collect (format nil "~(~x~)" i)))))
 
 (defun get-params-alg ()
-  (iter (for alg in (mapcar #'load-alg (filter-algorithms nil)))
+  (iter (for alg in (mapcar #'load-alg (filter-algorithms nil *algorithms*)))
         (when (parameter (alg-name alg))
           (collect alg))))
 

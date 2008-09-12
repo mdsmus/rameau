@@ -56,6 +56,10 @@
   (declare (ignore options algorithm))
   (mapcar #L(make-chord :root (print-event-note (first !1))) segments))
 
+(defmethod functional-analysis (segments options (algorithm rameau-algorithm))
+  (declare (ignore options algorithm))
+  (mapcar #L(make-fchord :function 1 :center (print-event-note (first !1))) segments))
+
 (defgeneric do-options (algorithm options)
   (:documentation "Process algorithm-specific options"))
 
@@ -67,7 +71,7 @@
   "Register algorithm instance \\texttt{alg} with \\texttt{rameau}."
   (push alg *algorithms*))
 
-(defun filter-algorithms (algoritmos)
+(defun filter-algorithms (algoritmos algs)
   "[DONTCHECK]
 
 Filter \\texttt{*algorithms*} so that only the ones specified in
@@ -76,7 +80,12 @@ Filter \\texttt{*algorithms*} so that only the ones specified in
   (if algoritmos
       (remove-duplicates
        (loop for alg in algoritmos
-             append (loop for i in *algorithms*
+             append (loop for i in algs
                           when (> (count-subseq alg (string-downcase (alg-name i))) 0)
                           collect i)))
-      *algorithms*))
+      algs))
+
+(defparameter *functional-algorithms* nil)
+
+(defun add-falgorithm (alg)
+  (push alg *functional-algorithms*))

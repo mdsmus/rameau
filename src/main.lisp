@@ -50,7 +50,7 @@ Please check with lilypond to see if it is valid. If it is, please report a bug.
       (rameau-quit))))
 
 (defun analyse-files :private (options)
-  (setf (arg :algorithms options) (mapcar #'load-alg (filter-algorithms (arg :algorithms options)))
+  (setf (arg :algorithms options) (mapcar #'load-alg (filter-algorithms (arg :algorithms options) *algorithms*))
         (arg :options options) (process-option-list (arg :options options)))
   (let ((analysis (handler-case (loop
                                       for file in (arg :files options)
@@ -925,7 +925,7 @@ If you did, we have a bug, so please report.~%")
 (defcommand algorithms (options &rest ignore)
   (declare (ignore ignore))
   (make-training-data options)
-  (setf (arg :algorithms options) (mapcar #'load-alg (filter-algorithms (arg :algorithms options)))
+  (setf (arg :algorithms options) (mapcar #'load-alg (filter-algorithms (arg :algorithms options) *algorithms*))
         (arg :options options) (process-option-list (arg :options options)))
   (iter (for alg in (arg :algorithms options))
         (do-options alg options)
