@@ -427,7 +427,7 @@ or # as a prefix (as in bvi or #iii). EXAMPLE: (get-function-degree
          (repeat-string number (get-accidental 'flat representation)))
         ((zerop number) "")))
 
-(defun get-roman-function (fundamental chord-mode center scale-mode)
+(defun get-roman-function (fundamental center scale-mode)
   "Return the roman function of a fundamental in given center.
   fundamental and center must be strings while chord-mode and
   scale-mode must be keywords. get-roman-function is smart enough to
@@ -435,11 +435,9 @@ or # as a prefix (as in bvi or #iii). EXAMPLE: (get-function-degree
   (with-system tonal
     (let* ((interval (interval (parse-note fundamental) (parse-note center)))
            (interval-code (interval->code interval))
-           (base-note (nth (1- (first interval-code)) (get-scale-mode scale-mode)))
-           (fn (if (eql chord-mode :minor) #'string-downcase #'identity)))
-      (format nil "~a~a"
-              (number->accidental (- interval base-note))
-              (funcall fn (number->roman (first interval-code)))))))
+           (base-note (nth (1- (first interval-code)) (get-scale-mode scale-mode))))
+      (values (first interval-code)
+              (- interval base-note)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
