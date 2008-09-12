@@ -27,7 +27,7 @@
          (function (first split-secondary))
          (center-function (second split-secondary)))
     (cl-ppcre:register-groups-bind (roman-function rest)
-        ("(iii|ii|iv|i|v|vi|vii|III|II|IV|I|V|VI|VII)(.*)?" function)
+        ("^(iii|ii|iv|i|v|vi|vii|III|II|IV|I|V|VI|VII)([0-9](\\.[0-9])*)?$" function)
       (destructuring-bind (&optional inversion 7th)
           (match-inversion (cl-ppcre:split "\\." rest))
         ;;; TODO usar center-function para achar centro real
@@ -69,3 +69,4 @@ center. center must be a string and scale-mode a keyword."
                                              scale-mode)))
 
 ;;(read-fchords (read-file-as-sexp (concat *rameau-path* "answer-sheets/chorales-bach/006.fun") :preserve))
+;; (%parse-fchord '|vi6| "F")
