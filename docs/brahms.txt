@@ -1,0 +1,80 @@
+This is the First Call for Papers for the 2010 Special Issue of the
+Journal of Mathematics and Music, which will focus on the
+computational analysis of a Brahms string quartet. Please feel free to
+distribute it further, and apologies if you receive multiple copies.
+
+
+-------------------------------------------------------------
+
+
+
+Journal of Mathematics and Music
+
+Special Issue on Computational Music Analysis
+
+First Call For Papers
+
+This is a call for papers for a special issue of the Journal of
+Mathematics and Music, to focus on Computational Music Analysis in the
+context of Brahms' String Quartet Op. 51 No.1, for publication in
+Summer 2010. The Journal of Mathematics and Music aims to advance the
+use of mathematical modeling and computational approaches in music
+theory, analysis, composition, and performance. It is the official
+journal of the Society for Mathematics and Computation in Music, an
+international forum for researchers and musicians working at the
+intersection of music, mathematics, and computation.  The Journal
+launched its inaugural issue at the International Conference on
+Mathematics and Computation in Music, in Berlin in 2007.
+
+The Special Issue on Computational Music Analysis welcomes previously
+unpublished contributions that present computational approaches of any
+type of music analysis, applied to Brahms' String Quartet No.1. The
+aim of this issue is to bring together and critically discuss diverse
+computational analytical approaches and methodologies, such as
+structural, motivic, semiotic, comparative, reductional, harmonic,
+transformational and others, using a variety of computational
+implementation techniques, including those derived from knowledge
+representation, artificial intelligence, mathematical modeling and
+machine learning.  By focusing the corpus of application of all
+methods to the same piece, similarities, differences and
+complementarities among the approaches on both the methodological and
+the analytical results levels can be highlighted and discussed.
+Authors are particularly encouraged to consider Allen Forte's (1983)
+[1] and David Huron's (2001) [2] analyses of the same piece, and
+relate them to their own work if possible.
+
+Submission Procedure
+
+Prospective authors should prepare manuscripts according to the
+Information for Authors as published on the web at
+http://www.tandf.co.uk/journals/titles/17459737.asp. Note that papers
+should not exceed 5000 words, which corresponds to approximately 10
+pages in the Journal. Longer papers have to be of exceptional quality
+in order to be accepted. Authors who have already published their
+analytical method in detail elsewhere may wish to focus here on the
+application and analytical results. The online edition of the Journal
+has the capability to provide extended material in the form of sound
+files, applets, or similar electronic media. Manuscripts should be
+sent to the Guest Editors.
+
+We wish to encourage prospective authors to contact guest editors, by
+the end of 2008, indicating their submission intention and any
+enquiries about suitability of submissions.
+
+Schedule
+Submission deadline: July 15, 2009
+Notification of acceptance: November 15, 2009
+Final manuscript due: February 15, 2010
+Tentative publication date: July 2010
+
+Guest Editors
+Christina Anagnostopoulou, chrisa [at] music.uoa.gr, University of
+Athens, Athens, GREECE
+Chantal Buteau, cbuteau [at] brocku.ca, Brock University,
+St.Catharines, Ontario, CANADA
+
+[1] A. Forte, "Motivic design and structural levels in the first
+movement of Brahms's String Quartet in C minor", The Musical
+Quarterly, Vol. 69 No 4, 1983.
+[2] D. Huron, "What is a musical feature? Forte's analysis of Brahms's
+opus 51 no 1, revisited", MTO, Vol. 7 No 4, 2001.
