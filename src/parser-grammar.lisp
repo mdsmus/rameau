@@ -2,7 +2,7 @@
 (use-package :yacc)
 
 (yacc:define-parser *expression-parser*
-    (:start-symbol start)
+  (:start-symbol start)
   (:precedence ((:left note-expr notes-list notes expression-atom expression-list expression ignorable)))
   (:muffle-conflicts t)
   (:terminals (NEW-STAFF
@@ -39,6 +39,7 @@
                COLON
                LAYOUT
                NUMBER
+               NEW-WITH
                INCLUDE
                = |{| |}| |<<| |>>| |<| |>|))
 
@@ -104,7 +105,8 @@
    (expression-atom #'identity))
 
   (repeat-block
-   (REPEAT ignorable varname ignorable dur-expr ignorable expression-atom #'parse-repeat-block))
+   (REPEAT ignorable varname ignorable dur-expr ignorable expression-atom #'parse-repeat-block)
+   (REPEAT ignorable varname ignorable NUMBER ignorable expression-atom #'parse-repeat-block))
 
   (variable-block
    (VARIABLE #'parse-variable-block))
@@ -125,6 +127,7 @@
 
   (score-block
    (NEW-SCORE ignorable expression-atom #'parse-score-block)
+   (CONTEXT ignorable |{| ignorable NEW-SCORE ignorable expression |}| #'parse-context-score2)
    (CONTEXT ignorable SCORE ignorable = ignorable VARNAME ignorable expression-atom #'parse-context-score)
    (CONTEXT ignorable SCORE ignorable = ignorable STRING ignorable expression-atom #'parse-context-score))
 
@@ -166,7 +169,8 @@
    (dur-expr MULTIPLICA #'parse-dur-multiplica))
 
   (scheme-code
-   (HASH ignorable scheme-sexp))
+   (HASH ignorable scheme-sexp)
+   (HASH ignorable OCTAVE VARNAME))
 
   (markup-expr
    (MARKUP ignorable |{| scheme-list |}|))
@@ -183,16 +187,20 @@
    VARIABLE
    ignorable
    STRING
+   (|{| scheme-list |}|)
    BOOL
    COLON
    STAFF
+   NEW-WITH
    SCORE
    VOICE
    DUR
    OCTAVE
    NUMBER
    PONTO
+   HASH
    MULTIPLICA
    =
    scheme-sexp)
+  
   )

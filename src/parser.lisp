@@ -19,6 +19,8 @@
 
 (lexer:deflexer string-lexer
     ("('|,)+" (return (values 'OCTAVE lexer:%0)))
+  ("-[123456789]" (return (values 'ignore lexer:%0)))
+  ("_[123456789]" (return (values 'ignore lexer:%0)))
   ("(V|v)oice" (return (values 'VOICE lexer:%0)))
   ("((P|p)iano)?(S|s)taff" (return (values 'STAFF lexer:%0)))
   ("(S|s)core" (return (values 'SCORE lexer:%0)))
@@ -27,8 +29,9 @@
   ("\\\\staccato" (return (values 'ignore lexer:%0)))
   ("(\\[|\\])" (return (values 'ignore lexer:%0)))
   ("(-|\\\\|\\+)[<>]" (return (values 'ignore lexer:%0)))
+  ("_>" (return (values 'ignore lexer:%0)))
   ("(\\\\|-|_|\\^|~|\\?|!)(\\.|\\^|\\+|\\||!|_|\\\\<|\\\\>|-|\"[^\"]*\")?" (return (values 'ignore lexer:%0)))
-  ("([:alpha:]|-)+"
+  ("([:alpha:])+(-[:alpla:]+)?"
    (if (or (note? lexer:%0) (rest? lexer:%0))
        (return (values 'NOTE lexer:%0))
        (return (values 'VARNAME lexer:%0))))
@@ -42,6 +45,7 @@
   ("\\*\\d+" (return (values 'MULTIPLICA lexer:%0)))
   ("([:space:]+)" (return (values 'ignore lexer:%0)))
   ("\\\\\\\\" (return (values 'ignore lexer:%0)))
+  ("\\\\override[^\\n]*" (return (values 'ignore lexer:%0)))
   ("\\\\(set|override)[^=]*=[:space:]+\"[^\"]*\"" (return (values 'ignore lexer:%0)))
   ("\\\\(set|override)[^=]*=[:space:]+[^:space:]*" (return (values 'ignore lexer:%0)))
   ("\\\\(set|override)[^=]*=[:space:]+#(\\+|-)?\\d" (return (values 'ignore lexer:%0)) )
@@ -67,6 +71,7 @@
    (setf *current-key* (let ((l (remove-if (lambda (x) (equal x "")) (cl-ppcre:split " " lexer:%0))))
                          (list (string->symbol (second l)) (string->symbol (subseq (third l) 1)))))
    (return (values 'ignore lexer:%0)))
+  ("%\\{[^%]*%\\}" (return (values 'ignore lexer:%0)))
   ("%[^\\n]*" (return (values 'ignore lexer:%0)))
   ("\\\\(S|s)kip" (return (values 'SKIP lexer:%0)))
   ("\\\\(C|c)ontext" (return (values 'CONTEXT lexer:%0)))
@@ -182,6 +187,14 @@
     (setf (node-text blck)
           (list a i b ig c ign block))
     blck))
+
+(defun parse-context-score2 :private (a i ob ig c ign block cb)
+  "[DONTCHECK]"
+  (let ((blck (parse-score-block a nil block)))
+    (setf (node-text blck)
+          (list a i ob ig c ign block cb))
+    blck))
+
 
 (defun parse-variable-block :private (variable)
   "[DONTCHECK]"

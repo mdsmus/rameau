@@ -156,3 +156,5 @@
      (correct-durations notas)
      (mapcar #'event-dur notas))))
 
+(define-test transpose
+  (assert-equal '(14 28) (mapcar #'rameau:event-pitch (rameau::get-parsed-notes-string "\\transpose c d { c d }"))))
