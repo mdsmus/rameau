@@ -85,6 +85,7 @@
   ("\\\\new[:space:]+(v|V)oice" (return (values 'NEW-VOICE lexer:%0)))
   ("\\\\new" (return (values 'NEW "foobar")))
   ("\\\\(R|r)elative" (return (values 'RELATIVE lexer:%0)))
+  ("\\\\(T|t)ranspose" (return (values 'TRANSPOSE lexer:%0)))
   ("\\\\(S|s)core" (return (values 'NEW-SCORE lexer:%0)))
   ("\\\\(P|p)paper" (return (values 'NEW-PAPER lexer:%0)))
   ("\\\\(W|w)ith" (return (values 'NEW-WITH lexer:%0)))
@@ -110,6 +111,10 @@
 
 (defclass relative (ast-node)
   ((start :accessor node-start :initarg :start)))
+
+(defclass transpose (ast-node)
+  ((from :accessor node-from :initarg :from)
+   (to :accessor node-to :initarg :to)))
 
 (defclass set-variable (ast-node)
   ((varname :accessor node-varname :initarg :varname)
@@ -232,6 +237,13 @@ Parse a \\texttt{repeat} block using lilypond syntax.
 Parse a lilypond relative block.
 "
   (make-instance 'relative :expr block :start relative :text (list a ign relative igno block)))
+
+(defun parse-transpose-block :private (a ig from ign to igno block)
+  "[DONTCHECK]
+
+Parse a lilypond relative block.
+"
+  (make-instance 'transpose :expr block :from from :to to :text (list a ig from ign to igno block)))
 
 (defun parse-assignment :private  (variable ign equal igna value)
   "[DONTCHECK]"
@@ -508,6 +520,16 @@ with the other ones.
 
 (defmethod process-ast ((node relative))
   (do-relative (node-start node) (process-ast (node-expr node))))
+
+(defmethod process-ast ((node transpose))
+  (let* ((seq (sequence-expressions (process-ast (node-expr node))))
+         (n (format t "~a~%" seq))
+         (notes (rameau::note-sequence-notas seq)))
+    (setf (note-sequence-notas seq)
+          (first (transpose-segmentos (list notes)
+                                     (interval (event-pitch (first (note-sequence-notas (node-to node))))
+                                               (event-pitch (first (note-sequence-notas (node-from node))))))))
+    seq))
 
 (defmethod process-ast ((node set-variable))
   (push (cons (node-varname node) (node-value node)) *environment*)

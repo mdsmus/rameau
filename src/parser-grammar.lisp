@@ -15,6 +15,7 @@
                OCTAVE
                IGNORE
                RELATIVE
+               TRANSPOSE
                STRING
                PARTIAL
                REPEAT
@@ -90,6 +91,7 @@
    (repeat-block #'identity)
    (variable-block #'identity)
    (relative-block #'identity)
+   (transpose-block #'identity)
    (chord-block #'identity)
    (scheme-code #'do-nothing)
    (include ignorable STRING #'parse-include)
@@ -139,6 +141,9 @@
 
   (relative-block
    (RELATIVE ignorable note-expr ignorable expression-atom #'parse-relative-block))
+
+  (transpose-block
+   (TRANSPOSE ignorable note-expr ignorable note-expr ignorable expression-atom #'parse-transpose-block))
 
   (times-block
    (TIMES ignorable NUMBER ignorable expression-atom #'parse-times-block))
