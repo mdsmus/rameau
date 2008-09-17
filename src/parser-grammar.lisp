@@ -197,6 +197,7 @@
    (OVERRIDE ignorable scheme-quoted)
    (OVERRIDE ignorable = ignorable VARNAME)
    (OVERRIDE ignorable VARNAME ignorable scheme-quoted ignorable = ignorable scheme-quoted)
+   (OVERRIDE ignorable VARNAME PONTO VARNAME ignorable scheme-quoted ignorable = ignorable scheme-quoted)
    (OVERRIDE ignorable VARNAME ignorable scheme-quoted ignorable VARNAME ignorable = ignorable scheme-quoted)
    (OVERRIDE ignorable = ignorable string))
    

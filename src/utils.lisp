@@ -382,3 +382,7 @@ null or 'erro."
         (+ zero
            (* one (/ value max)))
         zero)))
+
+(defun deep-copy (value)
+  (cl-store:store value "/tmp/foo")
+  (cl-store:restore "/tmp/foo"))

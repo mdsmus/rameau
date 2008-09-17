@@ -19,6 +19,7 @@
       ("-d" "debug" "ativa código de depuração para os itens i" nil type-list)
       ("-v" "verbose" "verbose")
       ("-A" "about" "print rameau info")
+      ("-y" "crazy-debug" "dump megabytes of debug info from the lexer and parser.")
       ("-t" "trace" "mostra o trace de <funções>" nil type-list)
       ("-o" "options" "send options to the algorithms" nil type-list)
       ("" "paper-width" "largura do papel" 7.1)

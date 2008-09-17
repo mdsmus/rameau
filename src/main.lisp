@@ -49,12 +49,15 @@
       nil)))
 
 (defun main-parse-file (file)
-  (handler-case (parse-file file)
-    (error ()
-      (format t "Could not parse file ~a.
-Please check with lilypond to see if it is valid. If it is, please report a bug.~%"
-              file)
-      (rameau-quit))))
+  (handler-bind
+      ((error (lambda (e)
+                (format t "Could not parse file ~a.
+Please check with lilypond to see if it is valid. If it is, please report a bug.
+The error is ~a~%"
+                        file e)
+                #+sbcl(sb-debug:backtrace)
+                (rameau-quit))))
+     (parse-file file)))
 
 (defun analyse-files :private (options)
   (setf (arg :algorithms options) (mapcar #'load-alg (filter-algorithms (arg :algorithms options) *algorithms*))
@@ -980,7 +983,7 @@ If you did, we have a bug, so please report.~%")
   (setf *training-data* nil))
 
 (defcommand web (options &rest ignore)
-  (declare (ignore ignore options))
+  (declare (ignore ignore))
 
   (let ((port (arg :port options)))
     (format t "Starting rameau web on port ~a.~%" port)
@@ -1071,6 +1074,9 @@ If you did, we have a bug, so please report.~%")
               (aif (arg :debug options)
                    (mapcar2 #'rameau-debug #'make-keyword it)
                    (rameau-undebug))
+              (when (arg :crazy-debug options)
+                (setf yacc::*warn-on-tokens* t
+                      lexer::*warn-on-token* t))
               (when (arg :profile options)
                 (rameau-profile))
               (awhen (arg :trace options)

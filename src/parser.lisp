@@ -6,6 +6,8 @@
 
 (defparameter *anacruz* 0)
 
+(enable-sharp-l-syntax)
+
 ;; The refactored parser.
 
 ;; This parser's purpose is to preserve all the information in the
@@ -22,7 +24,7 @@
   ("-[123456789]" (return (values 'ignore lexer:%0)))
   ("_[123456789]" (return (values 'ignore lexer:%0)))
   ("(V|v)oice" (return (values 'VOICE lexer:%0)))
-  ("((P|p)iano)?(S|s)taff" (return (values 'STAFF lexer:%0)))
+  ("((P|p)iano)?(S|s)taff(!Group)" (return (values 'STAFF lexer:%0)))
   ("(S|s)core" (return (values 'SCORE lexer:%0)))
   ("-\\\\tenuto" (return (values 'ignore lexer:%0)))
   ("-\\\\staccato" (return (values 'ignore lexer:%0)))
@@ -526,10 +528,9 @@ with the other ones.
 
 (defmethod process-ast ((node transpose))
   (let* ((seq (sequence-expressions (process-ast (node-expr node))))
-         (n (format t "~a~%" seq))
          (notes (rameau::note-sequence-notas seq)))
     (setf (note-sequence-notas seq)
-          (first (transpose-segmentos (list notes)
+          (first (transpose-segmentos (list (remove-if #L(null (event-pitch !1)) notes))
                                      (interval (event-pitch (first (note-sequence-notas (node-to node))))
                                                (event-pitch (first (note-sequence-notas (node-from node))))))))
     seq))
@@ -539,7 +540,7 @@ with the other ones.
   nil)
 
 (defmethod process-ast ((node read-variable))
-  (process-ast (rest (assoc (subseq (node-varname node) 1) *environment* :test #'equalp))))
+  (process-ast (deep-copy (rest (assoc (subseq (node-varname node) 1) *environment* :test #'equalp)))))
 
 (defmethod process-ast (node)
   (if (listp node)

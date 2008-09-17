@@ -145,7 +145,7 @@
   "Creates a single sequence from a list of \\texttt{note-sequence}s"
   (if (note-sequence-p sequencias)
       sequencias
-      (let ((sequencias (remove-if #'null sequencias)))
+      (let ((sequencias (remove-if #L(or (null !1) (equal '(nil) !1)) sequencias)))
         (if (cdr sequencias)
             (let* ((primeiro (sequence-expressions (car sequencias)))
                    (segundo (sequence-expressions (second sequencias)))
