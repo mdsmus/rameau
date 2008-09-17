@@ -38,3 +38,14 @@
 - percentagem acerto gabaritos
 - definir status novatos
 - suporte kern, musedata
+
+
+* trocar:
+  - center    -> key-pitch
+  - function  -> degree-number
+  - accidents -> degree-accidentals
+** colocar struct roman-function com degree-number, accidentals-number, mode
+** colocar struct tonal-key com center e mode
+** um fchord tonal-function + tonal-key + inversions
+** musiclib lida com roman-functions e tonal-keys
+** renomear future pra todo

@@ -25,6 +25,7 @@
                SIMULT
                PONTO
                MARKUP
+               OVERRIDE
                TIMES
                NUMBER
                VOICE
@@ -67,7 +68,9 @@
    (NEW-PAPER ignorable |{| scheme-list |}|))
 
   (with
-   (NEW-WITH ignorable |{| scheme-list |}|))
+   (NEW-WITH ignorable |{| scheme-list |}|)
+   (NEW-WITH ignorable varname ignorable |{| scheme-list |}| )
+   (NEW-WITH ignorable varname ignorable scheme-quoted ))
 
   (expression
    (ignorable expression-list ignorable #'return-second))
@@ -82,10 +85,12 @@
    (OPEN-PAREN #'do-nothing)
    (CLOSE-PAREN #'do-nothing)
    (layout-block #'do-nothing)
+   (override-expr #'do-nothing)
    (music-block #'identity)
    (staff-block #'identity)
    (score-block #'identity)
    (voice-block #'identity)
+   (scheme-quoted #'do-nothing)
    (times-block #'identity)
    (assignment #'identity)
    (repeat-block #'identity)
@@ -175,11 +180,27 @@
 
   (scheme-code
    (HASH ignorable scheme-sexp)
-   (HASH ignorable OCTAVE VARNAME))
+   scheme-quoted)
 
   (markup-expr
    (MARKUP ignorable |{| scheme-list |}|))
 
+  (scheme-quoted
+   (HASH OCTAVE STRING)
+   (HASH OCTAVE VARNAME)
+   (HASH OCTAVE scheme-sexp)
+   (HASH OCTAVE VARNAME)
+   (HASH STRING))
+
+  (override-expr
+   (OVERRIDE ignorable scheme-code)
+   (OVERRIDE ignorable scheme-quoted)
+   (OVERRIDE ignorable = ignorable VARNAME)
+   (OVERRIDE ignorable VARNAME ignorable scheme-quoted ignorable = ignorable scheme-quoted)
+   (OVERRIDE ignorable VARNAME ignorable scheme-quoted ignorable VARNAME ignorable = ignorable scheme-quoted)
+   (OVERRIDE ignorable = ignorable string))
+   
+  
   (scheme-sexp
    (OPEN-PAREN scheme-list CLOSE-PAREN))
 
@@ -201,6 +222,8 @@
    VOICE
    DUR
    OCTAVE
+   override-expr
+   markup-expr
    NUMBER
    PONTO
    HASH
