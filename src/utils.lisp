@@ -384,5 +384,6 @@ null or 'erro."
         zero)))
 
 (defun deep-copy (value)
-  (cl-store:store value "/tmp/foo")
-  (cl-store:restore "/tmp/foo"))
+  (let ((name (concat "/tmp/foo" (stringify (random 10)))))
+    (cl-store:store value name)
+    (cl-store:restore name)))
