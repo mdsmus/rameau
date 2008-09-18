@@ -1,7 +1,6 @@
 (in-package #:rameau)
 (enable-sharp-l-syntax)
 
-(defparameter *roman-functions* '("i" "ii" "iii" "iv" "v" "vi" "vii"))
 
 (defparameter *inversions-template*
   '(((7)   => nil 7)
@@ -16,80 +15,45 @@
 (defun print-fchord (struct stream depth)
   "Print \\texttt{struct} to \\texttt{stream}."
   (declare (ignore depth))
-  (unless (stringp (fchord-center struct))
-  (let* ((roman (nth (1- (fchord-function struct)) *roman-functions*))
-         (mode (case (fchord-mode struct)
-                 (:major (string-upcase roman))
-                 (:minor roman)
-                 (:half-diminished (format nil "~aø" roman))
-                 (:diminished-triad (format nil "~a°" roman))
-                 (:fully-diminished (format nil "~a°7" roman))
-                 (t (format nil "~a~a" roman (fchord-mode struct)))))
-         (center (print-note (code->notename (fchord-center struct))))
-         (center (if (eq :major (fchord-key-mode struct)) (string-upcase center) center))
-         (accidents (if (< (fchord-accidents struct) 0) "b" "#"))
-         (accidents (repeat-string (abs (fchord-accidents struct)) accidents)))
-    (format stream "~a:~a~a" center accidents mode)))
-  )
+  (format stream "~a:~a" (fchord-key struct) (fchord-roman-function struct)))
          
 (defstruct (fchord (:print-function print-fchord))
-  root 7th 9th 11th 13th bass inversion mode function center accidents key-mode)
+  root 7th 9th 11th 13th bass inversion key roman-function)
 
 (defun match-inversion (inversion-list)
   (nthcdr 2 (assoc (mapcar #'parse-integer (sort inversion-list #'string>))
                    *inversions-template*
                    :test #'equalp)))
 
-(defun parse-mode (function mode-symbol 7th)
-  (cond ((upper-case-p function) :major)
-        ((null mode-symbol) :minor)
-        ((equal mode-symbol "ø") :half-diminished)
-        ((and (null 7th) (equal mode-symbol "°")) :diminished-triad)
-        ((and (equal 7th "7-") (equal mode-symbol "°")) :fully-diminished)
-        ((equal mode-symbol "+") :augmented)
-        (t (error "Chord-type not recognized: ~a ~a ~a~%" function mode-symbol 7th))))
-
-(defun make-center (root mode)
-  (let ((note (print-note (code->notename root))))
-    (if (eq :major mode)
-        (string-upcase note)
-        note)))
-
-(defun %parse-fchord (function-string center)
-  (let* ((split-secondary (cl-ppcre:split "/" function-string))
-         (function (first split-secondary))
-         (center-function (second split-secondary)))
-    (cl-ppcre:register-groups-bind (accidents roman-function mode-symbol figured-bass)
-        ("^(#|b)*(iii|ii|iv|i|v|vi|vii|III|II|IV|I|V|VI|VII)(°|ø|\\+)?([0-9](\\.[0-9])*)?$" function)
-      (destructuring-bind (&optional inversion 7th)
-          (match-inversion (cl-ppcre:split "\\." figured-bass))
-        (let* ((tonal-function (1+ (position roman-function *roman-functions* :test #'equalp)))
-               (center-pitch (parse-note center))
-               (center-mode (if (upper-case-p (char center 0)) :major :minor))
-               (root (+ center-pitch (nth (1- tonal-function) (get-scale-mode center-mode))))
-               (mode (parse-mode (char roman-function 0) mode-symbol 7th)))
-          (if center-function
-              (%parse-fchord function (make-center root mode))
-              (make-fchord :root root
-                           :bass nil
-                           :7th 7th
-                           :inversion inversion
-                           :mode mode
-                           :accidents (number-of-accidentals (or accidents "") 'latin)
-                           :function tonal-function
-                           :center center-pitch
-                           :key-mode center-mode)))))))
+(defun %parse-fchord (function-string key)
+  (when (and function-string (not (equal "-" function-string)))
+    (let* ((split-secondary (cl-ppcre:split "/" function-string))
+           (function (first split-secondary))
+           (center-function (second split-secondary)))
+      (multiple-value-bind (roman-function figured-bass)
+          (parse-roman-function function)
+        (destructuring-bind (&optional inversion 7th)
+            (match-inversion (cl-ppcre:split "\\." figured-bass))
+          (let* ((root (roman-function-root roman-function key))
+                 (mode (if (eq :major (roman-function-mode roman-function)) :major :minor)))
+            (if center-function
+                (%parse-fchord center-function (make-tonal-key :center-pitch root :mode mode))
+                (make-fchord :root root
+                             :bass nil
+                             :7th 7th
+                             :key key
+                             :roman-function roman-function))))))))
 
 (defun parse-fchords (chords center)
   (mapcar #'(lambda (chord)
               (if (consp chord)
-                  (mapcar #L(%parse-fchord (stringify !1) center) chord)
+                  (mapcar #L(unless (equal '- !1) (%parse-fchord (stringify !1) center)) chord)
                   (%parse-fchord (stringify chord) center)))
           chords))
 
 (defun read-fchords (list)
   (iter (for chord in (iter (for item in (sublist-of-args list #\@))
-                            (for center = (subseq (symbol-name (first item)) 1))
+                            (for center = (parse-tonal-key (subseq (symbol-name (first item)) 1)))
                             (for chords = (rest item))
                             (nconcing (parse-fchords chords center))))
         (with last-chord = nil)
@@ -101,34 +65,30 @@
   (cond ((equal mode "") :major)
         ((equal mode "m") :minor)
         ((equal mode "ø") :half-diminished)
-        ((equal mode "°") :diminished-triad)
+        ((equal mode "°") :diminished)
         ((equal mode "+") :augmented)
         (t :major)))
 
-(defmethod chord->fchord ((chord chord) center scale-mode)
+(defmethod chord->fchord ((chord chord) center)
   "Convert a chord of type 'chord' to a functional chord according to
 center. center must be a string and scale-mode a keyword."
-  (multiple-value-bind (function accidents)
-      (get-roman-function (chord-root chord) center scale-mode)
-    (make-fchord :root (chord-root chord)
-                 :bass (chord-bass chord)
-                 :inversion (chord-inversion chord)
-                 :mode (mode->keyword (chord-mode chord))
-                 :7th (chord-7th chord)
-                 :9th (chord-9th chord)
-                 :11th (chord-11th chord)
-                 :13th (chord-13th chord)
-                 :function function
-                 :accidents accidents
-                 :key-mode (if (upper-case-p (char center 0)) :major :minor)
-                 :center (parse-note center))))
+  (make-fchord :root (chord-root chord)
+               :bass (chord-bass chord)
+               :inversion (chord-inversion chord)
+               :7th (chord-7th chord)
+               :9th (chord-9th chord)
+               :11th (chord-11th chord)
+               :13th (chord-13th chord)
+               :key center
+               :roman-function (get-roman-function (chord-root chord) (mode->keyword (chord-mode chord)) center)
+               ))
 
 (defmethod %compare-answer-sheet ((answer fchord) (sheet fchord) &optional tempered?)
   (declare (ignore tempered?))
-  (and (equal (fchord-function answer) (fchord-function sheet))
-       (equal (fchord-center answer) (fchord-center sheet))))
+  (and (equalp (fchord-key answer) (fchord-key sheet))
+       (equalp (fchord-roman-function answer) (fchord-roman-function sheet))))
 
 ;; (read-fchords (read-file-as-sexp (concat *rameau-path* "answer-sheets/chorales-bach/006.fun") :preserve))
 ;; (path-parse-functional-answer-sheet "/home/top/programas/analise-harmonica/music/chorales-bach/006.ly")
 ;; (%parse-fchord "vi6" "F")
-;; (fchord-function (chord->fchord (make-chord :root "a" :mode "") "B" :minor))
+;; (chord->fchord (make-chord :root "a" :mode "") (make-tonal-key :center-pitch 0 :mode :minor))

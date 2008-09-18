@@ -40,12 +40,12 @@
 - suporte kern, musedata
 
 
-* trocar:
+* DONE trocar:
   - center    -> key-pitch
   - function  -> degree-number
   - accidents -> degree-accidentals
-** colocar struct roman-function com degree-number, accidentals-number, mode
-** colocar struct tonal-key com center e mode
-** um fchord tonal-function + tonal-key + inversions
-** musiclib lida com roman-functions e tonal-keys
-** renomear future pra todo
+* DONE colocar struct roman-function com degree-number, accidentals-number, mode
+* DONE colocar struct tonal-key com center e mode
+* DONE um fchord tonal-function + tonal-key + inversions
+* DONE musiclib lida com roman-functions e tonal-keys
+* DONE renomear future pra todo

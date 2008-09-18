@@ -381,7 +381,12 @@ EXAMPLE: (equal-sets? '(0 3 7) '(8 1 4)) returns T."
               t))
     (prime (when (equal (prime-form set1) (prime-form set2)) t))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
 ;;; Tonal functions
+
+;;; These functions are used in the roman number functional analysis code.
 
 (defun get-scale-mode (mode)
   (case mode
@@ -427,17 +432,78 @@ or # as a prefix (as in bvi or #iii). EXAMPLE: (get-function-degree
          (repeat-string number (get-accidental 'flat representation)))
         ((zerop number) "")))
 
-(defun get-roman-function (fundamental center scale-mode)
+(defun get-roman-function (fundamental mode center)
   "Return the roman function of a fundamental in given center.
   fundamental and center must be strings while chord-mode and
   scale-mode must be keywords. get-roman-function is smart enough to
   understand different inputs for notes such as cis and c#."
   (with-system tonal
-    (let* ((interval (interval (parse-note fundamental) (parse-note center)))
+    (let* ((interval (interval (parse-note fundamental) (tonal-key-center-pitch center)))
            (interval-code (interval->code interval))
-           (base-note (nth (1- (first interval-code)) (get-scale-mode scale-mode))))
-      (values (first interval-code)
-              (- interval base-note)))))
+           (base-note (nth (1- (first interval-code)) (get-scale-mode (tonal-key-mode center)))))
+
+      (make-roman-function :degree-number (first interval-code)
+                           :degree-accidentals (- interval base-note)
+                           :mode mode))))
+
+(defstruct (tonal-key (:print-function print-tonal-key))
+  center-pitch
+  mode)
+
+(defstruct (roman-function (:print-function print-roman-function))
+  degree-number
+  degree-accidentals
+  mode)
+
+(defun parse-tonal-key (key)
+  (let ((mode (if (upper-case-p (char key 0)) :major :minor))
+        (pitch (parse-note key)))
+    (make-tonal-key :center-pitch pitch :mode mode)))
+
+(defun print-tonal-key (key &optional stream (depth 0))
+  (declare (ignore depth))
+  (let ((note (print-note (code->notename (tonal-key-center-pitch key)))))
+    (format stream "~a"
+            (if (eq :major (tonal-key-mode key))
+                (string-capitalize note)
+                note))))
+
+(defun parse-mode (function mode-symbol)
+  (cond ((upper-case-p function) :major)
+        ((null mode-symbol) :minor)
+        ((equal mode-symbol "ø") :half-diminished)
+        ((equal mode-symbol "°") :diminished)
+        ((equal mode-symbol "+") :augmented)
+        (t (error "Chord-type not recognized: ~a ~a~%" function mode-symbol))))
+
+(defun parse-roman-function (function)
+  (cl-ppcre:register-groups-bind (accidentals roman-function mode-symbol extra)
+      ("^(#|b)*(iii|ii|iv|i|v|vi|vii|III|II|IV|I|V|VI|VII)(°|ø|\\+)?([\\.1234567]*)" function)
+    (let* ((tonal-function (roman->number roman-function))
+           (mode (parse-mode (char roman-function 0) mode-symbol)))
+      (values
+       (make-roman-function :degree-number tonal-function
+                            :mode mode
+                            :degree-accidentals (number-of-accidentals (or accidentals "") 'latin))
+       extra))))
+
+(defun print-roman-function (function &optional stream (depth 0))
+  (declare (ignore depth))
+  (let* ((roman (number->roman (roman-function-degree-number function)))
+         (roman (if (eq :major (roman-function-mode function)) (string-upcase roman) roman))
+         (mode (case (roman-function-mode function)
+                 (:major "")
+                 (:minor "")
+                 (:half-diminished "ø")
+                 (:diminished "°")
+                 (t (roman-function-mode function))))
+         (accidentals (number->accidental (roman-function-degree-accidentals function))))
+    (format stream "~a~a~a" accidentals roman mode)))
+
+(defun roman-function-root (roman-function key)
+  (+ (tonal-key-center-pitch key)
+     (roman-function-degree-accidentals roman-function)
+     (nth (1- (roman-function-degree-number roman-function)) (get-scale-mode (tonal-key-mode key)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

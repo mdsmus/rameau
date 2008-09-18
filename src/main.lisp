@@ -36,17 +36,19 @@
 ;;; Make analysis
 
 (defun main-perform-analysis (segments options alg)
-  (handler-case (perform-analysis segments options alg)
-    (error ()
-      (format t "Analysis failed for algorithm ~a. Please report a bug.~%" alg)
-      nil)))
+  (handler-bind ((error (lambda (err)
+                          (format t "Analysis failed for algorithm ~a. Please report a bug. Error ~a.~%" alg err)
+                          (when (arg :debug options) #+sbcl (sb-debug:backtrace))
+                          nil)))
+    (perform-analysis segments options alg)))
 
 
 (defun main-perform-functional-analysis (segments options alg)
-  (handler-case (functional-analysis segments options alg)
-    (error ()
-      (format t "Analysis failed for algorithm ~a. Please report a bug.~%" alg)
-      nil)))
+  (handler-bind ((error (lambda (err)
+                          (format t "Analysis failed for algorithm ~a. Please report a bug. Error ~a.~%" alg err)
+                          (when (arg :debug options) #+sbcl (sb-debug:backtrace))
+                          nil)))
+    (functional-analysis segments options alg)))
 
 (defun main-parse-file (file)
   (handler-bind

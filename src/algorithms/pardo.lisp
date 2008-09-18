@@ -209,7 +209,7 @@
          (mode (if (or (equal (chord-mode first-chord) "") (null (chord-mode first-chord)))
                    :major
                    :minor)))
-    (mapcar #L(rameau::chord->fchord !1 root mode) analysis)))
+    (mapcar #L(rameau::chord->fchord !1 (make-tonal-key :center-pitch (parse-note root) :mode mode)) analysis)))
 
 (let ((es-pb (make-instance 'es-pardo
                               :name "ES-PB"
