@@ -20,13 +20,24 @@
 ;;; the modulation parts, but I've got to look at the data to figure
 ;;; this out.
 ;;;
-;;; The output matrix will be
+;;; The output matrix will be:
 ;;;
-;;; key-mode * degree -> (note-pitch - key-pitch)
+;;; (degree * key-mode) -> module(note-pitch - key-pitch)
 ;;;
 ;;; Which has the unfortunate 8820 entries, also far too many. I don't
 ;;; think we have enough data to reliably estimate these values, but I
 ;;; will need to check.
+;;;
+;;; The keyword :out stands for the beggining/end of a piece. It's the
+;;; thing responsible for making sure cadences do happen, for example.
+
+(defun make-number-hash-table (function list)
+  (let ((table (make-hash-table :test function)))
+    (iter (for i from 0)
+          (for el in list)
+          (setf (gethash el table) i))
+    table))
+
 
 (let* ((natural-pitches (mapcar #'parse-note '("a" "b" "c" "d" "e" "f" "g")))
        (key-pitches (mapcan #L(list (1- !1) !1 (1+ !1)) natural-pitches))
@@ -46,7 +57,31 @@
                                         (make-roman-function :degree-number n
                                                              :degree-accidentals a
                                                              :mode m))))))))
-       (total (* (length degrees) (length keys)))
-       (totsq (* total 2 (length degrees)))
-       (notes (* 2 total)))
-  (format t "Estdos internos ~a, transição ~a, output ~a~%" total totsq notes))
+       (transition-inputs (append
+                           (list :out)
+                           (iter (for d in degrees)
+                                (nconcing (iter (for m in key-modes)
+                                                (collect (list m d)))))))
+       (number->input (make-vector transition-inputs))
+       (input->number (make-number-hash-table #'equalp transition-inputs))
+       (transition-outputs (append
+                            (list :out)
+                            (iter (for pitch from 0 to 95)
+                                  (nconcing
+                                   (iter (for m in key-mode)
+                                         (nconcing
+                                          (iter (for d in degrees)
+                                                (collect (list pitch m d)))))))))
+       (number->toutput (make-vector transition-outputs))
+       (toutput->number (make-number-hash-table #'equalp transition-outputs)))
+  (defun number->input (number)
+    (svref number number->input))
+  (defun input->number (inp)
+    (gethash inp input->number :out))
+  (defun number->toutput (number)
+    (svref number number->toutput))
+  (defun toutput->number (toup)
+    (gethash toup toutput->number :out))
+    
+  )
+

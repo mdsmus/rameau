@@ -36,6 +36,7 @@
                                      (:file "pardo")
                                      (:file "knn")
                                      (:file "tree-enarm")
+                                     (:file "fhmm")
                                      ))))
 
 (asdf:defsystem :backends
