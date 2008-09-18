@@ -47,8 +47,8 @@
 (defun parse-fchords (chords center)
   (mapcar #'(lambda (chord)
               (if (consp chord)
-                  (mapcar #L(unless (equal '- !1) (%parse-fchord (stringify !1) center)) chord)
-                  (%parse-fchord (stringify chord) center)))
+                  (mapcar #L(unless (equal '- !1) (%parse-fchord (symbol-name !1) center)) chord)
+                  (%parse-fchord (symbol-name chord) center)))
           chords))
 
 (defun read-fchords (list)
@@ -89,6 +89,6 @@ center. center must be a string and scale-mode a keyword."
        (equalp (fchord-roman-function answer) (fchord-roman-function sheet))))
 
 ;; (read-fchords (read-file-as-sexp (concat *rameau-path* "answer-sheets/chorales-bach/006.fun") :preserve))
-;; (path-parse-functional-answer-sheet "/home/top/programas/analise-harmonica/music/chorales-bach/006.ly")
+;; (mapcar (path-parse-functional-answer-sheet "/home/top/programas/analise-harmonica/music/chorales-bach/006.ly")
 ;; (%parse-fchord "vi6" "F")
 ;; (chord->fchord (make-chord :root "a" :mode "") (make-tonal-key :center-pitch 0 :mode :minor))

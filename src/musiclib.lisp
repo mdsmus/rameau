@@ -441,7 +441,6 @@ or # as a prefix (as in bvi or #iii). EXAMPLE: (get-function-degree
     (let* ((interval (interval (parse-note fundamental) (tonal-key-center-pitch center)))
            (interval-code (interval->code interval))
            (base-note (nth (1- (first interval-code)) (get-scale-mode (tonal-key-mode center)))))
-
       (make-roman-function :degree-number (first interval-code)
                            :degree-accidentals (- interval base-note)
                            :mode mode))))
@@ -490,7 +489,7 @@ or # as a prefix (as in bvi or #iii). EXAMPLE: (get-function-degree
 (defun print-roman-function (function &optional stream (depth 0))
   (declare (ignore depth))
   (let* ((roman (number->roman (roman-function-degree-number function)))
-         (roman (if (eq :major (roman-function-mode function)) (string-upcase roman) roman))
+         (roman (if (eq :major (roman-function-mode function)) (string-upcase roman) (string-downcase roman)))
          (mode (case (roman-function-mode function)
                  (:major "")
                  (:minor "")
