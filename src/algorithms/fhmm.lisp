@@ -31,14 +31,8 @@
 ;;; The keyword :out stands for the beggining/end of a piece. It's the
 ;;; thing responsible for making sure cadences do happen, for example.
 
-(defun make-number-hash-table (function list)
-  (let ((table (make-hash-table :test function)))
-    (iter (for i from 0)
-          (for el in list)
-          (setf (gethash el table) i))
-    table))
 
-
+(eval-when (:compile-toplevel :load-toplevel)
 (let* ((natural-pitches (mapcar #'parse-note '("a" "b" "c" "d" "e" "f" "g")))
        (key-pitches (mapcan #L(list (1- !1) !1 (1+ !1)) natural-pitches))
        (key-modes (list :major :minor))
@@ -96,27 +90,10 @@
                                       (tonal-key-center-pitch (fchord-key fchord)))))
       (if (eq :out fchord)
           :out
-          (list pitch-difference (tonal-key-mode (fchord-key fchord)) (fchord-roman-function fchord)))))
-  
-  )
+          (list pitch-difference (tonal-key-mode (fchord-key fchord)) (fchord-roman-function fchord)))))  
+  ))
 
-(defun good-turing-reestimate (vector xdim ydim)
-  (iter (for i from 0 below xdim)
-        (let ((freqfreq (make-hash-table :test #'equal)))
-          (iter (for j from 0 below ydim)
-                (incf (gethash (aref vector i j) freqfreq 0)))))
-  )
 
-(defun log-normalize (vec xd yd)
-  (let ((pvec (make-array (list xd yd) :initial-element 0d0 :element-type 'double-float)))
-    (iter (for i from 0 below xd)
-          (let ((n 0))
-            (iter (for j from 0 below yd)
-                  (incf n (aref vec i j)))
-            (iter (for j from 0 below yd)
-                (setf (aref pvec i j)
-                      (log (coerce (/ (aref vec i j) n) 'double-float))))))
-    pvec))
 
 (defun estimate-transition-probabilities (fchords)
   (let ((pvec (make-array (list *ninputs* *ntoutputs*) :initial-element 0)))
@@ -127,5 +104,5 @@
                   (let ((in (input->number (make-input prev)))
                         (out (toutput->number (make-toutput chord))))
                     (incf (aref pvec in out))))))
-    (good-turing-reestimate pvec *ninputs* *ntoutputs*)
-    (log-normalize pvec *ninputs* *ntoutputs*)))
+    (good-turing-reestimate pvec *ninputs* *ntoutputs*)))
+
