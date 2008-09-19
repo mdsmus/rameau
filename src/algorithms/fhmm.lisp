@@ -93,8 +93,6 @@
           (list pitch-difference (tonal-key-mode (fchord-key fchord)) (fchord-roman-function fchord)))))  
   ))
 
-
-
 (defun estimate-transition-probabilities (fchords)
   (let ((pvec (make-array (list *ninputs* *ntoutputs*) :initial-element 0)))
     (iter (for chorale in fchords)
@@ -106,3 +104,33 @@
                     (incf (aref pvec in out))))))
     (good-turing-reestimate pvec *ninputs* *ntoutputs*)))
 
+(defun estimate-note-probabilities (fchords chorales)
+  (let ((pvec (make-array (list *ninputs* *nnotes*) :initial-element 0)))
+    (iter (for chords in fchords)
+          (for chorale in chorales)
+          (iter (for chord in chords)
+                (for sonority in chorale)
+                (iter (for p in (mapcar #'event-pitch sonority))
+                      (incf (aref pvec
+                                  (input->number (make-input chord))
+                                  (module (- p (tonal-key-center-pitch (fchord-key chord)))))))))
+    (good-turing-reestimate pvec *ninputs* *nnotes*)))
+
+(defun train-functional-hmm (alg)
+  (let ((fchords (mapcar #'second *training-data*))
+        (segments (mapcar #'first *training-data*)))
+    (setf (trans alg) (estimate-transition-probabilities fchords)
+          (out alg) (estimate-note-probabilities fchords segments))
+    alg))
+
+(defclass functional-hmm (rameau-algorithm)
+  ((transitions :accessor trans :initform nil)
+   (outputs :accessor out :initform nil)
+   (version :accessor version :initform 0)))
+
+(defmethod do-options ((alg functional-hmm) options)
+  (when (arg :train options)
+    (train-functional-hmm alg)))
+
+(defun viterbi-decode (alg segments)
+  )
