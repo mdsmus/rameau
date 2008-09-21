@@ -20,6 +20,20 @@
 (defstruct (fchord (:print-function print-fchord))
   root 7th 9th 11th 13th bass inversion key roman-function)
 
+(defun transpose-fchord (fchord pitches)
+  (make-fchord :7th (fchord-7th fchord)
+               :9th (fchord-9th fchord)
+               :11th (fchord-11th fchord)
+               :13th (fchord-13th fchord)
+               :inversion (fchord-inversion fchord)
+               :roman-function (fchord-roman-function fchord)
+               :key (make-tonal-key :center-pitch (module (+ pitches
+                                                             (tonal-key-center-pitch
+                                                              (fchord-key fchord))))
+                                    :mode (tonal-key-mode (fchord-key fchord)))))
+
+
+
 (defun match-inversion (inversion-list)
   (nthcdr 2 (assoc (mapcar #'parse-integer (sort inversion-list #'string>))
                    *inversions-template*

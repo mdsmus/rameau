@@ -38,7 +38,7 @@
 ;;;
 ;;; (key * degree) -> sonority
 
-(defparameter *version* 5)
+(defparameter *version* 6)
 
 (eval-when (:compile-toplevel :load-toplevel)
 (let* ((natural-pitches (mapcar #'parse-note '("a" "b" "c" "d" "e" "f" "g")))
@@ -175,13 +175,14 @@
 
 (defun estimate-transition-probabilities (fchords)
   (let ((pvec (make-array (list *ninputs* *ntoutputs*) :initial-element 0)))
-    (iter (for chorale in fchords)
-          (iter (for chord in (append (list :out) chorale (list :out)))
-                (for prev previous chord)
-                (when (and prev chord)
-                  (let ((in (input->number (make-input prev)))
-                        (out (toutput->number (make-toutput chord prev))))
-                    (incf (aref pvec in out))))))
+    (iter (for chorale-orig in fchords)
+          (iter (for pitch from 0 to (get-module))
+                (iter (for chord in (append (list :out) (mapcar #L(transpose-fchord !1 pitch) chorale) (list :out)))
+                      (for prev previous chord)
+                      (when (and prev chord)
+                        (let ((in (input->number (make-input prev)))
+                              (out (toutput->number (make-toutput chord prev))))
+                          (incf (aref pvec in out)))))))
     (good-turing-reestimate pvec *ninputs* *ntoutputs*)))
 
 (defun estimate-note-probabilities (fchords chorales)
