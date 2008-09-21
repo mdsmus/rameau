@@ -103,6 +103,8 @@ center. center must be a string and scale-mode a keyword."
        (equalp (fchord-roman-function answer) (fchord-roman-function sheet))))
 
 ;; (read-fchords (read-file-as-sexp (concat *rameau-path* "answer-sheets/chorales-bach/006.fun") :preserve))
-;; (mapcar (path-parse-functional-answer-sheet "/home/top/programas/analise-harmonica/music/chorales-bach/006.ly")
+;; (trace %parse-fchord)
+;; (trace parse-roman-function)
+;; (mapcar (path-parse-functional-answer-sheet "/home/top/programas/analise-harmonica/music/chorales-bach/001.ly")
 ;; (%parse-fchord "vi6" "F")
-;; (chord->fchord (make-chord :root "a" :mode "") (make-tonal-key :center-pitch 0 :mode :minor))
+;; (chord->fchord (make-chord :root "a" :mode "") (make-tonal-key :center-pitch 0 :mode :minor))o

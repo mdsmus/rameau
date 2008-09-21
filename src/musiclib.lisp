@@ -477,7 +477,7 @@ or # as a prefix (as in bvi or #iii). EXAMPLE: (get-function-degree
 
 (defun parse-roman-function (function)
   (cl-ppcre:register-groups-bind (accidentals roman-function mode-symbol extra)
-      ("^(#|b)*(iii|ii|iv|i|v|vi|vii|III|II|IV|I|V|VI|VII)(°|ø|\\+)?([\\.1234567]*)" function)
+      ("^(#|b)*(iii|ii|iv|i|v|vi|vii|III|II|IV|I|V|VI|VII)(°|ø|\\+)?([\\.1234567]*)$" function)
     (let* ((tonal-function (roman->number roman-function))
            (mode (parse-mode (char roman-function 0) mode-symbol)))
       (values
