@@ -406,24 +406,31 @@ null or 'erro."
         (for i previous j)
         (for nk in (append (list 0) n (list 0)))
         (for nj previous nk)
-        (when (and i j k) (collect (* 2 (/ nj (- k i)))))))
+        (when (and i j k)
+          (collect (if (or (equal nj 0)
+                           (equal k i))
+                       1
+                       (* 2 (/ nj (- k i))))))))
 
 (defun compute-r* :private (n r)
   (let ((x-still-good t))
-    (iter (for nr+1 in n)
-          (for nr previous nr+1)
-          (for rr+1 in r)
-          (for rr previous rr+1)
-          (when (and nr+1 nr rr+1 rr)
-            (for x = (* (1+ rr) (/ nr+1 nr)))
-            (for y = (* (1+ rr) (/ (exp (1+ rr)) (exp rr))))
-            (for in = (> (abs (- x y))
-                         (* 1.96d0 (sqrt (* (* (1+ rr) (1+ rr))
-                                            (/ nr+1 (* nr nr))
-                                            (1+ (/ nr+1 nr)))))))
-            (when (and x-still-good (not in))
-              (setf x-still-good nil))
-            (if x-still-good (collect x) (collect y))))))
+    (append
+     (iter (for nr+1 in n)
+           (for nr previous nr+1)
+           (for rr+1 in r)
+           (for rr previous rr+1)
+           (when (and nr+1 nr rr+1 rr)
+             (for x = (* (1+ rr) (/ nr+1 nr)))
+             (for y = (* (1+ rr) (/ (exp (1+ rr)) (exp rr))))
+             (for in = (> (abs (- x y))
+                          (* 1.96d0 (sqrt (abs
+                                           (* (* (1+ rr) (1+ rr))
+                                              (/ nr+1 (* nr nr))
+                                              (1+ (/ nr+1 nr))))))))
+             (when (and x-still-good (not in))
+               (setf x-still-good nil))
+             (if x-still-good (collect x) (collect y))))
+     (list (* (1+ (last1 r)) (/ (exp (1+ (last1 r))) (exp (last1 r))))))))
 
 (defun compute-p :private (r* n-prime P0)
   (iter (for rr* in r*)
@@ -435,27 +442,45 @@ null or 'erro."
 \\url{http://www.grsampson.net/AGtf1.html}."
   (iter (for i from 0 below xdim)
         (let ((freqfreq (make-hash-table :test #'equal))
-              r n z logr logz r* p total P0 n-prime)
+              (all-zero t))
           (iter (for j from 0 below ydim)
+                (when (not (eql 0 (aref vector i j)))
+                  (setf all-zero nil))
                 (incf (gethash (aref vector i j) freqfreq 0)))
-          (let* ((freq (hash->ordered-list freqfreq #L(list !1 !2) #L(< (first !1) (first !2))))
-                 (r (mapcar #'first freq)) ; the frequencies in the data
-                 (n (mapcar #'second freq)) ; the number of times each frequency shows up
-                 (total (iter (for rr in r) (for nn in n) (sum (* rr nn)))) ; the total number of observations
-                 (P0 (/ (first n) total)) ; the expected frequency of unseen events
-                 (z (compute-z r n))
-                 (r* (compute-r* n r))
-                 (n-prime (mapcar #'* n r*))
-                 (p (compute-p r* n-prime P0)))
-            (iter (for j from 0 below ydim)
-                  (setf (aref vector i j)
-                        (log (coerce (or (nth (position (aref vector i j) r) p)
-                                         (/ P0 (first n)))
-                                     'double-float))))
-            (dbg :good-turing "R ~a~;N ~a; i ~a; z ~a; r* ~a; n-prime ~a;~%"
-                 r n i z r* n-prime))))
+          (if all-zero
+              (iter (for j from 0 below ydim)
+                    (setf (aref vector i j) (log (coerce (/ 1 ydim) 'double-float))))
+              (let* ((freq (hash->ordered-list freqfreq #L(list !1 !2) #L(< (first !1) (first !2))))
+                     (r (cdr (mapcar #'first freq))) ; the frequencies in the data
+                     (n (cdr (mapcar #'second freq))) ; the number of times each frequency shows up
+                     (total (iter (for rr in r) (for nn in n) (sum (* rr nn)))) ; the total number of observations
+                     (P0 (if (eql 0 total) 1d0 (/ (first n) total))) ; the expected frequency of unseen events
+                     (r* (compute-r* n r))
+                     (n-prime (mapcar #'* n r*))
+                     (p (compute-p r* n-prime P0)))
+                (iter (for j from 0 below ydim)
+                      (dbg :good-turing " j ~a  i ~a r ~a p ~a~%"
+                           j i r p)
+                      (when (and (position (aref vector i j) r)
+                                 (nth (position (aref vector i j) r :test #'eql) p)
+                                 (< (nth (position (aref vector i j) r :test #'eql) p)
+                                    0))
+                        (error "Valor menor que 0 ~a~%" p))
+                      (dbg :good-turing "Possibilidades: ~a , ~a, ~a~%"
+                           (/ P0 (second (first freq))) (position (aref vector i j) r)
+                           (and (position (aref vector i j) r)
+                                (nth (position (aref vector i j) r) p)))
+                      (setf (aref vector i j)
+                            (log (coerce (cond ((= 0 (aref vector i j)) 
+                                                (/ P0 (second (first freq))))
+                                               ((and (= 1 (length r))
+                                                     (not (= 0 (aref vector i j))))
+                                                0.5d0)
+                                               (t (nth (position (aref vector i j) r) p)))
+                                         'double-float))))
+                (dbg :good-turing "R ~a,N ~a, i ~a, r* ~a, n-prime ~a~%" r n i r* n-prime)))))
   vector)
-
+;; (good-turing-reestimate (make-array (list 1 12) :initial-contents '((0 0 0 11 11 1 2 1 1 1 0 1))) 1 12)
 (defun make-number-hash-table (function list)
   "Makes a hash table associating the elements of \\textt{list} with incresing integers."
   (let ((table (make-hash-table :test function)))

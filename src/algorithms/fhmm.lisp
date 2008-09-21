@@ -30,7 +30,15 @@
 ;;;
 ;;; The keyword :out stands for the beggining/end of a piece. It's the
 ;;; thing responsible for making sure cadences do happen, for example.
+;;;
+;;; The by far biggest table is the viterbi table. It has to really
+;;; encompass all possibilities for each sonority (as far as I can
+;;; tell there is no trivial way of cutting it down). Its dimensions
+;;; are:
+;;;
+;;; (key * degree) -> sonority
 
+(defparameter *version* 4)
 
 (eval-when (:compile-toplevel :load-toplevel)
 (let* ((natural-pitches (mapcar #'parse-note '("a" "b" "c" "d" "e" "f" "g")))
@@ -52,46 +60,118 @@
                                                              :degree-accidentals a
                                                              :mode m))))))))
        (transition-inputs (append
-                           (list :out)
+                           (list (list :out))
                            (iter (for d in degrees)
                                 (nconcing (iter (for m in key-modes)
                                                 (collect (list m d)))))))
-       (number->input (vector transition-inputs))
+       (number->input (coerce transition-inputs 'vector))
        (input->number (make-number-hash-table #'equalp transition-inputs))
        (transition-outputs (append
-                            (list :out)
+                            (list (list :out))
                             (iter (for pitch from 0 to 95)
                                   (nconcing
                                    (iter (for m in key-modes)
                                          (nconcing
                                           (iter (for d in degrees)
                                                 (collect (list pitch m d)))))))))
-       (number->toutput (vector transition-outputs))
-       (toutput->number (make-number-hash-table #'equalp transition-outputs)))
+       (number->toutput (coerce transition-outputs 'vector))
+       (toutput->number (make-number-hash-table #'equalp transition-outputs))
+       (viterbi-degrees (append (list (list :out))
+                                (iter (for k in keys)
+                                      (nconcing
+                                       (iter (for d in degrees)
+                                             (collect (list k d)))))))
+       (number->viterbi (coerce viterbi-degrees 'vector))
+       (viterbi->number (make-number-hash-table #'equalp viterbi-degrees)))
   (defun number->input (number)
     (svref number->input number))
   (defun input->number (inp)
-    (gethash inp input->number :out))
+    (gethash inp input->number 0))
   (defun number->toutput (number)
     (svref number->toutput number))
   (defun toutput->number (toup)
-    (gethash toup toutput->number :out))
+    (gethash toup toutput->number 0))
+  (defun number->viterbi (number)
+    (svref number->viterbi number))
+  (defun viterbi->number (vit)
+    (gethash vit viterbi->number 0))
+
   (defparameter *ninputs* (length number->input))
   (defparameter *ntoutputs* (length number->toutput))
   (defparameter *nnotes* (get-module))
-
-  (defun make-input (fchord)
-    (if (eq :out fchord)
-        :out
-        (list (tonal-key-mode (fchord-key fchord)) (fchord-roman-function fchord))))
-  
-  (defun make-toutput (fchord prev)
-    (let ((pitch-difference (interval (tonal-key-center-pitch (fchord-key prev))
-                                      (tonal-key-center-pitch (fchord-key fchord)))))
-      (if (eq :out fchord)
-          :out
-          (list pitch-difference (tonal-key-mode (fchord-key fchord)) (fchord-roman-function fchord)))))  
+  (defparameter *nviterbis* (length number->viterbi))
   ))
+
+(defun nviterbi->ninput (viterbi)
+  (destructuring-bind (key &optional degree) (number->viterbi viterbi)
+    (if (eq :out key)
+        (input->number (list :out))
+        (input->number (list (tonal-key-mode key) degree)))))
+
+(defun nviterbi->toutput (viterbi prev-viterbi)
+  (destructuring-bind (key &optional degree) (number->viterbi viterbi)
+    (destructuring-bind (pkey &optional pdegree) (number->viterbi prev-viterbi)
+      (declare (ignore pdegree))
+      (let ((pitch (cond ((and (eq key pkey) (eq :out key)) 0)
+                         ((eq :out key) (tonal-key-center-pitch pkey))
+                         ((eq :out pkey) (tonal-key-center-pitch key))
+                         (t (interval (tonal-key-center-pitch key) (tonal-key-center-pitch pkey)))))
+            (mode (if (eq :out key)
+                      :major
+                      (tonal-key-mode key))))
+        (toutput->number (list pitch mode degree))))))
+
+(defun nviterbi->first-toutput (viterbi)
+  (destructuring-bind (key &optional degree) (number->viterbi viterbi)
+    (if (eq :out key)
+        0
+        (let ((pitch (tonal-key-center-pitch key))
+              (mode (tonal-key-mode key)))
+          (toutput->number (list pitch mode degree))))))
+
+(defun nviterbi->base-pitch (viterbi)
+    (destructuring-bind (key &optional degree) (number->viterbi viterbi)
+      (declare (ignore degree))
+      (tonal-key-center-pitch key)))
+
+(defun nviterbi->fchord (nviterbi)
+  (destructuring-bind (key &optional degree) (number->viterbi nviterbi)
+    (make-fchord :key key :roman-function degree)))
+
+(defun make-input (fchord)
+  (if (eq :out fchord)
+      (list :out)
+      (list (tonal-key-mode (fchord-key fchord)) (fchord-roman-function fchord))))
+
+(defun pitch-difference (fchord prev)
+  (cond ((and (fchord-p fchord) (fchord-p prev))
+         (interval (tonal-key-center-pitch (fchord-key prev))
+                   (tonal-key-center-pitch (fchord-key fchord))))
+        ((and (not (fchord-p fchord))
+              (not (fchord-p prev)))
+         0)
+        ((not (fchord-p fchord))
+         (tonal-key-center-pitch (fchord-key prev)))
+        (t (tonal-key-center-pitch (fchord-key fchord)))))
+  
+(defun make-toutput (fchord prev)
+  (let ((pitch-difference (pitch-difference fchord prev)))
+    (if (eq :out fchord)
+        (list :out)
+        (list pitch-difference (tonal-key-mode (fchord-key fchord)) (fchord-roman-function fchord)))))
+
+(defun notes-probs (vector nviterbi sonority)
+  (destructuring-bind (key &optional degree) (number->viterbi nviterbi)
+    (declare (ignore degree))
+    (if (eq :out key)
+        0
+        (let ((center-pitch (tonal-key-center-pitch key))
+              (input (nviterbi->ninput nviterbi)))
+          (iter (for pitch in sonority)
+                (sum (aref vector input (interval center-pitch pitch))))))))
+
+(defun get-tran (vector vit pvit)
+  (aref vector (nviterbi->ninput pvit) (nviterbi->toutput vit pvit)))
 
 (defun estimate-transition-probabilities (fchords)
   (let ((pvec (make-array (list *ninputs* *ntoutputs*) :initial-element 0)))
@@ -100,7 +180,7 @@
                 (for prev previous chord)
                 (when (and prev chord)
                   (let ((in (input->number (make-input prev)))
-                        (out (toutput->number (make-toutput chord))))
+                        (out (toutput->number (make-toutput chord prev))))
                     (incf (aref pvec in out))))))
     (good-turing-reestimate pvec *ninputs* *ntoutputs*)))
 
@@ -113,7 +193,7 @@
                 (iter (for p in (mapcar #'event-pitch sonority))
                       (incf (aref pvec
                                   (input->number (make-input chord))
-                                  (module (- p (tonal-key-center-pitch (fchord-key chord)))))))))
+                                  (interval (tonal-key-center-pitch (fchord-key chord)) p))))))
     (good-turing-reestimate pvec *ninputs* *nnotes*)))
 
 (defun train-functional-hmm (alg)
@@ -129,8 +209,58 @@
    (version :accessor version :initform 0)))
 
 (defmethod do-options ((alg functional-hmm) options)
-  (when (arg :train options)
-    (train-functional-hmm alg)))
+  (when (and (aget :train (arg :options options))
+             (not (eql *version* (version alg))))
+    (train-functional-hmm alg)
+    (setf (version alg) *version*)))
 
 (defun viterbi-decode (alg segments)
-  )
+  (let* ((tran (trans alg))
+         (out (out alg))
+         (nsegs (length segments))
+         (table (make-array (list (1+ nsegs) *nviterbis*)  :initial-element 0d0))
+         (mtable (make-array (list (1+ nsegs) *nviterbis*) :initial-element 0d0)))
+    (dbg :fhmm "Tran ~a, out ~a, nseg ~a, table ~a, mtable ~a, version ~a~%"
+         (type-of tran) (type-of out) nsegs (type-of table) (type-of mtable) (version alg))
+    (iter (for j from 0 below *nviterbis*)
+          (for s = (mapcar #'event-pitch (first segments)))
+          (setf (aref table 0 j)
+                (+ (aref tran (input->number (list :out)) (nviterbi->first-toutput j))
+                   (notes-probs out j s))))
+    (dbg :fhmm "Done setting the first row.~%")
+    (iter (for i from 0)
+          (for seg in segments)
+          (for s = (mapcar #'event-pitch seg))
+          (for pseg previous seg)
+          (when (and seg pseg)
+            (dbg :fhmm "Doing row ~a~%" i)
+            (iter (for j from 0 below *nviterbis*)
+                  (dbg :fhmm "  Doing column ~a~%" j)
+                  (let ((probabilities (notes-probs out j s))
+                        (values (iter (for jj from 1 below *nviterbis*)
+                                      ;(dbg :fhmm "    Doing pre-column ~a~%" jj)
+                                      (finding (list (+ (aref table (1- i) jj)
+                                                        (get-tran tran j jj))
+                                                     jj)
+                                               maximizing (+ (aref table (1- i) jj)
+                                                             (get-tran tran j jj))))))
+                    (setf (aref table i j) (+ (* 2 probabilities) (first values))
+                          (aref mtable i j) (second values))))))
+    (dbg :fhmm "Done building table~%")
+    (let ((chords (list (argmax #L(+ (aref tran (1- nsegs) !1) (get-tran tran 0 !1)) 0 *nviterbis*))))
+      (dbg :fhmm "Chords: ~a ~%" chords)
+      (iter (for i from (- nsegs 1) downto 1)
+            (dbg :fhmm "  now: ~a ~%" chords)
+            (push (aref mtable i (first chords)) chords))
+      (mapcar #'nviterbi->fchord chords))))
+
+(defmethod functional-analysis (segments options (alg functional-hmm))
+  (viterbi-decode alg segments))
+
+(add-falgorithm (make-instance 'functional-hmm
+                               :name "F-Hmm"
+                               :description "A roman numeral functional analysis algorithm based on Raphael and Stoddard."))
+
+;; (trace train-functional-hmm)
+;; (rameau-main:main "functional -f chor:006")
+;; (trans (load-alg(first *functional-algorithms*)))
