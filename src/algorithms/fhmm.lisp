@@ -177,7 +177,7 @@
   (let ((pvec (make-array (list *ninputs* *ntoutputs*) :initial-element 0)))
     (iter (for chorale-orig in fchords)
           (iter (for pitch from 0 to (get-module))
-                (iter (for chord in (append (list :out) (mapcar #L(transpose-fchord !1 pitch) chorale) (list :out)))
+                (iter (for chord in (append (list :out) (mapcar #L(transpose-fchord !1 pitch) chorale-orig) (list :out)))
                       (for prev previous chord)
                       (when (and prev chord)
                         (let ((in (input->number (make-input prev)))
