@@ -181,8 +181,8 @@
                 (when (and prev chord)
                   (let ((in (input->number (make-input prev)))
                         (out (toutput->number (make-toutput chord prev))))
-                    (incf (aref pvec in out)))))))
-    (good-turing-reestimate pvec *ninputs* *ntoutputs*))
+                    (incf (aref pvec in out))))))
+    (good-turing-reestimate pvec *ninputs* *ntoutputs*)))
 
 (defun estimate-note-probabilities (fchords chorales)
   (let ((pvec (make-array (list *ninputs* *nnotes*) :initial-element 0)))
