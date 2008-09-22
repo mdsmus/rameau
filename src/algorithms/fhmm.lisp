@@ -170,6 +170,21 @@
           (iter (for pitch in sonority)
                 (sum (aref vector input (interval center-pitch pitch))))))))
 
+(defun not-zero (value not-zero)
+  (if (= 0d0 value)
+      not-zero
+      value))
+
+(defun dirichlett-smooth (array sizea sizeb)
+  (iter (for i from 0 below sizea)
+        (declare (fixnum i))
+        (let ((sum (iter (for j from 0 below sizeb) (sum (aref array i j))))
+              (zeros (iter (for j from 0 below sizeb) (counting (= 0 (aref array i j))))))
+          (iter (for j from 0 below sizeb)
+                (setf (aref array i j)
+                      (log (/ (not-zero (aref array i j) (/ 1 (+ 0.00000001d0 zeros))) (1+ sum)))))))
+  array)
+
 (defun get-tran (vector vit pvit)
   (aref vector (nviterbi->ninput pvit) (nviterbi->toutput vit pvit)))
 
@@ -182,7 +197,7 @@
                   (let ((in (input->number (make-input prev)))
                         (out (toutput->number (make-toutput chord prev))))
                     (incf (aref pvec in out))))))
-    (good-turing-reestimate pvec *ninputs* *ntoutputs*)))
+    (dirichlett-smooth pvec *ninputs* *ntoutputs*)))
 
 (defun estimate-note-probabilities (fchords chorales)
   (let ((pvec (make-array (list *ninputs* *nnotes*) :initial-element 0)))
@@ -194,7 +209,7 @@
                       (incf (aref pvec
                                   (input->number (make-input chord))
                                   (interval (tonal-key-center-pitch (fchord-key chord)) p))))))
-    (good-turing-reestimate pvec *ninputs* *nnotes*)))
+    (dirichlett-smooth pvec *ninputs* *nnotes*)))
 
 (defun train-functional-hmm (alg)
   (let ((fchords (mapcar #'second *training-data*))
