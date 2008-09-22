@@ -412,6 +412,10 @@ null or 'erro."
                        1
                        (* 2 (/ nj (- k i))))))))
 
+(defun dexp :private (x)
+  "Computes (exp (coerce x 'double-float))"
+  (exp (coerce x 'double-float)))
+
 (defun compute-r* :private (n r)
   (let ((x-still-good t))
     (append
@@ -421,7 +425,7 @@ null or 'erro."
            (for rr previous rr+1)
            (when (and nr+1 nr rr+1 rr)
              (for x = (* (1+ rr) (/ nr+1 nr)))
-             (for y = (* (1+ rr) (/ (exp (1+ rr)) (exp rr))))
+             (for y = (* (1+ rr) (/ (dexp (1+ rr)) (dexp rr))))
              (for in = (> (abs (- x y))
                           (* 1.96d0 (sqrt (abs
                                            (* (* (1+ rr) (1+ rr))
@@ -430,7 +434,7 @@ null or 'erro."
              (when (and x-still-good (not in))
                (setf x-still-good nil))
              (if x-still-good (collect x) (collect y))))
-     (list (* (1+ (last1 r)) (/ (exp (1+ (last1 r))) (exp (last1 r))))))))
+     (list (* (1+ (last1 r)) (/ (dexp (1+ (last1 r))) (dexp (last1 r))))))))
 
 (defun compute-p :private (r* n-prime P0)
   (iter (for rr* in r*)
