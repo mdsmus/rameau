@@ -48,15 +48,17 @@
           (parse-roman-function function)
         (destructuring-bind (&optional inversion 7th)
             (match-inversion (cl-ppcre:split "\\." figured-bass))
-          (let* ((root (roman-function-root roman-function key))
-                 (mode (if (eq :major (roman-function-mode roman-function)) :major :minor)))
             (if center-function
-                (%parse-fchord center-function (make-tonal-key :center-pitch root :mode mode))
-                (make-fchord :root root
-                             :bass nil
-                             :7th 7th
-                             :key key
-                             :roman-function roman-function))))))))
+                (let* ((func (parse-roman-function center-function))
+                       (root (roman-function-root func key))
+                       (mode (if (eq :major (roman-function-mode func)) :major :minor)))
+                  (%parse-fchord function (make-tonal-key :center-pitch root :mode mode)))
+                (let* ((root (roman-function-root roman-function key)))
+                  (make-fchord :root root
+                               :bass nil
+                               :7th 7th
+                               :key key
+                               :roman-function roman-function))))))))
 
 (defun parse-fchords (chords center)
   (mapcar #'(lambda (chord)
