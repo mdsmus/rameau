@@ -73,7 +73,7 @@
 (defun make-devnull-voice :private ()
   "\\new Devnull = \"nowhere\" \\texto")
 
-(defun print-compare-answer-sheet :private (analysis answer name options)
+(defun print-compare-answer-sheet :private (analysis answer name options cleaned)
   (make-variable (remove #\- name)
                  (concat " \\lyricmode {
  \\set stanza = \""
@@ -82,20 +82,21 @@
 "
                          (make-lily-list
                           (loop for al in analysis
-                                for ans =  answer then (rest ans)
-                                for an = (first ans)
-                                collect (if (or (null answer) (compare-answer-sheet al an))
-                                            (concat "\"" (format nil "~a" al) "\"")
-                                            (if (arg :no-color options)
-                                                (concat "\\markup { \\roman \\italic \\bold \""
-                                                        (format nil "~a" al)
-                                                        "\"}")
-                                                (concat "\\markup { \\roman \\italic \\bold \\with-color #(x11-color '"
-                                                        (substitute #\Space #\- (arg :wrong-answer-color options))
-                                                        ") "
-                                                        "\""
-                                                        (format nil "~a" al)
-                                                        "\"}")))))
+                             for ans =  answer then (rest ans)
+                             for an = (first ans)
+                             for cl in cleaned
+                             collect (if (or (null answer) (compare-answer-sheet al an))
+                                         (concat "\"" (format nil "~a" cl) "\"")
+                                         (if (arg :no-color options)
+                                             (concat "\\markup { \\roman \\italic \\bold \""
+                                                     (format nil "~a" cl)
+                                                     "\"}")
+                                             (concat "\\markup { \\roman \\italic \\bold \\with-color #(x11-color '"
+                                                     (substitute #\Space #\- (arg :wrong-answer-color options))
+                                                     ") "
+                                                     "\""
+                                                     (format nil "~a" cl)
+                                                     "\"}")))))
                          "}
 ")))
 
@@ -103,7 +104,7 @@
   (make-variable "answer"
                  (concat "\\lyricmode {
   \\set stanza = \"Answer\" "
-                         (make-lily-list (mapcar #L(format nil "\"~a\"" !1) answer))
+                         (make-lily-list (mapcar #L(format nil "\"~a\"" !1) (cleanup-keys answer)))
                          "}
 
 ")))
@@ -200,7 +201,8 @@
           do (format variables (print-compare-answer-sheet re
                                                            (analysis-answer-sheet analysis)
                                                            (alg-name al)
-                                                           options))
+                                                           options
+                                                           (cleanup-keys re)))
           (format in-score (make-lyrics (alg-name al))))
     (when (analysis-answer-sheet analysis)
       (format variables (make-answer-sheet (analysis-answer-sheet analysis)))
