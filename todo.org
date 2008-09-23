@@ -40,14 +40,24 @@
 - suporte kern, musedata
 
 
+* DONE colocar struct roman-function com degree-number, accidentals-number, mode
 * DONE trocar:
   - center    -> key-pitch
   - function  -> degree-number
   - accidents -> degree-accidentals
-* DONE colocar struct roman-function com degree-number, accidentals-number, mode
 * DONE colocar struct tonal-key com center e mode
 * DONE um fchord tonal-function + tonal-key + inversions
 * DONE musiclib lida com roman-functions e tonal-keys
 * DONE renomear future pra todo
-* reunião com jamary
-** comparação de análises de diferentes pessoas
+
+
+* TODO reunião com jamary
+* TODO comparação de análises de diferentes pessoas
+* TODO [#A] terminar maxwell
+* TODO [#B] fazermos pelo menos 10 gabaritos funcionais, de preferência mais
+* TODO [#A] limpar a saída da análise funcional
+* TODO [#B] pesquisar por que estimação good-turing está ruim demais para o hmm funcional
+* TODO [#C] implementar as redes de análise funcional de tsui no rameau
+
+* TODO [#A] escrever uma FunStyle pra complementar o CodingStyle dizendo que coisas são ideais no gabarito funcional
+>>>>>>> Modifica todo.org:todo.org
