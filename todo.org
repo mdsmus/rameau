@@ -49,3 +49,5 @@
 * DONE um fchord tonal-function + tonal-key + inversions
 * DONE musiclib lida com roman-functions e tonal-keys
 * DONE renomear future pra todo
+* reunião com jamary
+** comparação de análises de diferentes pessoas
