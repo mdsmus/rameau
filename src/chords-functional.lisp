@@ -86,6 +86,10 @@
           (setf last-chord chord))
         (collect last-chord)))
 
+(defun get-fchords (string)
+  (read-fchords
+   (read-from-string-as-sexp (cl-ppcre:regex-replace-all "([A-Ga-g](#|b)*):" string "@\\1") :preserve)))
+
 (defun mode->keyword (mode)
   (cond ((equal mode "") :major)
         ((equal mode "m") :minor)

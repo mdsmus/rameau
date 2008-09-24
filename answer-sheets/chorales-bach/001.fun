@@ -1,4 +1,4 @@
-@G I
+G: I
 I IV6 - V6
 I iii6 V iii
 IV - - vii°6 I
