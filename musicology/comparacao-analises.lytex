@@ -1,0 +1,27 @@
+\documentclass[12pt]{article}
+\usepackage[utf8,utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage[a4paper,top=3cm,left=2cm,right=2cm,bottom=3cm]{geometry}
+\usepackage{url}
+
+\title{Estudo de análise harmônica}
+\author{Grupo de pesquisa Genos---\url{genos.mus.br}}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\section*{Instruções}
+
+Fazer análise harmônica com numerais romanos usando parênteses para
+indicar as notas melódicas e circulando os acordes.
+
+\vspace{5em}
+
+\begin{lilypond}
+  \include "../music/chorales-bach/019.ly"
+\end{lilypond}
+
+\end{document}
