@@ -440,10 +440,11 @@ null or 'erro."
              (if x-still-good (collect x) (collect y))))
      (list (* (1+ (last1 r)) (/ (dexp (1+ (last1 r))) (dexp (last1 r))))))))
 
-(defun compute-p :private (r* n-prime P0)
+(defun compute-p :private (r* n-prime P0 total-r total-r*)
   (iter (for rr* in r*)
         (for nn in n-prime)
-        (collect (* (- 1 P0) (/ rr* nn)))))
+        (collect (* (- 1 P0) (/ (* total-r (/ rr* nn))
+                                total-r*)))))
 
 (defun good-turing-reestimate (vector xdim ydim)
   "Good-Turing reestimation of probabilities, extracted from
@@ -464,8 +465,10 @@ null or 'erro."
                      (total (iter (for rr in r) (for nn in n) (sum (* rr nn)))) ; the total number of observations
                      (P0 (if (eql 0 total) 1d0 (/ (first n) total))) ; the expected frequency of unseen events
                      (r* (compute-r* n r))
+                     (total-r (iter (for rr in r) (sum rr)))
+                     (total-r* (iter (for rr in r*) (sum rr)))
                      (n-prime (mapcar #'* n r*))
-                     (p (compute-p r* n-prime P0)))
+                     (p (compute-p r* n-prime P0 total-r total-r*)))
                 (iter (for j from 0 below ydim)
                       (dbg :good-turing " j ~a  i ~a r ~a p ~a~%"
                            j i r p)
@@ -474,10 +477,6 @@ null or 'erro."
                                  (< (nth (position (aref vector i j) r :test #'eql) p)
                                     0))
                         (error "Valor menor que 0 ~a~%" p))
-                      (dbg :good-turing "Possibilidades: ~a , ~a, ~a~%"
-                           (/ P0 (second (first freq))) (position (aref vector i j) r)
-                           (and (position (aref vector i j) r)
-                                (nth (position (aref vector i j) r) p)))
                       (setf (aref vector i j)
                             (log (coerce (cond ((= 0 (aref vector i j)) 
                                                 (/ P0 (second (first freq))))
@@ -486,9 +485,21 @@ null or 'erro."
                                                 0.5d0)
                                                (t (nth (position (aref vector i j) r) p)))
                                          'double-float))))
-                (dbg :good-turing "R ~a,N ~a, i ~a, r* ~a, n-prime ~a~%" r n i r* n-prime)))))
+                (dbg :good-turing "R ~a,N ~a, ~%    i ~a, r* ~a, ~% r*total ~a,   n-prime ~a, ~%   P0 ~a, freq ~a~%"
+                     r n i r* (iter (for r in r*) (sum r)) n-prime P0 freq)))))
   vector)
-;; (good-turing-reestimate (make-array (list 1 12) :initial-contents '((0 0 0 11 11 1 2 1 1 1 0 1))) 1 12)
+
+(defun exp-add (vector i yd)
+  (iter (for j from 0 below yd)
+        (sum (exp (aref vector i j)))))
+
+(defun exp-map (vector i yd)
+  (iter (for j from 0 below yd)
+        (collect (exp (aref vector i j)))))
+
+;; (format t "~a~%" (exp-add (good-turing-reestimate (make-array (list 1 12) :initial-contents '((0 0 0 11 11 1 2 1 1 1 0 1))) 1 12) 0 12))
+;; (format t "~a~%" (exp-add (rameau-fhmm:dirichlett-smooth (make-array (list 1 12) :initial-contents '((0 0 0 11 11 1 2 1 1 1 0 1))) 1 12) 0 12))
+
 (defun make-number-hash-table (function list)
   "Makes a hash table associating the elements of \\textt{list} with incresing integers."
   (let ((table (make-hash-table :test function)))
