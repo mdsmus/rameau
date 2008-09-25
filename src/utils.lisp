@@ -463,11 +463,11 @@ null or 'erro."
                      (r (cdr (mapcar #'first freq))) ; the frequencies in the data
                      (n (cdr (mapcar #'second freq))) ; the number of times each frequency shows up
                      (total (iter (for rr in r) (for nn in n) (sum (* rr nn)))) ; the total number of observations
-                     (P0 (if (eql 0 total) 1d0 (/ (first n) total))) ; the expected frequency of unseen events
                      (r* (compute-r* n r))
                      (total-r (iter (for rr in r) (sum rr)))
                      (total-r* (iter (for rr in r*) (sum rr)))
                      (n-prime (mapcar #'* n r*))
+                     (P0 (if (eql 0 total) 1d0  (/ (* total-r (/ (first n) total)) total-r*))) ; the expected frequency of unseen events
                      (p (compute-p r* n-prime P0 total-r total-r*)))
                 (iter (for j from 0 below ydim)
                       (dbg :good-turing " j ~a  i ~a r ~a p ~a~%"
