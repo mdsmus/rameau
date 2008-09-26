@@ -112,6 +112,13 @@ center. center must be a string and scale-mode a keyword."
                :roman-function (get-roman-function (chord-root chord) (mode->keyword (chord-mode chord)) center)
                ))
 
+(defmethod chord->fchord (chord center)
+  "Fallback for non-chord tones and augmented sixths until we do have a syntax for it. FIXME."
+  (make-fchord :key center
+               :roman-function (make-roman-function :degree-number 1
+                                                    :degree-accidentals 0
+                                                    :mode :major)))
+
 (defmethod %compare-answer-sheet ((answer fchord) (sheet fchord) &optional tempered?)
   (declare (ignore tempered?))
   (and (equalp (fchord-key answer) (fchord-key sheet))

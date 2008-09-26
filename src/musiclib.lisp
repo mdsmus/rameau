@@ -495,6 +495,7 @@ or # as a prefix (as in bvi or #iii). EXAMPLE: (get-function-degree
                  (:minor "")
                  (:half-diminished "ø")
                  (:diminished "°")
+                 (:augmented "+")
                  (t (roman-function-mode function))))
          (accidentals (number->accidental (roman-function-degree-accidentals function))))
     (format stream "~a~a~a" accidentals roman mode)))

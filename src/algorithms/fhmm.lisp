@@ -238,7 +238,7 @@
          cache)
     (dbg :fhmm "Tran ~a, out ~a, nseg ~a, table ~a, mtable ~a, version ~a~%"
          (type-of tran) (type-of out) nsegs (type-of table) (type-of mtable) (version alg))
-    (iter (for j from 0 below *nviterbis*)
+    (iter (for j from 1 below *nviterbis*)
           (for s = (mapcar #'event-pitch (first segments)))
           (setf (aref table 0 j)
                 (+ (aref tran (input->number (list :out)) (nviterbi->first-toutput j))
