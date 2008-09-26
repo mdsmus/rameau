@@ -1,4 +1,4 @@
-@A I - 
+A: I - 
 vi I - IV - V6/V
 v V/V V7/V V -
 I - V/V I6 - vi6

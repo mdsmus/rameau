@@ -178,9 +178,9 @@ Read and load definitions from a user-set configuration file in \\texttt{~/.rame
 (defun path-parse-functional-answer-sheet (file)
   "Find and parse the answer sheet for file \\texttt{file}, if exists."
   (let* ((full-file (cl-ppcre:regex-replace "music" file "answer-sheets"))
-         (full-file (cl-ppcre:regex-replace "\\.ly" full-file ".fun")))
-    (when (cl-fad:file-exists-p full-file)
-      (read-fchords (read-file-as-sexp full-file :preserve)))))
+         (full-file (cl-ppcre:regex-replace "\\.ly" full-file ".fun"))
+         (str (file-string full-file)))
+    (get-fchords str)))
 
 (defun parse-file-list (item f &optional (ext ".ly"))
   "Parse file list \\texttt{f} into a list of filenames. [DONTCHECK]"

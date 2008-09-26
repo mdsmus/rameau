@@ -18,3 +18,17 @@ src/*.fasl
 src/*.o
 src/*.fas
 src/*.lib
+docs/choral-book/out/
+docs/choral-book/*.aux
+docs/choral-book/*.dvi
+docs/choral-book/*.log
+docs/choral-book/*.tex
+corais/
+anppom/
+icmc-presentation/*.aux
+icmc-presentation/*.log
+icmc-presentation/*.out
+icmc-presentation/*.pdf
+icmc-presentation/*.snm
+icmc-presentation/*.nav
+icmc-presentation/*.toc*

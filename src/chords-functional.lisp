@@ -15,7 +15,16 @@
 (defun print-fchord (struct stream depth)
   "Print \\texttt{struct} to \\texttt{stream}."
   (declare (ignore depth))
-  (format stream "~a:~a" (fchord-key struct) (fchord-roman-function struct)))
+  (if (fchord-key struct)
+      (format stream "~a: ~a~a~a"
+              (fchord-key struct)
+              (fchord-roman-function struct)
+              (or (fchord-7th struct) "")
+              (or (fchord-inversion struct) ""))
+      (format stream "~a~a~a"
+              (fchord-roman-function struct)
+              (or (fchord-7th struct) "")
+              (or (fchord-inversion struct) ""))))
          
 (defstruct (fchord (:print-function print-fchord))
   root 7th 9th 11th 13th bass inversion key roman-function)
@@ -77,6 +86,10 @@
           (setf last-chord chord))
         (collect last-chord)))
 
+(defun get-fchords (string)
+  (read-fchords
+   (read-from-string-as-sexp (cl-ppcre:regex-replace-all "([A-Ga-g](#|b)*):" string "@\\1") :preserve)))
+
 (defun mode->keyword (mode)
   (cond ((equal mode "") :major)
         ((equal mode "m") :minor)
@@ -104,9 +117,30 @@ center. center must be a string and scale-mode a keyword."
   (and (equalp (fchord-key answer) (fchord-key sheet))
        (equalp (fchord-roman-function answer) (fchord-roman-function sheet))))
 
+(defun same-key (a b)
+  (and (tonal-key-p a)
+       (tonal-key-p b)
+       (eq (tonal-key-mode a) (tonal-key-mode b))
+       (eq (tonal-key-center-pitch a) (tonal-key-center-pitch b))))
+
+(defun cleanup-keys (fchords)
+  (if (fchord-p (first fchords))
+      (iter (with current-key = nil)
+            (with last-chord = nil)
+            (for chord in fchords)
+            (for this-chord =  chord)
+            (if (same-key current-key (fchord-key chord))
+                (setf chord (make-fchord :key nil :7th (fchord-7th chord) :roman-function (fchord-roman-function chord)))
+                (setf current-key (fchord-key chord)))
+            (when (equalp chord last-chord)
+              (setf chord '-))
+            (setf last-chord this-chord)
+            (collect chord))
+      fchords))
+
 ;; (read-fchords (read-file-as-sexp (concat *rameau-path* "answer-sheets/chorales-bach/006.fun") :preserve))
 ;; (trace %parse-fchord)
 ;; (trace parse-roman-function)
-;; (mapcar (path-parse-functional-answer-sheet "/home/top/programas/analise-harmonica/music/chorales-bach/006.ly")
+;; (cleanup-keys (path-parse-functional-answer-sheet "/home/top/programas/analise-harmonica/music/chorales-bach/006.ly"))
 ;; (%parse-fchord "vi6" "F")
 ;; (chord->fchord (make-chord :root "a" :mode "") (make-tonal-key :center-pitch 0 :mode :minor))o
