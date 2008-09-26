@@ -39,7 +39,6 @@
 - definir status novatos
 - suporte kern, musedata
 
-
 * DONE colocar struct roman-function com degree-number, accidentals-number, mode
 * DONE trocar:
   - center    -> key-pitch
