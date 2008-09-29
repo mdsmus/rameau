@@ -23,7 +23,9 @@
 ;;; Print messages
 (defun print-help :private ()
   (iter (for (key value) in *commands*)
+        (for documentation in (cons "" *command-documentations*))
         (format t "~%~:@(* ~a~)~%" (substitute #\Space #\- key :test #'equal))
+        (format t "    ~a~%" documentation)
         (iter (for (short long help) in value)
               (format t "~4T~4a--~25a ~a~%" short long (remove #\Newline help))))
   (rameau-quit))

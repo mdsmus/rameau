@@ -142,6 +142,7 @@
       ("" "gv" "roda gv")
       ("" "png" "gera png")
       ("-S" "view-score" "gera score, roda lily e gv"))  
+  "Perform chord labeling with the specified algorithms on the specified files."
   (let ((analysis (analyse-files options)))
     (iter (for anal in analysis)
           (cond ((arg :dont-compare options) (analysis-terminal-no-answer options anal))
@@ -169,6 +170,7 @@
       ("" "gv" "roda gv")
       ("" "png" "gera png")
       ("-S" "view-score" "gera score, roda lily e gv"))    
+  "Perform roman numeral functional analysis with the specified functional algorithms on the specified files."
   (let ((analysis (functional-analyse-files options)))
     (iter (for anal in analysis)
           (cond ((arg :dont-compare options) (analysis-terminal-no-answer options anal))
@@ -185,6 +187,8 @@
 
 (defcommand view (options)
   nil
+  "Pretty visualization of the notes and chords produced by the chord labeling algorithms. The
+result will be in analysis/analysis-<file>-<algorithm>.png"
   (let ((analysis (analyse-files options))
         (pitch-colors (make-hash-table :test #'equal)))
     (iter (for anal in analysis)

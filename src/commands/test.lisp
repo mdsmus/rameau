@@ -57,5 +57,6 @@
 (defcommand test (options)
   (("-u" "unit" "")
    ("-r" "regression" ""))
+  "Run unit and regression tests."
   (when (arg :unit options) (unit options))
   (when (arg :regression options) (regression options)))

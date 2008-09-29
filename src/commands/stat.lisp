@@ -22,6 +22,7 @@
 
 (defcommand collect-data (options)
   nil
+  "Collect accuracy data on the chord labeling algorithms specified."
   (let* ((analysis (analyse-files options))
          (a (first analysis)))
     (format t "~5a|" " ")
@@ -129,6 +130,7 @@
 
 (defcommand report (options)
   nil
+  "Collect precision, recall, f-measure and confusion matrixes for the chord labeling algorithms specified."
   (let* ((analysis (analyse-files options))
          (algorithms (analysis-algorithms (first analysis)))
          (confusion-matrix (iter (for a in algorithms)

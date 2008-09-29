@@ -272,7 +272,7 @@ baixo = \\relative c {
                     (cl-store:store *results* (concat *rameau-web-dir* "cache.store"))
                     (with-open-file (f full-path :direction :output :if-exists :supersede)
                       (format f "~a" code))
-                    (analysis-lily options analysis))))
+                    (rameau-analysis::analysis-lily options analysis))))
             (redirect (format nil "/show-analysis?analysis=~a&chorale=~a" md5 (or (parameter "chorale") ""))))))))
 
 (push (create-prefix-dispatcher "/analysis" 'do-analysis) *dispatch-table*)
@@ -354,6 +354,7 @@ baixo = \\relative c {
 
 (defcommand web (options &rest ignore)
   (("" "port" "define the port number for rameau web" 4242 type-integer))
+  "Start rameau's web interface"
   (declare (ignore ignore))
   (let ((port (arg :port options)))
     (format t "Starting rameau web on port ~a.~%" port)

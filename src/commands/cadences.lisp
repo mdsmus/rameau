@@ -120,10 +120,11 @@
             (cairo-brighten-source red green blue)
             (cl-cairo2:fill-path)))))
 
-(setf *commands* (append *commands* '()))
-
 (rameau::defcommand cadences (options)
   (("-z" "cadence-number" "number of chords to consider" 4 type-integer))
+  "Detect the chord progressions and cadences in the specified files using the first specified
+roman numeral functional analysis algorithm. The chord progressions will be in
+analysis/cadences-cadences.png and the cadences will be in analysis/cadences-last-cadences.png"
   (let ((analysis (functional-analyse-files options))
         (cadences (make-hash-table :test #'equal))
         (last-cadences (make-hash-table :test #'equal)))

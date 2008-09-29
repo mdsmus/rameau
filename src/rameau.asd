@@ -39,6 +39,7 @@
 
 (asdf:defsystem :commands
   :depends-on (:rameau-pkg :cl-store :vecto :cl-who :algorithms :hunchentoot :md5 :cl-fad :cl-base64 :cl-store)
+  :serial t
   :components ((:module commands
                         :components ((:file "analysis-command")
                                      (:file "cadences")

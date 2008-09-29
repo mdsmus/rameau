@@ -64,6 +64,7 @@
 
 (defcommand document (options &rest ignore)
   nil
+  "Generate the documentation for rameau and save it in the rameau-documentation folder."
   (declare (ignore ignore options))
   (create-documentation-for-all-packages))
 

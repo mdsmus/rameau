@@ -11,6 +11,8 @@
 
 (defcommand schoenberg (options)
   nil
+  "Collect stats on how many chord progressions found in the chorales are strong,
+weak, superstrong and neutral, according to Schoenberg's theory of harmony."
   (let ((analysis (analyse-files options))
         ascending
         descending
@@ -47,6 +49,7 @@
 
 (defcommand resolve-seventh (options)
   nil
+  "Show a summary of all the seventh-note resolutions found in the files. Only for Bach chorales."
   (let ((analysis (analyse-files options)))
     (iter (for next in (all-chords options analysis))
           (for chord previous next)
@@ -62,7 +65,6 @@
                                            (- (absolute-pitch nota2) (absolute-pitch nota3))))
                            (sinal (and diferenca (if (< diferenca 0) "+" "-")))
                            (intervalo (and diferenca (interval->code (module diferenca)))))
-
                       (when intervalo
                         (with-open-file (f (concat *rameau-path* (format nil "analysis/seventh-~a-~a.ly"
                                                                          (third chord)
@@ -85,6 +87,7 @@
 
 (defcommand jumps (options)
   nil
+  "List all the steps and leaps in the analysed files. Only for Bach chorales."
   (let ((jumps (make-hash-table :test #'equal))
         (analysis (analyse-files options)))
     (iter (for anal in analysis)
@@ -127,6 +130,7 @@
 
 (defcommand ambito (options)
   nil
+  "List the ranges of the voices in the analysed files. Only for Bach chorales."
   (let ((analysis (analyse-files options)))
     (iter (for anal in analysis)
           (let ((notes (parse-file (analysis-full-path anal)))
@@ -177,6 +181,7 @@
 
 (defcommand kostka-amb (options)
   nil
+  "Show where the note ranges for the voices in a chorale are different from KP rules. Only for Bach chorales."
   (iter (for anal in (analyse-files options))
         (let ((baixos   (mapcar #L(extract-note !1 (make-event :voice-name "\"baixo\"")) (analysis-segments anal)))
               (tenores  (mapcar #L(extract-note !1 (make-event :voice-name "\"tenor\"")) (analysis-segments anal)))
@@ -202,6 +207,8 @@
 
 (defcommand cruzamento (options)
   nil
+  "Find all voice crossings in the specified files. Only for Bach chorales. Each crossing will be saved
+as a lilypond snippet in analysis/cruzamento-<chorale>-<first-sonority>-<last-sonority>.ly"
   (iter (for anal in (analyse-files options))
         (let ((notes (analysis-segments anal))
               min max)
@@ -287,6 +294,7 @@
 
 (defcommand parallel-fifths (options)
   nil
+  "Detect consecutive fifths in the given files."
   (let ((analysis (analyse-files options)))
     (format t "Quintas \"reais\":~%")
     (do-parallel options analysis 5 "fifths" nil)
@@ -295,6 +303,7 @@
 
 (defcommand parallel-octaves (options)
   nil
+  "Detect consecutive octaves and unisons in the given files."
   (let ((analysis (analyse-files options)))
     (format t "Oitavas reais:~%")
     (do-parallel options analysis 1 "octaves" nil)
@@ -304,6 +313,8 @@
 (defcommand print-segments (options)
   (("-i" "start" "segmento inicial" 0 type-integer)
    ("-z" "end" "segmendo final" 1000000 type-integer))
+  "Create a lilypond snippet of the given file between the given sonorities. It will be saved
+as analysis/segments-<file>-<start>-<end>.ly"
   (iter (for anal in (analyse-files options))
         (format t "Chorale ~a ~%" (analysis-file-name anal))
         (let ((ini (or (arg :start options) 0))
