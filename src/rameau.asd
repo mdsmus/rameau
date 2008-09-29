@@ -22,9 +22,8 @@
                (:file "tools")
                (:file "options")
                (:file "terminal")
-               (:file "analysis")
                (:file "lily")
-               (:file "doc")
+               (:file "analysis")
                ))
 
 (asdf:defsystem :algorithms
@@ -41,8 +40,10 @@
 (asdf:defsystem :commands
   :depends-on (:rameau-pkg :cl-store :vecto :cl-who :algorithms :hunchentoot :md5 :cl-fad :cl-base64 :cl-store)
   :components ((:module commands
-                        :components ((:file "cadences")
+                        :components ((:file "analysis-command")
+                                     (:file "cadences")
                                      (:file "web")
+                                     (:file "doc")
                                      ))))
 
 (asdf:defsystem :rameau

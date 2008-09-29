@@ -715,11 +715,6 @@
     (rameau-web::start-rameau-web port))
   (loop))
 
-(defcommand document (options &rest ignore)
-  nil
-  (declare (ignore ignore options))
-  (rameau-doc:create-documentation-for-all-packages))
-
 ;;; Main
 (defun split-command-list :private (command-list)
   (let ((pos (position "and" command-list :test #'string=)))
@@ -806,9 +801,10 @@
               ;; parse file options
               (setf (arg :files options) (parse-files options))
               ;; parse algorithms options
-              (let ((fn (%string->symbol command)))
-                (if (fboundp fn)
-                    (funcall fn options)
+              (let* ((p (position command *command-names* :test #'string=))
+                     (func (and p (nth p *command-functions*))))
+                (if func
+                    (funcall func options)
                     (print-fatal (concat cmd " is not a rameau command."))))
               (when (arg :profile options)
                 (rameau-report)))

@@ -260,14 +260,14 @@ an error and doing a backtrace if running on sbcl and \\texttt{condition} is tru
        ,@code)))
 
 (defparameter *command-names* nil)
+(defparameter *command-functions* nil)
 
 (defmacro defcommand (name (&rest args) command-line-args &body body)
   "Wrapper to defun. Store the name of the command in *commands-names."
   `(progn
      (push (string-downcase (symbol-name ',name)) *command-names*)
      (setf *commands* (append *commands* (list (list (stringify ',name) ',command-line-args))))
-     (defun ,name ,args
-       ,@body)))
+     (push (lambda ,args ,@body) *command-functions*)))
 
 (defun make-int (value)
   "Coerce value into an integer."

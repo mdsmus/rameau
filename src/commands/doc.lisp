@@ -61,3 +61,9 @@
 
 (defun create-documentation-for-all-packages ()
   (mapcar #'create-documentation-sexp *rameau-packages*))
+
+(defcommand document (options &rest ignore)
+  nil
+  (declare (ignore ignore options))
+  (create-documentation-for-all-packages))
+

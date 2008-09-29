@@ -2,27 +2,27 @@
 
 (enable-sharp-l-syntax)
 
-(defun make-variable :private (name content)
+(defun make-variable  (name content)
   (concat name " = " content "
 
 "))
 
-(defun make-lily-list :private (content)
+(defun make-lily-list (content)
   (reduce #L(concat !1 "
 " !2)
           content))
 
-(defun make-lyrics :private (name)
+(defun make-lyrics (name)
   (format nil "\\new Lyrics \\lyricsto \"nowhere\" \\~a~%" (remove #\- name)))
 
-(defun intervalo :private (s1 s2)
+(defun intervalo (s1 s2)
   "Retorna o intervalo entre dois segmentos."
   (if (null s2)
       0
       (- (event-start (first s2))
          (event-end (first s1)))))
 
-(defun make-lily-sonorities :private (notes)
+(defun make-lily-sonorities (notes)
   (make-variable "sonorities" 
                  (concat " \\lyricmode {
  \\set Stanza = \"Sonority\""
@@ -36,7 +36,7 @@
 
                          "}")))
 
-(defun frac->dur-lily :private (dur)
+(defun frac->dur-lily (dur)
   "Convert duration \\texttt{dur} to a lilypond-style duration"
   (let ((numer (numerator (abs dur)))
         (denom (denominator (abs dur))))
@@ -44,7 +44,7 @@
           ((= numer 3) (format nil "~a." (/ denom 2)))
           (t (format nil "~a*~a" denom numer)))))
 
-(defun print-duracoes :private (segmento)
+(defun print-duracoes (segmento)
   (values (loop for s = segmento then (rest s)
                 unless s return res
                 collect (concat "c" (frac->dur-lily (event-dur (first (first s))))) into res
@@ -56,17 +56,17 @@
                   n
                   (list n))))))
 
-(defun make-devnull-var :private (sonorities)
+(defun make-devnull-var (sonorities)
   (multiple-value-bind (durs first-rest) (print-duracoes sonorities)
     (make-variable "texto"
                    (if first-rest
                        (format nil "{~{s~a ~} ~{~a ~}}~%~%" first-rest durs)
                        (format nil "{~{~a ~}}~%~%" durs)))))
 
-(defun make-devnull-voice :private ()
+(defun make-devnull-voice ()
   "\\new Devnull = \"nowhere\" \\texto")
 
-(defun print-compare-answer-sheet :private (analysis answer name options cleaned)
+(defun print-compare-answer-sheet (analysis answer name options cleaned)
   (make-variable (remove #\- name)
                  (concat " \\lyricmode {
  \\set stanza = \""
@@ -93,7 +93,7 @@
                          "}
 ")))
 
-(defun make-answer-sheet :private (answer)
+(defun make-answer-sheet (answer)
   (make-variable "answer"
                  (concat "\\lyricmode {
   \\set stanza = \"Answer\" "
@@ -102,7 +102,7 @@
 
 ")))
 
-(defun make-note-list :private (notes)
+(defun make-note-list (notes)
   (let (notelist
         (rest 0)
         (notes (remove-if #'null notes)))
@@ -118,7 +118,7 @@
                 (setf notelist (append notelist (list (event-original-event note)))))))
     notelist))
 
-(defun add-rests :private (notes)
+(defun add-rests (notes)
   (format nil " { ~{~a ~% ~} }"
           (iter (for note in notes)
                 (for prev previous note)
