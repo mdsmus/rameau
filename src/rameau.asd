@@ -45,6 +45,9 @@
                                      (:file "web")
                                      (:file "doc")
                                      (:file "stat")
+                                     (:file "algorithms")
+                                     (:file "musicology")
+                                     (:file "test")
                                      ))))
 
 (asdf:defsystem :rameau

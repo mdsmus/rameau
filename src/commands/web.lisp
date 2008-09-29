@@ -350,3 +350,13 @@ baixo = \\relative c {
   (start-server :port port))
 
 ;;(start-rameau-web)
+
+
+(defcommand web (options &rest ignore)
+  (("" "port" "define the port number for rameau web" 4242 type-integer))
+  (declare (ignore ignore))
+  (let ((port (arg :port options)))
+    (format t "Starting rameau web on port ~a.~%" port)
+    (write-line "Open http://localhost:4242/rameau/index.html on your browser")
+    (rameau-web::start-rameau-web port))
+  (loop))
