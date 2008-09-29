@@ -20,6 +20,21 @@
      (defun ,name ,args
        ,@body)))
 
+(defmacro safe-with-backtrace ((&key condition print-error-msg exit return) &body code)
+  "Runs \\texttt{code} with error protection, calling \\texttt{print-error-msg} if there's
+an error and doing a backtrace if running on sbcl and \\texttt{condition} is true at runtime."
+  (let ((err (gensym)))
+    `(handler-bind ((error (lambda (,err)
+                             ,print-error-msg
+                             (format t "Error: ~a~%" ,err)
+                             (when ,condition
+                               #+sbcl (sb-debug:backtrace))
+                             (when ,exit
+                               (rameau-quit))
+                             ,return)))
+       ,@code)))
+
+
 (defun %string->symbol (string &optional (package #+sbcl(sb-int:sane-package) #-sbcl *package*))
   (intern (string-upcase string) package))
 
@@ -36,86 +51,64 @@
 ;;; Make analysis
 
 (defun main-perform-analysis (segments options alg)
-  (handler-bind ((error (lambda (err)
-                          (format t "Analysis failed for algorithm ~a. Please report a bug. Error ~a.~%" alg err)
-                          (when (arg :debug options) #+sbcl (sb-debug:backtrace))
-                          nil)))
+  (safe-with-backtrace (:condition  (arg :debug options)
+                        :print-error-msg (format t "Analysis failed for algorithm ~a. Please report a bug.~%" alg))
     (perform-analysis segments options alg)))
 
-
 (defun main-perform-functional-analysis (segments options alg)
-  (handler-bind ((error (lambda (err)
-                          (format t "Analysis failed for algorithm ~a. Please report a bug. Error ~a.~%" alg err)
-                          (when (arg :debug options) #+sbcl (sb-debug:backtrace))
-                          nil)))
+  (safe-with-backtrace (:condition  (arg :debug options)
+                        :print-error-msg (format t "Functional analysis failed for algorithm ~a. Please report a bug.~%" alg))
     (functional-analysis segments options alg)))
 
-(defun main-parse-file (file)
-  (handler-bind
-      ((error (lambda (e)
-                (format t "Could not parse file ~a.
-Please check with lilypond to see if it is valid. If it is, please report a bug.
-The error is ~a~%"
-                        file e)
-                #+sbcl(sb-debug:backtrace)
-                (rameau-quit))))
+(defun main-parse-file (file options)
+  (safe-with-backtrace (:condition (arg :debug options)
+                        :print-error-msg (format t "Could not parse file ~a.
+Please check with lilypond to see if it is valid. If it is, please report a bug.~%" file)
+                        :exit t)
      (parse-file file)))
 
 (defun analyse-files :private (options)
   (setf (arg :algorithms options) (mapcar #'load-alg (filter-algorithms (arg :algorithms options) *algorithms*))
         (arg :options options) (process-option-list (arg :options options)))
-  (let ((analysis (handler-case (loop
-                                      for file in (arg :files options)
-                                      for segments = (sonorities (main-parse-file file))
-                                      collect
-                                      (make-analysis
-                                       :segments segments
-                                       :results (mapcar #L(main-perform-analysis segments options !1)
-                                                        (arg :algorithms options))
-                                       :answer-sheet (path-parse-answer-sheet file)
-                                       :file-name (pathname-name file)
-                                       :number-algorithms (length (arg :algorithms options))
-                                       :algorithms (arg :algorithms options)
-                                       :notes (mapcar #'list-events segments)
-                                       :ast (file-ast file)
-                                       :full-path file
-                                       :dur (durations segments)))
-                    (error () (list (make-analysis :segments (list nil)))))))
-    (when (every #'null (mapcar #'analysis-segments analysis))
-      (format t "ERROR: Couldn't analyse. Did you specify the files and the algorithms?
-If you did, we have a bug, so please report.~%")
-      (rameau-quit))
-    analysis))
+  (let (last-file)
+    (safe-with-backtrace (:condition (arg :debug options)
+                          :print-error-msg (format t "Could not analyse ~a.~%" last-file)
+                          :exit t)
+      (iter (for file in (arg :files options))
+            (setf last-file file)
+            (for segments = (sonorities (main-parse-file file options)))
+            (collect (make-analysis :segments segments
+                                    :results (mapcar #L(main-perform-analysis segments options !1)
+                                                     (arg :algorithms options))
+                                    :answer-sheet (path-parse-answer-sheet file)
+                                    :file-name (pathname-name file)
+                                    :number-algorithms (length (arg :algorithms options))
+                                    :algorithms (arg :algorithms options)
+                                    :notes (mapcar #'list-events segments)
+                                    :ast (file-ast file)
+                                    :full-path file
+                                    :dur (durations segments)))))))
 
 (defun functional-analyse-files :private (options)
   (setf (arg :algorithms options) (mapcar #'load-alg (filter-algorithms (arg :algorithms options) *functional-algorithms*))
         (arg :options options) (process-option-list (arg :options options)))
-  (let ((analysis (handler-case (loop
-                                      for file in (arg :files options)
-                                      for segments = (sonorities (main-parse-file file))
-                                      collect
-                                      (make-analysis
-                                       :segments segments
-                                       :results (mapcar #L(main-perform-functional-analysis segments options !1)
-                                                        (arg :algorithms options))
-                                       :answer-sheet (path-parse-functional-answer-sheet file)
-                                       :file-name (pathname-name file)
-                                       :number-algorithms (length (arg :algorithms options))
-                                       :algorithms (arg :algorithms options)
-                                       :notes (mapcar #'list-events segments)
-                                       :ast (file-ast file)
-                                       :full-path file
-                                       :dur (durations segments)))
-                    (error ()
-                      (format t "Error in functional analysis. That's odd, please report a bug.~%")
-                      (format t "The algorithms are ~a.~%" (arg :algorithms options))
-                      (list (make-analysis :segments (list nil)))))))
-    (when (every #'null (mapcar #'analysis-segments analysis))
-      (format t "ERROR: Couldn't analyse. Did you specify the files and the algorithms?
-If you did, we have a bug, so please report.~%")
-      (rameau-quit))
-    analysis))
-
+  (let (last-file)
+    (safe-with-backtrace (:condition (arg :debug options)
+                          :print-error-msg (format t "Could not analyse ~a. Error." last-file)
+                          :exit t)
+      (iter (for file in (arg :files options))
+            (for segments = (sonorities (main-parse-file file options)))
+            (collect (make-analysis :segments segments
+                                    :results (mapcar #L(main-perform-functional-analysis segments options !1)
+                                                     (arg :algorithms options))
+                                    :answer-sheet (path-parse-functional-answer-sheet file)
+                                    :file-name (pathname-name file)
+                                    :number-algorithms (length (arg :algorithms options))
+                                    :algorithms (arg :algorithms options)
+                                    :notes (mapcar #'list-events segments)
+                                    :ast (file-ast file)
+                                    :full-path file
+                                    :dur (durations segments)))))))
 
 ;;; Print messages
 (defun print-help :private ()
