@@ -258,3 +258,18 @@ an error and doing a backtrace if running on sbcl and \\texttt{condition} is tru
                                (rameau-quit))
                              ,return)))
        ,@code)))
+
+(defparameter *command-names* nil)
+
+(defmacro defcommand (name (&rest args) &body body)
+  "Wrapper to defun. Store the name of the command in *commands-names."
+  `(progn
+     (push (string-downcase (symbol-name ',name)) *command-names*)
+     (defun ,name ,args
+       ,@body)))
+
+(defun make-int (value)
+  "Coerce value into an integer."
+  (if (integerp value)
+      value
+      (parse-integer value)))

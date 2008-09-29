@@ -23,6 +23,13 @@ Please check with lilypond to see if it is valid. If it is, please report a bug.
                         :exit t)
      (parse-file file)))
 
+(defun all-chords-single (options anal)
+  (declare (ignore options))
+  (iter (for chord in (first (analysis-results anal)))
+        (for segment in (analysis-segments anal))
+        (for i from 0)
+        (collect (list chord segment (analysis-file-name anal) i))))
+
 (defun make-result-list :private (analysis)
   (apply #'mapcar #'list (analysis-results analysis)))
 

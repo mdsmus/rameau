@@ -10,15 +10,6 @@
 
 (enable-sharp-l-syntax)
 
-(defparameter *command-names* nil)
-
-(defmacro defcommand (name (&rest args) &body body)
-  "Wrapper to defun. Store the name of the command in *commands-names."
-  `(progn
-     (push (string-downcase (symbol-name ',name)) *command-names*)
-     (defun ,name ,args
-       ,@body)))
-
 (defun %string->symbol (string &optional (package #+sbcl(sb-int:sane-package) #-sbcl *package*))
   (intern (string-upcase string) package))
 
@@ -161,160 +152,6 @@
             (format t "~6,2f |" (stddev (butlast r) (average (butlast r)))))
       (format t "~%"))))
 
-(defun all-chords-single :private (options anal)
-  (declare (ignore options))
-  (iter (for chord in (first (analysis-results anal)))
-        (for segment in (analysis-segments anal))
-        (for i from 0)
-        (collect (list chord segment (analysis-file-name anal) i))))
-
-(defun all-chords :private (options analysis)
-  (iter (for anal in analysis)
-        (nconcing
-         (append '(nil nil nil nil nil)
-                 (all-chords-single options anal)))))
-
-(defun root-pitch :private (chord)
-  (parse-note (chord-root chord)))
-
-(defun chord-interval-number :private (a b)
-  (first (interval->code (module (- (root-pitch a) (root-pitch b))))))
-
-(defun remove-repeated-fchords :private (chords)
-  (let (last-chord)
-    (iter (for chord in chords)
-          (for prev previous chord)
-          (for c = (first chord))
-          (for lc = (first last-chord))
-          (if (not last-chord)
-              (progn (setf last-chord chord)
-                     (collect chord))
-              (unless  (and (equalp (fchord-key c) (fchord-key lc))
-                            (equal (roman-function-degree-number (fchord-roman-function c))
-                                   (roman-function-degree-number (fchord-roman-function lc))))
-                (collect chord)
-                (setf last-chord chord))))))
-
-(defun prepare-cadence :private (options anal n)
-  (butlast (group (remove-repeated-fchords (all-chords-single options anal))
-                  n)
-           (1- n)))
-
-(defun normalize-to-key (fchord first-key)
-  (let ((this-key (fchord-key fchord)))
-    (make-fchord :roman-function (fchord-roman-function fchord)
-                 :key (make-tonal-key :center-pitch (interval (tonal-key-center-pitch first-key)
-                                                              (tonal-key-center-pitch this-key))
-                                      :mode (tonal-key-mode this-key))
-                 :inversion (fchord-inversion fchord)
-                 :bass (fchord-bass fchord)
-                 :7th (fchord-7th fchord))))
-
-(defun add-to-cadence-hash :private (hash chords file-name segno)
-  (let ((key (fchord-key (first chords))))
-    (push (list file-name segno)
-          (gethash (reduce #'concat
-                           (mapcar #L(format nil "~a " !1)
-                                   (cleanup-keys (mapcar #L(normalize-to-key !1 key) chords))))
-                   hash))))
-
-(defun make-int :private (value)
-  (if (integerp value)
-      value
-      (parse-integer value)))
-
-(defun show-cadence-hash :private (options cadences)
-  (iter (for (cadence  places) in (sorted (iter (for (cadence places) in-hashtable cadences)
-                                                (collect (list cadence places)))
-                                          #L(< (length (second !1))
-                                               (length (second !2)))))
-        (if (< (make-int (arg :max-print-error options))
-               (length places))
-            (format t "  ~a found ~a times (max ~a)~%"
-                    cadence (length places) (arg :max-print-error options))
-            (progn
-              (format t " ~a [~a] found in: "
-                      cadence (length places))
-              (iter (for cad in places)
-                    (format t "(~a ~a) " (first cad) (second cad)))
-              (format t "~%")))))
-
-(defun text-dimensions (text size)
-  (cl-cairo2:set-font-size size)
-  (multiple-value-bind (xbear ybear width height)
-      (cl-cairo2:text-extents text)
-    (list (/ (+ width xbear) 2) (/ (- height ybear) 2))))
-(defun collides (boxa boxb)
-  (destructuring-bind ((cxa cya dxa dya &rest foo) (cxb cyb dxb dyb &rest bar))
-      (list boxa boxb)
-    (declare (ignore foo bar))
-    (and (> (+ 10 dxa dxb) (abs (- cxa cxb)))
-         (> (+ 5 dya dyb) (abs (- cya cyb))))))
-
-(defun approach-0 (number step)
-  (if (< number 0)
-      (- number step)
-      (+ number step))) 
-
-(defun make-cadence-figure (cadences name)
-  (make-random-state t)
-  (cl-cairo2:with-png-file ((format nil "~a/analysis/cadences-~a.png" *rameau-path* name) 'cl-cairo2:format-rgb24 2000 2000)
-    (let* ((center (list 1000 1000))
-           (boxes nil)
-           (cadences (sorted (iter (for (cadence places) in-hashtable cadences)
-                                   (collect (list cadence places)))
-                             #L(> (length (second !1))
-                                  (length (second !2)))))
-           (max-size (length (second (first cadences)))))
-      (cl-cairo2:select-font-face "Times" 'cl-cairo2:font-slant-normal 'cl-cairo2:font-weight-normal)
-      (cl-cairo2:rectangle 0 0 2000 2000)
-      (cl-cairo2:set-source-rgb 1 1 1)
-      (cl-cairo2:fill-path)
-      (iter (for (cadence  places) in cadences)
-            (for i from 1)
-            (let* ((size (genoslib::normalize 10d0 55d0 0d0 max-size  (length places)))
-                   (dim (append (text-dimensions cadence size) (list cadence size)))
-                   (angle (random (* 2 pi)))
-                   (cenx (first center))
-                   (ceny (second center))
-                   (box (cons cenx (cons ceny dim)))
-                   (stepx (* 10 (cos angle)))
-                   (stepy (* 10 (sin angle))))
-              (iter (for n from 1 to 220)
-                    (always (some #'identity (mapcar #L(collides !1 box) boxes)))
-                    (setf box (cons (+ (first box) stepx) (cons (+ (second box) stepy) dim))))
-              (push box boxes)))
-      (iter (for (cx cy dx dy cadence size) in boxes)
-            (for i from 1)
-            (for (red green blue) = (cairo-random-stroke-fill-colors))
-            (cl-cairo2:set-font-size size)
-            (multiple-value-bind (xbear ybear xwidth yheight) (cl-cairo2:text-extents cadence)
-              (cl-cairo2:move-to (+ (- cx xwidth) xbear)
-                                 (- (- cy yheight) ybear)))
-            (cl-cairo2:text-path cadence)
-            (cl-cairo2:stroke-preserve)
-            (cairo-brighten-source red green blue)
-            (cl-cairo2:fill-path)))))
-
-(defcommand cadences (options)
-  (let ((analysis (functional-analyse-files options))
-        (cadences (make-hash-table :test #'equal))
-        (last-cadences (make-hash-table :test #'equal)))
-    (iter (for anal in analysis)
-          (let ((prep (prepare-cadence options
-                                       anal
-                                       (arg :cadence-number options))))
-            (iter (for chords in prep)
-                  (add-to-cadence-hash cadences (mapcar #'first chords) (third (first chords)) (fourth (first chords))))
-            (add-to-cadence-hash last-cadences (mapcar #'first (last1 prep)) (third (first (last1 prep))) "end")))
-    (format t "All cadences:~%")
-    (show-cadence-hash options cadences)
-    (make-cadence-figure cadences "cadences")
-    (format t "Cadences in the end:~%")
-    (show-cadence-hash options last-cadences)
-    (make-cadence-figure last-cadences "last-cadences")
-    ))
-
 (defcommand schoenberg (options)
   (let ((analysis (analyse-files options))
         ascending
@@ -343,6 +180,12 @@
       (format t " Descending: ~,1f%~%" (% (length descending) total))
       (format t "Superstrong: ~,1f%~%" (% (length superstrong) total))
       (format t "    Neutral: ~,1f%~%" (% (length neutral) total)))))
+
+(defun all-chords :private (options analysis)
+  (iter (for anal in analysis)
+        (nconcing
+         (append '(nil nil nil nil nil)
+                 (all-chords-single options anal)))))
 
 (defcommand resolve-seventh (options)
   (let ((analysis (analyse-files options)))

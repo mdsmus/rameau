@@ -38,6 +38,7 @@
            #:type-integer
            #:*commands*
            #:parse-file-name
+           #:*command-names*
            )
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defgeneric
                           #:defparameter #:defvar #:defstruct #:defclass)

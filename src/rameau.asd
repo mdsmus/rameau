@@ -38,18 +38,17 @@
                                      (:file "fhmm")
                                      ))))
 
-(asdf:defsystem :rameau-web
-  :name "rameau-web"
-  :version "0.0"
-  :author "Alexandre Passos e Pedro Kroger"
-  :depends-on (:rameau-pkg :algorithms :hunchentoot :cl-who
-                           :md5 :cl-fad :cl-base64 :cl-store)
-  :components ((:file "web")))
+(asdf:defsystem :commands
+  :depends-on (:rameau-pkg :cl-store :vecto :cl-who :algorithms :hunchentoot :md5 :cl-fad :cl-base64 :cl-store)
+  :components ((:module commands
+                        :components ((:file "cadences")
+                                     (:file "web")
+                                     ))))
 
 (asdf:defsystem :rameau
     :name "rameau"
     :version "4.0"
     :author "Alexandre Passos e Pedro Kroger"
-    :depends-on (:rameau-pkg :algorithms :rameau-web)
+    :depends-on (:rameau-pkg :algorithms :commands)
     :components ((:file "main")
                  ))
