@@ -120,9 +120,10 @@
             (cairo-brighten-source red green blue)
             (cl-cairo2:fill-path)))))
 
-(setf *commands* (append *commands* '(("cadences" (("-z" "cadence-number" "number of chords to consider" 4 type-integer))))))
+(setf *commands* (append *commands* '()))
 
-(defcommand cadences (options)
+(rameau::defcommand cadences (options)
+  (("-z" "cadence-number" "number of chords to consider" 4 type-integer))
   (let ((analysis (functional-analyse-files options))
         (cadences (make-hash-table :test #'equal))
         (last-cadences (make-hash-table :test #'equal)))

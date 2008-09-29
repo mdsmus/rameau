@@ -85,35 +85,10 @@
         (write-line (subseq (last1 (cl-ppcre:split "\\n" string-result)) 34)))))
 
 (defcommand test (options)
+  (("-u" "unit" "")
+   ("-r" "regression" ""))
   (when (arg :unit options) (unit options))
   (when (arg :regression options) (regression options)))
-
-;;; Analysis
-(defcommand analysis (options)
-  (let ((analysis (analyse-files options)))
-    (iter (for anal in analysis)
-          (cond ((arg :dont-compare options) (analysis-terminal-no-answer options anal))
-                ((analysis-answer-sheet anal)
-                 (analysis-terminal options anal))
-                (t (print-warning (concat "the answer sheet for "
-                                          (analysis-file-name anal)
-                                          " doesn't exist"))
-                   (analysis-terminal-no-answer options anal)))
-          (when (or (arg :score options) (arg :view-score options) (arg :lily options))
-            (analysis-lily options anal)))))
-
-(defcommand functional (options)
-  (let ((analysis (functional-analyse-files options)))
-    (iter (for anal in analysis)
-          (cond ((arg :dont-compare options) (analysis-terminal-no-answer options anal))
-                ((analysis-answer-sheet anal)
-                 (analysis-terminal options anal))
-                (t (print-warning (concat "the answer sheet for "
-                                          (analysis-file-name anal)
-                                          " doesn't exist"))
-                   (analysis-terminal-no-answer options anal)))
-          (when (or (arg :score options) (arg :view-score options) (arg :lily options))
-            (analysis-lily options anal)))))
 
 (defun average :private (r)
   (let ((l (length r)))
@@ -128,6 +103,7 @@
   (length (remove-if #'null (mapcar #'compare-answer-sheet res gab))))
 
 (defcommand collect-data (options)
+  nil
   (let* ((analysis (analyse-files options))
          (a (first analysis)))
     (format t "~5a|" " ")
@@ -153,6 +129,7 @@
       (format t "~%"))))
 
 (defcommand schoenberg (options)
+  nil
   (let ((analysis (analyse-files options))
         ascending
         descending
@@ -188,6 +165,7 @@
                  (all-chords-single options anal)))))
 
 (defcommand resolve-seventh (options)
+  nil
   (let ((analysis (analyse-files options)))
     (iter (for next in (all-chords options analysis))
           (for chord previous next)
@@ -230,6 +208,7 @@
       97))
 
 (defcommand view (options)
+  nil
   (let ((analysis (analyse-files options))
         (pitch-colors (make-hash-table :test #'equal)))
     (iter (for anal in analysis)
@@ -274,6 +253,7 @@
                         (cl-cairo2:show-text cho)))))))
 
 (defcommand jumps (options)
+  nil
   (let ((jumps (make-hash-table :test #'equal))
         (analysis (analyse-files options)))
     (iter (for anal in analysis)
@@ -315,6 +295,7 @@
               (format t "~20a: ~a~%" (print-absolute-interval k) (length v))))))
 
 (defcommand ambito (options)
+  nil
   (let ((analysis (analyse-files options)))
     (iter (for anal in analysis)
           (let ((notes (parse-file (analysis-full-path anal)))
@@ -364,6 +345,7 @@
             (format f "~a" (make-lily-segments options (list pseg seg nseg)))))))
 
 (defcommand kostka-amb (options)
+  nil
   (iter (for anal in (analyse-files options))
         (let ((baixos   (mapcar #L(extract-note !1 (make-event :voice-name "\"baixo\"")) (analysis-segments anal)))
               (tenores  (mapcar #L(extract-note !1 (make-event :voice-name "\"tenor\"")) (analysis-segments anal)))
@@ -388,6 +370,7 @@
                                    :key #L(cons (event-pitch !1) (event-octave !1))))))
 
 (defcommand cruzamento (options)
+  nil
   (iter (for anal in (analyse-files options))
         (let ((notes (analysis-segments anal))
               min max)
@@ -472,6 +455,7 @@
                             (print-event-note f2))))))))
 
 (defcommand parallel-fifths (options)
+  nil
   (let ((analysis (analyse-files options)))
     (format t "Quintas \"reais\":~%")
     (do-parallel options analysis 5 "fifths" nil)
@@ -479,6 +463,7 @@
     (do-parallel options analysis 5 "fifths" t)))
 
 (defcommand parallel-octaves (options)
+  nil
   (let ((analysis (analyse-files options)))
     (format t "Oitavas reais:~%")
     (do-parallel options analysis 1 "octaves" nil)
@@ -486,6 +471,8 @@
     (do-parallel options analysis 1 "octaves" t)))
 
 (defcommand print-segments (options)
+  (("-i" "start" "segmento inicial" 0 type-integer)
+   ("-z" "end" "segmendo final" 1000000 type-integer))
   (iter (for anal in (analyse-files options))
         (format t "Chorale ~a ~%" (analysis-file-name anal))
         (let ((ini (or (arg :start options) 0))
@@ -596,6 +583,7 @@
            (recall    m re right ob))))
 
 (defcommand report (options)
+  nil
   (let* ((analysis (analyse-files options))
          (algorithms (analysis-algorithms (first analysis)))
          (confusion-matrix (iter (for a in algorithms)
@@ -694,6 +682,7 @@
                                it))))))
 
 (defcommand algorithms (options &rest ignore)
+  nil
   (declare (ignore ignore))
   (make-training-data options)
   (setf (arg :algorithms options) (mapcar #'load-alg (filter-algorithms (arg :algorithms options) *algorithms*))
@@ -705,6 +694,7 @@
         *training-data* nil))
 
 (defcommand funalg (options &rest ignore)
+  nil
   (declare (ignore ignore))
   (make-functional-training-data options)
   (setf (arg :algorithms options) (mapcar #'load-alg (filter-algorithms (arg :algorithms options) *functional-algorithms*))
@@ -717,6 +707,7 @@
         *training-data* nil))
 
 (defcommand web (options &rest ignore)
+  (("" "port" "define the port number for rameau web" 4242 type-integer))
   (declare (ignore ignore))
   (let ((port (arg :port options)))
     (format t "Starting rameau web on port ~a.~%" port)
@@ -725,6 +716,7 @@
   (loop))
 
 (defcommand document (options &rest ignore)
+  nil
   (declare (ignore ignore options))
   (rameau-doc:create-documentation-for-all-packages))
 

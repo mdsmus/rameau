@@ -261,10 +261,11 @@ an error and doing a backtrace if running on sbcl and \\texttt{condition} is tru
 
 (defparameter *command-names* nil)
 
-(defmacro defcommand (name (&rest args) &body body)
+(defmacro defcommand (name (&rest args) command-line-args &body body)
   "Wrapper to defun. Store the name of the command in *commands-names."
   `(progn
      (push (string-downcase (symbol-name ',name)) *command-names*)
+     (setf *commands* (append *commands* (list (list (stringify ',name) ',command-line-args))))
      (defun ,name ,args
        ,@body)))
 

@@ -130,3 +130,119 @@ Please check with lilypond to see if it is valid. If it is, please report a bug.
            (when (arg :sonorities options)
              (format t "~&TOTAL SONORITIES: ~a~%" seg-number))
            (format t "~%")))))
+
+(defun analysis-lily (options analysis)
+  (let* ((ast (analysis-ast analysis))
+         (score (first (get-children-by-type ast 'rameau::score)))
+         (music (first-child (first-child (first (children score)))))
+         (variables (make-string-output-stream))
+         (in-score (make-string-output-stream)))
+    (format variables (make-devnull-var (analysis-segments analysis)))
+    (format variables (make-lily-sonorities (analysis-segments analysis)))
+    (format in-score (make-lyrics "sonorities"))
+    (loop for al in (arg :algorithms options)
+          for re in (analysis-results analysis)
+          do (format variables (print-compare-answer-sheet re
+                                                           (analysis-answer-sheet analysis)
+                                                           (alg-name al)
+                                                           options
+                                                           (cleanup-keys re)))
+          (format in-score (make-lyrics (alg-name al))))
+    (when (analysis-answer-sheet analysis)
+      (format variables (make-answer-sheet (analysis-answer-sheet analysis)))
+      (format in-score (make-lyrics "answer")))
+    (setf (node-text score) (append (list (get-output-stream-string variables)
+                                          "\\score { "
+                                          "<< "
+                                          (make-devnull-voice)
+                                          "  ")
+                                    (node-text music)
+                                    (list (get-output-stream-string in-score)
+                                          " >>
+  \\layout {
+    \\context {
+      \\Lyrics
+      \\override LyricSpace #'minimum-distance = #1.0
+      \\override LyricText #'font-size = #-1
+      \\override LyricText #'font-family = #'roman
+    }
+  }
+  \\midi {}
+}
+")))
+    (let* ((result-dir (concat *rameau-path* "/analysis/"))
+           (result-file (make-pathname :directory result-dir
+                                       :name (concat "analysis-" (pathname-name (analysis-full-path analysis)))
+                                       :type (pathname-type (analysis-full-path analysis))))
+           (ps-file (make-pathname :directory result-dir
+                                   :name (pathname-name result-file)
+                                   :type "ps")))
+      (ensure-directories-exist result-dir)
+      (with-open-file (f result-file :direction :output :if-exists :supersede)
+        (format f "~a" (print-ast (cdr ast))))
+      (when (or (arg :lily options) (arg :view-score options))
+        #+sbcl (progn
+                 (sb-posix:chdir result-dir)
+                 (sb-ext:run-program "/usr/bin/lilypond" (list "-f"
+                                                               "ps"
+                                                               (when (arg :png options) "--png")
+                                                               (file-namestring result-file)))))
+      (when (or (arg :gv options) (arg :view-score options))
+        #+sbcl (sb-ext:run-program "/usr/bin/gv" (list (file-namestring ps-file))))
+      )))
+
+
+;;; Analysis
+(defcommand analysis (options)
+  (("" "dont-compare" "don't compare the results with the answer sheet")
+      ("" "sonorities" "print total number of sonorities")
+      ("-u" "show-dur" "")
+      ("-n" "show-notes" "")
+      ("-i" "ignore" "ignora (não imprime) corais sem gabaritos")
+      ("-c" "no-color" "don't use color in the answer")
+      ("-s" "score" "generate annotated scores as answer")
+      ("-z" "column-chord-size" "" "7")
+      ("" "column-number-size" "" "3")
+      ("" "column-notes-size" "" "12")
+      ("" "column-dur-size" "" "4")
+      ("" "column-separator" "" "|")
+      ("" "wrong-answer-color" "" "red")
+      ("" "lily" "roda lilypond")
+      ("" "gv" "roda gv")
+      ("" "png" "gera png")
+      ("-S" "view-score" "gera score, roda lily e gv"))  
+  (let ((analysis (analyse-files options)))
+    (iter (for anal in analysis)
+          (cond ((arg :dont-compare options) (analysis-terminal-no-answer options anal))
+                ((analysis-answer-sheet anal)
+                 (analysis-terminal options anal))
+                (t (analysis-terminal-no-answer options anal)))
+          (when (or (arg :score options) (arg :view-score options) (arg :lily options))
+            (analysis-lily options anal)))))
+
+(defcommand functional (options)
+  (("" "dont-compare" "don't compare the results with the answer sheet")
+      ("" "sonorities" "print total number of sonorities")
+      ("-u" "show-dur" "")
+      ("-n" "show-notes" "")
+      ("-i" "ignore" "ignora (não imprime) corais sem gabaritos")
+      ("-c" "no-color" "don't use color in the answer")
+      ("-s" "score" "generate annotated scores as answer")
+      ("-z" "column-chord-size" "" "7")
+      ("" "column-number-size" "" "3")
+      ("" "column-notes-size" "" "12")
+      ("" "column-dur-size" "" "4")
+      ("" "column-separator" "" "|")
+      ("" "wrong-answer-color" "" "red")
+      ("" "lily" "roda lilypond")
+      ("" "gv" "roda gv")
+      ("" "png" "gera png")
+      ("-S" "view-score" "gera score, roda lily e gv"))    
+  (let ((analysis (functional-analyse-files options)))
+    (iter (for anal in analysis)
+          (cond ((arg :dont-compare options) (analysis-terminal-no-answer options anal))
+                ((analysis-answer-sheet anal)
+                 (analysis-terminal options anal))
+                (t (analysis-terminal-no-answer options anal)))
+          (when (or (arg :score options) (arg :view-score options) (arg :lily options))
+            (analysis-lily options anal)))))
