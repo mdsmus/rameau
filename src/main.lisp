@@ -1,10 +1,9 @@
-                                        ; Main
+; Main
 ;;; Define rameau-main package
 (defpackage :rameau-main
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
-  (:import-from #:rameau-options #:parse-file-name)
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
-  (:use :rameau :cl :cl-ppcre :lisp-unit :iterate :rameau-options :rameau-terminal :genoslib :rameau-lily)
+  (:use :rameau :cl :cl-ppcre :lisp-unit :iterate :genoslib)
   (:documentation "Code for the main program that drives \\texttt{rameau}"))
 
 (in-package :rameau-main)
@@ -20,21 +19,6 @@
      (defun ,name ,args
        ,@body)))
 
-(defmacro safe-with-backtrace ((&key condition print-error-msg exit return) &body code)
-  "Runs \\texttt{code} with error protection, calling \\texttt{print-error-msg} if there's
-an error and doing a backtrace if running on sbcl and \\texttt{condition} is true at runtime."
-  (let ((err (gensym)))
-    `(handler-bind ((error (lambda (,err)
-                             ,print-error-msg
-                             (format t "Error: ~a~%" ,err)
-                             (when ,condition
-                               #+sbcl (sb-debug:backtrace))
-                             (when ,exit
-                               (rameau-quit))
-                             ,return)))
-       ,@code)))
-
-
 (defun %string->symbol (string &optional (package #+sbcl(sb-int:sane-package) #-sbcl *package*))
   (intern (string-upcase string) package))
 
@@ -47,68 +31,6 @@ an error and doing a backtrace if running on sbcl and \\texttt{condition} is tru
 (defun maptrace :private (lista-string &optional (trace 'trace))
   (let ((expr (append (list trace) (mapcar2 #'read-from-string #'string-upcase lista-string))))
     (eval expr)))
-
-;;; Make analysis
-
-(defun main-perform-analysis (segments options alg)
-  (safe-with-backtrace (:condition  (arg :debug options)
-                        :print-error-msg (format t "Analysis failed for algorithm ~a. Please report a bug.~%" alg))
-    (perform-analysis segments options alg)))
-
-(defun main-perform-functional-analysis (segments options alg)
-  (safe-with-backtrace (:condition  (arg :debug options)
-                        :print-error-msg (format t "Functional analysis failed for algorithm ~a. Please report a bug.~%" alg))
-    (functional-analysis segments options alg)))
-
-(defun main-parse-file (file options)
-  (safe-with-backtrace (:condition (arg :debug options)
-                        :print-error-msg (format t "Could not parse file ~a.
-Please check with lilypond to see if it is valid. If it is, please report a bug.~%" file)
-                        :exit t)
-     (parse-file file)))
-
-(defun analyse-files :private (options)
-  (setf (arg :algorithms options) (mapcar #'load-alg (filter-algorithms (arg :algorithms options) *algorithms*))
-        (arg :options options) (process-option-list (arg :options options)))
-  (let (last-file)
-    (safe-with-backtrace (:condition (arg :debug options)
-                          :print-error-msg (format t "Could not analyse ~a.~%" last-file)
-                          :exit t)
-      (iter (for file in (arg :files options))
-            (setf last-file file)
-            (for segments = (sonorities (main-parse-file file options)))
-            (collect (make-analysis :segments segments
-                                    :results (mapcar #L(main-perform-analysis segments options !1)
-                                                     (arg :algorithms options))
-                                    :answer-sheet (path-parse-answer-sheet file)
-                                    :file-name (pathname-name file)
-                                    :number-algorithms (length (arg :algorithms options))
-                                    :algorithms (arg :algorithms options)
-                                    :notes (mapcar #'list-events segments)
-                                    :ast (file-ast file)
-                                    :full-path file
-                                    :dur (durations segments)))))))
-
-(defun functional-analyse-files :private (options)
-  (setf (arg :algorithms options) (mapcar #'load-alg (filter-algorithms (arg :algorithms options) *functional-algorithms*))
-        (arg :options options) (process-option-list (arg :options options)))
-  (let (last-file)
-    (safe-with-backtrace (:condition (arg :debug options)
-                          :print-error-msg (format t "Could not analyse ~a. Error." last-file)
-                          :exit t)
-      (iter (for file in (arg :files options))
-            (for segments = (sonorities (main-parse-file file options)))
-            (collect (make-analysis :segments segments
-                                    :results (mapcar #L(main-perform-functional-analysis segments options !1)
-                                                     (arg :algorithms options))
-                                    :answer-sheet (path-parse-functional-answer-sheet file)
-                                    :file-name (pathname-name file)
-                                    :number-algorithms (length (arg :algorithms options))
-                                    :algorithms (arg :algorithms options)
-                                    :notes (mapcar #'list-events segments)
-                                    :ast (file-ast file)
-                                    :full-path file
-                                    :dur (durations segments)))))))
 
 ;;; Print messages
 (defun print-help :private ()
@@ -176,63 +98,6 @@ Please check with lilypond to see if it is valid. If it is, please report a bug.
   (when (arg :regression options) (regression options)))
 
 ;;; Analysis
-(defun make-result-list :private (analysis)
-  (apply #'mapcar #'list (analysis-results analysis)))
-
-(defun analysis-terminal :private (options analysis)
-  (let* ((number-algorithms (analysis-number-algorithms analysis))
-         (size-line (hline-size number-algorithms options)))
-    (format t "~2%")
-    (print-line-term options "#" "notes" "dur" "answer")
-    (iter (for algo in (arg :algorithms options))
-          (print-chord-column options (alg-name algo)))
-    (print-hline-term size-line)
-    (iter (with right-answer-list = (make-list number-algorithms :initial-element 0))
-          (for note in (analysis-notes analysis))
-          (for dur in (analysis-dur analysis))
-          (for seg-number from 1)
-          (for answer in (analysis-answer-sheet analysis))
-          (for result in (make-result-list analysis))
-          (for comparison = (mapcar (lambda (x) (compare-answer-sheet x answer)) result))
-          (setf right-answer-list (inc-bool-list comparison right-answer-list))
-          (print-line-term options seg-number note dur answer)
-          (iter (for res in result)
-                (for comp in comparison)
-                (print-color-terminal res comp options))
-          (finally
-           (print-hline-term size-line)
-           (print-line-term options "#" "notes" "dur" "answer")
-           (iter (for algo in (arg :algorithms options))
-                 (print-chord-column options (alg-name algo)))
-           (print-hline-term size-line)
-           (print-footer-term "CORRECT(%)" size-line number-algorithms options)
-           (iter (for i in (mapcar (lambda (x) (% x seg-number)) right-answer-list))
-                 (print-chord-column options (format nil "~,2f" i)))
-           (format t "~%")
-           (print-hline-term size-line)
-           (format t "~%")))))
-
-(defun analysis-terminal-no-answer :private (options analysis)
-  (let* ((number-algorithms (analysis-number-algorithms analysis))
-         (size-line (hline-size number-algorithms options 'no-answer)))
-    (format t "~2%")
-    (print-line-term options "#" "notes" "dur")
-    (iter (for algo in (arg :algorithms options))
-          (print-chord-column options (alg-name algo)))
-    (print-hline-term size-line)
-    (iter (for note in (analysis-notes analysis))
-          (for dur in (analysis-dur analysis))
-          (for seg-number from 1)
-          (for result in (make-result-list analysis))
-          (print-line-term options seg-number note dur)
-          (iter (for res in result)
-                (print-chord-column options res))
-          (finally
-           (print-hline-term size-line)
-           (when (arg :sonorities options)
-             (format t "~&TOTAL SONORITIES: ~a~%" seg-number))
-           (format t "~%")))))
-
 (defcommand analysis (options)
   (let ((analysis (analyse-files options)))
     (iter (for anal in analysis)
@@ -1010,7 +875,6 @@ Please check with lilypond to see if it is valid. If it is, please report a bug.
 
 (defcommand web (options &rest ignore)
   (declare (ignore ignore))
-
   (let ((port (arg :port options)))
     (format t "Starting rameau web on port ~a.~%" port)
     (write-line "Open http://localhost:4242/rameau/index.html on your browser")
@@ -1048,12 +912,6 @@ Please check with lilypond to see if it is valid. If it is, please report a bug.
                         (type-integer (parse-integer (first value)))
                         (t (first value))))
                     t)))))
-
-(defun process-option-list :private (options)
-  (iter (for op in options)
-        (aif (search "=" op)
-             (collect (list (make-keyword (subseq op 0 it)) (read-from-string (subseq op (1+ it) (length op)))))
-             (collect (list (make-keyword op) t)))))
 
 (defun parse-files :private (options)
   (loop for file in (arg :files options) append

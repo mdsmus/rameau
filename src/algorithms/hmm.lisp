@@ -1,7 +1,7 @@
 (defpackage :rameau-hmm
   (:import-from #:arnesi "AIF" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX" "AWHEN")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
-  (:use #:cl #:rameau #:genoslib #:rameau-options #:iterate)
+  (:use #:cl #:rameau #:genoslib #:iterate)
   (:documentation "A hidden markov model and a bayesian chord labelers."))
 
 (in-package :rameau-hmm)

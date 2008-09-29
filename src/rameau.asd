@@ -20,16 +20,15 @@
                (:file "chords")
                (:file "chords-functional")
                (:file "tools")
+               (:file "options")
+               (:file "terminal")
+               (:file "analysis")
+               (:file "lily")
                (:file "doc")
                ))
 
-(asdf:defsystem :options
-  :depends-on (:rameau-pkg)
-  :components ((:file "options")
-               ))
-
 (asdf:defsystem :algorithms
-  :depends-on (:rameau-pkg :options :cl-store :vecto)
+  :depends-on (:rameau-pkg :cl-store :vecto)
   :components ((:module algorithms
                         :components ((:file "hmm")
                                      (:file "neural")
@@ -39,23 +38,18 @@
                                      (:file "fhmm")
                                      ))))
 
-(asdf:defsystem :backends
-  :depends-on (:rameau-pkg :algorithms :options)
-  :components ((:file "terminal")
-               (:file "lily")))
-
 (asdf:defsystem :rameau-web
   :name "rameau-web"
   :version "0.0"
   :author "Alexandre Passos e Pedro Kroger"
-  :depends-on (:rameau-pkg :options :algorithms :hunchentoot :cl-who :backends
-                           :md5 :cl-fad :cl-base64 :backends :cl-store)
+  :depends-on (:rameau-pkg :algorithms :hunchentoot :cl-who
+                           :md5 :cl-fad :cl-base64 :cl-store)
   :components ((:file "web")))
 
 (asdf:defsystem :rameau
     :name "rameau"
     :version "4.0"
     :author "Alexandre Passos e Pedro Kroger"
-    :depends-on (:rameau-pkg :algorithms :options :rameau-web :backends)
+    :depends-on (:rameau-pkg :algorithms :rameau-web)
     :components ((:file "main")
                  ))

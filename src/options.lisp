@@ -1,12 +1,5 @@
 ;;; define package
-(defpackage :rameau-options
-  (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
-  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct #:defclass)
-  (:use :rameau :genoslib :cl :cl-ppcre :iterate)
-  (:export :type-list :type-integer :*commands*  :parse-file-name)
-  (:documentation "The command-line option parser for \\texttt{rameau}"))
-
-(in-package :rameau-options)
+(in-package :rameau)
 
 (enable-sharp-l-syntax)
 
@@ -171,3 +164,9 @@
                    (cl-ppcre:split "," file-or-range))
                   (t (search " " file-or-range)
                      (cl-ppcre:split " " file-or-range))))))
+
+(defun process-option-list (options)
+  (iter (for op in options)
+        (aif (search "=" op)
+             (collect (list (make-keyword (subseq op 0 it)) (read-from-string (subseq op (1+ it) (length op)))))
+             (collect (list (make-keyword op) t)))))

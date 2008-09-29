@@ -34,6 +34,10 @@
            #:node-expr
            #:alg-name
            #:alg-description
+           #:type-list
+           #:type-integer
+           #:*commands*
+           #:parse-file-name
            )
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defgeneric
                           #:defparameter #:defvar #:defstruct #:defclass)

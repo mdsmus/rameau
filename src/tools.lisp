@@ -211,10 +211,6 @@ Read and load definitions from a user-set configuration file in \\texttt{~/.rame
   (let ((segmento (sorted segmento #'event-<)))
     (event-pitch (first segmento))))
 
-(defstruct analysis
-  segments results answer-sheet file-name notes dur size-answer-sheet
-  number-algorithms ast full-path algorithms title)
-
 (defun random-color ()
   (min 0.5 (random 1.0)))
 
@@ -248,3 +244,17 @@ Read and load definitions from a user-set configuration file in \\texttt{~/.rame
 
 (defun remove-inversions (chord-string)
   (cl-ppcre:regex-replace-all "/.*" chord-string ""))
+
+(defmacro safe-with-backtrace ((&key condition print-error-msg exit return) &body code)
+  "Runs \\texttt{code} with error protection, calling \\texttt{print-error-msg} if there's
+an error and doing a backtrace if running on sbcl and \\texttt{condition} is true at runtime."
+  (let ((err (gensym)))
+    `(handler-bind ((error (lambda (,err)
+                             ,print-error-msg
+                             (format t "Error: ~a~%" ,err)
+                             (when ,condition
+                               #+sbcl (sb-debug:backtrace))
+                             (when ,exit
+                               (rameau-quit))
+                             ,return)))
+       ,@code)))

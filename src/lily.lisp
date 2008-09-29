@@ -1,11 +1,4 @@
-(defpackage :rameau-lily
-  (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
-  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
-  (:use :rameau :cl :cl-ppcre :lisp-unit :iterate :rameau-options  :genoslib :fann :rameau-neural)
-  (:documentation "Code to generate lilypond files from \\texttt{rameau}'s output."
-                  ))
-
-(in-package :rameau-lily)
+(in-package :rameau)
 
 (enable-sharp-l-syntax)
 
