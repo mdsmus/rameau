@@ -44,6 +44,7 @@
                                      (:file "cadences")
                                      (:file "web")
                                      (:file "doc")
+                                     (:file "stat")
                                      ))))
 
 (asdf:defsystem :rameau
