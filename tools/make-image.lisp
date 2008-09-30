@@ -16,16 +16,18 @@
                        #+cmu (first (ext:search-list "default:"))
                        #+clisp (ext:default-directory))))
 
-(defparameter *packages* (directory (concatenate 'string (main-path) "rameau-deps/*/")))
-
 (defparameter *asdf-file* (concatenate 'string (main-path) "rameau-deps/asdf/asdf.lisp"))
 
 #+(or clisp cmu) (load *asdf-file*)
 
 (push (concatenate 'string (main-path) "src/") asdf:*central-registry*)
 
+(defun get-dir-list (path)
+  (directory (concatenate 'string (main-path) path)))
+
 (when *use-rameau-deps*
-  (loop for p in *packages* do
+  (loop for p in (append (get-dir-list "rameau-deps/*/*")
+                         (get-dir-list "rameau-deps/*")) do
         (push (format nil "~a" p) asdf:*central-registry*)))
 
 (asdf:oos 'asdf:load-op :rameau :verbose nil)
