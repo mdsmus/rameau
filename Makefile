@@ -43,18 +43,8 @@ all-rameau: rameau cmurameau clisprameau
 check: rameau
 	./rameau check all
 
-cl-fann: deps
-	@if [ ! -d rameau-deps/cl-fann ]; then \
-	cd rameau-deps ; git clone git://genos.mus.br/cl-fann ;\
-	else \
-	cd rameau-deps/cl-fann ; git pull ;\
-	fi
-deps:
-	@if [ ! -d rameau-deps ]; then \
-	git clone git://genos.mus.br/rameau-deps ;\
-	else \
-	cd rameau-deps ; git pull ;\
-	fi
+get-rameau-deps:
+	git submodule update --init
 
 train:
 	./rameau algorithms -o train
@@ -87,7 +77,7 @@ eclrameau: $(lisp-files)
 clisprameau: $(lisp-files)
 	${clisp} -x "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" -x "(load \"tools/make-image.lisp\")"
 
-update: cl-fann
+update: get-rameau-deps
 	git pull --rebase
 
 coral:
