@@ -1,3 +1,6 @@
 [submodule "rameau-deps/lisp-libs"]
 	path = rameau-deps/lisp-libs
 	url = git://genos.mus.br/lisp-libs.git
+[submodule "rameau-deps/cl-fann"]
+	path = rameau-deps/cl-fann
+	url = git://genos.mus.br/cl-fann.git
