@@ -3,7 +3,6 @@ cmurameau
 eclrameau
 clisprameau
 checa-notas
-rameau-deps/*
 analysis/*
 docs/view-hmm-note-probabilities.png
 docs/view-hmm-trans-probabilities.png
