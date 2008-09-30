@@ -45,8 +45,8 @@ check: rameau
 
 get-rameau-deps:
 	git submodule update --init
-	cd rameau-deps/lisp-libs && git pull origin master
-	cd rameau-deps/cl-fann && git pull origin master
+	cd rameau-deps/lisp-libs && git checkout master && git pull
+	cd rameau-deps/cl-fann && git checkout master && git pull
 
 train:
 	./rameau algorithms -o train
