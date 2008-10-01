@@ -508,3 +508,7 @@ null or 'erro."
           (setf (gethash el table) i))
     table))
 
+(defun search-string-in-list (substring list)
+  "Search for string in a list using a substring."
+  (first (remove-if-not #L(search substring !1 :test #'equalp) list)))
+

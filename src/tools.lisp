@@ -9,6 +9,57 @@
                        #+cmu (first (ext:search-list "default:"))
                        #+clisp (ext:default-directory))))
 
+
+(defclass rameau-algorithm ()
+  ((name :accessor alg-name :initarg :name)
+   (tempered? :accessor alg-tempered? :initarg :tempered?)
+   (description :accessor alg-description :initarg :description)))
+
+(defgeneric perform-analysis (segments options algorithm)
+  (:documentation "Perform harmonic analysis"))
+
+(defmethod perform-analysis (segments options (algorithm rameau-algorithm))
+  (declare (ignore options algorithm))
+  (mapcar #L(make-chord :root (print-event-note (first !1))) segments))
+
+
+(defgeneric functional-analysis (segments options algorithm)
+  (:documentation "Perform functional harmonic analysis"))
+
+(defmethod functional-analysis (segments options (algorithm rameau-algorithm))
+  (declare (ignore options algorithm))
+  (mapcar #L(make-fchord :function 1 :center (event-pitch (first !1)) :key-mode :major) segments))
+
+(defgeneric do-options (algorithm options)
+  (:documentation "Process algorithm-specific options"))
+
+(defmethod do-options ((algorithm rameau-algorithm) options))
+
+(defparameter *algorithms* nil)
+
+(defun add-algorithm (alg)
+  "Register algorithm instance \\texttt{alg} with \\texttt{rameau}."
+  (push alg *algorithms*))
+
+(defun filter-algorithms (algoritmos algs)
+  "[DONTCHECK]
+
+Filter \\texttt{*algorithms*} so that only the ones specified in
+\\texttt{algoritmos} are returned.
+"
+  (if algoritmos
+      (remove-duplicates
+       (loop for alg in algoritmos
+             append (loop for i in algs
+                          when (> (count-subseq alg (string-downcase (alg-name i))) 0)
+                          collect i)))
+      algs))
+
+(defparameter *functional-algorithms* nil)
+
+(defun add-falgorithm (alg)
+  (push alg *functional-algorithms*))
+
 (defun alg-file-name (alg)
   "The file name used to save an algorithm to disk."
   (concat *rameau-path* "/algorithms/" (alg-name alg) ".store"))
@@ -80,16 +131,6 @@ Get environment variable \\texttt{string} from the environment.
   #+cmu(cdr (assoc (intern string :keyword) ext:*environment-list*))
   #+clisp(ext:getenv string))
 
-(defun rameau-get-font-path (font)
-  "Find font \\texttt{font} in the font path."
-  (let ((result))
-    (cl-fad:walk-directory #+linux "/usr/share/fonts/"
-                           #+windows "c:/windows/fonts/"
-                           (lambda (path) (push path result))
-                           :test (lambda (path) (search font (file-namestring path))))
-
-    (first result)))
-
 (defun remove-comma-if-needed (text)
   "[DONTCHECK]
 
@@ -128,29 +169,12 @@ Read and load definitions from a user-set configuration file in \\texttt{~/.rame
     ("regression" "regression/")
     ("lily" "regression-lily/")))
 
-(defparameter *gabarito-dir-list*
-  '(("chorales" "answer-sheets/chorales-bach/")
-    ("exemplos" "answer-sheets/examples/")))
-
 (defun files-range (list)
   "All files in the range specified in \\texttt{list}."
   (loop for x from (parse-integer (first list)) to (parse-integer (second list))
         collect (cond ((< x 10)  (format nil "00~a" x))
                       ((< x 100) (format nil "0~a" x))
                       (t (format nil "~a" x)))))
-
-(defun parse-answer-sheet (file item)
-  "Parse the answer sheet for song \\texttt{file}. [DONTCHECK]"
-  (let* ((*package* (find-package :rameau))
-         (nome-pop (concat *rameau-path*
-                           (get-item item *gabarito-dir-list*)
-                           (add-pop-ext (pathname-name file)))))
-    (when (cl-fad:file-exists-p nome-pop)
-      (read-chords (read-file-as-sexp nome-pop)))))
-
-(defun search-string-in-list (substring list)
-  "Search for string in a list using a substring."
-  (first (remove-if-not #L(search substring !1 :test #'equalp) list)))
 
 (defun search-music-dirs (substring dir)
   "Search for a directory in \\texttt{dir} with \\texttt{substring} in
@@ -258,56 +282,4 @@ an error and doing a backtrace if running on sbcl and \\texttt{condition} is tru
                                (rameau-quit))
                              ,return)))
        ,@code)))
-
-(enable-sharp-l-syntax)
-
-(defclass rameau-algorithm ()
-  ((name :accessor alg-name :initarg :name)
-   (tempered? :accessor alg-tempered? :initarg :tempered?)
-   (description :accessor alg-description :initarg :description)))
-
-(defgeneric perform-analysis (segments options algorithm)
-  (:documentation "Perform harmonic analysis"))
-
-(defmethod perform-analysis (segments options (algorithm rameau-algorithm))
-  (declare (ignore options algorithm))
-  (mapcar #L(make-chord :root (print-event-note (first !1))) segments))
-
-
-(defgeneric functional-analysis (segments options algorithm)
-  (:documentation "Perform functional harmonic analysis"))
-
-(defmethod functional-analysis (segments options (algorithm rameau-algorithm))
-  (declare (ignore options algorithm))
-  (mapcar #L(make-fchord :function 1 :center (event-pitch (first !1)) :key-mode :major) segments))
-
-(defgeneric do-options (algorithm options)
-  (:documentation "Process algorithm-specific options"))
-
-(defmethod do-options ((algorithm rameau-algorithm) options))
-
-(defparameter *algorithms* nil)
-
-(defun add-algorithm (alg)
-  "Register algorithm instance \\texttt{alg} with \\texttt{rameau}."
-  (push alg *algorithms*))
-
-(defun filter-algorithms (algoritmos algs)
-  "[DONTCHECK]
-
-Filter \\texttt{*algorithms*} so that only the ones specified in
-\\texttt{algoritmos} are returned.
-"
-  (if algoritmos
-      (remove-duplicates
-       (loop for alg in algoritmos
-             append (loop for i in algs
-                          when (> (count-subseq alg (string-downcase (alg-name i))) 0)
-                          collect i)))
-      algs))
-
-(defparameter *functional-algorithms* nil)
-
-(defun add-falgorithm (alg)
-  (push alg *functional-algorithms*))
 
