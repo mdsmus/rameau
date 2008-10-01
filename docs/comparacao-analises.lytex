@@ -15,12 +15,14 @@
 
 \section*{Instruções}
 
-Fazer análise harmônica com numerais romanos usando parênteses para
-indicar as notas melódicas e circulando os acordes.
+Fazer análise harmônica com numerais romanos indicando as notas
+melódicas. Favor ter atenção para que a cifra fique exatamente embaixo
+do acorde que ela representa.
 
-\vspace{5em}
+\vspace{3em}
 
 \begin{lilypond}
+  #(set-global-staff-size 20)
   \include "../music/chorales-bach/019.ly"
 \end{lilypond}
 
