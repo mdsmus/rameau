@@ -24,7 +24,7 @@
                #+sbcl(:file "sbcl")
                (:file "chords")
                (:file "chords-functional")
-               (:file "tools")
+               (:file "rameau")
                (:file "commands")
                (:file "terminal")
                (:file "analysis")
