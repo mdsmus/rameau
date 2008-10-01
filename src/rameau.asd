@@ -8,16 +8,19 @@
   :components ((:file "utils")
                (:file "musiclib" :depends-on ("utils"))))
 
-(asdf:defsystem :rameau-pkg
-  :depends-on (:rameau-base :genoslib :cl-store :cl-fad :vecto :cl-cairo2)
-  :serial t
+(asdf:defsystem :cl-lily
+  :depends-on (:rameau-base :genoslib)
   :components ((:module cl-lily
                         :serial t
                         :components ((:file "formato")
                                      (:file "segment")
                                      (:file "parser")
-                                     (:file "parser-grammar")))
-               (:file "packages")
+                                     (:file "parser-grammar")))))
+
+(asdf:defsystem :rameau-pkg
+  :depends-on (:rameau-base :genoslib :cl-store :cl-fad :vecto :cl-cairo2 :cl-lily)
+  :serial t
+  :components ((:file "packages")
                #+sbcl(:file "sbcl")
                (:file "chords")
                (:file "chords-functional")
@@ -30,7 +33,7 @@
 
 
 (asdf:defsystem :algorithms
-  :depends-on (:rameau-pkg :cl-store :vecto)
+  :depends-on (:rameau-pkg :cl-store :vecto :cl-lily)
   :components ((:module algorithms
                         :components ((:file "hmm")
                                      (:file "neural")
@@ -41,7 +44,7 @@
                                      ))))
 
 (asdf:defsystem :commands
-  :depends-on (:rameau-pkg :cl-store :vecto :cl-who :algorithms :hunchentoot :md5 :cl-fad :cl-base64 :cl-store)
+  :depends-on (:rameau-pkg :cl-lily :cl-store :vecto :cl-who :algorithms :hunchentoot :md5 :cl-fad :cl-base64 :cl-store)
   :serial t
   :components ((:module commands
                         :serial t
@@ -59,6 +62,6 @@
     :name "rameau"
     :version "4.0"
     :author "Alexandre Passos e Pedro Kroger"
-    :depends-on (:rameau-pkg :algorithms :commands)
+    :depends-on (:rameau-pkg :algorithms :commands :cl-lily)
     :components ((:file "main")
                  ))
