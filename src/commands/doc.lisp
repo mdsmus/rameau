@@ -62,9 +62,10 @@
 (defun create-documentation-for-all-packages ()
   (mapcar #'create-documentation-sexp *rameau-packages*))
 
-(defcommand document (options &rest ignore)
-  nil
-  "Generate the documentation for rameau and save it in the rameau-documentation folder."
+(defun document (options)
   (declare (ignore ignore options))
   (create-documentation-for-all-packages))
 
+(register-command :name "document"
+                  :action #'document
+                  :documentation "Generate the documentation for rameau and save it in the rameau-documentation folder.")

@@ -1,4 +1,4 @@
-# projetos podem ser ticketes, proximas acoes ligam a ele?
+\# projetos podem ser ticketes, proximas acoes ligam a ele?
 * projetos
 ** [#1] refatoração do codigo rameau [1]
 *** refatora codigo para conformar com CodingStyle
@@ -8,7 +8,7 @@
 ** [#1] release da biblioteca cl-lily [1]
 ** [#1] baby-proof rameau [1]
    fezer com que rameau-cli não quebre horrivelmente
-** [#1] limpar copus KP [1]
+** [#1] limpar corpus KP [1]
 *** tirar exemplos que não interessam em music/kostka-payne
 *** comparar quais arquivos em music/kostka-payne correspondem a pardo
 ** [#1] suporte inicial para analise funcional
@@ -33,8 +33,6 @@
 *** testar cl-i18n
     http://blog.viridian-project.de/cl-i18n/
 ** implementa segmentação
-*** testa cl-i18n
-    http://blog.viridian-project.de/cl-i18n/
 ** implementar suporte para kern
 ** implementar suporte para musdata
 ** implementar maxwell

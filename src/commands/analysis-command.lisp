@@ -8,6 +8,26 @@
 (in-package :rameau-analysis)
 
 
+(defparameter *analysis-options*
+    '(("" "dont-compare" "don't compare the results with the answer sheet")
+      ("" "sonorities" "print total number of sonorities")
+      ("-u" "show-dur" "")
+      ("-n" "show-notes" "")
+      ("-i" "ignore" "ignora (não imprime) corais sem gabaritos")
+      ("-c" "no-color" "don't use color in the answer")
+      ("-s" "score" "generate annotated scores as answer")
+      ("-z" "column-chord-size" "" "7")
+      ("" "column-number-size" "" "3")
+      ("" "column-notes-size" "" "12")
+      ("" "column-dur-size" "" "4")
+      ("" "column-separator" "" "|")
+      ("" "wrong-answer-color" "" "red")
+      ("" "lily" "roda lilypond")
+      ("" "gv" "roda gv")
+      ("" "png" "gera png")
+      ("-S" "view-score" "gera score, roda lily e gv")))
+
+
 (defun analysis-terminal (options analysis)
   (let* ((number-algorithms (analysis-number-algorithms analysis))
          (size-line (hline-size number-algorithms options)))
@@ -124,25 +144,7 @@
 
 
 ;;; Analysis
-(defcommand analysis (options)
-  (("" "dont-compare" "don't compare the results with the answer sheet")
-      ("" "sonorities" "print total number of sonorities")
-      ("-u" "show-dur" "")
-      ("-n" "show-notes" "")
-      ("-i" "ignore" "ignora (não imprime) corais sem gabaritos")
-      ("-c" "no-color" "don't use color in the answer")
-      ("-s" "score" "generate annotated scores as answer")
-      ("-z" "column-chord-size" "" "7")
-      ("" "column-number-size" "" "3")
-      ("" "column-notes-size" "" "12")
-      ("" "column-dur-size" "" "4")
-      ("" "column-separator" "" "|")
-      ("" "wrong-answer-color" "" "red")
-      ("" "lily" "roda lilypond")
-      ("" "gv" "roda gv")
-      ("" "png" "gera png")
-      ("-S" "view-score" "gera score, roda lily e gv"))  
-  "Perform chord labeling with the specified algorithms on the specified files."
+(defun analysis (options)
   (let ((analysis (analyse-files options)))
     (iter (for anal in analysis)
           (cond ((arg :dont-compare options) (analysis-terminal-no-answer options anal))
@@ -152,25 +154,13 @@
           (when (or (arg :score options) (arg :view-score options) (arg :lily options))
             (analysis-lily options anal)))))
 
-(defcommand functional (options)
-  (("" "dont-compare" "don't compare the results with the answer sheet")
-      ("" "sonorities" "print total number of sonorities")
-      ("-u" "show-dur" "")
-      ("-n" "show-notes" "")
-      ("-i" "ignore" "ignora (não imprime) corais sem gabaritos")
-      ("-c" "no-color" "don't use color in the answer")
-      ("-s" "score" "generate annotated scores as answer")
-      ("-z" "column-chord-size" "" "7")
-      ("" "column-number-size" "" "3")
-      ("" "column-notes-size" "" "12")
-      ("" "column-dur-size" "" "4")
-      ("" "column-separator" "" "|")
-      ("" "wrong-answer-color" "" "red")
-      ("" "lily" "roda lilypond")
-      ("" "gv" "roda gv")
-      ("" "png" "gera png")
-      ("-S" "view-score" "gera score, roda lily e gv"))    
-  "Perform roman numeral functional analysis with the specified functional algorithms on the specified files."
+(register-command :name "analysis"
+                  :documentation "Perform chord labeling with the specified algorithms on the specified files."
+                  :action #'analysis
+                  :options *analysis-options*)
+
+
+(defun functional (options)    
   (let ((analysis (functional-analyse-files options)))
     (iter (for anal in analysis)
           (cond ((arg :dont-compare options) (analysis-terminal-no-answer options anal))
@@ -180,15 +170,18 @@
           (when (or (arg :score options) (arg :view-score options) (arg :lily options))
             (analysis-lily options anal)))))
 
+(register-command :name "functional"
+                  :documentation "Perform roman numeral functional analysis with the specified functional algorithms on the specified files."
+                  :action #'functional
+                  :options *analysis-options*)
+
+
 (defun equivalent-pitch (chord)
   (if (chord-p chord)
       (parse-note (chord-root chord))
       97))
 
-(defcommand view (options)
-  nil
-  "Pretty visualization of the notes and chords produced by the chord labeling algorithms. The
-result will be in analysis/analysis-<file>-<algorithm>.png"
+(defun view-analysis (options)
   (let ((analysis (analyse-files options))
         (pitch-colors (make-hash-table :test #'equal)))
     (iter (for anal in analysis)
@@ -231,3 +224,8 @@ result will be in analysis/analysis-<file>-<algorithm>.png"
                              (setf (gethash (equivalent-pitch re) pitch-colors) (cairo-random-stroke-fill-colors)))
                         (cl-cairo2:move-to 400 (- cur-h 5))
                         (cl-cairo2:show-text cho)))))))
+
+(register-command :name "view"
+                  :action #'view-analysis
+                  :documentation   "Pretty visualization of the notes and chords produced by the chord labeling algorithms. The
+result will be in analysis/analysis-<file>-<algorithm>.png")

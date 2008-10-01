@@ -54,9 +54,12 @@
         (write-line string-result)
         (write-line (subseq (last1 (cl-ppcre:split "\\n" string-result)) 34)))))
 
-(defcommand test (options)
-  (("-u" "unit" "")
-   ("-r" "regression" ""))
-  "Run unit and regression tests."
+(defun test (options)
   (when (arg :unit options) (unit options))
   (when (arg :regression options) (regression options)))
+
+(register-command :name "test"
+                  :action #'test
+                  :options '(("-u" "unit" "")
+                             ("-r" "regression" ""))
+                  :documentation "Run unit and regression tests.")

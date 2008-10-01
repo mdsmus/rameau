@@ -9,10 +9,7 @@
 
 (enable-sharp-l-syntax)
 
-(defcommand schoenberg (options)
-  nil
-  "Collect stats on how many chord progressions found in the chorales are strong,
-weak, superstrong and neutral, according to Schoenberg's theory of harmony."
+(defun schoenberg (options)
   (let ((analysis (analyse-files options))
         ascending
         descending
@@ -41,15 +38,19 @@ weak, superstrong and neutral, according to Schoenberg's theory of harmony."
       (format t "Superstrong: ~,1f%~%" (% (length superstrong) total))
       (format t "    Neutral: ~,1f%~%" (% (length neutral) total)))))
 
+(register-command :name "schoenberg"
+                  :documentation  "Collect stats on how many chord progressions found in the chorales are strong,
+weak, superstrong and neutral, according to Schoenberg's theory of harmony."
+                  :action #'schoenberg)
+
+
 (defun all-chords :private (options analysis)
   (iter (for anal in analysis)
         (nconcing
          (append '(nil nil nil nil nil)
                  (all-chords-single options anal)))))
 
-(defcommand resolve-seventh (options)
-  nil
-  "Show a summary of all the seventh-note resolutions found in the files. Only for Bach chorales."
+(defun resolve-seventh (options)
   (let ((analysis (analyse-files options)))
     (iter (for next in (all-chords options analysis))
           (for chord previous next)
@@ -85,9 +86,11 @@ weak, superstrong and neutral, according to Schoenberg's theory of harmony."
                                 sinal
                                 intervalo)))))))))
 
-(defcommand jumps (options)
-  nil
-  "List all the steps and leaps in the analysed files. Only for Bach chorales."
+(register-command :name "resolve-seventh"
+                  :action #'resolve-seventh
+                  :documentation "Show a summary of all the seventh-note resolutions found in the files. Only for Bach chorales.")
+
+(defun jumps (options)
   (let ((jumps (make-hash-table :test #'equal))
         (analysis (analyse-files options)))
     (iter (for anal in analysis)
@@ -128,9 +131,11 @@ weak, superstrong and neutral, according to Schoenberg's theory of harmony."
         (iter (for (k v) in-hashtable jumps)
               (format t "~20a: ~a~%" (print-absolute-interval k) (length v))))))
 
-(defcommand ambito (options)
-  nil
-  "List the ranges of the voices in the analysed files. Only for Bach chorales."
+(register-command :name "jumps"
+                  :action #'jumps
+                  :documentation "List all the steps and leaps in the analysed files. Only for Bach chorales.")
+
+(defun ambito (options)
   (let ((analysis (analyse-files options)))
     (iter (for anal in analysis)
           (let ((notes (parse-file (analysis-full-path anal)))
@@ -157,6 +162,11 @@ weak, superstrong and neutral, according to Schoenberg's theory of harmony."
                             (+ 3 (event-octave max)))
                     ))))))
 
+(register-command :name "range"
+                  :action #'ambito
+                  :documentation  "List the ranges of the voices in the analysed files. Only for Bach chorales.")
+
+
 (defun print-report-ambito :private (notes min max segs chorale voice options)
   (iter (for next in notes)
         (for segno from 0)
@@ -179,9 +189,7 @@ weak, superstrong and neutral, according to Schoenberg's theory of harmony."
                              :if-exists :supersede)
             (format f "~a" (make-lily-segments options (list pseg seg nseg)))))))
 
-(defcommand kostka-amb (options)
-  nil
-  "Show where the note ranges for the voices in a chorale are different from KP rules. Only for Bach chorales."
+(defun kostka-amb (options)
   (iter (for anal in (analyse-files options))
         (let ((baixos   (mapcar #L(extract-note !1 (make-event :voice-name "\"baixo\"")) (analysis-segments anal)))
               (tenores  (mapcar #L(extract-note !1 (make-event :voice-name "\"tenor\"")) (analysis-segments anal)))
@@ -200,15 +208,17 @@ weak, superstrong and neutral, according to Schoenberg's theory of harmony."
           (print-report-ambito altos mina maxa (analysis-segments anal) (analysis-file-name anal) "alto" options)
           (print-report-ambito sopranos mins maxs (analysis-segments anal) (analysis-file-name anal) "soprano" options))))
 
+(register-command :name "kostka-amb"
+                  :action #'kostka-amb
+                  :documentation "Show where the note ranges for the voices in a chorale are different from KP rules. Only for Bach chorales.")
+
+
 (defun repeated-notes :private (segmento)
   (/= 4 (length (remove-duplicates (sorted segmento #'event-<)
                                    :test #'equal
                                    :key #L(cons (event-pitch !1) (event-octave !1))))))
 
-(defcommand cruzamento (options)
-  nil
-  "Find all voice crossings in the specified files. Only for Bach chorales. Each crossing will be saved
-as a lilypond snippet in analysis/cruzamento-<chorale>-<first-sonority>-<last-sonority>.ly"
+(defun cruzamento (options)
   (iter (for anal in (analyse-files options))
         (let ((notes (analysis-segments anal))
               min max)
@@ -237,6 +247,12 @@ as a lilypond snippet in analysis/cruzamento-<chorale>-<first-sonority>-<last-so
                                :direction :output
                                :if-exists :supersede)
               (format f "~a" (make-lily-segments options (subseq (analysis-segments anal) min max))))))))
+
+(register-command :name "crossings"
+                  :action #'cruzamento
+                  :documentation  "Find all voice crossings in the specified files. Only for Bach chorales. Each crossing will be saved
+as a lilypond snippet in analysis/cruzamento-<chorale>-<first-sonority>-<last-sonority>.ly")
+
 
 (defun intervals :private (segment number)
   (iter (for n in segment)
@@ -292,29 +308,31 @@ as a lilypond snippet in analysis/cruzamento-<chorale>-<first-sonority>-<last-so
                             (print-event-note f1)
                             (print-event-note f2))))))))
 
-(defcommand parallel-fifths (options)
-  nil
-  "Detect consecutive fifths in the given files."
+(defun parallel-fifths (options)
   (let ((analysis (analyse-files options)))
     (format t "Quintas \"reais\":~%")
     (do-parallel options analysis 5 "fifths" nil)
     (format t "Quintas nos tempos fortes:~%")
     (do-parallel options analysis 5 "fifths" t)))
 
-(defcommand parallel-octaves (options)
-  nil
-  "Detect consecutive octaves and unisons in the given files."
+(register-command :name "fifths"
+                  :action #'parallel-fifths
+                  :documentation "Detect consecutive fifths in the given files.")
+
+
+(defun parallel-octaves (options)
   (let ((analysis (analyse-files options)))
     (format t "Oitavas reais:~%")
     (do-parallel options analysis 1 "octaves" nil)
     (format t "Oitavas no compassos forte:~%")
     (do-parallel options analysis 1 "octaves" t)))
 
-(defcommand print-segments (options)
-  (("-i" "start" "segmento inicial" 0 type-integer)
-   ("-z" "end" "segmendo final" 1000000 type-integer))
-  "Create a lilypond snippet of the given file between the given sonorities. It will be saved
-as analysis/segments-<file>-<start>-<end>.ly"
+(register-command :name "octaves"
+                  :action #'parallel-octaves
+                  :documentation "Detect consecutive octaves and unisons in the given files.")
+
+
+(defun print-segments (options)
   (iter (for anal in (analyse-files options))
         (format t "Chorale ~a ~%" (analysis-file-name anal))
         (let ((ini (or (arg :start options) 0))
@@ -343,3 +361,10 @@ as analysis/segments-<file>-<start>-<end>.ly"
                                   (print-event-note note)
                                   (event-octave note)))
                     (format t "~%")))))))
+
+(register-command :name "print-segments"
+                  :action #'print-segments
+                  :options   '(("-i" "start" "segmento inicial" 0 type-integer)
+                               ("-z" "end" "segmendo final" 1000000 type-integer))
+                  :documentation "Create a lilypond snippet of the given file between the given sonorities. It will be saved
+as analysis/segments-<file>-<start>-<end>.ly")

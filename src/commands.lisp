@@ -3,7 +3,7 @@
 
 (enable-sharp-l-syntax)
 
-(defparameter *commands*
+(defparameter *command-line-options*
   '(("common-flags"
      (("-h" "help" "ajuda")
       ("-f" "files" "arquivos" nil type-list)
@@ -36,7 +36,7 @@
 (defun make-default-arguments ()
   "Make default arguments for \\texttt{rameau}."
   (let* ((options (make-instance 'arguments-table)))
-    (iter outer (for (k v) in *commands*)
+    (iter outer (for (k v) in *command-line-options*)
           (iter (for (short long doc init list) in v)
                 (for comando = (make-keyword long))
                 (when (and comando init) (setf (arg comando options) init))))
@@ -62,11 +62,11 @@
   (fifth (find-flag-by-name command name)))
 
 (defun find-flag-by-name :private (command name)
-  (or (find name (get-item "common-flags" *commands*) :key #'second :test #'string=)
+  (or (find name (get-item "common-flags" *command-line-options*) :key #'second :test #'string=)
       (find name (get-flag-assoc command) :key #'second :test #'string=)))
 
 (defun find-flag :private (command flag)
-  (or (find flag (get-item "common-flags" *commands*) :key #'first :test #'string=)
+  (or (find flag (get-item "common-flags" *command-line-options*) :key #'first :test #'string=)
       (find flag (get-flag-assoc command) :key #'first :test #'string=)))
 
 (defun long-flag? (flag)
@@ -80,10 +80,10 @@
     t))
 
 (defun get-common-flags :private ()
-  (get-item "common-flags" *commands*))
+  (get-item "common-flags" *command-line-options*))
 
 (defun get-commands-assoc :private ()
-  (remove "common-flags" (mapcar #'first *commands*)))
+  (remove "common-flags" (mapcar #'first *command-line-options*)))
 
 (defun get-command-slots :private (command)
   (mapcar #'second (get-flag-assoc command)))
@@ -115,22 +115,20 @@
              (collect (list (make-keyword (subseq op 0 it)) (read-from-string (subseq op (1+ it) (length op)))))
              (collect (list (make-keyword op) t)))))
 
+(defparameter *commands* nil)
 
+(defstruct command
+  name documentation options action)
 
-(defparameter *command-names* nil)
-(defparameter *command-functions* nil)
-(defparameter *command-documentations* nil)
+(defun register-command (&key name options documentation action)
+  (unless name
+    (error "Registering a command without a name. This is definitely not a wise thing to do.~%"))
+  (unless action
+    (error "A command must do something. Please refrain from registering actionless commands.~%"))
+  (push (make-command :name name
+                      :options options
+                      :documentation documentation
+                      :action action)
+        *commands*)
+  (setf *command-line-options* (append *command-line-options* (list (list (stringify name) options)))))
 
-(defmacro defcommand (name (&rest args) command-line-args documentation &body body)
-  "Wrapper to defun. Store the name of the command in *commands-names."
-  `(progn
-     (push (string-downcase (symbol-name ',name)) *command-names*)
-     (push ,documentation *command-documentations*)
-     (setf *commands* (append *commands* (list (list (stringify ',name) ',command-line-args))))
-     (push (lambda ,args ,@body) *command-functions*)))
-
-(defun make-int (value)
-  "Coerce value into an integer."
-  (if (integerp value)
-      value
-      (parse-integer value)))

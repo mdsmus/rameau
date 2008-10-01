@@ -21,9 +21,7 @@
                 (collect (list (sonorities (parse-file f))
                                it))))))
 
-(defcommand algorithms (options &rest ignore)
-  nil
-  "Give the specified chord-labeling algorithms the options passed with -o. Used for training."
+(defun algorithms (options)
   (declare (ignore ignore))
   (make-training-data options)
   (setf (arg :algorithms options) (mapcar #'load-alg (filter-algorithms (arg :algorithms options) *algorithms*))
@@ -34,9 +32,11 @@
   (setf (arg :algorithms options) nil
         *training-data* nil))
 
-(defcommand funalg (options &rest ignore)
-  nil
-  "Give the specified roman numeral functional analysis algorithms the options passed with -o. Used for training."
+(register-command :name "algorithms"
+                  :documentation   "Give the specified chord-labeling algorithms the options passed with -o. Used for training."
+                  :action #'algorithms)
+
+(defun funalg (options)
   (declare (ignore ignore))
   (make-functional-training-data options)
   (setf (arg :algorithms options) (mapcar #'load-alg (filter-algorithms (arg :algorithms options) *functional-algorithms*))
@@ -47,3 +47,7 @@
         (save-alg alg))
   (setf (arg :algorithms options) nil
         *training-data* nil))
+
+(register-command :name "funalg"
+                  :documentation "Give the specified roman numeral functional analysis algorithms the options passed with -o. Used for training."
+                  :action #'algorithms)

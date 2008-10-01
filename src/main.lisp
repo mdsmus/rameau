@@ -22,8 +22,8 @@
 
 ;;; Print messages
 (defun print-help :private ()
-  (iter (for (key value) in *commands*)
-        (for documentation in (cons "" *command-documentations*))
+  (iter (for (key value) in *command-line-options*)
+        (for documentation in (cons "" (mapcar #'command-documentation *commands*)))
         (format t "~%~:@(* ~a~)~%" (substitute #\Space #\- key :test #'equal))
         (format t "    ~a~%" documentation)
         (iter (for (short long help) in value)
@@ -36,8 +36,6 @@
 (defun print-fatal :private (message)
   (format t "~&FATAL: ~a~%" message))
 
-
-;;; Main
 (defun split-command-list :private (command-list)
   (let ((pos (position "and" command-list :test #'string=)))
     (if pos
@@ -100,10 +98,11 @@
     (if arguments
         (iter (for command-list in (split-command-list arguments))
               (for cmd = (first command-list))
-              (for command = (search-string-in-list cmd *command-names*))
+              (for command = (search-string-in-list cmd *commands* :key #'command-name))
+              (for command-name = (command-name command))
               ;; revert to default arguments
               ;; apply command-line options
-              (iter (for (key value) in (parse-options command (rest command-list)))
+              (iter (for (key value) in (parse-options command-name (rest command-list)))
                     (if key
                         (setf (arg key options) value)
                         (return-from main  (progn (format t "ERROR: command not found. Exiting.~%") 1))))
@@ -123,11 +122,9 @@
               ;; parse file options
               (setf (arg :files options) (parse-files options))
               ;; parse algorithms options
-              (let* ((p (position command *command-names* :test #'string=))
-                     (func (and p (nth p *command-functions*))))
-                (if func
-                    (funcall func options)
-                    (print-fatal (concat cmd " is not a rameau command."))))
+              (if (command-p command)
+                  (funcall (command-action command) options)
+                  (print-fatal (concat cmd " is not a rameau command.")))
               (when (arg :profile options)
                 (rameau-report)))
         ;;(dbg 'main "~a" (print-slots options))

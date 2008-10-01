@@ -20,9 +20,7 @@
 (defun count-hits :private (res gab)
   (length (remove-if #'null (mapcar #'compare-answer-sheet res gab))))
 
-(defcommand collect-data (options)
-  nil
-  "Collect accuracy data on the chord labeling algorithms specified."
+(defun collect-data (options)
   (let* ((analysis (analyse-files options))
          (a (first analysis)))
     (format t "~5a|" " ")
@@ -46,6 +44,10 @@
       (iter (for r in res)
             (format t "~6,2f |" (stddev (butlast r) (average (butlast r)))))
       (format t "~%"))))
+
+(register-command :name "collect-data"
+                  :action #'collect-data
+                  :documentation  "Collect accuracy data on the chord labeling algorithms specified.")
 
 
 (defun answer->mode (answer)
@@ -128,9 +130,7 @@
   (sqrt (* (precision m re right ob)
            (recall    m re right ob))))
 
-(defcommand report (options)
-  nil
-  "Collect precision, recall, f-measure and confusion matrixes for the chord labeling algorithms specified."
+(defun report (options)
   (let* ((analysis (analyse-files options))
          (algorithms (analysis-algorithms (first analysis)))
          (confusion-matrix (iter (for a in algorithms)
@@ -213,3 +213,8 @@
                             modes)
       (format f "~%\\end{document}~%")
       (format t "Modes: ~s~%" modes))))
+
+
+(register-command :name "report"
+                  :action #'report
+                  :documentation "Collect precision, recall, f-measure and confusion matrixes for the chord labeling algorithms specified.")

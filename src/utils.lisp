@@ -508,7 +508,12 @@ null or 'erro."
           (setf (gethash el table) i))
     table))
 
-(defun search-string-in-list (substring list)
+(defun search-string-in-list (substring list &key (key #'identity))
   "Search for string in a list using a substring."
-  (first (remove-if-not #L(search substring !1 :test #'equalp) list)))
+  (first (remove-if-not #L(search substring (funcall key !1) :test #'equalp) list)))
 
+(defun make-int (value)
+  "Coerce value into an integer."
+  (if (integerp value)
+      value
+      (parse-integer value)))
