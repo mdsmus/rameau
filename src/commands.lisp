@@ -114,3 +114,23 @@
         (aif (search "=" op)
              (collect (list (make-keyword (subseq op 0 it)) (read-from-string (subseq op (1+ it) (length op)))))
              (collect (list (make-keyword op) t)))))
+
+
+
+(defparameter *command-names* nil)
+(defparameter *command-functions* nil)
+(defparameter *command-documentations* nil)
+
+(defmacro defcommand (name (&rest args) command-line-args documentation &body body)
+  "Wrapper to defun. Store the name of the command in *commands-names."
+  `(progn
+     (push (string-downcase (symbol-name ',name)) *command-names*)
+     (push ,documentation *command-documentations*)
+     (setf *commands* (append *commands* (list (list (stringify ',name) ',command-line-args))))
+     (push (lambda ,args ,@body) *command-functions*)))
+
+(defun make-int (value)
+  "Coerce value into an integer."
+  (if (integerp value)
+      value
+      (parse-integer value)))

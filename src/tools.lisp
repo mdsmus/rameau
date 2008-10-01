@@ -259,20 +259,55 @@ an error and doing a backtrace if running on sbcl and \\texttt{condition} is tru
                              ,return)))
        ,@code)))
 
-(defparameter *command-names* nil)
-(defparameter *command-functions* nil)
-(defparameter *command-documentations* nil)
+(enable-sharp-l-syntax)
 
-(defmacro defcommand (name (&rest args) command-line-args documentation &body body)
-  "Wrapper to defun. Store the name of the command in *commands-names."
-  `(progn
-     (push (string-downcase (symbol-name ',name)) *command-names*)
-     (push ,documentation *command-documentations*)
-     (setf *commands* (append *commands* (list (list (stringify ',name) ',command-line-args))))
-     (push (lambda ,args ,@body) *command-functions*)))
+(defclass rameau-algorithm ()
+  ((name :accessor alg-name :initarg :name)
+   (tempered? :accessor alg-tempered? :initarg :tempered?)
+   (description :accessor alg-description :initarg :description)))
 
-(defun make-int (value)
-  "Coerce value into an integer."
-  (if (integerp value)
-      value
-      (parse-integer value)))
+(defgeneric perform-analysis (segments options algorithm)
+  (:documentation "Perform harmonic analysis"))
+
+(defmethod perform-analysis (segments options (algorithm rameau-algorithm))
+  (declare (ignore options algorithm))
+  (mapcar #L(make-chord :root (print-event-note (first !1))) segments))
+
+
+(defgeneric functional-analysis (segments options algorithm)
+  (:documentation "Perform functional harmonic analysis"))
+
+(defmethod functional-analysis (segments options (algorithm rameau-algorithm))
+  (declare (ignore options algorithm))
+  (mapcar #L(make-fchord :function 1 :center (event-pitch (first !1)) :key-mode :major) segments))
+
+(defgeneric do-options (algorithm options)
+  (:documentation "Process algorithm-specific options"))
+
+(defmethod do-options ((algorithm rameau-algorithm) options))
+
+(defparameter *algorithms* nil)
+
+(defun add-algorithm (alg)
+  "Register algorithm instance \\texttt{alg} with \\texttt{rameau}."
+  (push alg *algorithms*))
+
+(defun filter-algorithms (algoritmos algs)
+  "[DONTCHECK]
+
+Filter \\texttt{*algorithms*} so that only the ones specified in
+\\texttt{algoritmos} are returned.
+"
+  (if algoritmos
+      (remove-duplicates
+       (loop for alg in algoritmos
+             append (loop for i in algs
+                          when (> (count-subseq alg (string-downcase (alg-name i))) 0)
+                          collect i)))
+      algs))
+
+(defparameter *functional-algorithms* nil)
+
+(defun add-falgorithm (alg)
+  (push alg *functional-algorithms*))
+
