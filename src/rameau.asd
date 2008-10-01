@@ -11,14 +11,13 @@
 (asdf:defsystem :rameau-pkg
   :depends-on (:rameau-base :genoslib :cl-store :cl-fad :vecto :cl-cairo2)
   :serial t
-  :components ((:file "packages")
-               (:module cl-lily
+  :components ((:module cl-lily
                         :serial t
                         :components ((:file "formato")
                                      (:file "segment")
                                      (:file "parser")
-                                     (:file "parser-grammar")
-                                     (:file "lily")))
+                                     (:file "parser-grammar")))
+               (:file "packages")
                #+sbcl(:file "sbcl")
                (:file "chords")
                (:file "chords-functional")
@@ -26,6 +25,7 @@
                (:file "commands")
                (:file "terminal")
                (:file "analysis")
+               (:file "lily")
                ))
 
 
@@ -44,6 +44,7 @@
   :depends-on (:rameau-pkg :cl-store :vecto :cl-who :algorithms :hunchentoot :md5 :cl-fad :cl-base64 :cl-store)
   :serial t
   :components ((:module commands
+                        :serial t
                         :components ((:file "analysis-command")
                                      (:file "cadences")
                                      (:file "web")

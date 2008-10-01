@@ -42,7 +42,7 @@
            )
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defgeneric
                           #:defparameter #:defvar #:defstruct #:defclass)
-  (:use #:genoslib #:cl #:lisp-unit #:iterate #:cl-who)
+  (:use #:genoslib #:cl #:lisp-unit #:iterate #:cl-who #:cl-lily)
   (:documentation "The core \\texttt{rameau} framework."))
 
 (in-package :rameau)

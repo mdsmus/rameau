@@ -7,7 +7,7 @@
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:import-from #:alexandria "SWITCH")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
-  (:use #:cl #:fann #:rameau #:iterate #:genoslib)
+  (:use #:cl #:fann #:rameau #:iterate #:genoslib :cl-lily)
   (:documentation "Neural networks for chord labeling"))
 
 (in-package :rameau-neural)

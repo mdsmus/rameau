@@ -1,5 +1,5 @@
 (declaim (optimize (debug 3) (safety 3)))
-(in-package #:rameau)
+(in-package #:cl-lily)
 
 (defun group-by :private (start resto)
   "Helper grouping function. [DONTCHECK]"

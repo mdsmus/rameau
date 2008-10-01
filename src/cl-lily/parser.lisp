@@ -1,4 +1,4 @@
-(in-package #:rameau)
+(in-package #:cl-lily)
 (defparameter *filename* nil)
 (defparameter *dur* 0)
 (defparameter *environment* nil)
@@ -528,7 +528,7 @@ with the other ones.
 
 (defmethod process-ast ((node transpose))
   (let* ((seq (sequence-expressions (process-ast (node-expr node))))
-         (notes (rameau::note-sequence-notas seq)))
+         (notes (note-sequence-notas seq)))
     (setf (note-sequence-notas seq)
           (first (transpose-segmentos (list (remove-if #L(null (event-pitch !1)) notes))
                                      (interval (event-pitch (first (note-sequence-notas (node-to node))))

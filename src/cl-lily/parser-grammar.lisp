@@ -1,4 +1,4 @@
-(in-package #:rameau)
+(in-package #:cl-lily)
 (use-package :yacc)
 
 (yacc:define-parser *expression-parser*
