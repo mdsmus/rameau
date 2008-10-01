@@ -5,12 +5,12 @@
 *** refatora funcoes gigantes (horizontal e vertical)
 ** [#1] documentação da API [1]
 ** [#1] documentação para usuários [1]
-** [#1] release da biblioteca cl-lily [1]
 ** [#1] baby-proof rameau [1]
    fezer com que rameau-cli não quebre horrivelmente
 ** [#1] limpar corpus KP [1]
 *** tirar exemplos que não interessam em music/kostka-payne
 *** comparar quais arquivos em music/kostka-payne correspondem a pardo
+** [#1] implementar redes tsui para analise funcional
 ** [#1] suporte inicial para analise funcional
 *** verificar status analise funcional no rameau (chords-functional.lisp)
 ** compilar rameau com cmucl [1]
@@ -22,6 +22,7 @@
 *** investigar erro ecl com cl-store
 ** gui em tk [1]
    fazer uma gui com todas opções usando tk
+** release da biblioteca cl-lily [1]
 ** extrair anotações harmonicas do copus KP de pardo
    ter gabaritos com respostas de pardo
 *** investigar se lily 2.11 converte lyrics em midis
@@ -36,7 +37,6 @@
 ** implementar suporte para kern
 ** implementar suporte para musdata
 ** implementar maxwell
-** implementar redes tsui para analise funcional
 ** escrever documentação para gabarito funcional
 * objetivos
 ** [#1] separar o rameau em bibliotecas
