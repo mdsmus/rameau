@@ -12,11 +12,13 @@
   :depends-on (:rameau-base :genoslib :cl-store :cl-fad :vecto :cl-cairo2)
   :serial t
   :components ((:file "packages")
+               (:module cl-lily
+                        :serial t
+                        :components ((:file "formato")
+                                     (:file "segment")
+                                     (:file "parser")
+                                     (:file "parser-grammar")))
                #+sbcl(:file "sbcl")
-               (:file "formato")
-               (:file "segment")
-               (:file "parser")
-               (:file "parser-grammar")
                (:file "chords")
                (:file "chords-functional")
                (:file "tools")
@@ -25,6 +27,7 @@
                (:file "lily")
                (:file "analysis")
                ))
+
 
 (asdf:defsystem :algorithms
   :depends-on (:rameau-pkg :cl-store :vecto)
