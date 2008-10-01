@@ -22,7 +22,7 @@
 
 ;;; Print messages
 (defun print-help :private ()
-  (iter (for (key value) in *command-line-options*)
+  (iter (for (key value) in (append *common-flags* (mapcar #'make-command-option-list *commands*)))
         (for documentation in (cons "" (mapcar #'command-documentation *commands*)))
         (format t "~%~:@(* ~a~)~%" (substitute #\Space #\- key :test #'equal))
         (format t "    ~a~%" documentation)
@@ -47,20 +47,12 @@
   "Parse the list of options to a structure."
   (loop for item in (sublist-of-args list #\-) collect
         (destructuring-bind (flag &rest value) item
-          (list (cond ((long-flag? flag)
-                       (make-keyword (get-long-flag-name command flag)))
-                      ((short-flag? flag)
-                       (make-keyword (get-short-flag-name command flag))))
+          (list (make-keyword (get-flag-name command flag))
                 (if value
-                    (let ((type (cond ((long-flag? flag)
-                                       ;; FIXME: that's ugly
-                                       (get-type-by-name command (remove #\- flag :count 2)))
-                                      ((short-flag? flag)
-                                       (get-type-by-flag command flag)))))
-                      (case type
-                        (type-list value)
-                        (type-integer (parse-integer (first value)))
-                        (t (first value))))
+                    (case (get-flag-type command flag)
+                      (type-list value)
+                      (type-integer (parse-integer (first value)))
+                      (t (first value)))
                     t)))))
 
 (defun parse-files :private (options)
@@ -93,16 +85,13 @@
                                         ;(format t "Done, processing arguments...~%")
   (let* ((*package* (find-package :rameau-main))
          (rameau-args (rameau-args))
-         (arguments (if rameau-args rameau-args (cl-ppcre:split " " args)))
-         (options (make-default-arguments)))
+         (arguments (if rameau-args rameau-args (cl-ppcre:split " " args))))
     (if arguments
         (iter (for command-list in (split-command-list arguments))
               (for cmd = (first command-list))
-              (for command = (search-string-in-list cmd *commands* :key #'command-name))
-              (for command-name = (command-name command))
-              ;; revert to default arguments
-              ;; apply command-line options
-              (iter (for (key value) in (parse-options command-name (rest command-list)))
+              (for command = (get-command-by-name cmd))
+              (for options = (make-default-arguments command))
+              (iter (for (key value) in (parse-options command (rest command-list)))
                     (if key
                         (setf (arg key options) value)
                         (return-from main  (progn (format t "ERROR: command not found. Exiting.~%") 1))))

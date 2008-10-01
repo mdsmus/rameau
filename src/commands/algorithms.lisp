@@ -22,7 +22,6 @@
                                it))))))
 
 (defun algorithms (options)
-  (declare (ignore ignore))
   (make-training-data options)
   (setf (arg :algorithms options) (mapcar #'load-alg (filter-algorithms (arg :algorithms options) *algorithms*))
         (arg :options options) (process-option-list (arg :options options)))
@@ -37,7 +36,6 @@
                   :action #'algorithms)
 
 (defun funalg (options)
-  (declare (ignore ignore))
   (make-functional-training-data options)
   (setf (arg :algorithms options) (mapcar #'load-alg (filter-algorithms (arg :algorithms options) *functional-algorithms*))
         (arg :options options) (process-option-list (arg :options options)))

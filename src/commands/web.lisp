@@ -80,7 +80,7 @@
            (:p (:input :type "radio" :name "escolha" :value "chor" :onchange "habilita_chor()")
                (:label :for "escolha-2" "...or choose one of Bach's 371 Chorales")
                (:select :name "chorale" :id "chorale"  :disabled t
-                        (iter (for f in (parse-file-name "chor:1..371" (make-default-arguments)))
+                        (iter (for f in (parse-file-name "chor:1..371" (make-default-arguments (get-command-by-name "anal"))))
                               (let ((name (pathname-name f)))
                                 (htm (:option :value name (str name)))))))
            ;; FIXME: space should be defined in the css file
@@ -245,7 +245,7 @@ baixo = \\relative c {
                 (format t "Erro: ~a||||||~a"
                         code algs)
                 (progn
-                  (let* ((options (make-default-arguments))
+                  (let* ((options (make-default-arguments (get-command-by-name "anal")))
                          (options (progn (setf (arg :algorithms options) algs)
                                          options))
                          (ast (get-ast-string code))

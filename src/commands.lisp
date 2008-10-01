@@ -3,7 +3,7 @@
 
 (enable-sharp-l-syntax)
 
-(defparameter *command-line-options*
+(defparameter *common-flags*
   '(("common-flags"
      (("-h" "help" "ajuda")
       ("-f" "files" "arquivos" nil type-list)
@@ -20,8 +20,24 @@
       ;;("-q" "quiet" "quiet")
       ("-m" "max-print-error" "Quando o numero de arquivos que não são
   parseados é maior que essa constante, rameau mostra apenas o start
-  da lista." 10))))
-  "The 'list' at the end indicates that the flag accepts multiple values.")
+  da lista." 10)))))
+
+(defun get-flag-name (command flag)
+  (let ((all-flags (append (second (first *common-flags*))
+                           (command-options command))))
+    (iter (for (short long description start-value type) in all-flags)
+          (when (or (equalp short flag)
+                    (equalp long flag))
+            (return long)))))
+
+(defun get-flag-type (command flag)
+  (let ((all-flags (append (second (first *common-flags*))
+                           (command-options command))))
+    (iter (for (short long description start-value type) in all-flags)
+          (when (or (equalp short flag)
+                    (equalp long flag))
+            (return type)))))
+
 
 (defclass arguments-table ()
   ((arguments :accessor get-args :initform (make-hash-table :test #'eql))))
@@ -33,64 +49,15 @@
 (defsetf arg (name options) (value)
   `(setf (gethash ,name (get-args ,options)) ,value))
 
-(defun make-default-arguments ()
+(defun make-default-arguments (command)
   "Make default arguments for \\texttt{rameau}."
-  (let* ((options (make-instance 'arguments-table)))
-    (iter outer (for (k v) in *command-line-options*)
-          (iter (for (short long doc init list) in v)
-                (for comando = (make-keyword long))
-                (when (and comando init) (setf (arg comando options) init))))
+  (let ((options (make-instance 'arguments-table))
+        (all-flags (append (second (first *common-flags*))
+                           (command-options command))))
+    (iter (for (short long doc init list) in all-flags)
+          (for comando = (make-keyword long))
+          (when (and comando init) (setf (arg comando options) init)))
     options))
-
-(defun get-short-flag-name (command flag)
-  "Return \\texttt{flag}'s short name."
-  (second (find-flag command flag)))
-
-(defun get-long-flag-name (command flag)
-  "Return \\texttt{flag}'s long name."
-  (second (find-flag-by-name command (subseq flag 2))))
-
-(defun get-default-in-flag :private (command flag)
-  (third (find-flag command flag)))
-
-(defun get-type-by-flag (command flag)
-  "Return the argument type of \\texttt{command}."
-  (fifth (find-flag command flag)))
-
-(defun get-type-by-name (command name)
-  "Return the type of \\texttt{command} by its name."
-  (fifth (find-flag-by-name command name)))
-
-(defun find-flag-by-name :private (command name)
-  (or (find name (get-item "common-flags" *command-line-options*) :key #'second :test #'string=)
-      (find name (get-flag-assoc command) :key #'second :test #'string=)))
-
-(defun find-flag :private (command flag)
-  (or (find flag (get-item "common-flags" *command-line-options*) :key #'first :test #'string=)
-      (find flag (get-flag-assoc command) :key #'first :test #'string=)))
-
-(defun long-flag? (flag)
-  "True when \\texttt{flag} is a long flag."
-  (when (cl-ppcre:scan "^--[a-zA-Z]+" flag)
-    t))
-
-(defun short-flag? (flag)
-  "True when \\texttt{flag} is a short flag."
-  (when (cl-ppcre:scan "^-[a-zA-Z]+" flag)
-    t))
-
-(defun get-common-flags :private ()
-  (get-item "common-flags" *command-line-options*))
-
-(defun get-commands-assoc :private ()
-  (remove "common-flags" (mapcar #'first *command-line-options*)))
-
-(defun get-command-slots :private (command)
-  (mapcar #'second (get-flag-assoc command)))
-
-(defun get-flag-assoc :private (item)
-  "Works for commands only"
-  (get-item item *commands*))
 
 (defun parse-file-name (exp options)
   "Parse a file name \\texttt{exp} with the options in \\texttt{options}."
@@ -129,6 +96,14 @@
                       :options options
                       :documentation documentation
                       :action action)
-        *commands*)
-  (setf *command-line-options* (append *command-line-options* (list (list (stringify name) options)))))
+        *commands*))
 
+(defun get-command-by-name (name)
+  (search-string-in-list name *commands* :key #'command-name))
+
+(defun print-all-options (options)
+  (format nil "~s~%" (iter (for (k v) in-hashtable (get-args options)) (collect (list k v)))))
+
+(defun make-command-option-list (command)
+  (list (command-name command)
+        (command-options command)))
