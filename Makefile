@@ -44,7 +44,8 @@ check: rameau
 	./rameau check all
 
 get-rameau-deps:
-	git submodule update --init
+	git submodule init
+	git submodule update
 	cd rameau-deps/lisp-libs && git checkout master && git pull
 	cd rameau-deps/cl-fann && git checkout master && git pull
 
