@@ -89,6 +89,12 @@
         (iter (for command-list in (split-command-list arguments))
               (for cmd = (first command-list))
               (for command = (get-command-by-name cmd))
+              (when (string= cmd "-h")
+                (print-help)
+                (return))
+              (when  (string= cmd "-A")
+                (print-about)
+                (return))
               (for options = (make-default-arguments command))
               (iter (for (key value) in (parse-options command (rest command-list)))
                     (if key
@@ -104,9 +110,12 @@
                 (rameau-profile))
               (awhen (arg :trace options)
                 (maptrace it))
-              (when (or (arg :help options) (string= cmd "-h")) (print-help))
-              (when (or (arg :about options) (string= cmd "-A"))
-                (print-about))
+              (when (arg :help options)
+                (print-help)
+                (return))
+              (when (arg :about options)
+                (print-about)
+                (return))
               ;; parse file options
               (setf (arg :files options) (parse-files options))
               ;; parse algorithms options
