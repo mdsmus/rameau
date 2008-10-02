@@ -27,8 +27,7 @@
         (format t "~%~:@(* ~a~)~%" (substitute #\Space #\- key :test #'equal))
         (format t "    ~a~%" documentation)
         (iter (for (short long help) in value)
-              (format t "~4T~4a--~25a ~a~%" short long (remove #\Newline help))))
-  (rameau-quit))
+              (format t "~4T~4a--~25a ~a~%" short long (remove #\Newline help)))))
 
 (defun print-warning :private (message)
   (format t "~&WARNING: ~a~%" message))
