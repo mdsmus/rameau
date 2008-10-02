@@ -95,6 +95,9 @@
               (when  (string= cmd "-A")
                 (print-about)
                 (return))
+              (unless command
+                (print-fatal (concat cmd "is not a rameau command.~%"))
+                (return))
               (for options = (make-default-arguments command))
               (iter (for (key value) in (parse-options command (rest command-list)))
                     (if key
