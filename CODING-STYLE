@@ -1,10 +1,11 @@
 ; -*- org -*-
 
-* References
-  Read Norvig and Pitman's "Tutorial on Good Lisp Programming Style"
-  at norvig.com/luv-slides.ps.
-* Writing code
-** changelog
+* 1. References
+** 1.  Norvig and Pitman
+   "Tutorial on Good Lisp Programming Style" at
+   http://norvig.com/luv-slides.ps.
+* 2. Writing code
+** 1.  changelog
    We don't write Gnu style ChangeLog. The git log message is our
    changelog. Please write a short message in the first line that
    sumarizes the change in your commit. If you want to give more
@@ -25,7 +26,7 @@ Date:   Thu Apr 17 11:53:55 2008 -0300
     * compara-gabarito-temperado and compara-gabarito-tonal are merged in a single function compare-answer-sheet
     * functions to print a structure are defined separatelly
 
-** indentation
+** 2.  indentation
    Don't ever NEVER (did I say never?) use tabs to indent expressions.
    Use good old spaces. Make sure you have something like
 
@@ -50,16 +51,16 @@ Date:   Thu Apr 17 11:53:55 2008 -0300
    directory and load it in your .emacs *before* you load slime.
 
    Use 'make indent' if you want to re-indent all lisp files at once.
-** spacing
+** 3.  spacing
    Use just one blank line between each function definition. There is
    no need to use more space to guide the code. Use things in emacs
    like code navigation, outlining, and narrowing. One of us is
    intolerant to spaces and freak out if there are more spaces or
    blank lines than necessary.
-** package names
+** 4.  package names
    The name of packages should be simple and short. Please, don't use
    java-style foo.bar.bla.org package names.
-** documentation and tests cases
+** 5.  documentation and tests cases
    You don't write code just for yourself, it will be read long after
    you wrote it by others. Write documentation strings to make clean
    what the function does and provide information about the input and
@@ -77,24 +78,24 @@ Date:   Thu Apr 17 11:53:55 2008 -0300
    ;;; Header 1
    .... code ...
    ;;; Header 2
-** language
+** 6.  language
    All code, comments and documentation should be in English.
-** comments
+** 7.  comments
    Comments are good, docstrings are better. Write comments for
    anything that is complicated, tricky, or easy to forget (or
    difficult to remember) but is too low level to be in the docstring.
    Don't put your name and date in the comments, although Norvig
    recommends it. We use version control.
-** use short functions
+** 8.  use short functions
    A function shouldn't be bigger than a page (roughly 35-39 lines). If
    a function is too big you always can abstract it better in smaller
    functions.
-** don't pollute the "global" namespace with one-time functions
+** 9.  don't pollute the "global" namespace with one-time functions
    Usually is better to use labels or flet to encapsulate related
    functions in one bigger function.
 
    [FIXME: cor em labels]
-** loops
+** 10. loops
 *** use iterate instead of loop
     There is no harm in using loop, but since we use iterate in so
     many places is good to use iterate only for consistency
@@ -132,11 +133,11 @@ Date:   Thu Apr 17 11:53:55 2008 -0300
           (z 320))
       (iter (for x from 1 to 10)
             (collect (list x y z))))
-** predicates
+** 11. predicates
    Common lisp is not scheme. Write predicates with the termination
    "p" or "-p" and not "?". [We are SICP junkies, so sometimes we may
    be guilty of using "?", but we shuldn't]
-* Makefile
-** every thing created automatically must have a target in the makefile to clean it
-* Documentation
-  all text files must have a .txt extension
+* 3. Makefile
+** 1.  every thing created automatically must have a target in the makefile to clean it
+* 4. Documentation
+** 1.  all text files must have a .txt extension
