@@ -358,11 +358,11 @@ baixo = \\relative c {
   (declare (ignore ignore))
   (let ((port (arg :port options)))
     (format t "Starting rameau web on port ~a.~%" port)
-    (write-line "Open http://localhost:4242/rameau/index.html on your browser")
+    (format t "Open http://localhost:~a/rameau/index.html on your browser" port)
     (rameau-web::start-rameau-web port))
   (loop))
 
 (register-command :name "web"
                   :action #'web
-                  :options '(("" "port" "define the port number for rameau web" 4242 type-integer))
+                  :options '(("-r" "port" "define the port number for rameau web" 4242 type-integer))
                   :documentation "Start rameau's web interface")
