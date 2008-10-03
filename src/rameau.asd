@@ -64,4 +64,13 @@
     :author "Alexandre Passos e Pedro Kroger"
     :depends-on (:rameau-pkg :algorithms :commands :cl-lily)
     :components ((:file "main")
-                 ))
+                 (:module tests
+                          :components ((:file "packages")
+                                       (:file "utils")
+                                       ;;(:file "musiclib")
+                                       ;;(:file "formato")
+                                       ;;(:file "parser")
+                                       ;;(:file "segment")
+                                       ;;(:file "chords")
+                                       ;;(:file "tools")
+                                       ))))
