@@ -3,7 +3,7 @@
 (defpackage :rameau-main
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
-  (:use :rameau :cl :cl-ppcre :lisp-unit :iterate :genoslib)
+  (:use :rameau :cl :cl-ppcre :iterate :genoslib :rameau-runtests)
   (:documentation "Code for the main program that drives \\texttt{rameau}"))
 
 (in-package :rameau-main)

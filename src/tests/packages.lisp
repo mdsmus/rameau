@@ -1,4 +1,5 @@
 (in-package #:cl-user)
 
 (defpackage :rameau-test
-  (:use #:cl #:rameau #:genoslib #:rameau-main #:rameau-base #:lisp-unit))
+  (:shadowing-import-from #:cl #:defgeneric #:defclass #:defun #:defmacro #:defparameter #:defvar #:defstruct)
+  (:use #:cl #:rameau #:genoslib #:rameau-main #:lisp-unit))
