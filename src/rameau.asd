@@ -63,8 +63,10 @@
     :version "4.0"
     :author "Alexandre Passos e Pedro Kroger"
     :depends-on (:rameau-pkg :algorithms :commands :cl-lily)
+    :serial t
     :components ((:file "main")
                  (:module tests
+                          :serial t
                           :components ((:file "packages")
                                        (:file "utils")
                                        (:file "musiclib")

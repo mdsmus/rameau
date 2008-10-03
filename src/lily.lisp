@@ -125,7 +125,7 @@
                 (when (and note prev (not (= (event-end prev) (event-start note))))
                   (collect (format nil "r~a " (frac->dur-lily (- (event-start note) (event-end prev))))))
                 (collect (format nil "~a~a~a "
-                                 (print-event-note note 'lily)
+                                 (print-event-note note :lily)
                                  (show-octave (event-octave note))
                                  (frac->dur-lily (event-dur note)))))))
 

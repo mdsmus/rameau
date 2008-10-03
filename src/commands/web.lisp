@@ -230,8 +230,10 @@ baixo = \\relative c {
   (let ((an (parameter "answer")))
     (if (and an (/= 0 (length an)))
         (read-chords (read-from-string (format nil "(~a)" an)))
-        (awhen (parse-integer (or (parameter "chorale") ""):junk-allowed t)
-          (new-parse-answer-sheet (get-chorale-string it) "chor")))))
+        (awhen (or (parameter "chorale") "999")
+          (path-parse-answer-sheet (first
+                                    (parse-file-name (format nil "chor:~a" it)
+                                                     (make-default-arguments (get-command-by-name "anal")))))))))
 
 (defun do-analysis ()
   (let ((code (get-params-code))

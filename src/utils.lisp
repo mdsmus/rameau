@@ -4,36 +4,6 @@
   (:import-from #:alexandria "SWITCH" "FLATTEN")
   (:use #:cl #:iterate)
   (:export
-   #:maj
-   #:min
-   #:just
-   #:perfect
-   #:aug
-   #:dim
-   #:a
-   #:b
-   #:c
-   #:d
-   #:e
-   #:f
-   #:g
-   #:aes
-   #:bes
-   #:ces
-   #:des
-   #:ees
-   #:fes
-   #:gis
-   #:ais
-   #:bis
-   #:cis
-   #:dis
-   #:eis
-   #:fis
-   #:gis
-   #:al
-   #:fr
-   #:it
    #:tempered
    #:tonal
    )
@@ -96,22 +66,6 @@
                       nil
                       (set-difference *dbg-ids* ids))))
 
-(defun add-lily-ext (file)
-  "Add a .ly extension to filename \\texttt{file} if nonexistent."
-  (if (has-ext? file) file (concat file ".ly")))
-
-(defun add-pop-ext (file)
-  "Add a .pop extension to filename \\texttt{file} if nonexistent."  
-  (if (has-ext? file) file (concat file ".pop")))
-
-(defun has-ext? (file)
-  "Heuristic check to see whether filename \\texttt{file} has an extension."
-  (find #\. file))
-
-(defun remove-ext (file)
-  "Heuristic for removing a file's extension."
-  (subseq file 0 (position #\. file)))
-
 (defmacro defcached (funcname args &body body)
   "Defines \\texttt{funcname} just as defun, but with a cache around it. [DONTCHECK]"
   (labels ((varnames (symbols)
@@ -167,18 +121,6 @@
 (defun advance-all (list)
   "Advances every list in \\texttt{list}."
   (mapcar #'cdr list))
-
-(defcached string->symbol (string)
-  "Convert the string \\texttt{string} to a symbol."
-  (let ((*package* (find-package :rameau)))
-    (intern (string-upcase string) :rameau)))
-
-(defun destringify (coisa)
-  "Reverses the operation of stringify in a few interesting cases."
-  (let ((*package* (find-package :rameau)))
-    (cond ((numberp coisa) coisa)
-          ((stringp coisa) (read-from-string (string-upcase coisa)))
-          (t coisa))))
 
 (defun assoc-item (item alist)
   "Returns the item keyed by \\texttt{item} from the alist \\texttt{alist}. "
@@ -247,24 +189,6 @@ returning two values: the string and the number of bytes read. [DONTCHECK]"
   "Get item keyed by \\texttt{item} in alist \\texttt{lista}. It uses
 equal by default, so it is good for getting string keys."
   (second (assoc item lista :test test)))
-
-(defun char->symbol (char)
-  "Returns the symbol for the character \\texttt{char}."
-  (intern (string-upcase (string char)) :rameau))
-
-(defun split-word (word)
-  "Splits word \\texttt{word} into a list of characters and returns
-their symbolic representations."
-  (loop for char across word collect (char->symbol char)))
-
-(defun split-opts (string)
-  "Split the options in command-line argument \\texttt{string}."
-  (mapcan (lambda (s) (split-word (delete #\- s)))
-          (cl-ppcre:split #\Space string)))
-
-(defun split-dados (dados)
-  "Split string \\texttt{dados} using commas as separators."
-  (cl-ppcre:split "," dados))
 
 (defun sorted (lista ord &key (key #'identity))
   "Returns a sorted copy of list \\texttt{lista} ordered by \\texttt{ord}."

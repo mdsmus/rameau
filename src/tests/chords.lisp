@@ -1,20 +1,20 @@
 (in-package #:rameau-test)
 
 (define-test chord-interval-code
-  (assert-equal '(7 min) (chord-interval-code "c" "bes"))
-  (assert-equal '(2 maj) (chord-interval-code "c" "d")))
+  (assert-equal '(7 :min) (chord-interval-code "c" "bes"))
+  (assert-equal '(2 :maj) (chord-interval-code "c" "d")))
 
 (define-test expand-multiplications
   (assert-equal
    '(foo foo foo bar bar (foo))
-   (expand-multiplications '((* 3 foo) (* 2 bar) (foo))))
+   (rameau::expand-multiplications '((* 3 foo) (* 2 bar) (foo))))
   (assert-equal
    '(foo bar foo bar (foo))
-   (expand-multiplications '((* 2 foo bar) (foo)))))
+   (rameau::expand-multiplications '((* 2 foo bar) (foo)))))
 
 
 (define-test parse-multiplication
-  (assert-equal '(* 2 a) (parse-multiplication "a*2")))
+  (assert-equal '(* 2 :a) (rameau::parse-multiplication "a*2")))
 
 (define-test return-inversion
   (assert-equal 2 (return-inversion "c" "g")))

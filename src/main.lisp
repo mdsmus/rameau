@@ -60,6 +60,17 @@
             (list file)
             (parse-file-name file options))))
 
+;; These variables are set in the makefile. Their definitions are only here
+;; to stop rameau about from crashing in slime.
+
+(defvar *rameau-version*)
+(defvar *compilation-date*)
+(defvar *user*)
+(defvar *git-commit*)
+(defvar *kernel-info*)
+(defvar *libc-version*)
+
+
 (defun print-about ()
   (macrolet ((get-info (info)
                `(when (boundp ',info)

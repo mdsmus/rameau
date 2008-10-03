@@ -31,8 +31,8 @@
                                 :mode modo
                                 :7th setima)))))
 
-(defparameter *chord-classes* (mapcar #'string->symbol (mapcar #'stringify (append (list '— 'al+6 'fr+6 'it+6)
-                                                                                   *chords*))))
+(defparameter *chord-classes* (mapcar #'make-keyword (mapcar #'stringify (append (list '— 'al+6 'fr+6 'it+6)
+                                                                                 *chords*))))
 
 (defun prepare-sonority (segmento)
   (loop for nota in segmento
@@ -41,14 +41,14 @@
 (defun extract-class (acorde)
   (if (and (chord-p acorde)
            (member (chord-mode acorde) (list "" "m" "°" "!" "+" "ø") :test #'equal))
-      (string->symbol
+      (make-keyword
        (stringify
         (make-chord :root (chord-root acorde)
                     :7th (chord-7th acorde)
                     :mode (chord-mode acorde))))
       (if (melodic-note-p acorde)
-          (string->symbol "—")
-          (string->symbol (stringify acorde)))))
+          (make-keyword "—")
+          (make-keyword (stringify acorde)))))
 
 (defun prepare-training-sample (coral gabarito)
   (loop for s in coral

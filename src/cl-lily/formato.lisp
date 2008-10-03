@@ -59,7 +59,7 @@
         (< (event-pitch x) (event-pitch y))
         (< a b))))
 
-(defun print-event-note (e &optional (style 'latin))
+(defun print-event-note (e &optional (style :latin))
   "Print event \\texttt{e}'s note."
   (when (event-p e)
     (print-note (code->notename (event-pitch e)) style)))
@@ -110,7 +110,7 @@
 (defun list-events (segmento)
   "Print the notes in \\texttt{segmento} from bass to treble."
   (mapcar (lambda (x)
-            (print-note (code->notename (event-pitch x)) 'latin))
+            (print-note (code->notename (event-pitch x)) :latin))
           (sorted segmento #'event-<)))
 
 (defun durations (segmento)
@@ -199,7 +199,7 @@
        5)))
 
 (defun same-note :private (a b)
-  (< (abs (- a b)) (code->interval '(2 dim 6))))
+  (< (abs (- a b)) (code->interval '(2 :dim 6))))
 
 (defun modificador-oitava :private (a b)
   "[DONTCHECK]"

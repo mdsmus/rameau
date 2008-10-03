@@ -1,4 +1,5 @@
 (in-package #:rameau-test)
+(use-package :genoslib)
 
 (define-test sonorities
   (assert-equalp

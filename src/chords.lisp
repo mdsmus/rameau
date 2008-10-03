@@ -31,7 +31,7 @@
         (if pos
             (list '*
                   (parse-integer (subseq chord-string (1+ pos)))
-                  (string->symbol (subseq chord-string 0 pos)))
+                  (make-keyword (subseq chord-string 0 pos)))
             chord))))
 
 (defun expand-multiplications :private (gab)
@@ -116,7 +116,7 @@ position."
          (poplist (cl-ppcre:split "/" (stringify chord)))
          (bass-note (second poplist)))
     (if 6+
-        (make-augmented-sixth :type (string->symbol (elt 6+ 0)))
+        (make-augmented-sixth :type (make-keyword (elt 6+ 0)))
         (cl-ppcre:register-groups-bind (root mode 7th 9th 11th 13th)
             ("([cdefgab]+[#b]?)(m|°|ø|!|\\+)?(7[\\+-]?)?\\.?(9[b\\#]?)?\\.?(11[b\\#]?)?\\.?(13[b\\#]?)?"
              (first poplist) :sharedp t)
@@ -159,7 +159,7 @@ Transpose chord \\texttt{c} by \\texttt{n} pitches.
                                      (+ n
                                         (parse-note
                                          (chord-root c))))
-                                    'latin)
+                                    :latin)
                   :bass (chord-bass c)
                   :mode (chord-mode c)
                   :inversion (chord-inversion c)

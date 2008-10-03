@@ -2,4 +2,4 @@
 
 (defpackage :rameau-test
   (:shadowing-import-from #:cl #:defgeneric #:defclass #:defun #:defmacro #:defparameter #:defvar #:defstruct)
-  (:use #:cl #:rameau #:genoslib #:rameau-main #:lisp-unit))
+  (:use #:cl #:cl-lily #:rameau #:genoslib #:rameau-main #:lisp-unit))

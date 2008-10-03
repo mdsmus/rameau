@@ -1,4 +1,5 @@
 (in-package :rameau-test)
+(use-package :cl-lily)
 
 (define-test event-end
   (assert-equal
@@ -7,22 +8,18 @@
 
 (define-test but-a-fifth-apart
   (assert-true
-   (but-a-fifth-apart (make-event :key '(C MAJOR) :time-sig 1 :pitch 0 :octave 0)
-                        (make-event :key '(C MAJOR) :time-sig 1 :pitch 28 :octave 0)))
+   (cl-lily::but-a-fifth-apart (make-event :key '(C MAJOR) :time-sig 1 :pitch 0 :octave 0)
+                                (make-event :key '(C MAJOR) :time-sig 1 :pitch 28 :octave 0)))
   (assert-true
-   (but-a-fifth-apart (make-event :key '(C MAJOR) :time-sig 1 :pitch 0 :octave 0)
-                        (make-event :key '(C MAJOR) :time-sig 1 :pitch 28 :octave 1)))
+   (cl-lily::but-a-fifth-apart (make-event :key '(C MAJOR) :time-sig 1 :pitch 0 :octave 0)
+                               (make-event :key '(C MAJOR) :time-sig 1 :pitch 28 :octave 1)))
   (assert-false
-   (but-a-fifth-apart (make-event :key '(C MAJOR) :time-sig 1 :pitch 55 :octave 1)
-                        (make-event :key '(C MAJOR) :time-sig 1 :pitch 28 :octave 1)))
-  (assert-true
-   (with-system tempered
-     (but-a-fifth-apart (make-event :key '(C MAJOR) :time-sig 1 :pitch 0)
-                          (make-event :key '(C MAJOR) :time-sig 1 :pitch 5))))
+   (cl-lily::but-a-fifth-apart (make-event :key '(C MAJOR) :time-sig 1 :pitch 55 :octave 1)
+                               (make-event :key '(C MAJOR) :time-sig 1 :pitch 28 :octave 1)))
   (assert-true
    (with-system tonal
-     (but-a-fifth-apart (make-event :key '(C MAJOR) :time-sig 1 :pitch 0)
-                          (make-event :key '(C MAJOR) :time-sig 1 :pitch 5)))))
+     (cl-lily::but-a-fifth-apart (make-event :key '(C MAJOR) :time-sig 1 :pitch 0)
+                                 (make-event :key '(C MAJOR) :time-sig 1 :pitch 5)))))
 
 (define-test do-relative
   (assert-true

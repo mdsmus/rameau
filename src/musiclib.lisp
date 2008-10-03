@@ -2,8 +2,7 @@
 (export '(a b c d e f g
           a# b# c# d# e# f# g#
           ab bb cb db eb fb gb
-          maj min dim aug perfect
-          sharp flat up down lily latin prime))
+          sharp flat up down prime))
 
 (defvar *system* 'tonal)
 
@@ -27,41 +26,41 @@ is a table with the code for tonal intervals according to Jamary (p.
 represents a minor third; (3 dim 2) represents double-diminished
 third. Quantity is optional when equal to 1. [DONTCHECK]"
   (let ((tonal-system
-         '((c 0)  (c 1)  (c 2)  (c 3)  (c 4)  (c 5)  (c 6)
-           (d -7) (d -6) (d -5) (d -4) (d -3) (d -2) (d -1)
-           (d 0)  (d 1)  (d 2)  (d 3)  (d 4)  (d 5)  (d 6)
-           (e -7) (e -6) (e -5) (e -4) (e -3) (e -2) (e -1)
-           (e 0)  (e 1)  (e 2)  (e 3)  (e 4)  (e 5)  (e 6)
-           (f -6) (f -5) (f -4) (f -3) (f -2) (f -1)
-           (f 0)  (f 1)  (f 2)  (f 3)  (f 4)  (f 5)  (f 6) (f 7)
-           (g -6) (g -5) (g -4) (g -3) (g -2) (g -1)
-           (g 0)  (g 1)  (g 2)  (g 3)  (g 4)  (g 5)  (g 6)
-           (a -7) (a -6) (a -5) (a -4) (a -3) (a -2) (a -1)
-           (a 0)  (a 1)  (a 2)  (a 3)  (a 4)  (a 5)  (a 7)
-           (b -7) (b -6) (b -5) (b -4) (b -3) (b -2) (b -1)
-           (b 0)  (b 1)  (b 2)  (b 3)  (b 4)  (b 5)  (b 7)
-           (c -6) (c -5) (c -4) (c -3) (c -2) (c -1)))
+         '((:c 0)  (:c 1)  (:c 2)  (:c 3)  (:c 4)  (:c 5)  (:c 6)
+           (:d -7) (:d -6) (:d -5) (:d -4) (:d -3) (:d -2) (:d -1)
+           (:d 0)  (:d 1)  (:d 2)  (:d 3)  (:d 4)  (:d 5)  (:d 6)
+           (:e -7) (:e -6) (:e -5) (:e -4) (:e -3) (:e -2) (:e -1)
+           (:e 0)  (:e 1)  (:e 2)  (:e 3)  (:e 4)  (:e 5)  (:e 6)
+           (:f -6) (:f -5) (:f -4) (:f -3) (:f -2) (:f -1)
+           (:f 0)  (:f 1)  (:f 2)  (:f 3)  (:f 4)  (:f 5)  (:f 6) (:f 7)
+           (:g -6) (:g -5) (:g -4) (:g -3) (:g -2) (:g -1)
+           (:g 0)  (:g 1)  (:g 2)  (:g 3)  (:g 4)  (:g 5)  (:g 6)
+           (:a -7) (:a -6) (:a -5) (:a -4) (:a -3) (:a -2) (:a -1)
+           (:a 0)  (:a 1)  (:a 2)  (:a 3)  (:a 4)  (:a 5)  (:a 7)
+           (:b -7) (:b -6) (:b -5) (:b -4) (:b -3) (:b -2) (:b -1)
+           (:b 0)  (:b 1)  (:b 2)  (:b 3)  (:b 4)  (:b 5)  (:b 7)
+           (:c -6) (:c -5) (:c -4) (:c -3) (:c -2) (:c -1)))
         (tonal-intervals
-         '((1 perfect) (1 aug) (1 aug 2) (1 aug 3) (1 aug 4) (1 aug 5) (1 aug 6)
-           (2 dim 6) (2 dim 5) (2 dim 4) (2 dim 3) (2 dim 2) (2 dim) (2 min) (2 maj) (2 aug)
-           (2 aug 2) (2 aug 3) (2 aug 4) (2 aug 5) (2 aug 6) 
-           (3 dim 6) (3 dim 5) (3 dim 4) (3 dim 3) (3 dim 2) (3 dim)
-           (3 min) (3 maj) (3 aug) (3 aug 2) (3 aug 3) (3 aug 4) (3 aug 5) (3 aug 6)
-           (4 dim 6) (4 dim 5) (4 dim 4) (4 dim 3) (4 dim 2) (4 dim)
-           (4 perfect) (4 aug) (4 aug 2) (4 aug 3) (4 aug 4) (4 aug 5) (4 aug 6) (4 aug 7)
-           (5 dim 6) (5 dim 5) (5 dim 4) (5 dim 3) (5 dim 2) (5 dim)
-           (5 perfect) (5 aug) (5 aug 2) (5 aug 3) (5 aug 4) (5 aug 5) (5 aug 6)
-           (6 dim 6) (6 dim 5) (6 dim 4) (6 dim 3) (6 dim 2) (6 dim)
-           (6 min) (6 maj) (6 aug) (6 aug 2) (6 aug 3) (6 aug 4) (6 aug 5) (6 aug 6)
-           (7 dim 6) (7 dim 5) (7 dim 4) (7 dim 3) (7 dim 2) (7 dim)
-           (7 min) (7 maj) (7 aug) (7 aug 2) (7 aug 3) (7 aug 4) (7 aug 5) (7 aug 6)
-           (1 dim 6) (1 dim 5) (1 dim 4) (1 dim 3) (1 dim 2) (1 dim) (8 perfect)))
+         '((1 :perfect) (1 :aug) (1 :aug 2) (1 :aug 3) (1 :aug 4) (1 :aug 5) (1 :aug 6)
+           (2 :dim 6) (2 :dim 5) (2 :dim 4) (2 :dim 3) (2 :dim 2) (2 :dim) (2 :min) (2 :maj) (2 :aug)
+           (2 :aug 2) (2 :aug 3) (2 :aug 4) (2 :aug 5) (2 :aug 6) 
+           (3 :dim 6) (3 :dim 5) (3 :dim 4) (3 :dim 3) (3 :dim 2) (3 :dim)
+           (3 :min) (3 :maj) (3 :aug) (3 :aug 2) (3 :aug 3) (3 :aug 4) (3 :aug 5) (3 :aug 6)
+           (4 :dim 6) (4 :dim 5) (4 :dim 4) (4 :dim 3) (4 :dim 2) (4 :dim)
+           (4 :perfect) (4 :aug) (4 :aug 2) (4 :aug 3) (4 :aug 4) (4 :aug 5) (4 :aug 6) (4 :aug 7)
+           (5 :dim 6) (5 :dim 5) (5 :dim 4) (5 :dim 3) (5 :dim 2) (5 :dim)
+           (5 :perfect) (5 :aug) (5 :aug 2) (5 :aug 3) (5 :aug 4) (5 :aug 5) (5 :aug 6)
+           (6 :dim 6) (6 :dim 5) (6 :dim 4) (6 :dim 3) (6 :dim 2) (6 :dim)
+           (6 :min) (6 :maj) (6 :aug) (6 :aug 2) (6 :aug 3) (6 :aug 4) (6 :aug 5) (6 :aug 6)
+           (7 :dim 6) (7 :dim 5) (7 :dim 4) (7 :dim 3) (7 :dim 2) (7 :dim)
+           (7 :min) (7 :maj) (7 :aug) (7 :aug 2) (7 :aug 3) (7 :aug 4) (7 :aug 5) (7 :aug 6)
+           (1 :dim 6) (1 :dim 5) (1 :dim 4) (1 :dim 3) (1 :dim 2) (1 :dim) (8 :perfect)))
         (tempered-intervals
-         '((1 perfect) (2 min) (2 maj) (3 min) (3 maj) (4 perfect)
-           (5 dim) (5 perfect) (6 min) (6 maj) (7 min) (7 maj) (8 perfect)))
+         '((1 :perfect) (2 :min) (2 :maj) (3 :min) (3 :maj) (4 :perfect)
+           (5 :dim) (5 :perfect) (6 :min) (6 :maj) (7 :min) (7 :maj) (8 :perfect)))
         (tempered-system
-         '((c 0) (c 1) (d 0) (d 1) (e 0) (f 0)
-           (f 1) (g 0) (g 1) (a 0) (a 1) (b 0))))
+         '((:c 0) (:c 1) (:d 0) (:d 1) (:e 0) (:f 0)
+           (:f 1) (:g 0) (:g 1) (:a 0) (:a 1) (:b 0))))
     (assoc-item item `((tonal (,tonal-system 96 ,tonal-intervals))
                        (tempered (,tempered-system 12 ,tempered-intervals))))))
 
@@ -91,31 +90,31 @@ system. [DONTCHECK]"
 
 (defun get-accidental (accidental representation)
   "Returns a string with the accidental in a specific
-    representation. \\example{(get-accidental 'sharp 'latin)}{\\#}"
+    representation. \\example{(get-accidental 'sharp :latin)}{\\#}"
   (assoc-item accidental
-              (assoc-item representation '((lily ((flat "es")
+              (assoc-item representation '((:lily ((flat "es")
                                                   (sharp "is")))
-                                           (latin ((flat "b")
+                                           (:latin ((flat "b")
                                                    (sharp "#")))))))
 
 (defun get-octave (octave representation)
   "Returns a string with the octave in a specific
-    representation. \\example{(get-octave 'central 'lily)}{\"\"}"
+    representation. \\example{(get-octave 'central :lily)}{\"\"}"
   (assoc-item octave
-              (assoc-item representation '((lily ((down ",")
+              (assoc-item representation '((:lily ((down ",")
                                                   (up "'")))
-                                           (latin ((down "-1")
+                                           (:latin ((down "-1")
                                                    (up "1")))))))
 
 (defun get-interval-name (short)
   "Returns the full name of a chord for the abbreviated
 representation. \\example{(get-interval-name \\rq dim)}{diminished}.
 [DONTCHECK]"
-  (assoc-item short '((min minor)
-                      (maj major)
-                      (perfect perfect)
-                      (aug augmented)
-                      (dim diminished))))
+  (assoc-item short '((:min minor)
+                      (:maj major)
+                      (:perfect perfect)
+                      (:aug augmented)
+                      (:dim diminished))))
 
 (defun get-interval-quantity (num)
   "Returns a word representing the numeric quantity of a chord.
@@ -129,7 +128,7 @@ representation. \\example{(get-interval-name \\rq dim)}{diminished}.
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun octave-from-string (octave &optional (representation 'lily))
+(defun octave-from-string (octave &optional (representation :lily))
   "Returns the numeric representation of a octave represented as
 string. The central octave has the value 8."
   (let ((up (get-octave 'up representation))
@@ -157,7 +156,7 @@ first argument to this function, otherwise it could mistakenly return
 
 (defun match-note-representation (note representation)
   "Returns non-nil if a note matches the representation.
-EXAMPLE: (match-note-representation \"cis\" 'latin) returns nil."
+EXAMPLE: (match-note-representation \"cis\" :latin) returns nil."
   (or (search (get-accidental 'flat representation) note)
       (search (get-accidental 'sharp representation) note)))
 
@@ -166,15 +165,15 @@ EXAMPLE: (match-note-representation \"cis\" 'latin) returns nil."
 
 (defun %parse-note (note representation system)
   "Returns the numeric code for a note according with the representation and system.
-EXAMPLE: \\begin{verbatim}(%parse-note \"ces\" 'lily 'tonal)\\end{verbatim} returns 95.
+EXAMPLE: \\begin{verbatim}(%parse-note \"ces\" :lily 'tonal)\\end{verbatim} returns 95.
 This is a low level function, you should use parse-note instead."
   (let ((note-code-tonal
-         (%my-position (list (string->symbol (subseq note 0 1))
+         (%my-position (list (make-keyword (subseq note 0 1))
                              (number-of-accidentals (subseq note 1) representation))
                        (get-system-notes 'tonal)
                        :test #'equal))
         (note-code-tempered
-         (+ (%my-position (list (string->symbol (subseq note 0 1)) 0)
+         (+ (%my-position (list (make-keyword (subseq note 0 1)) 0)
                           (get-system-notes 'tempered)
                           :test #'equal)
             (number-of-accidentals (subseq note 1) representation))))
@@ -208,9 +207,9 @@ retorna 14."
     (when (note? note)
       (let ((note (string-downcase note)))
         (module 
-         (cond ((eql (length note) 1) (%note->code (string->symbol note)))
-               ((match-note-representation note 'lily) (%parse-note note 'lily *system*))
-               ((match-note-representation note 'latin) (%parse-note note 'latin *system*))
+         (cond ((eql (length note) 1) (%note->code (make-keyword note)))
+               ((match-note-representation note :lily) (%parse-note note :lily *system*))
+               ((match-note-representation note :latin) (%parse-note note :latin *system*))
                (t (error "type of note is unknown"))))))))
 
 (defun notename->code (note)
@@ -226,24 +225,24 @@ should be represented as strings."
 
 (defun print-accidentals (acc repr)
   "Returns a string of a note according to the numeric value of an
-accidental and a representation. EXAMPLE: (print-accidentals 3 'lily)
+accidental and a representation. EXAMPLE: (print-accidentals 3 :lily)
 returns isisis."
   (repeat-string acc (get-accidental (if (>= acc 0) 'sharp 'flat) repr)))
 
-(defcached print-note (note-code &optional (representation 'latin))
+(defcached print-note (note-code &optional (representation :latin))
   "Retuns a string of a note according to a note-code and representation.
-Example: (print-note '(c 1) 'lily) return cis."
+Example: (print-note '(c 1) :lily) return cis."
   (format nil "~(~a~)~a" (first note-code) (print-accidentals (second note-code) representation)))
 
 (defun latin->lily (note)
   "Accepts a string with a note in latin representation and returns a
 note using lilypond's representation."
-  (print-note (code->notename (parse-note (stringify note))) 'lily))
+  (print-note (code->notename (parse-note (stringify note))) :lily))
 
 (defun lily->latin (note)
   "Accepts a string with a note in lilypond representation and returns
 a note using latin representation."
-  (print-note (code->notename (parse-note note)) 'latin))
+  (print-note (code->notename (parse-note note)) :latin))
 
 (defun module (n)
   "Returns the module according to a system.
@@ -280,8 +279,10 @@ EXAMPLE: (code->interval '(3 aug)) returns 29."
   "Returns the name of an interval. EXAMPLE: (print-interval 16)
 returns double augmented second."
   (destructuring-bind (int type &optional quantity) (interval->code interval)
-    (format nil "~@[~(~a~) ~]~(~a~) ~:r" (get-interval-quantity quantity)
-            (get-interval-name type) int)))
+    (format nil "~@[~(~a~) ~]~(~a~) ~:r"
+            (get-interval-quantity quantity)
+            (get-interval-name type)
+            int)))
 
 ;;; SETS
 
@@ -423,7 +424,7 @@ or # as a prefix (as in bvi or #iii). EXAMPLE: (get-function-degree
                    (#\# (1+ (%get-function-number (subseq tonal-function 1))))
                    (t (%get-function-number tonal-function))))))))
 
-(defun number->accidental (number &optional (representation 'latin))
+(defun number->accidental (number &optional (representation :latin))
   "Convert a number to it's representation as accidents.
   EXAMPLE: (number->accidental -3) => \"bbb\""
   (cond ((plusp number)
@@ -483,7 +484,7 @@ or # as a prefix (as in bvi or #iii). EXAMPLE: (get-function-degree
       (values
        (make-roman-function :degree-number tonal-function
                             :mode mode
-                            :degree-accidentals (number-of-accidentals (or accidentals "") 'latin))
+                            :degree-accidentals (number-of-accidentals (or accidentals "") :latin))
        extra))))
 
 (defun print-roman-function (function &optional stream (depth 0))

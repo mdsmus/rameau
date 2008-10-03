@@ -31,7 +31,7 @@
         (declare (fixnum root))
         (appending (iter (for mode in '("" "m" "+" "°" "ø" "!"))
                          (appending (iter (for seventh in '("" "7" "7-" "7+"))
-                                          (collect (make-chord :root (print-note (code->notename root) 'latin)
+                                          (collect (make-chord :root (print-note (code->notename root) :latin)
                                                                :mode mode
                                                                :7th seventh))))))))
 

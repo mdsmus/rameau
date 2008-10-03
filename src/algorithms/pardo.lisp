@@ -60,7 +60,7 @@
     (+ score encontrados)))
 
 (defun final-score (template sonority nota)
-  (let ((note-symb (string->symbol (print-note nota 'latin))))
+  (let ((note-symb (make-keyword (print-note nota :latin))))
     (make-pardo-grade :root note-symb
                       :template template
                       :result (score-template
@@ -96,7 +96,7 @@
          (cod (module
                (+ (parse-note (stringify proxima-tonica))
                   (code->interval '(7 maj)))))
-         (nota (print-note (code->notename cod) 'latin)))
+         (nota (print-note (code->notename cod) :latin)))
     (or (find-if
          (lambda (x)
            (equal nota (stringify (pardo-grade-root x))))

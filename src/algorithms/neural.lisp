@@ -56,7 +56,7 @@
                                (make-melodic-note))
                               ((> (get-module) maxi)
                                (make-chord :root (print-note (code->notename (module (+ diff maxi)))
-                                                             'latin)))
+                                                             :latin)))
                               ((= (+ 1 (get-module)) maxi)
                                (make-augmented-sixth :type "IT"))
                               ((= (+ 2 (get-module)) maxi)
