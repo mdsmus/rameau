@@ -157,4 +157,4 @@
      (mapcar #'event-dur notas))))
 
 (define-test transpose
-  (assert-equal '(0 14 14 28) (mapcar #'rameau:event-pitch (rameau::get-parsed-notes-string "c d \\transpose c d { c d }"))))
+  (assert-equal '(0 14 14 28) (mapcar #'event-pitch (rameau::get-parsed-notes-string "c d \\transpose c d { c d }"))))

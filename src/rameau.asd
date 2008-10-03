@@ -71,7 +71,7 @@
                                        (:file "utils")
                                        (:file "musiclib")
                                        (:file "formato")
-                                       ;;(:file "parser")
+                                       (:file "parser")
                                        (:file "segment")
                                        (:file "chords")
                                        (:file "tools")
