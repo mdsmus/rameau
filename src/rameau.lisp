@@ -74,16 +74,6 @@ Filter \\texttt{*algorithms*} so that only the ones specified in
   "Save algorithm \\texttt{alg} to disk."
   (cl-store:store alg (alg-file-name alg)))
 
-(defun rameau-args ()
-  "[DONTCHECK]"
-  (let ((sbcl-args #+sbcl sb-ext:*posix-argv*)
-        (cmu-args #+cmu extensions:*command-line-strings*)
-        (clisp-args #+clisp *args*))
-    (cond (sbcl-args (rest sbcl-args))
-          (cmu-args (subseq cmu-args (1+ (position "cmurameau" cmu-args :test #'string=))))
-          (clisp-args clisp-args)
-          (t (error "algum problema com argumentos")))))
-
 (defun rameau-profile ()
   "[DONTCHECK]
 
@@ -275,4 +265,3 @@ an error and doing a backtrace if running on sbcl and \\texttt{condition} is tru
                                (rameau-quit))
                              ,return)))
        ,@code)))
-

@@ -29,6 +29,7 @@
                (:file "terminal")
                (:file "analysis")
                (:file "lily")
+               (:file "main")
                ))
 
 
@@ -64,7 +65,7 @@
     :author "Alexandre Passos e Pedro Kroger"
     :depends-on (:rameau-pkg :algorithms :commands :cl-lily)
     :serial t
-    :components ((:file "main")
+    :components ((:file "setup")
                  (:module tests
                           :serial t
                           :components ((:file "packages")

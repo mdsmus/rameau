@@ -1,14 +1,7 @@
-; Main
-;;; Define rameau-main package
-(defpackage :rameau-main
-  (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
-  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
-  (:use :rameau :cl :cl-ppcre :iterate :genoslib :rameau-runtests)
-  (:documentation "Code for the main program that drives \\texttt{rameau}"))
-
-(in-package :rameau-main)
+(in-package :rameau)
 
 (enable-sharp-l-syntax)
+
 
 (defun rameau-args ()
   "The command-line arguments, minus the first one."
@@ -93,7 +86,7 @@
   "You can run main from the REPL with all arguments as a
   string: (main \"analysis chorales -v -f 001\")"
                                         ;(format t "Done, processing arguments...~%")
-  (let* ((*package* (find-package :rameau-main))
+  (let* ((*package* (find-package :rameau))
          (rameau-args (rameau-args))
          (arguments (if rameau-args rameau-args (cl-ppcre:split " " args))))
     (if arguments
@@ -143,8 +136,3 @@
         (print-help)))
   #+clisp(ext:exit)
   0)
-(format t "Algorithms: ~a~%" (mapcar #'alg-name *algorithms*))
-(main "algorithms -o train -a net -f chor:1..6 exa:11..13 exa:23..28")
-(main "algorithms -o train -a hmm tree bay knn -f chor:1..10 exa:11..13 exa:23..28 chor:12 chor:14 chor:17..33 ")
-(format t "FAlgorithms: ~a~%" (mapcar #'alg-name *functional-algorithms*))
-(main "funalg -o train -a hmm -f chor:1..3 exa:001 chor:1..3 chor:006")

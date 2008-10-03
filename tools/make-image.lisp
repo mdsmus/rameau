@@ -32,12 +32,11 @@
 
 (asdf:oos 'asdf:load-op :rameau :verbose nil)
 
-#+sbcl(sb-ext:save-lisp-and-die "rameau" :purify t :executable t :toplevel #'rameau-main:main)
+#+sbcl(sb-ext:save-lisp-and-die "rameau" :purify t :executable t :toplevel #'rameau:main)
 
-#+cmu(extensions:save-lisp "cmurameau" :init-function #'rameau-main:main)
+#+cmu(extensions:save-lisp "cmurameau" :init-function #'rameau:main)
 
-#+clisp(ext:saveinitmem "clisprameau" :script nil :quiet t :executable t :init-function #'rameau-main:main)
-
+#+clisp(ext:saveinitmem "clisprameau" :script nil :quiet t :executable t :init-function #'rameau:main)
 #+ecl(progn (loop for file in '("src/rameau.lisp"
                                 "src/cifras.lisp"
                                 "src/formato.lisp"
