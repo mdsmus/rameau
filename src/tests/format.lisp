@@ -1,7 +1,7 @@
 (in-package :rameau-test)
 
-(def-suite cl-lily :description "Tests for the format file")
-(in-suite cl-lily)
+(def-suite format :description "Tests for the format file")
+(in-suite format)
 
 (test event-end
   (is (=

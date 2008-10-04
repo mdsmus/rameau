@@ -1,7 +1,10 @@
 (in-package #:rameau-test)
 
-(define-test get-parsed-notes-string
-  (assert-true
+(def-suite parser :description "Tests for the parser file")
+(in-suite parser)
+
+(test get-parsed-notes-string
+  (is-true
    (event-equal
     (list
      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 0 :DUR 1/4 :start 0)
@@ -16,7 +19,7 @@
 \\new Staff {  c d e f }
 \\new Staff {  c d e f }
 >> }")))
-  (assert-true
+  (is-true
    (event-equal
     (list
      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 55 :OCTAVE 1 :DUR 1/4 :start 0)
@@ -34,7 +37,7 @@
   }
 >>")))
   
-  (assert-true
+  (is-true
    (event-equal
     (list
      (make-event :key '(C MAJOR) :time-sig 1 :PITCH 55 :OCTAVE 1 :DUR 1/4 :start 0)
@@ -58,7 +61,7 @@
   }
 >>")))
   
-  (assert-true
+  (is-true
    (event-equal
     (get-parsed-notes-string "
 \\header {
@@ -105,14 +108,14 @@
           (make-event :key '(C MAJOR) :time-sig "3/4" :PITCH 55 :OCTAVE 1 :DUR 1/4 :start 1/2)
           (make-event :key '(C MAJOR) :time-sig "3/4" :PITCH 28 :OCTAVE 1 :DUR 1/4 :start 1/2)
           (make-event :key '(C MAJOR) :time-sig "3/4" :PITCH 0 :OCTAVE 1 :DUR 1/4 :start 1/2))))
-  (assert-true
+  (is-true
    (event-equal
     (get-parsed-notes-string "{ foo = { c d e} \\foo }")
    (list
     (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 0 :DUR 1/4 :start 0)
     (make-event :key '(C MAJOR) :time-sig 1 :PITCH 14 :OCTAVE 0 :DUR 1/4 :start 1/4)
     (make-event :key '(C MAJOR) :time-sig 1 :PITCH 28 :OCTAVE 0 :DUR 1/4 :start 1/2))))
-  (assert-true
+  (is-true
    (event-equal
     (get-parsed-notes-string "{ foo = { c } \\foo foo = { d } \\foo }")
     (list
@@ -121,40 +124,40 @@
   )
 
 
-(define-test correct-times
-  (assert-equal
-   (event-dur (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 0 :DUR 9/2 :start 0))
-   (let ((nota (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 0 :DUR 3 :start 0)))
-     (correct-times 3/2 nota)
-     (event-dur nota))))
+(test correct-times
+  (is (equal
+    (event-dur (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 0 :DUR 9/2 :start 0))
+    (let ((nota (make-event :key '(C MAJOR) :time-sig 1 :PITCH 0 :OCTAVE 0 :DUR 3 :start 0)))
+      (correct-times 3/2 nota)
+      (event-dur nota)))))
 
-(define-test correct-durations
-  (assert-equal
-   '(4 4 4 8 8)
-   (let ((notas
-          (list
-           (make-event :key '(C MAJOR) :time-sig 1 :pitch 1
+(test correct-durations
+  (is (equal
+    '(4 4 4 8 8)
+    (let ((notas
+           (list
+            (make-event :key '(C MAJOR) :time-sig 1 :pitch 1
                         :octave 1
                         :start 0
                         :dur 4)
-           (make-event :key '(C MAJOR) :time-sig 1 :pitch 2
+            (make-event :key '(C MAJOR) :time-sig 1 :pitch 2
                         :octave 1
                         :start 0
                         :dur nil)
-           (make-event :key '(C MAJOR) :time-sig 1 :pitch 3
+            (make-event :key '(C MAJOR) :time-sig 1 :pitch 3
                         :octave 1
                         :start 0
                         :dur nil)
-           (make-event :key '(C MAJOR) :time-sig 1 :pitch 3
+            (make-event :key '(C MAJOR) :time-sig 1 :pitch 3
                         :octave 1
                         :start 0
                         :dur 8)
-           (make-event :key '(C MAJOR) :time-sig 1 :pitch 4
+            (make-event :key '(C MAJOR) :time-sig 1 :pitch 4
                         :octave 1
                         :start 0
                         :dur nil))))
-     (correct-durations notas)
-     (mapcar #'event-dur notas))))
+      (correct-durations notas)
+      (mapcar #'event-dur notas)))))
 
-(define-test transpose
-  (assert-equal '(0 14 14 28) (mapcar #'event-pitch (rameau::get-parsed-notes-string "c d \\transpose c d { c d }"))))
+(test transpose
+  (is (equal '(0 14 14 28) (mapcar #'event-pitch (rameau::get-parsed-notes-string "c d \\transpose c d { c d }")))))

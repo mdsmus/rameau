@@ -44,7 +44,7 @@
   (let ((string-result
          (with-output-to-string (string)
            (let ((*standard-output* string))
-             (iter (for test in '(utils musiclib cl-lily))
+             (iter (for test in '(utils musiclib parser format))
                    (format t "~%TEST: ~a~%" test)
                    (fiveam:run! test))))))
     (if (arg :verbose options)

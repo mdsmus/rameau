@@ -73,7 +73,7 @@
                           :components ((:file "utils")
                                        (:file "musiclib")
                                        (:file "format")
-                                       ;(:file "parser")
+                                       (:file "parser")
                                        ;(:file "segment")
                                        ;(:file "chords")
                                        ;(:file "tools")
