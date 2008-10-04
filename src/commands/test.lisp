@@ -41,15 +41,9 @@
       (print-ok/no-list (parse-summary (arg :files options)) options)))
 
 (defun unit (options)
-  (let ((string-result
-         (with-output-to-string (string)
-           (let ((*standard-output* string))
-             (iter (for test in '(utils musiclib parser format segment chords rameau))
-                   (format t "~%TEST: ~a~%" test)
-                   (fiveam:run! test))))))
-    (if (arg :verbose options)
-        (write-line string-result)
-        (write-line (subseq (last1 (cl-ppcre:split "\\n" string-result)) 34)))))
+  (iter (for test in '(utils musiclib parser format segment chords rameau))
+        (format t "TEST: ~a~%" test)
+        (fiveam:run! test)))
 
 (defun test-rameau (options)
   "This function can't be named 'test' in order not to conflict with
