@@ -8,12 +8,17 @@
 (enable-sharp-l-syntax)
 
 (defparameter *rameau-packages*
-  ;;; falta rameau e rameau-doc
-  '("RAMEAU-OPTIONS" "RAMEAU-BASE" "GENOSLIB" "RAMEAU-WEB"
-    "RAMEAU-MAIN" "RAMEAU-TERMINAL" "RAMEAU-LILY" "RAMEAU-HMM"
+;;; falta rameau e rameau-doc
+  '("RAMEAU-BASE" "GENOSLIB" "RAMEAU-WEB"
+    "RAMEAU-HMM"
     "RAMEAU-NEURAL" "RAMEAU-KNN" "RAMEAU-TREE-ENARM" "RAMEAU-PARDO"))
 
 (defun find-source-file-of-function :private (function-name)
+  ;; according to CLHS the readtable is reset after reading or
+  ;; compiling a file. For some reason it is not enought to call
+  ;; enable-sharp-l-syntax on the top of this file, it has to be
+  ;; called here.
+  (enable-sharp-l-syntax)
   (pathname-name (cadadr (swank-backend:find-source-location (symbol-function function-name)))))
 
 (defun function-uses :private (function-name)
