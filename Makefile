@@ -114,10 +114,10 @@ distclean: cleanall clean-deps clean-analysis clean-score clean-midi clean-cache
 	cd docs/choral-book && $(MAKE) cleanall
 
 # remove os fasls do rameau, sem remover das bibliotecas
-lisp-clean-rameau: clean-lib
+lisp-clean: clean-lib
 	rm -rf ~/lisp/fasl/sbcl-1.0.20.8-linux-x86/$$HOME/src/rameau/src
 
-lisp-clean: clean-lib clean
+lisp-clean-all: clean-lib clean
 	bash -c "rm -rf /var/cache/common-lisp-controller/\$${UID}/sbcl/local"
 	rm -rf ~/lisp/fasl/*
 
