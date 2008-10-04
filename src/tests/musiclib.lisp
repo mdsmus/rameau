@@ -1,186 +1,189 @@
 (in-package #:rameau-test)
 
-(define-test octave-from-string
-  (assert-equal 0  (octave-from-string ""))
-  (assert-equal -1  (octave-from-string ","))
-  (assert-equal -2  (octave-from-string ",,"))
-  (assert-equal 1  (octave-from-string "'"))
-  (assert-equal 2 (octave-from-string "''")))
+(def-suite musiclib :description "Tests for the musiclib file")
+(in-suite musiclib)
 
-(define-test code->notename
-  (assert-equal '(:c 0) (code->notename 0))
-  (assert-equal '(:c -1) (code->notename 95))
-  (assert-equal '(:d 0) (code->notename 14))
-  (assert-equal '(:c 0) (code->notename 96))
-  (assert-equal '(:c 0) (with-system tempered (code->notename 0)))
-  (assert-equal '(:b 0) (with-system tempered (code->notename 95)))
-  (assert-equal '(:d 0) (with-system tempered (code->notename 14)))
-  (assert-equal '(:c 0) (with-system tempered (code->notename 96))))
+(test octave-from-string
+  (is (= 0  (octave-from-string "")))
+  (is (= -1  (octave-from-string ",")))
+  (is (= -2  (octave-from-string ",,")))
+  (is (= 1  (octave-from-string "'")))
+  (is (= 2 (octave-from-string "''"))))
 
-(define-test note?
-  (assert-true (note? "cis"))
-  (assert-true (note? "cIs"))
-  (assert-true (note? "c##"))
-  (assert-false (note? "c##is#"))
-  (assert-false (note? "cis#"))
-  (assert-false (note? "s"))
-  (assert-false (note? "foo")))
+(test code->notename
+  (is (equal '(:c 0) (code->notename 0)))
+  (is (equal '(:c -1) (code->notename 95)))
+  (is (equal '(:d 0) (code->notename 14)))
+  (is (equal '(:c 0) (code->notename 96)))
+  (is (equal '(:c 0) (with-system tempered (code->notename 0))))
+  (is (equal '(:b 0) (with-system tempered (code->notename 95))))
+  (is (equal '(:d 0) (with-system tempered (code->notename 14))))
+  (is (equal '(:c 0) (with-system tempered (code->notename 96)))))
 
-(define-test number-of-accidentals
-   (assert-equal 1 (number-of-accidentals "cis" :lily))
-   (assert-equal 2 (number-of-accidentals "cisis" :lily))
-   (assert-equal 5 (number-of-accidentals "cisisisisis" :lily))
-   (assert-equal 0 (number-of-accidentals "c" :lily))
-   (assert-equal -1 (number-of-accidentals "ees" :lily))
-   (assert-equal -1 (number-of-accidentals "ces" :lily))
-   (assert-equal -2 (number-of-accidentals "ceses" :lily))
-   (assert-equal -5 (number-of-accidentals "ceseseseses" :lily)))
+(test note?
+  (is-true (note? "cis"))
+  (is-true (note? "cIs"))
+  (is-true (note? "c##"))
+  (is-false (note? "c##is#"))
+  (is-false (note? "cis#"))
+  (is-false (note? "s"))
+  (is-false (note? "foo")))
 
-(define-test match-note-representation
-    (assert-equal nil (match-note-representation "cis" :latin))
-    (assert-equal nil (match-note-representation "c#" :lily))
-    (assert-equal 1 (match-note-representation "c#" :latin))
-    (assert-equal 1 (match-note-representation "cis" :lily)))
+(test number-of-accidentals
+  (is (= 1 (number-of-accidentals "cis" :lily)))
+  (is (= 2 (number-of-accidentals "cisis" :lily)))
+  (is (= 5 (number-of-accidentals "cisisisisis" :lily)))
+  (is (= 0 (number-of-accidentals "c" :lily)))
+  (is (= -1 (number-of-accidentals "ees" :lily)))
+  (is (= -1 (number-of-accidentals "ces" :lily)))
+  (is (= -2 (number-of-accidentals "ceses" :lily)))
+  (is (= -5 (number-of-accidentals "ceseseseses" :lily))))
 
-(define-test get-accidental
-    (assert-equal "#" (get-accidental 'sharp :latin))
-  (assert-equal "is" (get-accidental 'sharp :lily))
-  (assert-equal "b" (get-accidental 'flat :latin))
-  (assert-equal "es" (get-accidental 'flat :lily)))
+(test match-note-representation
+  (is (eql nil (match-note-representation "cis" :latin)))
+  (is (eql nil (match-note-representation "c#" :lily)))
+  (is (= 1 (match-note-representation "c#" :latin)))
+  (is (= 1 (match-note-representation "cis" :lily))))
 
-(define-test get-octave
-    (assert-equal "'" (get-octave 'up :lily))
-  (assert-equal "," (get-octave 'down :lily)))
+(test get-accidental
+  (is (equal "#" (get-accidental 'sharp :latin)))
+  (is (equal "is" (get-accidental 'sharp :lily)))
+  (is (equal "b" (get-accidental 'flat :latin)))
+  (is (equal "es" (get-accidental 'flat :lily))))
 
-(define-test parse-note
-  (assert-equal 0 (parse-note "c"))
-  (assert-equal 13 (parse-note "des"))
-  (assert-equal 14 (parse-note "d"))
-  (assert-equal 1  (parse-note "cis"))
-  (assert-equal 1 (with-system tempered (parse-note "db")))
-  (assert-equal 2 (with-system tempered (parse-note "c##")))
-  (assert-equal 1 (with-system tempered (parse-note "c#"))))
+(test get-octave
+  (is (equal "'" (get-octave 'up :lily)))
+  (is (equal "," (get-octave 'down :lily))))
 
-(define-test print-accidentals
-  (assert-equal "isisis" (print-accidentals 3 :lily))
-  (assert-equal "eseses" (print-accidentals -3 :lily))
-  (assert-equal "###" (print-accidentals 3 :latin))
-  (assert-equal "bbb" (print-accidentals -3 :latin)))
+(test parse-note
+  (is (= 0 (parse-note "c")))
+  (is (= 13 (parse-note "des")))
+  (is (= 14 (parse-note "d")))
+  (is (= 1  (parse-note "cis")))
+  (is (= 1 (with-system tempered (parse-note "db"))))
+  (is (= 2 (with-system tempered (parse-note "c##"))))
+  (is (= 1 (with-system tempered (parse-note "c#")))))
 
-(define-test print-note
-  (assert-equal "cis" (print-note '(c 1) :lily))
-  (assert-equal "c#" (print-note '(c 1) :latin))
-  (assert-equal "ceseses" (print-note '(c -3) :lily))
-  (assert-equal "dbbb" (print-note '(d -3) :latin)))
+(test print-accidentals
+  (is (equal "isisis" (print-accidentals 3 :lily)))
+  (is (equal "eseses" (print-accidentals -3 :lily)))
+  (is (equal "###" (print-accidentals 3 :latin)))
+  (is (equal "bbb" (print-accidentals -3 :latin))))
 
-(define-test module
-  (assert-equal 1 (module 97))
-  (assert-equal 1 (module 1))
-  (assert-equal 1 (with-system tempered (module 97)))
-  (assert-equal 1 (with-system tempered (module 13))))
+(test print-note
+  (is (equal "cis" (print-note '(c 1) :lily)))
+  (is (equal "c#" (print-note '(c 1) :latin)))
+  (is (equal "ceseses" (print-note '(c -3) :lily)))
+  (is (equal "dbbb" (print-note '(d -3) :latin))))
 
-(define-test transpose
-  (assert-equal 3 (transpose 0 3))
-  (assert-equal 1 (with-system tempered (transpose 0 13)))
-  (assert-equal 32 (transpose 0 320)))
+(test module
+  (is (= 1 (module 97)))
+  (is (= 1 (module 1)))
+  (is (= 1 (with-system tempered (module 97))))
+  (is (= 1 (with-system tempered (module 13)))))
 
-(define-test inversion
-  (assert-equal 7 (with-system tempered (inversion 5 0)))
-  (assert-equal 91 (inversion 5 0)))
+(test transpose
+  (is (= 3 (transpose 0 3)))
+  (is (= 1 (with-system tempered (transpose 0 13))))
+  (is (= 32 (transpose 0 320))))
 
-(define-test interval
-  (assert-equal 4 (interval 7 3))
-  (assert-equal 52 (interval 13 57)))
+(test inversion
+  (is (= 7 (with-system tempered (inversion 5 0))))
+  (is (= 91 (inversion 5 0))))
 
-(define-test code->interval
-  (assert-equal 29 (code->interval '(3 :aug)))
-  (assert-equal 0 (code->interval '(1 :perfect)))
-  (assert-equal 3 (with-system tempered (code->interval '(2 :aug))))
-  (assert-equal 3 (with-system tempered (code->interval '(3 :min)))))
+(test interval
+  (is (= 4 (interval 7 3)))
+  (is (= 52 (interval 13 57))))
 
-(define-test print-interval
-  (assert-equal "double augmented second" (print-interval 16)))
+(test code->interval
+  (is (= 29 (code->interval '(3 :aug))))
+  (is (= 0 (code->interval '(1 :perfect))))
+  (is (= 3 (with-system tempered (code->interval '(2 :aug)))))
+  (is (= 3 (with-system tempered (code->interval '(3 :min))))))
 
-(define-test %rotate
-  (assert-equal '(0 3 4 7) (%rotate '(0 3 4 7) 0))
-  (assert-equal '(3 4 7 0) (%rotate '(0 3 4 7) 1))
-  (assert-equal '(4 7 0 3) (%rotate '(0 3 4 7) 2))
-  (assert-equal '(7 0 3 4) (%rotate '(0 3 4 7) 3))
-  (assert-equal '(0 3 4 7) (%rotate '(0 3 4 7) 4))
-  (assert-equal '(3 4 7 0) (%rotate '(0 3 4 7) 5))
-  (assert-equal '(7 0 3 4) (%rotate '(0 3 4 7) -1)))
+(test print-interval
+  (is (equal "double augmented second" (print-interval 16))))
 
-(define-test set-rotate
-  (assert-equal '((0 3 7) (3 7 0) (7 0 3)) (with-system tempered (set-rotate '(0 3 7)))))
+(test %rotate
+  (is (equal '(0 3 4 7) (%rotate '(0 3 4 7) 0)))
+  (is (equal '(3 4 7 0) (%rotate '(0 3 4 7) 1)))
+  (is (equal '(4 7 0 3) (%rotate '(0 3 4 7) 2)))
+  (is (equal '(7 0 3 4) (%rotate '(0 3 4 7) 3)))
+  (is (equal '(0 3 4 7) (%rotate '(0 3 4 7) 4)))
+  (is (equal '(3 4 7 0) (%rotate '(0 3 4 7) 5)))
+  (is (equal '(7 0 3 4) (%rotate '(0 3 4 7) -1))))
 
-(define-test set-inversion
-  (assert-equal '(0 9 5) (with-system tempered (set-inversion '(0 3 7) 0)))
-  (assert-equal '(0 93 89) (set-inversion '(0 3 7) 0)))
+(test set-rotate
+  (is (equal '((0 3 7) (3 7 0) (7 0 3)) (with-system tempered (set-rotate '(0 3 7))))))
 
-(define-test set-transpose
-  (assert-equal '(3 6 10) (with-system tempered (set-transpose '(0 3 7) 3)))
-  (assert-equal '(3 17 24) (with-system tonal (set-transpose '(0 14 21) 3))))
+(test set-inversion
+  (is (equal '(0 9 5) (with-system tempered (set-inversion '(0 3 7) 0))))
+  (is (equal '(0 93 89) (set-inversion '(0 3 7) 0))))
 
-(define-test set-transpose-to-0
-  (assert-equal '(0 10 8) (with-system tempered (set-transpose-to-0 '(9 7 5)))))
+(test set-transpose
+  (is (equal '(3 6 10) (with-system tempered (set-transpose '(0 3 7) 3))))
+  (is (equal '(3 17 24) (with-system tonal (set-transpose '(0 14 21) 3)))))
 
-(define-test set-intervals
-  (assert-equal '(3 4 5) (with-system tempered (set-intervals '(0 3 7)))))
+(test set-transpose-to-0
+  (is (equal '(0 10 8) (with-system tempered (set-transpose-to-0 '(9 7 5))))))
 
-(define-test set-symmetric?
-  (assert-equal nil (with-system tempered (set-symmetric? '(0 4 7))))
-  (assert-equal t (with-system tempered (set-symmetric? '(0 3 6 9)))))
+(test set-intervals
+  (is (equal '(3 4 5) (with-system tempered (set-intervals '(0 3 7))))))
 
-(define-test set-form-list
-  (assert-equal (list '((0 3 7) 7 3) '((3 7 0) 9 4) '((7 0 3) 8 5))
-                          (with-system tempered (set-form-list '(0 3 7)))))
+(test set-symmetric?
+  (is (eql nil (with-system tempered (set-symmetric? '(0 4 7)))))
+  (is (eql t (with-system tempered (set-symmetric? '(0 3 6 9))))))
 
-(define-test sort-form-list
-  (assert-equal '(((0 3 7) 7 3) ((7 0 3) 8 5) ((3 7 0) 9 4))
-                          (sort-form-list '(((0 3 7) 7 3) ((3 7 0) 9 4) ((7 0 3) 8 5)))))
+(test set-form-list
+  (is (equal (list '((0 3 7) 7 3) '((3 7 0) 9 4) '((7 0 3) 8 5))
+                 (with-system tempered (set-form-list '(0 3 7))))))
 
-(define-test smaller-sets
-  (assert-equal '(((0 3 7) 7 3))
-                          (with-system tempered
-                            (smaller-sets '(((0 3 7) 7 3) ((7 0 3) 8 5) ((3 7 0) 9 4))))))
+(test sort-form-list
+  (is (equal '(((0 3 7) 7 3) ((7 0 3) 8 5) ((3 7 0) 9 4))
+                 (sort-form-list '(((0 3 7) 7 3) ((3 7 0) 9 4) ((7 0 3) 8 5))))))
 
-(define-test smaller-sets-comparisson
-  (assert-equal '(0 3 7)
-                          (with-system tempered
-                            (smaller-sets-comparisson '(((0 3 7) 7 3) ((0 4 7) 7 4))))))
+(test smaller-sets
+  (is (equal '(((0 3 7) 7 3))
+                 (with-system tempered
+                   (smaller-sets '(((0 3 7) 7 3) ((7 0 3) 8 5) ((3 7 0) 9 4)))))))
 
-(define-test smallest-set
-  (assert-equal '(0 3 7) (with-system tempered
-                                     (smallest-set '(((0 3 7) 7 3) ((0 4 7) 7 4))))))
+(test smaller-sets-comparisson
+  (is (equal '(0 3 7)
+                 (with-system tempered
+                   (smaller-sets-comparisson '(((0 3 7) 7 3) ((0 4 7) 7 4)))))))
 
-(define-test normal-form
-  (assert-equal '(0 4 7) (with-system tempered (normal-form '(7 4 0)))))
+(test smallest-set
+  (is (equal '(0 3 7) (with-system tempered
+                            (smallest-set '(((0 3 7) 7 3) ((0 4 7) 7 4)))))))
 
-(define-test prime-form
-  (assert-equal '(0 3 7) (with-system tempered (prime-form '(4 7 0)))))
+(test normal-form
+  (is (equal '(0 4 7) (with-system tempered (normal-form '(7 4 0))))))
 
-(define-test set-equal?
-  (assert-equal nil (with-system tempered (set-equal? '(0 3 7) '(0 4 7) 'normal)))
-  (assert-equal t (with-system tempered (set-equal? '(0 3 7) '(0 4 7) 'prime))))
+(test prime-form
+  (is (equal '(0 3 7) (with-system tempered (prime-form '(4 7 0))))))
 
-(define-test latin->lily
-  (assert-equal "ces" (latin->lily "cb"))
-  (assert-equal "cisis" (latin->lily "c##")))
+(test set-equal?
+  (is (eql nil (with-system tempered (set-equal? '(0 3 7) '(0 4 7) 'normal))))
+  (is (eql t (with-system tempered (set-equal? '(0 3 7) '(0 4 7) 'prime)))))
 
-(define-test lily->latin
-  (assert-equal "cb" (lily->latin "ces"))
-  (assert-equal "c##" (lily->latin "cisis")))
+(test latin->lily
+  (is (equal "ces" (latin->lily "cb")))
+  (is (equal "cisis" (latin->lily "c##"))))
+
+(test lily->latin
+  (is (equal "cb" (lily->latin "ces")))
+  (is (equal "c##" (lily->latin "cisis"))))
 
 
-(define-test rest?
-  (assert-false (rest? "c"))
-  (assert-false (rest? "cis"))
-  (assert-true (rest? "R")))
+(test rest?
+  (is-false (rest? "c"))
+  (is-false (rest? "cis"))
+  (is-true (rest? "R")))
 
-(define-test notename->code
-  (assert-equal 10 (notename->code (code->notename 10)))
-  (assert-equal 10 (with-system tempered
-                     (notename->code (code->notename 10))))) 
+(test notename->code
+  (is (= 10 (notename->code (code->notename 10))))
+  (is (= 10 (with-system tempered
+                      (notename->code (code->notename 10)))))) 
 
-(define-test enharmonicaly-equal-p
-  (assert-true  (enharmonicaly-equal-p  "a#" "bb")))
+(test enharmonicaly-equal-p
+  (is-true  (enharmonicaly-equal-p  "a#" "bb")))

@@ -44,18 +44,21 @@
   (let ((string-result
          (with-output-to-string (string)
            (let ((*standard-output* string))
-             (fiveam:run! 'utils)
-             (format t "~%")))))
+             (iter (for test in '(utils musiclib))
+                   (format t "~%TEST: ~a~%" test)
+                   (fiveam:run! test))))))
     (if (arg :verbose options)
         (write-line string-result)
         (write-line (subseq (last1 (cl-ppcre:split "\\n" string-result)) 34)))))
 
-(defun test (options)
+(defun test-rameau (options)
+  "This function can't be named 'test' in order not to conflict with
+the function in fiveAM."
   (when (arg :unit options) (unit options))
   (when (arg :regression options) (regression options)))
 
 (register-command :name "test"
-                  :action #'test
+                  :action #'test-rameau
                   :options '(("-u" "unit" "")
                              ("-r" "regression" ""))
                   :documentation "Run unit and regression tests.")

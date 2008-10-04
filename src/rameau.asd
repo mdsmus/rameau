@@ -72,7 +72,7 @@
                           :serial t
                           :components (;;(:file "packages")
                                        (:file "utils")
-                                       ;(:file "musiclib")
+                                       (:file "musiclib")
                                        ;(:file "formato")
                                        ;(:file "parser")
                                        ;(:file "segment")
