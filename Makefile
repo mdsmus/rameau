@@ -26,7 +26,7 @@ else
 	clisp = clisp -ansi -K full
 endif
 
-lisp-files = $(wildcard src/*asd src/*.lisp src/lib/*.lisp tools/*.lisp src/algorithms/*.lisp src/commands/*.lisp src/cl-lily/*.lisp)
+lisp-files = $(wildcard src/*.asd src/*.lisp tools/*.lisp src/tests/*.lisp src/algorithms/*.lisp src/commands/*.lisp src/cl-lily/*.lisp)
 neural-path = $(maindir)/algorithms/
 
 
