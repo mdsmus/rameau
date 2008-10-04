@@ -1,108 +1,111 @@
 (in-package :rameau-test)
 
-(define-test concat
-  (assert-equal
-   "abracadabra"
-   (concat "abra" "ca" "dabra")))
+(def-suite utils :description "Tests for the utils file")
+(in-suite example-suite)
 
-(define-test %
-  (assert-equal 100.0 (% 1 1)))
+(test concat
+  (is (equal
+       "abracadabra"
+       (concat "abra" "ca" "dabra"))))
 
-(define-test assoc-item
-  (assert-equal
-   'foo
-   (assoc-item 'bar '((baz bas) (foo bar) (bar foo)))))
+(test %
+  (is (eql 100.0 (% 1 1))))
 
-(define-test count-subseq
-  (assert-equal
-   3
-   (count-subseq "foo" "fofofoofofooooofofoofofo")))
+(test assoc-item
+  (is (eql
+       'foo
+       (assoc-item 'bar '((baz bas) (foo bar) (bar foo))))))
 
-(define-test mostn
-  (assert-equal
-   '(-10 -10)
-   (mostn #'- '(1 2 10 3 -10 4 5 10 4 8 4 -10 10))))
+(test count-subseq
+  (is (eqlstring=
+    3
+    (count-subseq "foo" "fofofoofofooooofofoofofo"))))
 
-(define-test skip-initial-element
-  (assert-equal '(2 3 4 1 2) (skip-initial-element 1 '(1 1 1 1 2 3 4 1 2))))
+(test mostn
+  (is (equal
+    '(-10 -10)
+    (mostn #'- '(1 2 10 3 -10 4 5 10 4 8 4 -10 10)))))
 
-(define-test stringify
-  (assert-equal "mel" (stringify :mel))
-  (assert-equal "11" (stringify 11))
-  (assert-equal "foo" (stringify 'foo))
-  (assert-equal "fof" (stringify "FoF")))
+(test skip-initial-element
+  (is (equal '(2 3 4 1 2) (skip-initial-element 1 '(1 1 1 1 2 3 4 1 2)))))
 
-(define-test repeat-string
-  (assert-equal "foofoofoo" (repeat-string 3 "foo")))
+(test stringify
+  (is (equal "mel" (stringify :mel)))
+  (is (equal "11" (stringify 11)))
+  (is (equal "foo" (stringify 'foo)))
+  (is (equal "fof" (stringify "FoF"))))
 
-(define-test clip
-  (assert-equal '(foo bar baz) (clip 3 '(foo bar baz 1 2 3)))
-  (assert-equal '(foo baz baz) (clip 10 '(foo baz baz))))
+(test repeat-string
+  (is (equal "foofoofoo" (repeat-string 3 "foo"))))
 
-(define-test insert
-  (assert-equal '((1 b) (2 c) (3 a) (4 e)) (insert '(3 a) '((1 b) (2 c) (4 e)) :key #'car)))
+(test clip
+  (is (equal '(foo bar baz) (clip 3 '(foo bar baz 1 2 3))))
+  (is (equal '(foo baz baz) (clip 10 '(foo baz baz)))))
 
-(define-test smallest
-  (assert-equal 10 (smallest '(100 1000 10 20 30))))
+(test insert
+  (is (equal '((1 b) (2 c) (3 a) (4 e)) (insert '(3 a) '((1 b) (2 c) (4 e)) :key #'car))))
 
-(define-test advance-all
-  (assert-equal '(nil (10) (10 100)) (advance-all '((a) (10 10) (1 10 100)))))
+(test smallest
+  (is (eql 10 (smallest '(100 1000 10 20 30)))))
 
-(define-test firstn
-  (assert-equal '(10 20 30) (firstn '(10 20 30) 3))
-  (assert-equal '(10 nil nil) (firstn '(10) 3)))
+(test advance-all
+  (is (equal '(nil (10) (10 100)) (advance-all '((a) (10 10) (1 10 100))))))
 
-(define-test repeat-list
-  (assert-equal '(10 10 10) (repeat-list 3 10))
-  (assert-equal '((10) (10) (10)) (repeat-list 3 '(10))))
+(test firstn
+  (is (equal '(10 20 30) (firstn '(10 20 30) 3)))
+  (is (equal '(10 nil nil) (firstn '(10) 3))))
 
-(define-test unzip
-  (assert-equal '(10 20 30 40) (unzip '((10 1) (20 2) (30 3) (40 4)))))
+(test repeat-list
+  (is (equal '(10 10 10) (repeat-list 3 10)))
+  (is (equal '((10) (10) (10)) (repeat-list 3 '(10)))))
 
-(define-test get-item
-  (assert-equal 10 (get-item 1 '((1 10)))))
+(test unzip
+  (is (equal '(10 20 30 40) (unzip '((10 1) (20 2) (30 3) (40 4))))))
 
-(define-test sorted
-  (assert-equal '(1 2 3 4) (sorted '(4 3 2 1) #'<)))
+(test get-item
+  (is (eql 10 (get-item 1 '((1 10))))))
 
-(define-test mapcar2
-  (assert-equal '("foo" "bar") (mapcar2 #'string-downcase #'stringify '(foo bar))))
+(test sorted
+  (is (equal '(1 2 3 4) (sorted '(4 3 2 1) #'<))))
 
-(define-test group
-  (assert-equal '((a b c) (b c nil) (c nil nil)) (group '(a b c) 3)))
+(test mapcar2
+  (is (equal '("foo" "bar") (mapcar2 #'string-downcase #'stringify '(foo bar)))))
 
-(define-test contextualize
-  (assert-equal '((NIL A B C) (A B C D) (B C D E) (C D E NIL) (D E NIL NIL))
-                (contextualize '(a b c d e) 1 2)))
+(test group
+  (is (equal '((a b c) (b c nil) (c nil nil)) (group '(a b c) 3))))
+
+(test contextualize
+  (is (equal '((NIL A B C) (A B C D) (B C D E) (C D E NIL) (D E NIL NIL))
+                 (contextualize '(a b c d e) 1 2))))
 
 
-(define-test sort-set
-  (assert-equal '(1 2 3) (sort-set '(2 3 1))))
+(test sort-set
+  (is (equal '(1 2 3) (sort-set '(2 3 1)))))
 
-(define-test string-member
-  (assert-equal '(foo bar baz) (string-member 'foo '(a b foo bar baz))))
+(test string-member
+  (is (equal '(foo bar baz) (string-member 'foo '(a b foo bar baz)))))
 
-(define-test apush
-  (assert-equal '((foo bar) nil) (apush (list 'foo 'bar) (list nil))))
+(test apush
+  (is (equal '((foo bar) nil) (apush (list 'foo 'bar) (list nil)))))
 
-(define-test aget
-  (assert-equal 'bar (aget 'foo (apush '(foo bar) (make-alist)))))
+(test aget
+  (is (eql 'bar (aget 'foo (apush '(foo bar) (make-alist))))))
 
-(define-test aset
+(test aset
   (let ((a (make-alist)))
     (aset 'foo a 'bar)
-    (assert-equal 'bar (aget 'foo a))))
+    (is (equal 'bar (aget 'foo a)))))
 
-(define-test aincf
+(test aincf
   (let ((a (make-alist)))
     (aincf 'foo a 42)
-    (assert-equal 42 (aget 'foo a))))
+    (is (eql 42 (aget 'foo a)))))
 
-(define-test square
-  (assert-equal 4 (square 2)))
+(test square
+  (is (eql 4 (square 2))))
 
-(define-test distance
-  (assert-equal 100 (distance '(0) '(10))))
+(test distance
+  (is (eql 100 (distance '(0) '(10)))))
 
-(define-test make-keyword
-  (assert-equal :foo (make-keyword "FoO")))
+(test make-keyword
+  (is (eql :foo (make-keyword "FoO"))))
