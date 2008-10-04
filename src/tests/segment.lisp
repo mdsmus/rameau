@@ -1,7 +1,7 @@
 (in-package #:rameau-test)
 (use-package :genoslib)
 
-(def-suite segment :description "Tests for the segment file")
+(def-suite segment :description "Tests for the segment file" :in all)
 (in-suite segment)
 
 (test sonorities

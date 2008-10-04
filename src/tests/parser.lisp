@@ -1,6 +1,6 @@
 (in-package #:rameau-test)
 
-(def-suite parser :description "Tests for the parser file")
+(def-suite parser :description "Tests for the parser file" :in all)
 (in-suite parser)
 
 (test get-parsed-notes-string

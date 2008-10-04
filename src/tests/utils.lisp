@@ -1,6 +1,6 @@
 (in-package :rameau-test)
 
-(def-suite utils :description "Tests for the utils file")
+(def-suite utils :description "Tests for the utils file" :in all)
 (in-suite utils)
 
 (test concat

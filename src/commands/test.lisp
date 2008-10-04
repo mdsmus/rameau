@@ -41,9 +41,11 @@
       (print-ok/no-list (parse-summary (arg :files options)) options)))
 
 (defun unit (options)
-  (iter (for test in '(utils musiclib parser format segment chords rameau))
-        (format t "TEST: ~a~%" test)
-        (fiveam:run! test)))
+  (iter (for test1 in (arg :unit options))
+        (for test-name = (intern (string-upcase test1) :rameau-test))
+        (format t "TEST: ~a~%" test-name)
+        (print test-name)
+        (fiveam:run! test-name)))
 
 (defun test-rameau (options)
   "This function can't be named 'test' in order not to conflict with
@@ -53,6 +55,6 @@ the function in fiveAM."
 
 (register-command :name "test"
                   :action #'test-rameau
-                  :options '(("-u" "unit" "")
+                  :options '(("-u" "unit" "run the unit tests" ("all") type-list)
                              ("-r" "regression" ""))
                   :documentation "Run unit and regression tests.")
