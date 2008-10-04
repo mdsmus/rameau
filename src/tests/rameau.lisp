@@ -1,6 +1,6 @@
 (in-package :rameau-test)
 
-(def-suite rameau :description "Tests for the rameau file" :in all)
+(defsuite rameau "Tests for the rameau file")
 (in-suite rameau)
 
 (test files-range

@@ -1,6 +1,6 @@
 (in-package #:rameau-test)
 
-(def-suite musiclib :description "Tests for the musiclib file" :in all)
+(defsuite musiclib "Tests for the musiclib file")
 (in-suite musiclib)
 
 (test octave-from-string

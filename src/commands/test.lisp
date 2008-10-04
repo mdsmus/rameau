@@ -41,11 +41,15 @@
       (print-ok/no-list (parse-summary (arg :files options)) options)))
 
 (defun unit (options)
-  (iter (for test1 in (arg :unit options))
-        (for test-name = (intern (string-upcase test1) :rameau-test))
-        (format t "TEST: ~a~%" test-name)
-        (print test-name)
-        (fiveam:run! test-name)))
+  (let* ((args (arg :unit options))
+         (arguments (if (and (equal args '("all"))
+                             (arg :verbose options))
+                        *rameau-suite*
+                        args)))
+    (iter (for test1 in arguments)
+          (for test-name = (intern (string-upcase test1) :rameau-test))
+          (format t "TEST: ~a~%" test-name)
+          (fiveam:run! test-name))))
 
 (defun test-rameau (options)
   "This function can't be named 'test' in order not to conflict with
@@ -53,8 +57,15 @@ the function in fiveAM."
   (when (arg :unit options) (unit options))
   (when (arg :regression options) (regression options)))
 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defparameter *rameau-suite* nil))
+
+(defmacro defsuite (name &optional description)
+  (pushnew name *rameau-suite*)
+  `(def-suite ,name :description ,description :in all))
+
 (register-command :name "test"
                   :action #'test-rameau
-                  :options '(("-u" "unit" "run the unit tests" ("all") type-list)
+                  :options '(("-u" "unit" "run the unit tests" nil type-list)
                              ("-r" "regression" ""))
                   :documentation "Run unit and regression tests.")

@@ -1,6 +1,6 @@
 (in-package :rameau-test)
 
-(def-suite format :description "Tests for the format file" :in all)
+(defsuite format "Tests for the format file")
 (in-suite format)
 
 (test event-end
