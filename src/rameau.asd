@@ -75,6 +75,6 @@
                                        (:file "format")
                                        (:file "parser")
                                        (:file "segment")
-                                       ;(:file "chords")
+                                       (:file "chords")
                                        ;(:file "tools")
                                        ))))
