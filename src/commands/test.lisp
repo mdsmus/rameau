@@ -44,7 +44,7 @@
   (let ((string-result
          (with-output-to-string (string)
            (let ((*standard-output* string))
-             (iter (for test in '(utils musiclib parser format segment chords))
+             (iter (for test in '(utils musiclib parser format segment chords rameau))
                    (format t "~%TEST: ~a~%" test)
                    (fiveam:run! test))))))
     (if (arg :verbose options)

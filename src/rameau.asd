@@ -76,5 +76,4 @@
                                        (:file "parser")
                                        (:file "segment")
                                        (:file "chords")
-                                       ;(:file "tools")
-                                       ))))
+                                       (:file "rameau")))))
