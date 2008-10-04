@@ -29,7 +29,7 @@
   (when segment
     (let ((nota (first segment)))
       (cons (list nota (count nota segment))
-            (group-and-count (skip nota segment))))))
+            (group-and-count (skip-initial-element nota segment))))))
 
 (defun segment-to-template (segment)
   "Converte um sonority em um formato pronto para ser comparado com um template."

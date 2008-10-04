@@ -94,10 +94,10 @@
         (collect (append (last list i)
                          (butlast list i)))))
 
-(defun skip (element list &key (test #'equal))
+(defun skip-initial-element (element list &key (test #'equal))
   "Skip every initial occurence of \\texttt{element} in \\texttt{list}."
   (if (funcall test element (first list))
-      (skip element (rest list) :test test)
+      (skip-initial-element element (rest list) :test test)
       list))
 
 (defun count-subseq (sub seq &optional (start -1) (acc 0))

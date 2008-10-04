@@ -23,8 +23,8 @@
    '(-10 -10)
    (mostn #'- '(1 2 10 3 -10 4 5 10 4 8 4 -10 10))))
 
-(define-test skip
-  (assert-equal '(2 3 4 1 2) (skip 1 '(1 1 1 1 2 3 4 1 2))))
+(define-test skip-initial-element
+  (assert-equal '(2 3 4 1 2) (skip-initial-element 1 '(1 1 1 1 2 3 4 1 2))))
 
 (define-test stringify
   (assert-equal "mel" (stringify :mel))
