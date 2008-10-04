@@ -22,22 +22,22 @@
   parseados é maior que essa constante, rameau mostra apenas o start
   da lista." 10)))))
 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defun get-all-flags (command)
+    (append (second (first *common-flags*))
+            (command-options command))))
+
+(defmacro get-flag (slot command flag)
+  `(iter (for (short long description start-value type) in (get-all-flags ,command))
+         (when (or (equalp short ,flag)
+                   (equalp long ,flag))
+           (return ,slot))))
+
 (defun get-flag-name (command flag)
-  (let ((all-flags (append (second (first *common-flags*))
-                           (command-options command))))
-    (iter (for (short long description start-value type) in all-flags)
-          (when (or (equalp short flag)
-                    (equalp long flag))
-            (return long)))))
+  (get-flag long command flag))
 
 (defun get-flag-type (command flag)
-  (let ((all-flags (append (second (first *common-flags*))
-                           (command-options command))))
-    (iter (for (short long description start-value type) in all-flags)
-          (when (or (equalp short flag)
-                    (equalp long flag))
-            (return type)))))
-
+  (get-flag type command flag))
 
 (defclass arguments-table ()
   ((arguments :accessor get-args :initform (make-hash-table :test #'eql))))
@@ -51,12 +51,11 @@
 
 (defun make-default-arguments (command)
   "Make default arguments for \\texttt{rameau}."
-  (let ((options (make-instance 'arguments-table))
-        (all-flags (append (second (first *common-flags*))
-                           (command-options command))))
-    (iter (for (short long doc init list) in all-flags)
-          (for comando = (make-keyword long))
-          (when (and comando init) (setf (arg comando options) init)))
+  (let ((options (make-instance 'arguments-table)))
+    (iter (for (short long doc init list) in (get-all-flags command))
+          (for cmd = (make-keyword long))
+          (when (and cmd init)
+            (setf (arg cmd options) init)))
     options))
 
 (defun parse-file-name (exp options)
