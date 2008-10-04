@@ -66,6 +66,6 @@ the function in fiveAM."
 
 (register-command :name "test"
                   :action #'test-rameau
-                  :options '(("-u" "unit" "run the unit tests" '("all") type-list)
+                  :options '(("-u" "unit" "run the unit tests" ("all") type-list)
                              ("-r" "regression" ""))
                   :documentation "Run unit and regression tests.")
