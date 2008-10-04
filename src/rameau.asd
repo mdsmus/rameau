@@ -12,7 +12,7 @@
   :depends-on (:rameau-base :genoslib)
   :components ((:module cl-lily
                         :serial t
-                        :components ((:file "formato")
+                        :components ((:file "format")
                                      (:file "segment")
                                      (:file "parser")
                                      (:file "parser-grammar")))))
