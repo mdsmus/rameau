@@ -5,6 +5,8 @@
 
 (in-package :rameau-doc)
 
+(enable-sharp-l-syntax)
+
 (defparameter *rameau-packages*
   ;;; falta rameau e rameau-doc
   '("RAMEAU-OPTIONS" "RAMEAU-BASE" "GENOSLIB" "RAMEAU-WEB"
@@ -41,16 +43,16 @@
           (remove-if-not #'rameau-package-p list)))
 
 (defun document-function-or-macro :private (symbol &optional (type :function))
-  (list (get-package-name symbol)
-        (stringify symbol)
-        type
-        (stringify (swank-backend:arglist symbol))
-        (documentation symbol 'function)
-        (find-source-file-of-function symbol)
-        (when (eql type :function)
-          (remove-functions-not-in-rameau (function-uses symbol))
-          ;;(remove-functions-not-in-rameau (functions-used-by symbol))
-          )))
+  (append (list :package-name (get-package-name symbol)
+                :name (stringify symbol)
+                :type type
+                :arglist (stringify (swank-backend:arglist symbol))
+                :docstring (documentation symbol 'function)
+                :source-file (find-source-file-of-function symbol))
+          (when (eql type :function)
+            (list :uses (remove-functions-not-in-rameau (function-uses symbol))
+                  ;;
+                  ))))
 
 (defun create-documentation-sexp :private (package)
   (iter (for symbol in-package package :external-only t)
@@ -63,7 +65,7 @@
   (mapcar #'create-documentation-sexp *rameau-packages*))
 
 (defun document (options)
-  (declare (ignore ignore options))
+  (declare (ignore options))
   (create-documentation-for-all-packages))
 
 (register-command :name "document"
