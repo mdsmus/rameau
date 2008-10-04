@@ -70,10 +70,9 @@
                  (:file "package-test")
                  (:module tests
                           :serial t
-                          :components (;;(:file "packages")
-                                       (:file "utils")
+                          :components ((:file "utils")
                                        (:file "musiclib")
-                                       ;(:file "formato")
+                                       (:file "format")
                                        ;(:file "parser")
                                        ;(:file "segment")
                                        ;(:file "chords")
