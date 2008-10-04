@@ -78,7 +78,8 @@
 (defun process-option-list (options)
   (iter (for op in options)
         (aif (search "=" op)
-             (collect (list (make-keyword (subseq op 0 it)) (read-from-string (subseq op (1+ it) (length op)))))
+             (collect (list (make-keyword (subseq op 0 it))
+                            (read-from-string (subseq op (1+ it) (length op)))))
              (collect (list (make-keyword op) t)))))
 
 (defparameter *commands* nil)
