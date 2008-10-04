@@ -1,7 +1,7 @@
 (in-package :rameau-test)
 
 (def-suite utils :description "Tests for the utils file")
-(in-suite example-suite)
+(in-suite utils)
 
 (test concat
   (is (equal
@@ -17,14 +17,14 @@
        (assoc-item 'bar '((baz bas) (foo bar) (bar foo))))))
 
 (test count-subseq
-  (is (eqlstring=
-    3
-    (count-subseq "foo" "fofofoofofooooofofoofofo"))))
+  (is (eql
+       3
+       (count-subseq "foo" "fofofoofofooooofofoofofo"))))
 
 (test mostn
   (is (equal
-    '(-10 -10)
-    (mostn #'- '(1 2 10 3 -10 4 5 10 4 8 4 -10 10)))))
+       '(-10 -10)
+       (mostn #'- '(1 2 10 3 -10 4 5 10 4 8 4 -10 10)))))
 
 (test skip-initial-element
   (is (equal '(2 3 4 1 2) (skip-initial-element 1 '(1 1 1 1 2 3 4 1 2)))))
@@ -76,7 +76,7 @@
 
 (test contextualize
   (is (equal '((NIL A B C) (A B C D) (B C D E) (C D E NIL) (D E NIL NIL))
-                 (contextualize '(a b c d e) 1 2))))
+             (contextualize '(a b c d e) 1 2))))
 
 
 (test sort-set

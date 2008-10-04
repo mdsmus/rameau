@@ -1,6 +1,6 @@
 ;;; -*- Mode: LISP; Syntax: COMMON-LISP; Package: CL-USER; Base: 10 -*-
 (asdf:defsystem :rameau-base
-  :depends-on (:yacc :lexer :cl-fad :cl-ppcre :cl-store :arnesi :cffi :alexandria :ltk :iterate :swank :fann :cl-who)
+  :depends-on (:yacc :lexer :cl-fad :cl-ppcre :cl-store :arnesi :cffi :alexandria :ltk :iterate :swank :fann :cl-who :fiveam)
   :components ((:file "rameau-base")))
 
 (asdf:defsystem :genoslib
@@ -45,9 +45,10 @@
                                      ))))
 
 (asdf:defsystem :commands
-  :depends-on (:rameau-pkg :cl-lily :cl-store :vecto :cl-who :algorithms :hunchentoot :md5 :cl-fad :cl-base64 :cl-store :lisp-unit)
+  :depends-on (:rameau-pkg :cl-lily :cl-store :vecto :cl-who :algorithms :hunchentoot :md5 :cl-fad :cl-base64 :cl-store)
   :serial t
-  :components ((:module commands
+  :components ((:file "package-test")
+               (:module commands
                         :serial t
                         :components ((:file "analysis-command")
                                      (:file "cadences")
@@ -66,9 +67,10 @@
     :depends-on (:rameau-pkg :algorithms :commands :cl-lily)
     :serial t
     :components ((:file "setup")
+                 (:file "package-test")
                  (:module tests
                           :serial t
-                          :components ((:file "packages")
+                          :components (;;(:file "packages")
                                        (:file "utils")
                                        ;(:file "musiclib")
                                        ;(:file "formato")

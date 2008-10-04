@@ -1,17 +1,13 @@
-(defpackage :rameau-runtests
-  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defgeneric
-                          #:defparameter #:defvar #:defstruct #:defclass)
-  (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
-  (:use :rameau :genoslib :cl :iterate :cl-lily)
-  (:documentation "The test commands for \\texttt{rameau}"))
+(in-package :rameau-test)
 
-(in-package :rameau-runtests)
+;;; the functions in this file are defined with cl:defun because
+;;; rameau-test must use cl:defun and cl:defmacro
 
 ;;; Tests
-(defun print-condition :private (status file expr)
+(defun print-condition (status file expr)
   (format t "[~a] ~a: ~a~%" status (pathname-name file) expr))
 
-(defun print-ok/no-list :private (list options)
+(defun print-ok/no-list (list options)
   (destructuring-bind (ok no) list
     (let* ((s2 (length no))
            (no-string
@@ -21,13 +17,13 @@
                   (t no))))
       (format t "  [OK]: ~a [NO]: ~a ~@[~a ~]~%" (length ok) s2 no-string))))
 
-(defun parse-verbose :private (files)
+(defun parse-verbose (files)
   (dolist (file files)
     (handler-case (parse-file file)
       (serious-condition (expr) (print-condition 'no file expr))
       (:no-error (&rest rest) (print-condition 'ok file rest)))))
 
-(defun parse-summary :private (files)
+(defun parse-summary (files)
   (let (ok no)
     (dolist (file files)
       (handler-case (parse-file file)
@@ -39,16 +35,16 @@
           (push (pathname-name file) ok))))
     (list (reverse ok) (reverse no))))
 
-(defun regression :private (options)
+(defun regression (options)
   (if (arg :verbose options)
       (parse-verbose (arg :files options))
       (print-ok/no-list (parse-summary (arg :files options)) options)))
 
-(defun unit :private (options)
+(defun unit (options)
   (let ((string-result
          (with-output-to-string (string)
            (let ((*standard-output* string))
-             (lisp-unit:run-all-tests :rameau-test)
+             (fiveam:run! 'utils)
              (format t "~%")))))
     (if (arg :verbose options)
         (write-line string-result)
