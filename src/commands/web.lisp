@@ -355,7 +355,6 @@ baixo = \\relative c {
 
 
 (defun web (options)
-  (declare (ignore ignore))
   (let ((port (arg :port options)))
     (format t "Starting rameau web on port ~a.~%" port)
     (format t "Open http://localhost:~a/rameau/index.html on your browser" port)

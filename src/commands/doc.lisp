@@ -14,14 +14,17 @@
     "RAMEAU-STAT" "RAMEAU-WEB" "RAMEAU-HMM" "RAMEAU-NEURAL" "RAMEAU-KNN"
     "RAMEAU-TREE-ENARM" "RAMEAU-PARDO"))
 
+(defun swank-get-source-location :private (function-name)
+  (second (aget :location (first (swank-backend:find-definitions function-name)))))
+
 (defun find-source-file-of-function :private (function-name)
   ;; according to CLHS the readtable is reset after reading or
   ;; compiling a file. For some reason it is not enought to call
   ;; enable-sharp-l-syntax on the top of this file, it has to be
   ;; called here.
   (enable-sharp-l-syntax)
-  (let ((file-name (cadadr (swank-backend:find-source-location (symbol-function function-name)))))
-   (cl-ppcre:regex-replace *rameau-path*  file-name "")))
+  (let ((file-name (swank-get-source-location function-name)))
+    (cl-ppcre:regex-replace *rameau-path*  file-name "")))
 
 (defun function-uses :private (function-name)
   (handler-case (swank-backend:list-callees function-name)
