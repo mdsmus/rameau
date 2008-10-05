@@ -9,7 +9,7 @@
 
 (defparameter *rameau-packages*
   ;; falta rameau e rameau-doc
-  '("RAMEAU-BASE" "GENOSLIB" "RAMEAU-WEB" "RAMEAU-ALG-COMMANDS"
+  '("RAMEAU" "RAMEAU-BASE" "GENOSLIB" "RAMEAU-WEB" "RAMEAU-ALG-COMMANDS"
     "RAMEAU-ANALYSIS" "RAMEAU-CADENCES" "RAMEAU-DOC" "RAMEAU-MUSICOLOGY"
     "RAMEAU-STAT" "RAMEAU-WEB" "RAMEAU-HMM" "RAMEAU-NEURAL" "RAMEAU-KNN"
     "RAMEAU-TREE-ENARM" "RAMEAU-PARDO"))
@@ -53,10 +53,12 @@
           (remove-if-not #'rameau-package-p list)))
 
 (defun parse-documentation (docstring)
+  "Remove extraneous tags from string @var{docstring}"
   (when docstring
     (cl-ppcre:regex-replace "\\[NOTEST\\]" docstring "")))
 
 (defun find-test-body (test-name test-file)
+  "Find the body of a test names @var{test-name} in file @var{test-file}"
   (flet ((get-first-test (test-list)
            (second (third (first test-list)))))
     (get-first-test (remove-if-not #L(eql test-name (second !1)) test-file))))
@@ -82,11 +84,13 @@
                        (document-function-or-macro symbol :type :function))))))
 
 (defun get-all-tests ()
+  "Get all texts from rameau."
   (mapcan #'read-file-as-sexp (directory (concat *rameau-path* "src/tests/*.lisp"))))
 
 ;;; HTML
 
 (defmacro html-page (stream title &body body)
+  "Standard rameau documentation page markup."
   `(with-html-output (,stream nil :prologue t :indent t)
      (:html
             (:head 
@@ -109,6 +113,7 @@ class is foo and content is bar."
     (cl-ppcre:regex-replace-all "@(\\w+){([\\w-@%?!:\\*.]+)}" str2 "<span class='\\1'>\\2</span>")))
 
 (defun html-for-one-package (package)
+  "Generate documentation for package @var{package}"
   (format t "Generating documentation for package ~a.~%" package)
   (with-open-file (file (format nil "~a/rameau-documentation/~(~a~).html" *rameau-path* package)
                         :direction :output :if-exists :supersede)
@@ -121,7 +126,7 @@ class is foo and content is bar."
             (for docstring = (getf plist :docstring))
             ;;(for url = "http://bugs.genos.mus.br/repositories/entry/rameau/")
             (for url = "http://git.genos.mus.br/cgit.cgi?url=rameau/tree/")
-            (for filename = (getf plist :source-file))
+            (for filename = (or (getf plist :source-file) ""))
             (for example = (find-test-body name test-file))
             (for uses = (getf plist :uses))
             (htm
@@ -157,6 +162,7 @@ class is foo and content is bar."
 
 ;;; Basic command
 (defun document (options)
+  "Document rameau."
   (declare (ignore options))
   (mapcar #'html-for-one-package *rameau-packages*))
 

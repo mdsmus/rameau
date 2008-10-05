@@ -74,6 +74,8 @@ h2 {
     float: left;
     display: block;
     clear: left;
+    width: 20em;
+    overflow: visible;
 }
 
 h1 {
