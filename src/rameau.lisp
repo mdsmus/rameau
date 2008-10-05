@@ -58,6 +58,7 @@ Filter @var{*algorithms*} so that only the ones specified in
 (defparameter *functional-algorithms* nil)
 
 (defun add-falgorithm (alg)
+  "Register functional algorithm @var{alg}."
   (push alg *functional-algorithms*))
 
 (defun alg-file-name (alg)
@@ -152,13 +153,6 @@ Read and load definitions from a user-set configuration file in @var{~/.rameaurc
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defparameter *lily-dir-list*
-  '(("chorales" "music/chorales-bach/")
-    ("kostka" "music/kostka-payne/")
-    ("exemplos" "music/examples/")
-    ("regression" "regression/")
-    ("lily" "regression-lily/")))
-
 (defun files-range (list)
   "All files in the range specified in @var{list}."
   (loop for x from (parse-integer (first list)) to (parse-integer (second list))
@@ -189,19 +183,6 @@ Read and load definitions from a user-set configuration file in @var{~/.rameaurc
     (when (cl-fad:file-exists-p full-file)
       (get-fchords (file-string full-file)))))
 
-(defun parse-file-list (item f &optional (ext ".ly"))
-  "Parse file list @var{f} into a list of filenames. [NOTEST]"
-  (let* ((path (concat *rameau-path* (get-item item *lily-dir-list*  #'equal)))
-         (file-name (format nil "~a" (first f)))
-         (files (if (search ".." file-name)
-                    (files-range (cl-ppcre:split "\\.\\." file-name))
-                    f)))
-    (if files
-        (mapcar (lambda (file) (concat path file ext)) files)
-        (remove-if #'(lambda (x) (search "coral" x))
-                   (mapcar (lambda (file) (format nil "~a" file))
-                           (directory (concat path "*" ext)))))))
-
 (defparameter *training-data* nil)
 
 (defun extract-feature-list (segmento diff)
@@ -219,20 +200,11 @@ Read and load definitions from a user-set configuration file in @var{~/.rameaurc
     (event-pitch (first segmento))))
 
 (defun random-color ()
+  "A nice random color."
   (min 0.5 (random 1.0)))
 
-(defun random-stroke-fill-colors ()
-  (let* ((red (rameau::random-color))
-         (green (rameau::random-color))
-         (blue (rameau::random-color))
-         (redfill (max 1 (* 1.5 red)))
-         (greenfill (max 1 (* 1.5 green)))
-         (bluefill (max 1 (* 1.5 blue))))
-    (vecto:set-rgb-stroke red green blue)
-    (vecto:set-rgb-fill redfill greenfill bluefill)
-    (list red green blue redfill greenfill bluefill)))
-
 (defun cairo-random-stroke-fill-colors ()
+  "Random stroke and fill colors for use with cairo."
   (let* ((red (rameau::random-color))
          (green (rameau::random-color))
          (blue (rameau::random-color)))
@@ -240,13 +212,11 @@ Read and load definitions from a user-set configuration file in @var{~/.rameaurc
     (list red green blue)))
 
 (defun cairo-brighten-source (red green blue)
+  "Brighten slightly the colors used."
   (cl-cairo2:set-source-rgb (* 0.5 red) (* 0.5 green) (* 0.5 blue)))
 
-(defun set-stroke-fill-colors (colors)
-  (vecto:set-rgb-stroke (first colors) (second colors) (third colors))
-  (vecto:set-rgb-fill (fourth colors) (fifth colors) (third colors)))
-
 (defun cairo-set-stroke-fill-colors (colors)
+  "Set stroke and fill colors using cairo."
   (cl-cairo2:set-source-rgb (first colors) (second colors) (third colors)))
 
 (defmacro safe-with-backtrace ((&key condition print-error-msg exit return) &body code)

@@ -29,6 +29,7 @@
 
 
 (defun analysis-terminal (options analysis)
+  "Displays the analysis in @var{analysis} as a table on the console."
   (let* ((number-algorithms (analysis-number-algorithms analysis))
          (size-line (hline-size number-algorithms options)))
     (format t "~2%")
@@ -62,6 +63,7 @@
            (format t "~%")))))
 
 (defun analysis-terminal-no-answer (options analysis)
+  "Displays the analysis in @var{analysis} as a table on the console."
   (let* ((number-algorithms (analysis-number-algorithms analysis))
          (size-line (hline-size number-algorithms options 'no-answer)))
     (format t "~2%")
@@ -83,6 +85,7 @@
            (format t "~%")))))
 
 (defun analysis-lily (options analysis)
+  "Displays the analysis in @var{analysis} as a lilypond score."
   (let* ((ast (analysis-ast analysis))
          (score (first (get-children-by-type ast 'rameau::score)))
          (music (first-child (first-child (first (children score)))))
@@ -145,6 +148,7 @@
 
 ;;; Analysis
 (defun analysis (options)
+  "Run analysis according to options."
   (let ((analysis (analyse-files options)))
     (iter (for anal in analysis)
           (cond ((arg :dont-compare options) (analysis-terminal-no-answer options anal))
@@ -161,6 +165,7 @@
 
 
 (defun functional (options)    
+  "Run functional analysis according to options."
   (let ((analysis (functional-analyse-files options)))
     (iter (for anal in analysis)
           (cond ((arg :dont-compare options) (analysis-terminal-no-answer options anal))
@@ -177,11 +182,13 @@
 
 
 (defun equivalent-pitch (chord)
+  "The pitch for chord @var{chord}"
   (if (chord-p chord)
       (parse-note (chord-root chord))
       97))
 
 (defun view-analysis (options)
+  "Run analysis according to options and show the output as a cairo graph."
   (let ((analysis (analyse-files options))
         (pitch-colors (make-hash-table :test #'equal)))
     (iter (for anal in analysis)

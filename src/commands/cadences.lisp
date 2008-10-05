@@ -30,6 +30,7 @@
            (1- n)))
 
 (defun normalize-to-key (fchord first-key)
+  "Normalize fchord @var{fchord} to be in relation to @var{key}."
   (let ((this-key (fchord-key fchord)))
     (make-fchord :roman-function (fchord-roman-function fchord)
                  :key (make-tonal-key :center-pitch (interval (tonal-key-center-pitch first-key)
@@ -64,11 +65,14 @@
               (format t "~%")))))
 
 (defun text-dimensions (text size)
+  "The size of @var{text} when printed as a size @var{size}."
   (cl-cairo2:set-font-size size)
   (multiple-value-bind (xbear ybear width height)
       (cl-cairo2:text-extents text)
     (list (/ (+ width xbear) 2) (/ (- height ybear) 2))))
+
 (defun collides (boxa boxb)
+  "True if the boxes collide."
   (destructuring-bind ((cxa cya dxa dya &rest foo) (cxb cyb dxb dyb &rest bar))
       (list boxa boxb)
     (declare (ignore foo bar))
@@ -76,11 +80,13 @@
          (> (+ 5 dya dyb) (abs (- cya cyb))))))
 
 (defun approach-0 (number step)
+  "Bring number closer to 0 by a step."
   (if (< number 0)
       (- number step)
       (+ number step))) 
 
 (defun make-cadence-figure (cadences name)
+  "Draw the cadence figure for the cadences."
   (make-random-state t)
   (cl-cairo2:with-png-file ((format nil "~a/analysis/cadences-~a.png" *rameau-path* name) 'cl-cairo2:format-rgb24 2000 2000)
     (let* ((center (list 1000 1000))
@@ -121,6 +127,7 @@
             (cl-cairo2:fill-path)))))
 
 (defun cadences (options)
+  "Run analysis and report the found cadences."
   (let ((analysis (functional-analyse-files options))
         (cadences (make-hash-table :test #'equal))
         (last-cadences (make-hash-table :test #'equal)))

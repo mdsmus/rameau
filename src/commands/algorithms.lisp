@@ -8,6 +8,7 @@
 (in-package :rameau-alg-commands)
 
 (defun make-training-data (options)
+  "Make training data using the information in @var{options} for chord labeling algorithms."
   (setf *training-data*
         (iter (for f in (arg :files options))
               (awhen (path-parse-answer-sheet (format nil "~a" f))
@@ -15,6 +16,8 @@
                                it))))))
 
 (defun make-functional-training-data (options)
+  "Make training data using the information in @var{options} for
+roman numeral functional analysis algorithms."
   (setf *training-data*
         (iter (for f in (arg :files options))
               (awhen (path-parse-functional-answer-sheet (format nil "~a" f))
@@ -22,6 +25,7 @@
                                it))))))
 
 (defun algorithms (options)
+  "Gives the command-line options in options to the algorithms."
   (make-training-data options)
   (setf (arg :algorithms options) (mapcar #'load-alg (filter-algorithms (arg :algorithms options) *algorithms*))
         (arg :options options) (process-option-list (arg :options options)))
@@ -36,6 +40,7 @@
                   :action #'algorithms)
 
 (defun funalg (options)
+  "Give the command-line options to the functional algorithms."
   (make-functional-training-data options)
   (setf (arg :algorithms options) (mapcar #'load-alg (filter-algorithms (arg :algorithms options) *functional-algorithms*))
         (arg :options options) (process-option-list (arg :options options)))
