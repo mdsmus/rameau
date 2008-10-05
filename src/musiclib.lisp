@@ -90,7 +90,7 @@ system. [NOTEST]"
 
 (defun get-accidental (accidental representation)
   "Returns a string with the accidental in a specific
-    representation. \\example{(get-accidental 'sharp :latin)}{\\#}"
+    representation."
   (assoc-item accidental
               (assoc-item representation '((:lily ((flat "es")
                                                   (sharp "is")))
@@ -99,7 +99,7 @@ system. [NOTEST]"
 
 (defun get-octave (octave representation)
   "Returns a string with the octave in a specific
-    representation. \\example{(get-octave 'central :lily)}{\"\"}"
+    representation."
   (assoc-item octave
               (assoc-item representation '((:lily ((down ",")
                                                   (up "'")))
@@ -108,8 +108,7 @@ system. [NOTEST]"
 
 (defun get-interval-name (short)
   "Returns the full name of a chord for the abbreviated
-representation. \\example{(get-interval-name \\rq dim)}{diminished}.
-[NOTEST]"
+representation. [NOTEST]"
   (assoc-item short '((:min minor)
                       (:maj major)
                       (:perfect perfect)
@@ -118,7 +117,7 @@ representation. \\example{(get-interval-name \\rq dim)}{diminished}.
 
 (defun get-interval-quantity (num)
   "Returns a word representing the numeric quantity of a chord.
-\\example{(get-interval-quantity 3)}{triple}. [NOTEST]"
+[NOTEST]"
   (assoc-item num '((2 double)
                     (3 triple)
                     (4 quadruple)
@@ -155,8 +154,7 @@ first argument to this function, otherwise it could mistakenly return
           (t 0))))
 
 (defun match-note-representation (note representation)
-  "Returns non-nil if a note matches the representation.
-EXAMPLE: (match-note-representation \"cis\" :latin) returns nil."
+  "Returns non-nil if a note matches the representation."
   (or (search (get-accidental 'flat representation) note)
       (search (get-accidental 'sharp representation) note)))
 
@@ -165,7 +163,6 @@ EXAMPLE: (match-note-representation \"cis\" :latin) returns nil."
 
 (defun %parse-note (note representation system)
   "Returns the numeric code for a note according with the representation and system.
-EXAMPLE: \\begin{verbatim}(%parse-note \"ces\" :lily 'tonal)\\end{verbatim} returns 95.
 This is a low level function, you should use parse-note instead."
   (let ((note-code-tonal
          (%my-position (list (make-keyword (subseq note 0 1))
@@ -225,13 +222,12 @@ should be represented as strings."
 
 (defun print-accidentals (acc repr)
   "Returns a string of a note according to the numeric value of an
-accidental and a representation. EXAMPLE: (print-accidentals 3 :lily)
-returns isisis."
+accidental and a representation."
   (repeat-string acc (get-accidental (if (>= acc 0) 'sharp 'flat) repr)))
 
 (defcached print-note (note-code &optional (representation :latin))
-  "Retuns a string of a note according to a note-code and representation.
-Example: (print-note '(c 1) :lily) return cis."
+  "Retuns a string of a note according to a note-code and
+representation."
   (format nil "~(~a~)~a" (first note-code) (print-accidentals (second note-code) representation)))
 
 (defun latin->lily (note)
@@ -245,9 +241,7 @@ a note using latin representation."
   (print-note (code->notename (parse-note note)) :latin))
 
 (defun module (n)
-  "Returns the module according to a system.
-EXAMPLE: (module 96 'tonal) returns 96 and (module 96 'tempered)
-returns 0."
+  "Returns the module according to a system."
   (mod n (get-system-module *system*)))
 
 (defun transpose (note index)
@@ -271,13 +265,11 @@ numeric value."
   (nth interval (get-system-intervals *system*)))
 
 (defun code->interval (code)
-  "Retuns a interval of an interval-code.
-EXAMPLE: (code->interval '(3 aug)) returns 29."
+  "Retuns a interval of an interval-code."
   (module (position code (get-system-intervals 'tonal) :test #'equal)))
 
 (defun print-interval (interval)
-  "Returns the name of an interval. EXAMPLE: (print-interval 16)
-returns double augmented second."
+  "Returns the name of an interval."
   (destructuring-bind (int type &optional quantity) (interval->code interval)
     (format nil "~@[~(~a~) ~]~(~a~) ~:r"
             (get-interval-quantity quantity)
@@ -309,9 +301,8 @@ rotation, and so on. This function is cyclic."
   (set-transpose set (- (first set))))
 
 (defun set-intervals (set)
-  "Retuns a list with the intervals between the consecutive notes of a set.
-EXAMPLE: (set-intervals '(0 3 7)) returns (3 4 5). In this list 5 is
-the interval between the last and first note."
+  "Retuns a list with the intervals between the consecutive notes of a
+set, including the interval between the last and first notes."
   (mapcar (lambda (a b) (module (- b a))) set (%rotate set)))
 
 (defun set-symmetric? (set)
@@ -323,8 +314,7 @@ the interval between the last and first note."
   "Generate a form-list of an set. A form-list is a list with each
 permutation of a set, including the overall interval of the set, and
 the inverval between the second and first note. This format is used to
-determine the normal and prime form. EXAMPLE: (set-form-list '(0 3 7))
-returns (((0 3 7) 7 3) ((3 7 0) 9 4) ((7 0 3) 8 5))."
+determine the normal and prime form."
   (loop
         for rotation in (set-rotate (sort-set (remove-duplicates set)))
         for set-size = (interval (last1 rotation) (first rotation))
@@ -354,15 +344,13 @@ interval between the first and second notes."
       (smaller-sets-comparisson smaller-sets)))
 
 (defun normal-form (set)
-  "Returns the normal form of a set.
-EXAMPLE: (normal-form '(1 7 3)) returns (1 3 7)."
+  "Returns the normal form of a set."
   (if (set-symmetric? set)
       set
       (smallest-set (smaller-sets (sort-form-list (set-form-list set))))))
 
 (defun prime-form (set)
-  "Retuns the prime form of a set. Only on a tempered system.
-EXAMPLE: (prime-form '(1 7 3)) returns (0 2 6). "
+  "Retuns the prime form of a set. Only on a tempered system."
   (assert (eq *system* 'tempered))
   (let ((nf-transposition (set-transpose (normal-form set) 0))
         (nf-inversion (set-inversion (normal-form set) 0)))
@@ -374,8 +362,7 @@ EXAMPLE: (prime-form '(1 7 3)) returns (0 2 6). "
 (defun set-equal? (set1 set2 &optional (form 'normal))
   "Test if two sets are the same. The default option is to see if the
 sets are equal by transposition. The option 'prime tests if the sets
-are also equal by inversion.
-EXAMPLE: (equal-sets? '(0 3 7) '(8 1 4)) returns T."
+are also equal by inversion."
   (case form
     (normal (when (equal (set-transpose-to-0 (normal-form set1))
                          (set-transpose-to-0 (normal-form set2)))
@@ -413,8 +400,7 @@ accept iiii for 4, only iv."
 question that this function returns is 'what is the V degree of C
 major?' tonal-function and center must be strings, although case
 doesn't matter. mode should be a keyword. tonal-function can have a b
-or # as a prefix (as in bvi or #iii). EXAMPLE: (get-function-degree
-\"iv\" \"a\" :major) will return 14, that is D."
+or # as a prefix (as in bvi or #iii)."
   (flet ((%get-function-number (string)
            (nth (1- (roman->number string)) (get-scale-mode mode))))
     (with-system tonal
@@ -425,8 +411,7 @@ or # as a prefix (as in bvi or #iii). EXAMPLE: (get-function-degree
                    (t (%get-function-number tonal-function))))))))
 
 (defun number->accidental (number &optional (representation :latin))
-  "Convert a number to it's representation as accidents.
-  EXAMPLE: (number->accidental -3) => \"bbb\""
+  "Convert a number to it's representation as accidents."
   (cond ((plusp number)
          (repeat-string number (get-accidental 'sharp representation)))
         ((minusp number)

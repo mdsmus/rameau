@@ -113,8 +113,7 @@
     (reduce #'min list :key test)))
 
 (defun repeat-string (n string)
-  "Repeat a string n times. EXAMPLE: (repeat-string 3 \"foo\") returns
-  \"foofoofoo\"."
+  "Repeat a string n times."
   (with-output-to-string (s)
     (dotimes (i (abs n)) (format s string))))
 
