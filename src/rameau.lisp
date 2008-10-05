@@ -249,9 +249,6 @@ Read and load definitions from a user-set configuration file in @var{~/.rameaurc
 (defun cairo-set-stroke-fill-colors (colors)
   (cl-cairo2:set-source-rgb (first colors) (second colors) (third colors)))
 
-(defun remove-inversions (chord-string)
-  (cl-ppcre:regex-replace-all "/.*" chord-string ""))
-
 (defmacro safe-with-backtrace ((&key condition print-error-msg exit return) &body code)
   "Runs @var{code} with error protection, calling @var{print-error-msg} if there's
 an error and doing a backtrace if running on sbcl and @var{condition} is true at runtime."

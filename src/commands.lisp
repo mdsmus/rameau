@@ -24,19 +24,23 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defun get-all-flags (command)
+    "Find all the flags that can be used by @var{command}."
     (append (second (first *common-flags*))
             (command-options command))))
 
 (defmacro get-flag (slot command flag)
+  "Iterate through all flags and find whichever slot is interesting."
   `(iter (for (short long description start-value type) in (get-all-flags ,command))
          (when (or (equalp short ,flag)
                    (equalp long ,flag))
            (return ,slot))))
 
 (defun get-flag-name (command flag)
+  "Finds the name of a parameter."
   (get-flag long command flag))
 
 (defun get-flag-type (command flag)
+  "Finds the type of a parameter."
   (get-flag type command flag))
 
 (defclass arguments-table ()
@@ -76,6 +80,7 @@
                      (cl-ppcre:split " " file-or-range))))))
 
 (defun process-option-list (options)
+  "Process the options in @{options}."
   (iter (for op in options)
         (aif (search "=" op)
              (collect (list (make-keyword (subseq op 0 it))
@@ -99,11 +104,14 @@
         *commands*))
 
 (defun get-command-by-name (name)
+  "Finds a command named @var{name}."
   (search-string-in-list name *commands* :key #'command-name))
 
 (defun print-all-options (options)
+  "Print all the options in @var{options}."
   (format nil "~s~%" (iter (for (k v) in-hashtable (get-args options)) (collect (list k v)))))
 
 (defun make-command-option-list (command)
+  "Makes a list with @var{command}'s name and options to be printed by print-help."
   (list (command-name command)
         (command-options command)))

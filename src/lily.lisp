@@ -3,16 +3,19 @@
 (enable-sharp-l-syntax)
 
 (defun make-variable  (name content)
+  "Create a lilypond variable named @var{name} with value @var{content}"
   (concat name " = " content "
 
 "))
 
 (defun make-lily-list (content)
+  "List the values in @var{content} in a form amenable to lilypond."
   (reduce #L(concat !1 "
 " !2)
           content))
 
 (defun make-lyrics (name)
+  "Make lilypond lyrics code with name @var{name}."
   (format nil "\\new Lyrics \\lyricsto \"nowhere\" \\~a~%" (remove #\- name)))
 
 (defun intervalo (s1 s2)
@@ -45,6 +48,7 @@
           (t (format nil "~a*~a" denom numer)))))
 
 (defun print-duracoes (segmento)
+  "Output the lilypond code for the durations of the sonority in @var{segmento}."
   (values (loop for s = segmento then (rest s)
                 unless s return res
                 collect (concat "c" (frac->dur-lily (event-dur (first (first s))))) into res
@@ -57,6 +61,7 @@
                   (list n))))))
 
 (defun make-devnull-var (sonorities)
+  "The variable that is set to a devnull voice."
   (multiple-value-bind (durs first-rest) (print-duracoes sonorities)
     (make-variable "texto"
                    (if first-rest
@@ -64,9 +69,11 @@
                        (format nil "{~{~a ~}}~%~%" durs)))))
 
 (defun make-devnull-voice ()
+  "The empty template for a devnull voice in lilypond."
   "\\new Devnull = \"nowhere\" \\texto")
 
 (defun print-compare-answer-sheet (analysis answer name options cleaned)
+  "Print analysis @var{analysis} as a lilypond source matching it with answer sheet @var{answer}."
   (make-variable (remove #\- name)
                  (concat " \\lyricmode {
  \\set stanza = \""
@@ -94,6 +101,7 @@
 ")))
 
 (defun make-answer-sheet (answer)
+  "Create the lilypond source for the answer-sheet answer."
   (make-variable "answer"
                  (concat "\\lyricmode {
   \\set stanza = \"Answer\" "
@@ -119,6 +127,7 @@
     notelist))
 
 (defun add-rests (notes)
+  "Add the rests between the notes in @var{notes}."
   (format nil " { ~{~a ~% ~} }"
           (iter (for note in notes)
                 (for prev previous note)
@@ -130,6 +139,7 @@
                                  (frac->dur-lily (event-dur note)))))))
 
 (defun make-lily-segments (options segments)
+  "Make the lilypond for a chorale snippet based on segments @var{segments}."
   (let ((baixos (add-rests (make-note-list (mapcar #L(extract-note !1 (make-event :voice-name "\"baixo\"")) segments))))
         (tenores (add-rests (make-note-list (mapcar #L(extract-note !1 (make-event :voice-name "\"tenor\"")) segments))))
         (altos (add-rests (make-note-list (mapcar #L(extract-note !1 (make-event :voice-name "\"alto\"")) segments))))

@@ -1,7 +1,7 @@
 .function-block {
     margin-left: 2em;
     margin-right: 2em;
-    padding-top: 6em;
+    padding-top: 5em;
 }
 
 .function-arg-list {
@@ -11,6 +11,10 @@
     border-collapse: collapse;
     -moz-border-radius: 0.5em;
     padding-left: 1em;
+    margin-left: 5em;
+    margin-bottom: 1em;
+    float: left;
+    clear: left;
     padding-right: 1em;
     background-color: #eeeeff;
 }
@@ -47,6 +51,7 @@
     font-weight :bold;
     font-size: 12pt;
     font-family: verdana,arial,helvetica,sans-serif;
+    clear: left;
 }
 
 .example, .docstring, .uses-body {
@@ -75,6 +80,11 @@ h2 {
     clear: left;
     width: 20em;
     overflow: visible;
+}
+
+.function-name-header h2 {
+    overflow: visible;
+    white-space: pre;
 }
 
 h1 {

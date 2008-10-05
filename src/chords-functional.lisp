@@ -30,6 +30,7 @@
   root 7th 9th 11th 13th bass inversion key roman-function)
 
 (defun transpose-fchord (fchord pitches)
+  "Transpose fchord @var{fchord} by @var{pitches}"
   (make-fchord :7th (fchord-7th fchord)
                :9th (fchord-9th fchord)
                :11th (fchord-11th fchord)
@@ -43,12 +44,12 @@
 
 
 
-(defun match-inversion (inversion-list)
+(defun match-inversion :private (inversion-list)
   (nthcdr 2 (assoc (mapcar #'parse-integer (sort inversion-list #'string>))
                    *inversions-template*
                    :test #'equalp)))
 
-(defun %parse-fchord (function-string key)
+(defun %parse-fchord  :private (function-string key)
   (when (and function-string (not (equal "-" function-string)))
     (let* ((split-secondary (cl-ppcre:split "/" function-string))
            (function (first split-secondary))
@@ -70,6 +71,7 @@
                                :roman-function roman-function))))))))
 
 (defun parse-fchords (chords center)
+  "Parse the fchords in @var{chords} as having @var{center} as their key."
   (mapcar #'(lambda (chord)
               (if (consp chord)
                   (mapcar #L(unless (equal '- !1) (%parse-fchord (symbol-name !1) center)) chord)
@@ -77,6 +79,7 @@
           chords))
 
 (defun read-fchords (list)
+  "Read the fchords in @var{list}."
   (iter (for chord in (iter (for item in (sublist-of-args list #\@))
                             (for center = (parse-tonal-key (subseq (symbol-name (first item)) 1)))
                             (for chords = (rest item))
@@ -87,10 +90,12 @@
         (collect last-chord)))
 
 (defun get-fchords (string)
+  "Read the fchords from @var{string}."
   (read-fchords
    (read-from-string-as-sexp (cl-ppcre:regex-replace-all "([A-Ga-g](#|b)*):" string "@\\1") :preserve)))
 
 (defun mode->keyword (mode)
+  "Match the chord-mode @var{mode} with the appropriate fchord-mode keyword."
   (cond ((equal mode "") :major)
         ((equal mode "m") :minor)
         ((equal mode "ø") :half-diminished)
@@ -125,12 +130,14 @@ center. center must be a string and scale-mode a keyword."
        (equalp (fchord-roman-function answer) (fchord-roman-function sheet))))
 
 (defun same-key (a b)
+  "True if @var{a} and @var{b} are the same key."
   (and (tonal-key-p a)
        (tonal-key-p b)
        (eq (tonal-key-mode a) (tonal-key-mode b))
        (eq (tonal-key-center-pitch a) (tonal-key-center-pitch b))))
 
 (defun cleanup-keys (fchords)
+  "Clean the keys from @var{fchords} before outputting them to sensitive musicians."
   (if (fchord-p (first fchords))
       (iter (with current-key = nil)
             (with last-chord = nil)

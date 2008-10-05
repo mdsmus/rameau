@@ -19,6 +19,7 @@
     ("white"         "1;37")))
 
 (defun print-color-terminal (result comparison options)
+  "Print @var{result} on a terminal with colors."
   (let ((column (concat "~" (arg :column-chord-size options) "a"))
         (color (if comparison 21 (get-item (arg :wrong-answer-color options) *colors* #'equalp)))
         (string "~a[~am")
@@ -30,9 +31,12 @@
           (format t (concat "~a[0m" sep) (code-char #x1b))))))
 
 (defun inc-bool-list (bool-list num-list)
+  "Increment each element of @var{num-list} by 1 if the corresponding
+element of @var{bool-list} is true."
   (mapcar #'+ (mapcar #'(lambda (x) (if x 1 0)) bool-list) num-list))
 
 (defun print-line-term (options number note dur &optional answer)
+  "Print one line of terminal output."
   (let ((sep (arg :column-separator options)))
     (format t (concat "~&~"
                       (arg :column-number-size options)
@@ -49,6 +53,7 @@
             (when answer answer))))
 
 (defun hline-size (number-algorithms options &optional no-answer)
+  "The size of a horizontal line of output."
   (+ (* (parse-integer (arg :column-chord-size options)) number-algorithms)
      number-algorithms
      (1+ (parse-integer (arg :column-number-size options)))
@@ -63,10 +68,12 @@
          0)))
 
 (defun print-chord-column (options text)
+  "Print a column with a chord."
   (format t (concat "~" (arg :column-chord-size options) "a" (arg :column-separator options))
           text))
 
 (defun print-footer-term (text size-line number-algorithms options)
+  "Print a terminal output footer."
   (let ((footer-size (- size-line
                         (1+ (length text))
                         number-algorithms
@@ -74,4 +81,5 @@
     (format t (concat "~&" text (repeat-string footer-size " ") (arg :column-separator options)) "~%")))
 
 (defun print-hline-term (size)
+  "Print a horizontal line with size @var{size}."
   (format t "~&~a" (repeat-string size "-")))
