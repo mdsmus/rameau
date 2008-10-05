@@ -2,7 +2,7 @@
 (in-package #:cl-lily)
 
 (defun group-by :private (start resto)
-  "Helper grouping function. [DONTCHECK]"
+  "Helper grouping function. [NOTEST]"
   (if resto
       (if (= start (event-start (car resto)))
           (multiple-value-bind (segmento restante) (group-by start (cdr resto))
@@ -14,7 +14,7 @@
       (values nil nil)))
 
 (defun group-with-start :private (musica)
-  "Group \\texttt{music} by the on-set times of the notes. [DONTCHECK]"
+  "Group \\texttt{music} by the on-set times of the notes. [NOTEST]"
   (when musica
     (let* ((primeiro (first musica))
            (start (event-start primeiro))
@@ -27,7 +27,7 @@
 (defun correct-segments :private (segmento proximo)
   "Split the notes in segment to ensure they do not overflow the
   possible sonority. Any too long notes are bunked into the next
-  sonority. [DONTCHECK]"
+  sonority. [NOTEST]"
   (let* ((sobras nil)
          (proximo-event (if proximo (event-start (first proximo))))
          (proximo-start (if proximo
@@ -70,7 +70,7 @@
   time. For this, it is necessary to ensure that the notes in every
   sonority have the same on-set and off-set times. This is
   accomplished by splitting notes, which is made by correct-segments.
-  [DONTCHECK]"
+  [NOTEST]"
   (if (cdr musica)
       (multiple-value-bind
             (segmento sobras)

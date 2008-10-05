@@ -42,32 +42,32 @@
 (setf *debug-io* *error-output*)
 
 (defun dbg (id format-string &rest args)
-  "Print debugging info if (DEBUG ID) has been specified. [DONTCHECK]"
+  "Print debugging info if (DEBUG ID) has been specified. [NOTEST]"
   (when (member id *dbg-ids* :test #'string=)
     (fresh-line *standard-output*)
     (apply #'format t (concat " => DEBUG: " format-string) args)
     (force-output *standard-output*)))
 
 (defun dbg-indent (id indent format-string &rest args)
-  "Print indented debugging info if (DEBUG ID) has been specified. [DONTCHECK]"
+  "Print indented debugging info if (DEBUG ID) has been specified. [NOTEST]"
   (when (member id *dbg-ids*)
     (fresh-line *debug-io*)
     (dotimes (i indent) (princ " " *debug-io*))
     (apply #'format *debug-io* (concat " => DEBUG: " format-string) args)))
 
 (defun rameau-debug (id)
-  "Start dbg output on the given ids. [DONTCHECK]"
+  "Start dbg output on the given ids. [NOTEST]"
   (format t "Debugging ~a~%" id)
   (push id *dbg-ids*))
 
 (defun rameau-undebug (&rest ids)
-  "Stop dbg on the ids. With no ids, stop dbg altogether. [DONTCHECK]"
+  "Stop dbg on the ids. With no ids, stop dbg altogether. [NOTEST]"
   (setf *dbg-ids* (if (null ids)
                       nil
                       (set-difference *dbg-ids* ids))))
 
 (defmacro defcached (funcname args &body body)
-  "Defines \\texttt{funcname} just as defun, but with a cache around it. [DONTCHECK]"
+  "Defines \\texttt{funcname} just as defun, but with a cache around it. [NOTEST]"
   (labels ((varnames (symbols)
              (cons 'list
                    (loop for s in symbols unless (and (symbolp s)
@@ -142,7 +142,7 @@ that have the largest value according to \\texttt{pred}."
 
 (defun file-string (path)
   "Suck up an entire file from \\texttt{path} into a freshly-allocated string,
-returning two values: the string and the number of bytes read. [DONTCHECK]"
+returning two values: the string and the number of bytes read. [NOTEST]"
   (with-open-file (s path #+sbcl :external-format #+sbcl :utf-8 )
     (let* ((len (file-length s))
            (data (make-string len :initial-element #\Space))
@@ -151,7 +151,7 @@ returning two values: the string and the number of bytes read. [DONTCHECK]"
 
 (defun binary-file-string (path)
   "Suck up an entire file from \\texttt{path} into a freshly-allocated byte-string,
-returning two values: the string and the number of bytes read. [DONTCHECK]"
+returning two values: the string and the number of bytes read. [NOTEST]"
   (with-open-file (s path #+sbcl :element-type '(unsigned-byte 8) )
     (let ((file-data (make-array (file-length s)
                                  :element-type '(unsigned-byte 8))))
@@ -169,13 +169,13 @@ returning two values: the string and the number of bytes read. [DONTCHECK]"
       (cons list (repeat-list (- n 1) list))))
 
 (defun read-from-string-as-sexp (file &optional (case :upcase))
-  "Read from string \\texttt{file} as a single sexp. [DONTCHECK]"
+  "Read from string \\texttt{file} as a single sexp. [NOTEST]"
   (let ((*readtable* (copy-readtable *readtable*)))
     (setf (readtable-case *readtable*) case)
     (read-from-string (format nil "(~a)" file))))
 
 (defun read-file-as-sexp (file &optional (case :upcase))
-  "Read file named \\texttt{file} as a single sexp. [DONTCHECK]"
+  "Read file named \\texttt{file} as a single sexp. [NOTEST]"
   (read-from-string-as-sexp (file-string file) case))
 
 (defun unzip (lista)
@@ -218,7 +218,7 @@ string representation as \\texttt{item}."
 ;; Alist helper functions
 
 (defun make-alist ()
-  "Makes a helped alist. [DONTCHECK]"
+  "Makes a helped alist. [NOTEST]"
   (list nil))
 
 (defun apush (obj place)

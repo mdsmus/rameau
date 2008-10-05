@@ -149,11 +149,11 @@
   ((name :accessor voice-name :initarg :name)))
 
 (defun parse-music-block :private (a block b)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (make-instance 'music-block :expr block :text (list a block b)))
 
 (defun parse-chord-dur :private (a chord b igno dur)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (when dur
     (dolist (i (butlast (remove-if #'null (expand-if-list chord))))
       (setf (note-sequence-dur i) (node-dur dur))
@@ -162,44 +162,44 @@
   (make-instance 'chord-lily :expr chord :text (list a chord b igno dur)))
 
 (defun parse-simultaneous :private (a simultaneous b)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (make-instance 'simultaneous :expr simultaneous :text (list a simultaneous b)))
 
 (defun parse-simult :private (a i b simultaneous  c)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (make-instance 'simultaneous :expr simultaneous :text (list a i b simultaneous c)))
 
 (defun parse-staff-block :private (a ign block)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (make-instance 'staff :expr block :text (list a ign block)))
 
 (defun parse-context-staff :private (a i b ig c ign d igno block)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (let ((blck (parse-staff-block a nil block)))
     (setf (node-text blck)
           (list a i b ig c ign d igno block))
     blck))
 
 (defun parse-new-staff :private (a i b ig c ign block)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (let ((blck (parse-staff-block a nil block)))
     (setf (node-text blck)
           (list a i b ig c ign block))
     blck))
 
 (defun parse-score-block :private (a ign block)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (make-instance 'score :expr block :text (list a ign block)))
 
 (defun parse-context-score :private (a i b ig c ign block)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (let ((blck (parse-score-block a nil block)))
     (setf (node-text blck)
           (list a i b ig c ign block))
     blck))
 
 (defun parse-context-score2 :private (a i ob ig c ign block cb)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (let ((blck (parse-score-block a nil block)))
     (setf (node-text blck)
           (list a i ob ig c ign block cb))
@@ -207,71 +207,71 @@
 
 
 (defun parse-variable-block :private (variable)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (make-instance 'read-variable :varname variable :text variable))
 
 (defun parse-times-block :private (a i number ig expr)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (make-instance 'times :times number :expr expr :text (list a i number ig expr)))
 
 (defun parse-voice-block :private (a ign block)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (make-instance 'voice :name "" :expr block :text (list a ign block)))
 
 (defun parse-voice-block-string :private (a i b ig c ign block)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (make-instance 'voice :name c :expr block :text (list a i b ig c ign block)))
 
 (defun parse-repeat-block :private (a i b ig dur ign block)
-  "[DONTCHECK]
+  "[NOTEST]
 
 Parse a \\texttt{repeat} block using lilypond syntax.
 "
   (make-instance 'music-block :expr block :text (list a i b ig dur ign block)))
 
 (defun parse-context-voice :private (a i b ig c ign d igno block)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (let ((blck (parse-voice-block-string a nil b nil d nil block)))
     (setf (node-text blck)
           (list a i b ig c ign d igno block))
     blck))
 
 (defun parse-relative-block :private (a ign relative igno block)
-  "[DONTCHECK]
+  "[NOTEST]
 
 Parse a lilypond relative block.
 "
   (make-instance 'relative :expr block :start relative :text (list a ign relative igno block)))
 
 (defun parse-transpose-block :private (a ig from ign to igno block)
-  "[DONTCHECK]
+  "[NOTEST]
 
 Parse a lilypond relative block.
 "
   (make-instance 'transpose :expr block :from from :to to :text (list a ig from ign to igno block)))
 
 (defun parse-assignment :private  (variable ign equal igna value)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (make-instance 'set-variable :varname variable :value value :text (list variable ign equal igna value)))
 
 (defun parse-dur :private (dur)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (make-instance 'dur-node :dur (/ 1 (parse-integer dur)) :text (list dur)))
 
 (defun parse-dur-ponto :private (dur ponto)
-  "[DONTCHECK]
+  "[NOTEST]
 
 Parse the length of a dotted note."
   (make-instance 'dur-node :dur (+ (node-dur dur) (/ (node-dur dur) 2)) :text (list dur ponto)))
 
 (defun parse-dur-multiplica :private (dur mult)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (make-instance 'dur-node
                  :dur (* (node-dur dur) (eval (read-from-string (subseq mult 1))))
                  :text (list dur mult)))
 
 (defun empty-dur :private ()
-  "[DONTCHECK]
+  "[NOTEST]
 
 Parse an empty duration.
 "
@@ -280,12 +280,12 @@ Parse an empty duration.
                  :text nil))
 
 (defun make-anacruz :private (ign igno dur)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (setf *anacruz* (- (node-dur dur) (read-from-string *current-sig*)))
   (make-instance 'no-op-node :text (list ign igno dur)))
 
 (defun parse-include :private (a b file)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (let ((notas (parse-file
                 (if *filename*
                     (concat (subseq *filename* 0 (search "/" *filename* :from-end t))
@@ -298,13 +298,13 @@ Parse an empty duration.
                         :dur (+ (event-start (last1 notas)) (event-dur (last1 notas))))))
 
 (defun empty-octave :private ()
-  "[DONTCHECK]"
+  "[NOTEST]"
   "")
 
 ;; Funçoes problematicas:
 
 (defun parse-lilypond :private (expression)
-  "[DONTCHECK]
+  "[NOTEST]
 
 Parse an entire lilypond file.
 "
@@ -312,27 +312,27 @@ Parse an entire lilypond file.
     (correct-durations musica)))
 
 (defun do-nothing :private (&rest args)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (make-instance 'no-op-node :text args))
 
 (defun return-second :private (a b &rest rest)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (make-instance 'music-list :expr (cons b (make-instance 'no-op-node)) :text (append (list a b) rest)))
 
 (defun return-first :private (a b)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (make-instance 'music-block :expr (cons a (make-instance 'no-op-node)) :text (list a b)))
 
 (defun parser-list :private (b)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (make-instance 'music-list :expr (cons b (make-instance 'no-op-node)) :text (list b)))
 
 (defun parser-cons :private (a i b)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (make-instance 'music-list :expr (cons a b) :text (list a i b)))
 
 (defun ignore-middle :private (a ignore b)
-  "[DONTCHECK]
+  "[NOTEST]
 
 Ignore the middle argument, \\texttt{ignore}, and make a music-list
 with the other ones.
@@ -340,7 +340,7 @@ with the other ones.
   (make-instance 'music-list :expr (cons a b) :text (list a ignore b)))
 
 (defun parser-ign :private (a b)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (make-instance 'no-op-node :text (list a b)))
 
 ;; Metodos para processar a ast
@@ -474,7 +474,7 @@ with the other ones.
       (remove-if #'null (flatten (%get-children-by-type ast type)))))
 
 (defgeneric process-ast (astnode)
-  (:documentation "Process an AST node and extract the notes. [DONTCHECK]"))
+  (:documentation "Process an AST node and extract the notes. [NOTEST]"))
 
 (defmethod process-ast ((node no-op-node))
   (process-ast (node-expr node)))
@@ -571,7 +571,7 @@ with the other ones.
   (get-parsed-notes (get-ast-string str)))
 
 (defun parse-file (filename)
-  "[DONTCHECK]
+  "[NOTEST]
 
 Parse lilypond file \\texttt{filename} as a sequence of notes.
 "
@@ -581,7 +581,7 @@ Parse lilypond file \\texttt{filename} as a sequence of notes.
       (get-parsed-notes-string (file-string filename)))))
 
 (defun file-ast (filename)
-  "[DONTCHECK]
+  "[NOTEST]
 
 Parse lilypond file \\texttt{filename} as an ast.
 "

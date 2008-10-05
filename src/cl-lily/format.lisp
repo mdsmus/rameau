@@ -138,12 +138,12 @@
   (make-note "s" "" igno dur))
 
 (defun move-event :private (event tempo)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (setf (event-start event) (+ (event-start event) tempo))
   event)
 
 (defun move-sequence :private (seq tempo)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (mapcar (lambda (x) (move-event x tempo))
           seq))
 
@@ -181,7 +181,7 @@
   exp1)
 
 (defun merge-exprs :private (exprs)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (if (note-sequence-p exprs)
       exprs
       (if (cdr exprs)
@@ -202,7 +202,7 @@
   (< (abs (- a b)) (code->interval '(2 :dim 6))))
 
 (defun modificador-oitava :private (a b)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (let ((pa (event-pitch a))
         (pb (event-pitch b))
         (oa (event-octave a))
@@ -236,7 +236,7 @@
     expressao))
 
 (defun transpose-segmentos (segmentos valor)
-  "[DONTCHECK]
+  "[NOTEST]
 
 Transpose the sonorities in \\texttt{segmentos} by \\texttt{valor} pitches.
 "
@@ -252,7 +252,7 @@ Transpose the sonorities in \\texttt{segmentos} by \\texttt{valor} pitches.
                           :time-sig (event-time-sig n)))))
 
 (defun tempera (nota)
-  "[DONTCHECK]
+  "[NOTEST]
 
 An equivalent tempered version of event \\texttt{nota}.
 "

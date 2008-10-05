@@ -3,13 +3,13 @@
 (enable-sharp-l-syntax)
 
 (defun expand-non-chord-tones :private (stream char)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (declare (ignore char))
   (let ((*package* (find-package :rameau)))
     `(m! ,@(read-delimited-list #\] stream t))))
 
 (defun expand-repeat :private (stream char)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (declare (ignore char))
   (let ((*package* (find-package :rameau)))
     `(* 1 ,@(read-delimited-list #\} stream t))))
@@ -46,7 +46,7 @@
           (cons atual (expand-multiplications resto))))))
 
 (defun expand-chords :private (list)
-  "[DONTCHECK]"
+  "[NOTEST]"
   (expand-multiplications (mapcar #'parse-multiplication list)))
 
 (defstruct (melodic-note
@@ -143,14 +143,14 @@ position."
     (t (%parse-chord chord))))
 
 (defun read-chords (list)
-  "[DONTCHECK]
+  "[NOTEST]
 
 Parse the chords in list \\texttt{list}.
 "
   (mapcar #'parse-chord (expand-chords list)))
 
 (defun transpose-chord (c n)
-  "[DONTCHECK]
+  "[NOTEST]
 
 Transpose chord \\texttt{c} by \\texttt{n} pitches.
 "
@@ -207,7 +207,7 @@ Transpose chord \\texttt{c} by \\texttt{n} pitches.
       (some (lambda (x) (%compare-answer-sheet answer x tempered?)) answer-sheet)))
 
 (defun add-inversion (segmento acorde)
-  "[DONTCHECK]
+  "[NOTEST]
 
 Label the chord \\texttt{acorde} with the inversion found in \\texttt{segmento}.
 "
@@ -221,7 +221,7 @@ Label the chord \\texttt{acorde} with the inversion found in \\texttt{segmento}.
         acorde)))
 
 (defun add-inversions (segmentos acordes)
-  "[DONTCHECK]
+  "[NOTEST]
 
 Label all chords in \\texttt{acordes} with the appropriate inversion
 according to the music in \\texttt{segmentos}.

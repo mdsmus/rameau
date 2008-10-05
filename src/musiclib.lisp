@@ -7,13 +7,13 @@
 (defvar *system* 'tonal)
 
 (defmacro with-system (system &body body)
-  "[DONTCHECK]"
+  "[NOTEST]"
   `(let ((*system* ',system))
      (declare (special *system*))
      ,@body))
 
 (defmacro deftemplates (name &body templates)
-  "[DONTCHECK]"
+  "[NOTEST]"
   `(defparameter ,name ',templates))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -24,7 +24,7 @@ note-codes for every note in Jamary's table (p. 18). Tonal-intervals
 is a table with the code for tonal intervals according to Jamary (p.
 21). The format is (inverval kind quantity). For instance, (3 min)
 represents a minor third; (3 dim 2) represents double-diminished
-third. Quantity is optional when equal to 1. [DONTCHECK]"
+third. Quantity is optional when equal to 1. [NOTEST]"
   (let ((tonal-system
          '((:c 0)  (:c 1)  (:c 2)  (:c 3)  (:c 4)  (:c 5)  (:c 6)
            (:d -7) (:d -6) (:d -5) (:d -4) (:d -3) (:d -2) (:d -1)
@@ -65,27 +65,27 @@ third. Quantity is optional when equal to 1. [DONTCHECK]"
                        (tempered (,tempered-system 12 ,tempered-intervals))))))
 
 (defun get-system-notes (system)
-  "Returns a table defining notes in the system. [DONTCHECK]"
+  "Returns a table defining notes in the system. [NOTEST]"
   (first (get-system-item system)))
 
 (defun get-notes ()
-  "Returns a table defining notes in the system. [DONTCHECK]"
+  "Returns a table defining notes in the system. [NOTEST]"
   (if (eq 'tempered *system*)
       (get-system-notes 'tempered)
       (get-system-notes 'tonal)))
 
 (defun get-system-module (system)
   "Returns the numeric value to be used as a module in the defined
-system. [DONTCHECK]"
+system. [NOTEST]"
   (second (get-system-item system)))
 
 (defun get-module ()
   "Returns the numeric value to be used as a module in the current
-system. [DONTCHECK]"
+system. [NOTEST]"
   (second (get-system-item *system*)))
 
 (defun get-system-intervals (system)
-  "Returns a table defining intervals in the system. [DONTCHECK]"
+  "Returns a table defining intervals in the system. [NOTEST]"
   (third (get-system-item system)))
 
 (defun get-accidental (accidental representation)
@@ -109,7 +109,7 @@ system. [DONTCHECK]"
 (defun get-interval-name (short)
   "Returns the full name of a chord for the abbreviated
 representation. \\example{(get-interval-name \\rq dim)}{diminished}.
-[DONTCHECK]"
+[NOTEST]"
   (assoc-item short '((:min minor)
                       (:maj major)
                       (:perfect perfect)
@@ -118,7 +118,7 @@ representation. \\example{(get-interval-name \\rq dim)}{diminished}.
 
 (defun get-interval-quantity (num)
   "Returns a word representing the numeric quantity of a chord.
-\\example{(get-interval-quantity 3)}{triple}. [DONTCHECK]"
+\\example{(get-interval-quantity 3)}{triple}. [NOTEST]"
   (assoc-item num '((2 double)
                     (3 triple)
                     (4 quadruple)

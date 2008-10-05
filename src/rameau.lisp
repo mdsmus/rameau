@@ -42,7 +42,7 @@
   (push alg *algorithms*))
 
 (defun filter-algorithms (algoritmos algs)
-  "[DONTCHECK]
+  "[NOTEST]
 
 Filter \\texttt{*algorithms*} so that only the ones specified in
 \\texttt{algoritmos} are returned.
@@ -75,7 +75,7 @@ Filter \\texttt{*algorithms*} so that only the ones specified in
   (cl-store:store alg (alg-file-name alg)))
 
 (defun rameau-profile ()
-  "[DONTCHECK]
+  "[NOTEST]
 
 Profile all functions in \\texttt{Rameau}.
 "
@@ -97,7 +97,7 @@ Profile all functions in \\texttt{Rameau}.
           (profile:profile-all :package "GENOSLIB")))
 
 (defun rameau-report ()
-  "[DONTCHECK]
+  "[NOTEST]
 
 Report the results from a profile.
 "
@@ -105,7 +105,7 @@ Report the results from a profile.
   #+cmu(profile:report-time))
 
 (defun rameau-quit ()
-  "[DONTCHECK]
+  "[NOTEST]
 
 Exit \\texttt{rameau}.
 "
@@ -113,7 +113,7 @@ Exit \\texttt{rameau}.
   #+sbcl(sb-ext:quit))
 
 (defun getenv (string)
-  "[DONTCHECK]
+  "[NOTEST]
 
 Get environment variable \\texttt{string} from the environment.
 "
@@ -122,7 +122,7 @@ Get environment variable \\texttt{string} from the environment.
   #+clisp(ext:getenv string))
 
 (defun remove-comma-if-needed (text)
-  "[DONTCHECK]
+  "[NOTEST]
 
 Remove the commas from \\texttt{text} and replace them with dots in
 case we a in a portuguese language environment. Needed for fann.
@@ -132,7 +132,7 @@ case we a in a portuguese language environment. Needed for fann.
       text))
 
 (defun unicode-term (f)
-  "[DONTCHECK]
+  "[NOTEST]
 
 Checks if terminal \\texttt{f} supports unicode.
 "
@@ -141,7 +141,7 @@ Checks if terminal \\texttt{f} supports unicode.
       (eq (stream-external-format f) #+sbcl :utf-8 #-sbcl :default)))
 
 (defun read-user-config ()
-  "[DONTCHECK]
+  "[NOTEST]
 
 Read and load definitions from a user-set configuration file in \\texttt{~/.rameaurc}.
 "
@@ -190,7 +190,7 @@ Read and load definitions from a user-set configuration file in \\texttt{~/.rame
       (get-fchords (file-string full-file)))))
 
 (defun parse-file-list (item f &optional (ext ".ly"))
-  "Parse file list \\texttt{f} into a list of filenames. [DONTCHECK]"
+  "Parse file list \\texttt{f} into a list of filenames. [NOTEST]"
   (let* ((path (concat *rameau-path* (get-item item *lily-dir-list*  #'equal)))
          (file-name (format nil "~a" (first f)))
          (files (if (search ".." file-name)
