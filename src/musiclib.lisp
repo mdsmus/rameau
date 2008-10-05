@@ -143,10 +143,10 @@ numeric code."
 
 (defun number-of-accidentals (acc-string representation)
   "Returns the numeric value of a string of accidentals according to
-representation. For instance, if acc-string is ``eseses'' the function
+representation. For instance, if acc-string is \"eseses\" the function
 returns -3. Be careful not to pass a string representing a note as the
 first argument to this function, otherwise it could mistakenly return
--2 for ``ees''."
+-2 for \"ees\"."
   (let ((sharp (get-accidental 'sharp representation))
         (flat (get-accidental 'flat representation)))
     (cond ((search sharp acc-string) (count-subseq sharp acc-string))
@@ -189,13 +189,12 @@ This is a low level function, you should use parse-note instead."
 
 (defun parse-note (note)
   "Returns the numeric code of a pitch, given its representation as a
-string. This function is smart enought to know that ``aes'' is
-lilypond's representation and ``d\\#'' is latin's representation."
+string. This function is smart enought to know that \"aes\" is
+lilypond's representation and \"d#\" is latin's representation."
   (flet ((%note->code (note)
            "Aceita um símbolo representando uma nota e retorna seu
 código numérico. Essa é uma função auxiliar que funciona apenas para
-notas sem acidentes, como 'd', 'e', etc. EXEMPLO: (\\%note->code \"d\")
-retorna 14."
+notas sem acidentes, como 'd', 'e', etc."
            (case *system*
              (tonal (position (list note 0)
                               (get-system-notes *system*) :test #'equal))
