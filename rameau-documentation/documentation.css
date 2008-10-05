@@ -1,5 +1,7 @@
 .function-block {
     margin-left: 2em;
+    margin-right: 2em;
+    padding-top: 6em;
 }
 
 .function-arg-list {
@@ -8,6 +10,7 @@
     line-height: 0px;
     border: solid 2px #cccccc;
     border-collapse: collapse;
+    -moz-border-radius: 0.5em;
     padding-left: 1em;
     padding-right: 1em;
     background-color: #eeeeff;
@@ -67,6 +70,39 @@ h2 {
     width: 68%;
 }
 
+.function-name-header {
+    float: left;
+    display: block;
+    clear: left;
+}
+
+h1 {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    display: block;
+    align: center;
+    font-family: serif;
+    text-align: center;
+}
+
 .function-type {
     float: right;
+    clear:right;
+    margin-right: 10em;
+}
+
+body {
+    background: #aaaadd;
+    font-family: sans-serif;
+}
+
+div.main {
+    background: #ccccff;
+    opacity: 90%;
+    width: 50em;
+    margin: auto;
+    padding: 1em 1em 1em 1em; 
+    -moz-border-radius: 2em;
 }

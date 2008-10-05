@@ -98,7 +98,8 @@
                   :href "/favicon.ico")
              (:link :rel "stylesheet" :href "documentation.css"))
             (:body
-             ,@body))))
+             (:div :class "main"
+                   ,@body)))))
 
 (defun htmlize-docstring (string)
   "Replace strings in the form of @foo{bar} and gerenate a span whose
@@ -124,9 +125,10 @@ class is foo and content is bar."
             (for example = (find-test-body name test-file))
             (for uses = (getf plist :uses))
             (htm
-             (:h2 (str name)
-                  (:div :class "function-type"
-                        (fmt "[~a]" (getf plist :type))))
+             (:div :class "function-type"
+                   (:h2 (fmt "[~a]" (getf plist :type))))
+             (:div :class "function-name-header"
+                   (:h2 (str name)))
              (:div :class "function-block"
                    (:div :class "function-arg-list"
                          (:p (:span :class "function-name" (fmt "~(~a~)" name))
