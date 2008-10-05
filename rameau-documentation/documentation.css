@@ -7,7 +7,6 @@
 .function-arg-list {
     font-family: mono;
     display: inline-block;
-    line-height: 0px;
     border: solid 2px #cccccc;
     border-collapse: collapse;
     -moz-border-radius: 0.5em;
