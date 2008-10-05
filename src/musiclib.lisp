@@ -7,13 +7,13 @@
 (defvar *system* 'tonal)
 
 (defmacro with-system (system &body body)
-  "[NOTEST]"
+  "Run the contained code using codification @var{system}.[NOTEST]"
   `(let ((*system* ',system))
      (declare (special *system*))
      ,@body))
 
 (defmacro deftemplates (name &body templates)
-  "[NOTEST]"
+  "Define templates as used in Pardo and Birmingham's algorithm. [NOTEST]"
   `(defparameter ,name ',templates))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -441,11 +441,13 @@ or # as a prefix (as in bvi or #iii)."
   mode)
 
 (defun parse-tonal-key (key)
+  "Parse string @var{key} as a tonal key."
   (let ((mode (if (upper-case-p (char key 0)) :major :minor))
         (pitch (parse-note key)))
     (make-tonal-key :center-pitch pitch :mode mode)))
 
 (defun print-tonal-key (key &optional stream (depth 0))
+  "Print tonal key @var{key}."
   (declare (ignore depth))
   (let ((note (print-note (code->notename (tonal-key-center-pitch key)))))
     (format stream "~a"
@@ -454,6 +456,7 @@ or # as a prefix (as in bvi or #iii)."
                 note))))
 
 (defun parse-mode (function mode-symbol)
+  "Parse string @var{function} and keyword @var{mode-symbol} into one mode."
   (cond ((upper-case-p function) :major)
         ((null mode-symbol) :minor)
         ((equal mode-symbol "ø") :half-diminished)
@@ -462,6 +465,7 @@ or # as a prefix (as in bvi or #iii)."
         (t (error "Chord-type not recognized: ~a ~a~%" function mode-symbol))))
 
 (defun parse-roman-function (function)
+  "Parse string @var{function} ad a roman number function."
   (cl-ppcre:register-groups-bind (accidentals roman-function mode-symbol extra)
       ("^(#|b)*(iii|ii|iv|i|v|vi|vii|III|II|IV|I|V|VI|VII)(°|ø|\\+)?([\\.1234567]*)$" function)
     (let* ((tonal-function (roman->number roman-function))
@@ -473,6 +477,7 @@ or # as a prefix (as in bvi or #iii)."
        extra))))
 
 (defun print-roman-function (function &optional stream (depth 0))
+  "Print roman number function @var{function}"
   (declare (ignore depth))
   (let* ((roman (number->roman (roman-function-degree-number function)))
          (roman (if (eq :major (roman-function-mode function)) (string-upcase roman) (string-downcase roman)))
@@ -487,6 +492,7 @@ or # as a prefix (as in bvi or #iii)."
     (format stream "~a~a~a" accidentals roman mode)))
 
 (defun roman-function-root (roman-function key)
+  "Find the root of roman function @var{roman-function} and key @var{key}"
   (+ (tonal-key-center-pitch key)
      (roman-function-degree-accidentals roman-function)
      (nth (1- (roman-function-degree-number roman-function)) (get-scale-mode (tonal-key-mode key)))))

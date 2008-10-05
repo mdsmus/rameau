@@ -14,6 +14,7 @@
 (enable-sharp-l-syntax)
 
 (defun % (x total)
+  "Represent @var{x} as a percentual on @var{total}"
   (unless (= 0 total)
     (/ (* x 100.0) total)))
 
@@ -217,11 +218,11 @@ string representation as @var{item}."
 ;; Alist helper functions
 
 (defun make-alist ()
-  "Makes a helped alist. [NOTEST]"
+  "Makes an empty alist, to be used with other alist helper functions in this package. [NOTEST]"
   (list nil))
 
 (defun apush (obj place)
-  "Destructively modifies list @var{place} and puts @var{obj}
+  "Destructively modifies alist @var{place} and puts @var{obj}
 as its car."
   (let ((ap (car place))
         (dp (cdr place)))
@@ -253,6 +254,7 @@ null or 'erro."
        (incf (car (cdr (assoc ,key ,list :test #'equal))) ,amount)))
 
 (defmacro square (x)
+  "Expands to the square of @var{x}"
   (let ((n (gensym)))
     `(let ((,n ,x))
        (* ,n ,n))))
@@ -313,16 +315,20 @@ null or 'erro."
         zero)))
 
 (defun deep-copy (value)
+  "Very ugly hack to do a deep copy of @var{value}"
   (let ((name (concat "/tmp/foo" (stringify (random 10)))))
     (cl-store:store value name)
     (cl-store:restore name)))
 
 (defun hash->ordered-list (table output cmp)
+  "Create an ordered list with the elements of hashtable @var{hash} ordered
+by @var{cmp} and using @var{output} as a key."
   (sorted (iter (for (k v) in-hashtable table)
                 (collect (funcall output k v)))
           cmp))
 
 (defun ilog (x)
+  "A convenient function to avoid floating-point underflow when computing (log 0)"
   (if (equal x 0)
       most-negative-double-float
       (log x)))
@@ -413,10 +419,14 @@ null or 'erro."
   vector)
 
 (defun exp-add (vector i yd)
+  "Sums (exp x) for x in @var{vector} using @var{i} as a first index and going
+up to @var{yd} on the second dimension"
   (iter (for j from 0 below yd)
         (sum (exp (aref vector i j)))))
 
 (defun exp-map (vector i yd)
+  "Collects (exp x) for x in @var{vector} using @var{i} as a first index and going
+up to @var{yd} on the second dimension"
   (iter (for j from 0 below yd)
         (collect (exp (aref vector i j)))))
 
