@@ -32,6 +32,11 @@
     width: 65%;
 }
 
+.rameau {
+    text-transform: capitalize;
+    font-variant: small-caps;
+}
+
 .var {
     font-style: italic;
 }

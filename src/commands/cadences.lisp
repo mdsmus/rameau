@@ -3,7 +3,7 @@
                           #:defparameter #:defvar #:defstruct #:defclass)
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:use :rameau :genoslib :cl :iterate)
-  (:documentation "The cadence detection code for @var{rameau}"))
+  (:documentation "The cadence detection code for @rameau"))
 
 (in-package :rameau-cadences)
 

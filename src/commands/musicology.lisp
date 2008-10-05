@@ -3,7 +3,7 @@
                           #:defparameter #:defvar #:defstruct #:defclass)
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:use :rameau :genoslib :cl :iterate :cl-lily)
-  (:documentation "The computational musicology commands for @var{rameau}"))
+  (:documentation "The computational musicology commands for @rameau"))
 
 (in-package :rameau-musicology)
 

@@ -38,7 +38,7 @@
 (defparameter *algorithms* nil)
 
 (defun add-algorithm (alg)
-  "Register algorithm instance @var{alg} with @var{rameau}."
+  "Register algorithm instance @var{alg} with @rameau."
   (push alg *algorithms*))
 
 (defun filter-algorithms (algoritmos algs)
@@ -107,7 +107,7 @@ Report the results from a profile.
 (defun rameau-quit ()
   "[NOTEST]
 
-Exit @var{rameau}.
+Exit @rameau.
 "
   #+clisp(ext:exit)
   #+sbcl(sb-ext:quit))

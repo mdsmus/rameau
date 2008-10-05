@@ -8,9 +8,11 @@
 (enable-sharp-l-syntax)
 
 (defparameter *rameau-packages*
-;;; falta rameau e rameau-doc
-  '("RAMEAU-BASE" "GENOSLIB" "RAMEAU-WEB"
-    "RAMEAU-HMM" "RAMEAU-NEURAL" "RAMEAU-KNN" "RAMEAU-TREE-ENARM" "RAMEAU-PARDO"))
+  ;; falta rameau e rameau-doc
+  '("RAMEAU-BASE" "GENOSLIB" "RAMEAU-WEB" "RAMEAU-ALG-COMMANDS"
+    "RAMEAU-ANALYSIS" "RAMEAU-CADENCES" "RAMEAU-DOC" "RAMEAU-MUSICOLOGY"
+    "RAMEAU-STAT" "RAMEAU-WEB" "RAMEAU-HMM" "RAMEAU-NEURAL" "RAMEAU-KNN"
+    "RAMEAU-TREE-ENARM" "RAMEAU-PARDO"))
 
 (defun find-source-file-of-function :private (function-name)
   ;; according to CLHS the readtable is reset after reading or
@@ -98,8 +100,9 @@
 (defun htmlize-docstring (string)
   "Replace strings in the form of @foo{bar} and gerenate a span whose
 class is foo and content is bar."
-  (let ((str (cl-ppcre:regex-replace-all "@link{([\\w+ ]+)}{([\\w-@%?!/:.]+)}" string "<a href='\\2'>\\1</a>")))
-    (cl-ppcre:regex-replace-all "@(\\w+){([\\w-@%?!:\\*.]+)}" str "<span class='\\1'>\\2</span>")))
+  (let* ((str1 (cl-ppcre:regex-replace-all "@link{([\\w+ ]+)}{([\\w-@%?!/:.]+)}" string "<a href='\\2'>\\1</a>"))
+         (str2 (cl-ppcre:regex-replace-all "@rameau" str1 "<span class='rameau'>rameau</span>")))
+    (cl-ppcre:regex-replace-all "@(\\w+){([\\w-@%?!:\\*.]+)}" str2 "<span class='\\1'>\\2</span>")))
 
 (defun html-for-one-package (package)
   (with-open-file (file (format nil "~a/rameau-documentation/~(~a~).html" *rameau-path* package)

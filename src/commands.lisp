@@ -50,7 +50,7 @@
   `(setf (gethash ,name (get-args ,options)) ,value))
 
 (defun make-default-arguments (command)
-  "Make default arguments for @var{rameau}."
+  "Make default arguments for @rameau."
   (let ((options (make-instance 'arguments-table)))
     (iter (for (short long doc init list) in (get-all-flags command))
           (for cmd = (make-keyword long))
