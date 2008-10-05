@@ -105,6 +105,7 @@ class is foo and content is bar."
     (cl-ppcre:regex-replace-all "@(\\w+){([\\w-@%?!:\\*.]+)}" str2 "<span class='\\1'>\\2</span>")))
 
 (defun html-for-one-package (package)
+  (format t "Generating documentation for package ~a.~%" package)
   (with-open-file (file (format nil "~a/rameau-documentation/~(~a~).html" *rameau-path* package)
                         :direction :output :if-exists :supersede)
     (html-page file "Rameau API Documentation"
@@ -114,7 +115,8 @@ class is foo and content is bar."
             (with test-file = (get-all-tests))
             (for name = (getf plist :name))
             (for docstring = (getf plist :docstring))
-            (for url = "http://bugs.genos.mus.br/repositories/entry/rameau/")
+            ;;(for url = "http://bugs.genos.mus.br/repositories/entry/rameau/")
+            (for url = "http://git.genos.mus.br/cgit.cgi?url=rameau/tree/")
             (for filename = (getf plist :source-file))
             (for example = (find-test-body name test-file))
             (for uses = (getf plist :uses))

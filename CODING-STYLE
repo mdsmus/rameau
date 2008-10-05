@@ -64,9 +64,11 @@ Date:   Thu Apr 17 11:53:55 2008 -0300
    You don't write code just for yourself, it will be read long after
    you wrote it by others. Write documentation strings to make clean
    what the function does and provide information about the input and
-   output. Whatever is possible, write test cases. They serve not
-   only to test the program, but as an example of use. In fact, the
-   first test is shown in the pdf documentation.
+   output. Whatever is possible, write test cases. They serve not only
+   to test the program, but as an example of use. In fact, the first
+   test is shown in the generated documentation. So, choose a
+   representative example as the first testing case. When is
+   appropriate, document the type of arguments and output.
 
    Read the session about documentation in Norvig and Pitman's
    "Tutorial on Good Lisp Programming Style", p. 17.
@@ -78,6 +80,15 @@ Date:   Thu Apr 17 11:53:55 2008 -0300
    ;;; Header 1
    .... code ...
    ;;; Header 2
+
+   You can use a few formating commands inside the docstring:
+
+   @rameau
+   @var{name}
+   @func{name}
+   @macro{name}
+   @link{name}{url}
+
 ** 6.  language
    All code, comments and documentation should be in English.
 ** 7.  comments
