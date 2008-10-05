@@ -60,7 +60,7 @@
   (append (list :package-name (get-package-name symbol)
                 :name symbol
                 :type type
-                :arglist (stringify `(,symbol ,@(swank-backend:arglist symbol)))
+                :arglist (swank-backend:arglist symbol)
                 :docstring (parse-documentation (documentation symbol 'function))
                 :source-file (find-source-file-of-function symbol))
           (when (eql type :function)
@@ -105,12 +105,19 @@
             (for example = (find-test-body name test-file))
             (for docstring = (getf plist :docstring))
             (htm (:h2 (str name))
-                 ;;(getf plist :type)
-                 (:p "Syntax: " (str (getf plist :arglist)))
-                 (when docstring (htm (:p (str docstring))))
-                 (:p "defined in " (str (getf plist :source-file)))
-                 (:p "uses" (str (getf plist :uses)))
-                 (when example (htm (:p "Example: " (str example)))))))))
+                 (:div :class "function-block"
+                       (:div :class "function-arg-list"
+                             ;;(getf plist :type)
+                             (:p (:div :class "function-name" (fmt "~(~a~)" name))
+                                 (iter (for arg in (getf plist :arglist))
+                                       (if (member arg '(&optional &rest &key &body))
+                                           (htm (:div :class "function-key" (str (stringify arg))))
+                                           (htm (:div :class "function-arg" (str (stringify arg)))))
+                                       )))
+                       (when docstring (htm (:p (str docstring))))
+                       (:p "defined in " (str (getf plist :source-file)))
+                       (:p "uses" (str (getf plist :uses)))
+                       (when example (htm (:p "Example: " (str example))))))))))
 
 (defun create-documentation-for-all-packages ()
   (mapcar #'html-for-one-package *rameau-packages*))
