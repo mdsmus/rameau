@@ -110,7 +110,7 @@
 class is foo and content is bar."
   (let* ((str1 (cl-ppcre:regex-replace-all "@link{([\\w+ ]+)}{([\\w-@%?!/:.]+)}" string "<a href='\\2'>\\1</a>"))
          (str2 (cl-ppcre:regex-replace-all "@rameau" str1 "<span class='rameau'>rameau</span>")))
-    (cl-ppcre:regex-replace-all "@(\\w+){([\\w-@%?!:\\*.]+)}" str2 "<span class='\\1'>\\2</span>")))
+    (cl-ppcre:regex-replace-all "@(\\w+){([\\w-@%?!:\\*.~/]+)}" str2 "<span class='\\1'>\\2</span>")))
 
 (defun html-for-one-package (package)
   "Generate documentation for package @var{package}"
