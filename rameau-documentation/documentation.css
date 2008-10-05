@@ -29,6 +29,33 @@
     padding-right: 1pt;
 }
 
+p.docstring {
+    display: inline-block;
+    text-align: justify;
+    padding-right: 1pt;
+}
+
+.var {
+    padding-left: 1pt;
+    font-style: italic;
+    display: inline-block;
+}
+
+.example-header {
+    font-weight :bold;
+    font-size: 12pt;
+    font-family: verdana,arial,helvetica,sans-serif;
+}
+
+.example {
+    font-family: mono;
+    display: inline-block;
+    margin-left: 2em;
+    border: dotted 2px #cccccc;
+    border-collapse: collapse;
+    padding: 1em;
+}
+
 h2 {
     font-family: verdana,arial,helvetica,sans-serif;
     color: #000066;

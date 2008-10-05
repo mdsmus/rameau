@@ -19,7 +19,8 @@
   ;; enable-sharp-l-syntax on the top of this file, it has to be
   ;; called here.
   (enable-sharp-l-syntax)
-  (pathname-name (cadadr (swank-backend:find-source-location (symbol-function function-name)))))
+  (let ((file-name (cadadr (swank-backend:find-source-location (symbol-function function-name)))))
+   (cl-ppcre:regex-replace *rameau-path*  file-name "")))
 
 (defun function-uses :private (function-name)
   (handler-case (swank-backend:list-callees function-name)
@@ -93,6 +94,11 @@
 (defun get-all-tests ()
   (mapcan #'read-file-as-sexp (directory (concat *rameau-path* "src/tests/*.lisp"))))
 
+(defun htmlize-docstring (string)
+  "Replace strings in the form of @foo{bar} and gerenate a div whose
+class is foo and content is bar."
+  (cl-ppcre:regex-replace-all "@(\\w+){([\\w-@%?!]+)}" string "<div class='\\1'>\\2</div>"))
+
 (defun html-for-one-package (package)
   (with-open-file (file (format nil "~a/rameau-documentation/~(~a~).html" *rameau-path* package)
                         :direction :output :if-exists :supersede)
@@ -102,8 +108,10 @@
       (iter (for plist in (create-documentation-sexp package))
             (with test-file = (get-all-tests))
             (for name = (getf plist :name))
-            (for example = (find-test-body name test-file))
             (for docstring = (getf plist :docstring))
+            (for url = "http://bugs.genos.mus.br/repositories/entry/rameau/")
+            (for filename = (getf plist :source-file))
+            (for example = (find-test-body name test-file))
             (htm (:h2 (str name))
                  (:div :class "function-block"
                        (:div :class "function-arg-list"
@@ -112,12 +120,21 @@
                                  (iter (for arg in (getf plist :arglist))
                                        (if (member arg '(&optional &rest &key &body))
                                            (htm (:div :class "function-key" (str (stringify arg))))
-                                           (htm (:div :class "function-arg" (str (stringify arg)))))
-                                       )))
-                       (when docstring (htm (:p (str docstring))))
-                       (:p "defined in " (str (getf plist :source-file)))
+                                           (htm (:div :class "function-arg" (str (stringify arg))))))))
+                       (when docstring (htm
+                                        (:br)
+                                        (:p :class "docstring"
+                                            (str (htmlize-docstring docstring))
+                                            "Defined in " (htm (:a :href (concat url filename)
+                                                                   (str (pathname-name filename)))))))
+                       
                        (:p "uses" (str (getf plist :uses)))
-                       (when example (htm (:p "Example: " (str example))))))))))
+                       (when example
+                         (htm (:p :class "example-header" "Example: ")
+                              (:div :class "example"
+                                    (fmt "~s" (third example))
+                                    (:br)
+                                    (fmt "=> ~s" (second example)))))))))))
 
 (defun create-documentation-for-all-packages ()
   (mapcar #'html-for-one-package *rameau-packages*))
