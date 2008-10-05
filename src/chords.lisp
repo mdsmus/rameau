@@ -59,7 +59,7 @@
   notes)
 
 (defun print-chord (struct stream depth)
-  "Print chord \\texttt{struct} to stream \\texttt{stream}, ignoring \\texttt{depth}."
+  "Print chord @var{struct} to stream @var{stream}, ignoring @var{depth}."
   (declare (ignore depth))
   (format stream "~:(~a~)~@[~a~]~@[~:(~a~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[/~:(~a~)~]"
           (chord-root struct)
@@ -76,8 +76,8 @@
           (chord-bass struct)))
 
 (defun print-augmented-sixth (struct stream depth)
-  "Print augmented sixth chord \\texttt{struct} to \\texttt{stream}
-  ignoring \\texttt{depth}."
+  "Print augmented sixth chord @var{struct} to @var{stream}
+  ignoring @var{depth}."
   (declare (ignore depth))
   (format stream "~:(~a+6~)" (augmented-sixth-type struct)))
 
@@ -134,7 +134,7 @@ position."
                       :13th 13th)))))
 
 (defun parse-chord (chord)
-  "Parse symbol or list \\texttt{chord} into a chord or melodic note
+  "Parse symbol or list @var{chord} into a chord or melodic note
   or augmented sixth."
   (typecase chord
     (list (case (first chord)
@@ -145,14 +145,14 @@ position."
 (defun read-chords (list)
   "[NOTEST]
 
-Parse the chords in list \\texttt{list}.
+Parse the chords in list @var{list}.
 "
   (mapcar #'parse-chord (expand-chords list)))
 
 (defun transpose-chord (c n)
   "[NOTEST]
 
-Transpose chord \\texttt{c} by \\texttt{n} pitches.
+Transpose chord @var{c} by @var{n} pitches.
 "
   (if (chord-p c)
       (make-chord :root (print-note (code->notename
@@ -200,8 +200,8 @@ Transpose chord \\texttt{c} by \\texttt{n} pitches.
           (stringify (augmented-sixth-type answer-sheet))))
 
 (defun compare-answer-sheet (answer answer-sheet &optional tempered?)
-  "Compare result \\texttt{answer} with answer-sheet
-\\texttt{answer-sheet}. True if they match."
+  "Compare result @var{answer} with answer-sheet
+@var{answer-sheet}. True if they match."
   (if (atom answer-sheet)
       (%compare-answer-sheet answer answer-sheet tempered?)
       (some (lambda (x) (%compare-answer-sheet answer x tempered?)) answer-sheet)))
@@ -209,7 +209,7 @@ Transpose chord \\texttt{c} by \\texttt{n} pitches.
 (defun add-inversion (segmento acorde)
   "[NOTEST]
 
-Label the chord \\texttt{acorde} with the inversion found in \\texttt{segmento}.
+Label the chord @var{acorde} with the inversion found in @var{segmento}.
 "
   (let ((inv (first (list-events segmento))))
     (if (chord-p acorde)
@@ -223,13 +223,13 @@ Label the chord \\texttt{acorde} with the inversion found in \\texttt{segmento}.
 (defun add-inversions (segmentos acordes)
   "[NOTEST]
 
-Label all chords in \\texttt{acordes} with the appropriate inversion
-according to the music in \\texttt{segmentos}.
+Label all chords in @var{acordes} with the appropriate inversion
+according to the music in @var{segmentos}.
 "
   (mapcar #'add-inversion segmentos acordes))
 
 (defun 7th-pitch (chord)
-  "The pitch of chord \\texttt{chord}'s seventh note."
+  "The pitch of chord @var{chord}'s seventh note."
   (let ((root (parse-note (chord-root chord))))
     (module
      (cond ((equal "7+" (chord-7th chord))

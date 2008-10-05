@@ -3,7 +3,7 @@
                           #:defparameter #:defvar #:defstruct #:defclass)
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:use :rameau :genoslib :cl :iterate :cl-lily)
-  (:documentation "The correctness statistics commands for \\texttt{rameau}"))
+  (:documentation "The correctness statistics commands for @var{rameau}"))
 
 (in-package :rameau-stat)
 

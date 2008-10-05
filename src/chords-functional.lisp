@@ -13,7 +13,7 @@
   chord has a seventh>.")
 
 (defun print-fchord (struct stream depth)
-  "Print \\texttt{struct} to \\texttt{stream}."
+  "Print @var{struct} to @var{stream}."
   (declare (ignore depth))
   (if (fchord-key struct)
       (format stream "~a: ~a~a~a"

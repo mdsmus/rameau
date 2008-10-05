@@ -14,7 +14,7 @@
       (values nil nil)))
 
 (defun group-with-start :private (musica)
-  "Group \\texttt{music} by the on-set times of the notes. [NOTEST]"
+  "Group @var{music} by the on-set times of the notes. [NOTEST]"
   (when musica
     (let* ((primeiro (first musica))
            (start (event-start primeiro))
@@ -85,5 +85,5 @@
       musica))
 
 (defun sonorities (musica)
-  "The minimal sonorities in \\texttt{musica}, a note sequence."
+  "The minimal sonorities in @var{musica}, a note sequence."
   (resplit-segments (group-with-start musica)))

@@ -1,5 +1,5 @@
 (defpackage :rameau-base
-  (:documentation "Macros to replace the standard \\texttt{def*} macros with
+  (:documentation "Macros to replace the standard @var{def*} macros with
 equivalents that export symbols by default.")
   (:shadow :defun :defmacro :defparameter :defvar :defstruct :defclass :defgeneric)
   (:use #:cl))

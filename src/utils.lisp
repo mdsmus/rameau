@@ -18,16 +18,16 @@
     (/ (* x 100.0) total)))
 
 (defun stringify (obj)
-  "Convert \\texttt{obj} to a string according to predefined conventions."
+  "Convert @var{obj} to a string according to predefined conventions."
   (let ((*package* (find-package :rameau)))
     (format nil "~(~a~)" obj)))
 
 (defun clip (size list)
-  "Clip \\texttt{list} to size \\texttt{size}."
+  "Clip @var{list} to size @var{size}."
   (remove-if #'null (firstn list size)))
 
 (defun insert (element list &key (less #'<) (key #'identity))
-  "Insert \\texttt{element} into \\texttt{list} in a sorted position."
+  "Insert @var{element} into @var{list} in a sorted position."
   (if list
       (let ((fe (funcall key element))
             (fl (funcall key (first list))))
@@ -67,7 +67,7 @@
                       (set-difference *dbg-ids* ids))))
 
 (defmacro defcached (funcname args &body body)
-  "Defines \\texttt{funcname} just as defun, but with a cache around it. [NOTEST]"
+  "Defines @var{funcname} just as defun, but with a cache around it. [NOTEST]"
   (labels ((varnames (symbols)
              (cons 'list
                    (loop for s in symbols unless (and (symbolp s)
@@ -81,7 +81,7 @@
                 (setf (gethash ,(varnames args) ,cache) (progn ,@body))))))))
 
 (defun concat (&rest strings)
-  "Concatenate strings \\texttt{strings}."
+  "Concatenate strings @var{strings}."
   (apply #'concatenate 'string strings))
 
 (defun sort-set (set)
@@ -89,26 +89,26 @@
   (sorted set #'<))
 
 (defun rotations (list)
-  "Get all rotations possible for \\texttt{list}."
+  "Get all rotations possible for @var{list}."
   (iter (for i from 0 below (length list))
         (collect (append (last list i)
                          (butlast list i)))))
 
 (defun skip-initial-element (element list &key (test #'equal))
-  "Skip every initial occurence of \\texttt{element} in \\texttt{list}."
+  "Skip every initial occurence of @var{element} in @var{list}."
   (if (funcall test element (first list))
       (skip-initial-element element (rest list) :test test)
       list))
 
 (defun count-subseq (sub seq &optional (start -1) (acc 0))
-  "Count the number of occurences of \\texttt{sub} in \\texttt{seq}."
+  "Count the number of occurences of @var{sub} in @var{seq}."
   (let ((s (search sub seq :start2 (+ start 1))))
     (if s
         (count-subseq sub seq s (+ acc 1))
         acc)))
 
 (defun smallest (list &optional (test #'identity))
-  "The smallest element of \\texttt{list}, according to \\texttt{test}."
+  "The smallest element of @var{list}, according to @var{test}."
   (when list
     (reduce #'min list :key test)))
 
@@ -119,16 +119,16 @@
     (dotimes (i (abs n)) (format s string))))
 
 (defun advance-all (list)
-  "Advances every list in \\texttt{list}."
+  "Advances every list in @var{list}."
   (mapcar #'cdr list))
 
 (defun assoc-item (item alist)
-  "Returns the item keyed by \\texttt{item} from the alist \\texttt{alist}. "
+  "Returns the item keyed by @var{item} from the alist @var{alist}. "
   (second (assoc item alist)))
 
 (defun mostn (pred list)
-  "Reimplementation of \\texttt{mostn} from On Lisp. Finds the elements of \\texttt{list}
-that have the largest value according to \\texttt{pred}."
+  "Reimplementation of @var{mostn} from On Lisp. Finds the elements of @var{list}
+that have the largest value according to @var{pred}."
   (when list
     (let ((max-value (funcall pred (first list)))
           (list-max nil))
@@ -141,7 +141,7 @@ that have the largest value according to \\texttt{pred}."
       list-max)))
 
 (defun file-string (path)
-  "Suck up an entire file from \\texttt{path} into a freshly-allocated string,
+  "Suck up an entire file from @var{path} into a freshly-allocated string,
 returning two values: the string and the number of bytes read. [NOTEST]"
   (with-open-file (s path #+sbcl :external-format #+sbcl :utf-8 )
     (let* ((len (file-length s))
@@ -150,7 +150,7 @@ returning two values: the string and the number of bytes read. [NOTEST]"
       (values data (read-sequence data s)))))
 
 (defun binary-file-string (path)
-  "Suck up an entire file from \\texttt{path} into a freshly-allocated byte-string,
+  "Suck up an entire file from @var{path} into a freshly-allocated byte-string,
 returning two values: the string and the number of bytes read. [NOTEST]"
   (with-open-file (s path #+sbcl :element-type '(unsigned-byte 8) )
     (let ((file-data (make-array (file-length s)
@@ -159,39 +159,39 @@ returning two values: the string and the number of bytes read. [NOTEST]"
       file-data)))
 
 (defun firstn (list n)
-  "Return the first \\texttt{n} elements of \\texttt{list}, or \\texttt{n} nulls."
+  "Return the first @var{n} elements of @var{list}, or @var{n} nulls."
   (loop for i from 0 to (1- n) collect
         (nth i list)))
 
 (defun repeat-list (n list)
-  "Repeat \\texttt{n} times the element \\texttt{list}, forming a list."
+  "Repeat @var{n} times the element @var{list}, forming a list."
   (if (> n 0)
       (cons list (repeat-list (- n 1) list))))
 
 (defun read-from-string-as-sexp (file &optional (case :upcase))
-  "Read from string \\texttt{file} as a single sexp. [NOTEST]"
+  "Read from string @var{file} as a single sexp. [NOTEST]"
   (let ((*readtable* (copy-readtable *readtable*)))
     (setf (readtable-case *readtable*) case)
     (read-from-string (format nil "(~a)" file))))
 
 (defun read-file-as-sexp (file &optional (case :upcase))
-  "Read file named \\texttt{file} as a single sexp. [NOTEST]"
+  "Read file named @var{file} as a single sexp. [NOTEST]"
   (read-from-string-as-sexp (file-string file) case))
 
 (defun unzip (lista)
-  "Transform the list of pairs \\texttt{lista} in a pair of lists."
+  "Transform the list of pairs @var{lista} in a pair of lists."
   (loop for el in lista
         nconc (list (first el)) into lista1
         nconc (list (second el)) into lista2
         finally (return (values lista1 lista2))))
 
 (defun get-item (item lista &optional (test #'equal))
-  "Get item keyed by \\texttt{item} in alist \\texttt{lista}. It uses
+  "Get item keyed by @var{item} in alist @var{lista}. It uses
 equal by default, so it is good for getting string keys."
   (second (assoc item lista :test test)))
 
 (defun sorted (lista ord &key (key #'identity))
-  "Returns a sorted copy of list \\texttt{lista} ordered by \\texttt{ord}."
+  "Returns a sorted copy of list @var{lista} ordered by @var{ord}."
   (sort (copy-list lista) ord :key key))
 
 (defun mapcar2 (fn1 fn2 list)
@@ -199,20 +199,20 @@ equal by default, so it is good for getting string keys."
   (mapcar (lambda (x) (funcall fn1 (funcall fn2 x))) list))
 
 (defun group (lista n)
-  "Groups the elements of \\texttt{lista} in groups of \\texttt{n} elements.
-Every element is part of \\texttt{n} groups. The list is padded with nulls."
+  "Groups the elements of @var{lista} in groups of @var{n} elements.
+Every element is part of @var{n} groups. The list is padded with nulls."
   (when lista
     (cons (firstn lista n) (group (rest lista) n))))
 
 (defun contextualize (segments before after)
-  "Contextualize music \\texttt{segments} by putting \\texttt{before} segments before and \\texttt{after} segments after each segment."
+  "Contextualize music @var{segments} by putting @var{before} segments before and @var{after} segments after each segment."
   (butlast (group (append (repeat-list before nil) segments)
                   (+ 1 before after))
            (max 0 (1- after))))
 
 (defun string-member (item list)
-  "Tests whether there is an item in \\texttt{list} with the same
-string representation as \\texttt{item}."
+  "Tests whether there is an item in @var{list} with the same
+string representation as @var{item}."
   (member (stringify item) list :test #'equal :key #'stringify))
 
 ;; Alist helper functions
@@ -222,7 +222,7 @@ string representation as \\texttt{item}."
   (list nil))
 
 (defun apush (obj place)
-  "Destructively modifies list \\texttt{place} and puts \\texttt{obj}
+  "Destructively modifies list @var{place} and puts @var{obj}
 as its car."
   (let ((ap (car place))
         (dp (cdr place)))
@@ -231,8 +231,8 @@ as its car."
   place)
 
 (defun aget (key list &optional default)
-  "Get element keyed by \\texttt{key} from alist \\texttt{list}. If it
-does not exist, insert and return \\texttt{default} unless default is
+  "Get element keyed by @var{key} from alist @var{list}. If it
+does not exist, insert and return @var{default} unless default is
 null or 'erro."
   (aif (assoc key list :test #'equal)
        (second it)
@@ -242,13 +242,13 @@ null or 'erro."
          default)))
 
 (defmacro aset (key list value)
-  "Set the value for \\texttt{key} in alist \\texttt{list}."
+  "Set the value for @var{key} in alist @var{list}."
   `(if (eq 'erro (aget ,key ,list 'erro))
        (apush (list ,key ,value) ,list)
        (setf (second (assoc ,key ,list :test #'equal)) ,value)))
 
 (defmacro aincf (key list &optional (amount 1))
-  "Increment the value of \\texttt{key} in alist \\texttt{list} by \\texttt{amount}."
+  "Increment the value of @var{key} in alist @var{list} by @var{amount}."
   `(if (eq 'erro (aget ,key ,list 'erro))
        (aset ,key ,list ,amount)
        (incf (car (cdr (assoc ,key ,list :test #'equal))) ,amount)))
@@ -259,7 +259,7 @@ null or 'erro."
        (* ,n ,n))))
 
 (defun distance (a b)
-  "The euclidian distance between lists \\texttt{a} and \\texttt{b}."
+  "The euclidian distance between lists @var{a} and @var{b}."
   (if (and a b)
       (loop for i in a
             for j in b
@@ -267,11 +267,11 @@ null or 'erro."
       most-positive-fixnum))
 
 (defun make-keyword (string)
-  "Make \\texttt{string} into a keyword."
+  "Make @var{string} into a keyword."
   (intern (string-upcase string) (find-package :keyword)))
 
 (defun sublist-of-args (list char)
-  "Return the sublist of \\texttt{list} for the arg in \\texttt{char}."
+  "Return the sublist of @var{list} for the arg in @var{char}."
   ;; tem um bug quando repete proxima flag imediatamente: (@a foo @a bar)
   ;; entra em loop recursivo
   (labels ((next-flag (list)
@@ -293,8 +293,8 @@ null or 'erro."
            (list list)))))
 
 (defun argmax (function start end)
-  "The maximum \\texttt{n} between \\texttt{start} and \\texttt{end}
-  according to \\texttt{function}."
+  "The maximum @var{n} between @var{start} and @var{end}
+  according to @var{function}."
   (let ((argmax 0)
         (max most-negative-double-float))
     (iter (for column from start below end)
@@ -305,7 +305,7 @@ null or 'erro."
     (values argmax max)))
 
 (defun normalize (zero one min max value)
-  "Draw a line from \\texttt{zero} = \\texttt{min} to \\texttt{one} = \\texttt{max} and find \\texttt{value} in it." 
+  "Draw a line from @var{zero} = @var{min} to @var{one} = @var{max} and find @var{value} in it." 
   (let ((value (- value min))
         (max (- max min)))
     (if (/= 0 max)

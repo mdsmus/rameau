@@ -43,14 +43,14 @@
   ((arguments :accessor get-args :initform (make-hash-table :test #'eql))))
 
 (defun arg (name options)
-  "Get option named \\texttt{name} from \\texttt{options}."
+  "Get option named @var{name} from @var{options}."
   (gethash name (get-args options)))
 
 (defsetf arg (name options) (value)
   `(setf (gethash ,name (get-args ,options)) ,value))
 
 (defun make-default-arguments (command)
-  "Make default arguments for \\texttt{rameau}."
+  "Make default arguments for @var{rameau}."
   (let ((options (make-instance 'arguments-table)))
     (iter (for (short long doc init list) in (get-all-flags command))
           (for cmd = (make-keyword long))
@@ -59,7 +59,7 @@
     options))
 
 (defun parse-file-name (exp options)
-  "Parse a file name \\texttt{exp} with the options in \\texttt{options}."
+  "Parse a file name @var{exp} with the options in @var{options}."
   (unless (search ":" exp)
     (error "expression should be in the format <substring>:<expression>"))
   (let* ((tmp (cl-ppcre:split ":" exp))

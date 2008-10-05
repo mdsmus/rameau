@@ -2,7 +2,7 @@
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:use :rameau :cl-lily :cl :cl-ppcre :iterate :genoslib :cl-who :hunchentoot :md5 :cl-store)
   (:export #:start-rameau-web)
-  (:documentation "The web interface for \\texttt{rameau}"))
+  (:documentation "The web interface for @var{rameau}"))
 
 (in-package :rameau-web)
 
@@ -348,7 +348,7 @@ baixo = \\relative c {
 (push (create-prefix-dispatcher "/rameau/clear-cache" 'clear-cache) *dispatch-table*)
 
 (defun start-rameau-web (port)
-  "Start the web server for \\texttt{rameau}."
+  "Start the web server for @var{rameau}."
   (start-server :port port))
 
 ;;(start-rameau-web)

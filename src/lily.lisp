@@ -37,7 +37,7 @@
                          "}")))
 
 (defun frac->dur-lily (dur)
-  "Convert duration \\texttt{dur} to a lilypond-style duration"
+  "Convert duration @var{dur} to a lilypond-style duration"
   (let ((numer (numerator (abs dur)))
         (denom (denominator (abs dur))))
     (cond ((= numer 1) (format nil "~a" denom))

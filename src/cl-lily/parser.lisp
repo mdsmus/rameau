@@ -225,7 +225,7 @@
 (defun parse-repeat-block :private (a i b ig dur ign block)
   "[NOTEST]
 
-Parse a \\texttt{repeat} block using lilypond syntax.
+Parse a @var{repeat} block using lilypond syntax.
 "
   (make-instance 'music-block :expr block :text (list a i b ig dur ign block)))
 
@@ -334,7 +334,7 @@ Parse an entire lilypond file.
 (defun ignore-middle :private (a ignore b)
   "[NOTEST]
 
-Ignore the middle argument, \\texttt{ignore}, and make a music-list
+Ignore the middle argument, @var{ignore}, and make a music-list
 with the other ones.
 "
   (make-instance 'music-list :expr (cons a b) :text (list a ignore b)))
@@ -393,7 +393,7 @@ with the other ones.
 (defmethod correct-times (times tree))
 
 (defgeneric print-ast (astnode)
-  (:documentation "Print the file represented by the ast note \\texttt{astnode}."))
+  (:documentation "Print the file represented by the ast note @var{astnode}."))
 
 (defmethod print-ast ((node string))
   node)
@@ -427,7 +427,7 @@ with the other ones.
   node)
 
 (defgeneric children (node)
-  (:documentation "List the immediate childs of \\texttt{node}"))
+  (:documentation "List the immediate childs of @var{node}"))
 
 (defmethod children ((node ast-node))
   (expand-if-list (node-expr node)))
@@ -450,7 +450,7 @@ with the other ones.
   (nconc (expand-if-list (car (node-expr node))) (expand-if-list (cdr (node-expr node)))))
 
 (defgeneric %get-children-by-type (node type)
-  (:documentation "List the childs of \\textt{node} that are of type \\texttt{type}"))
+  (:documentation "List the childs of \\textt{node} that are of type @var{type}"))
 
 (defmethod %get-children-by-type ((node ast-node) type)
   (if (typep node type)
@@ -468,7 +468,7 @@ with the other ones.
 (defmethod %get-children-by-type (node type))
 
 (defun get-children-by-type (ast type)
-  "The child nodes of \\texttt{ast} having type \\texttt{type}."
+  "The child nodes of @var{ast} having type @var{type}."
   (if (and (listp ast) (numberp (car ast)))
       (remove-if #'null (flatten (%get-children-by-type (cdr ast) type)))
       (remove-if #'null (flatten (%get-children-by-type ast type)))))
@@ -548,7 +548,7 @@ with the other ones.
       node))
 
 (defun get-ast-string (str)
-  "Get the ast from string \\texttt{str}."
+  "Get the ast from string @var{str}."
   (let ((*environment* nil)
         (*dur* 1/4)
         (*current-key* '(c major))
@@ -557,7 +557,7 @@ with the other ones.
     (cons *anacruz* (yacc:parse-with-lexer (string-lexer str) *expression-parser*))))
 
 (defun get-parsed-notes (ast)
-  "Get the notes in the ast \\texttt{ast}."
+  "Get the notes in the ast @var{ast}."
   (let ((anacruz (first ast))
         (ast (rest ast)))
     (move-sequence (remove-if (lambda (x) (null (event-pitch x)))
@@ -567,13 +567,13 @@ with the other ones.
                    anacruz)))
 
 (defun get-parsed-notes-string (str)
-  "Get the notes from the music in \\texttt{str}."
+  "Get the notes from the music in @var{str}."
   (get-parsed-notes (get-ast-string str)))
 
 (defun parse-file (filename)
   "[NOTEST]
 
-Parse lilypond file \\texttt{filename} as a sequence of notes.
+Parse lilypond file @var{filename} as a sequence of notes.
 "
   (when (cl-fad:file-exists-p filename)
     (let ((*filename* filename))
@@ -583,7 +583,7 @@ Parse lilypond file \\texttt{filename} as a sequence of notes.
 (defun file-ast (filename)
   "[NOTEST]
 
-Parse lilypond file \\texttt{filename} as an ast.
+Parse lilypond file @var{filename} as an ast.
 "
   (when (cl-fad:file-exists-p filename)
     (let ((*filename* filename))
