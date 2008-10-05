@@ -9,6 +9,9 @@ docs/view-hmm-trans-probabilities.png
 docs/view-hmm-prior-probabilities.png
 algorithms/*.store
 auto
+src/cl-lily/*.fasl
+src/commands/*.fasl
+src/tests/*.fasl
 src/algorithms/*.fasl
 src/algorithms/*.o
 src/algorithms/*.fas
@@ -22,12 +25,3 @@ docs/choral-book/*.aux
 docs/choral-book/*.dvi
 docs/choral-book/*.log
 docs/choral-book/*.tex
-corais/
-anppom/
-icmc-presentation/*.aux
-icmc-presentation/*.log
-icmc-presentation/*.out
-icmc-presentation/*.pdf
-icmc-presentation/*.snm
-icmc-presentation/*.nav
-icmc-presentation/*.toc*
