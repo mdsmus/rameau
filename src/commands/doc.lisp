@@ -47,12 +47,21 @@
   (mapcar #'(lambda (item) (if (listp item) (second item) item))
           (remove-if-not #'rameau-package-p list)))
 
+(defun parse-documentation (docstring)
+  (when docstring
+    (string-trim "[NOTEST]" docstring)))
+
+(defun find-test-body (test-name test-file)
+  (flet ((get-first-test (test-list)
+           (second (third (first test-list)))))
+    (get-first-test (remove-if-not #L(eql test-name (second !1)) test-file))))
+
 (defun document-function-or-macro :private (symbol &key (type :function) used-by-p)
   (append (list :package-name (get-package-name symbol)
-                :name (stringify symbol)
+                :name symbol
                 :type type
                 :arglist (stringify `(,symbol ,@(swank-backend:arglist symbol)))
-                :docstring (documentation symbol 'function)
+                :docstring (parse-documentation (documentation symbol 'function))
                 :source-file (find-source-file-of-function symbol))
           (when (eql type :function)
             (list :uses (remove-functions-not-in-rameau (function-uses symbol))
@@ -69,9 +78,7 @@
 
 (defmacro html-page (stream title &body body)
   `(with-html-output (,stream nil :prologue t :indent t)
-     (:html :xmlns :xmlns "http://www.w3.org/1999/xhtml"
-            :xml\:lang "en" 
-            :lang "en"
+     (:html
             (:head 
              (:meta :http-equiv "Content-Type" 
                     :content    "text/html;charset=utf-8")
@@ -83,22 +90,30 @@
             (:body
              ,@body))))
 
+(defun get-all-tests ()
+  (mapcan #'read-file-as-sexp (directory (concat *rameau-path* "src/tests/*.lisp"))))
+
 (defun html-for-one-package (package)
-  (with-open-file (file (concat *rameau-path* "/rameau-documentation/rameau.html")
-                        :direction :output :if-exists :supersede)    
+  (with-open-file (file (format nil "~a/rameau-documentation/~(~a~).html" *rameau-path* package)
+                        :direction :output :if-exists :supersede)
     (html-page file "Rameau API Documentation"
       (:h1 (str package))
       (:p1 (str (documentation (find-package package) t)))
       (iter (for plist in (create-documentation-sexp package))
-            (htm (:h2 (str (getf plist :name)))
+            (with test-file = (get-all-tests))
+            (for name = (getf plist :name))
+            (for example = (find-test-body name test-file))
+            (for docstring = (getf plist :docstring))
+            (htm (:h2 (str name))
                  ;;(getf plist :type)
                  (:p "Syntax: " (str (getf plist :arglist)))
-                 (:p (str (getf plist :docstring)))
+                 (when docstring (htm (:p (str docstring))))
                  (:p "defined in " (str (getf plist :source-file)))
-                 (:p "uses" (str (getf plist :uses))))))))
+                 (:p "uses" (str (getf plist :uses)))
+                 (when example (htm (:p "Example: " (str example)))))))))
 
 (defun create-documentation-for-all-packages ()
-  (mapcar #'create-documentation-sexp *rameau-packages*))
+  (mapcar #'html-for-one-package *rameau-packages*))
 
 (defun document (options)
   (declare (ignore options))
