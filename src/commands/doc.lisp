@@ -1,7 +1,7 @@
 (defpackage :rameau-doc
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
-  (:use :rameau :cl :iterate :genoslib))
+  (:use :rameau :cl :iterate :genoslib :cl-who))
 
 (in-package :rameau-doc)
 
@@ -47,24 +47,55 @@
   (mapcar #'(lambda (item) (if (listp item) (second item) item))
           (remove-if-not #'rameau-package-p list)))
 
-(defun document-function-or-macro :private (symbol &optional (type :function))
+(defun document-function-or-macro :private (symbol &key (type :function) used-by-p)
   (append (list :package-name (get-package-name symbol)
                 :name (stringify symbol)
                 :type type
-                :arglist (stringify (swank-backend:arglist symbol))
+                :arglist (stringify `(,symbol ,@(swank-backend:arglist symbol)))
                 :docstring (documentation symbol 'function)
                 :source-file (find-source-file-of-function symbol))
           (when (eql type :function)
             (list :uses (remove-functions-not-in-rameau (function-uses symbol))
-                  ;;
-                  ))))
+                  :used-by
+                  (when used-by-p
+                    (remove-functions-not-in-rameau (functions-used-by symbol)))))))
 
 (defun create-documentation-sexp :private (package)
   (iter (for symbol in-package package :external-only t)
         (when (fboundp symbol)
           (collect (if (macro-function symbol)
-                       (document-function-or-macro symbol :macro)
-                       (document-function-or-macro symbol :function))))))
+                       (document-function-or-macro symbol :type :macro)
+                       (document-function-or-macro symbol :type :function))))))
+
+(defmacro html-page (stream title &body body)
+  `(with-html-output (,stream nil :prologue t :indent t)
+     (:html :xmlns :xmlns "http://www.w3.org/1999/xhtml"
+            :xml\:lang "en" 
+            :lang "en"
+            (:head 
+             (:meta :http-equiv "Content-Type" 
+                    :content    "text/html;charset=utf-8")
+             (:title ,title)
+             (:link :rel "icon"
+                  :type "image/gif"
+                  :href "/favicon.ico")
+             (:link :rel "stylesheet" :href "documentation.css"))
+            (:body
+             ,@body))))
+
+(defun html-for-one-package (package)
+  (with-open-file (file (concat *rameau-path* "/rameau-documentation/rameau.html")
+                        :direction :output :if-exists :supersede)    
+    (html-page file "Rameau API Documentation"
+      (:h1 (str package))
+      (:p1 (str (documentation (find-package package) t)))
+      (iter (for plist in (create-documentation-sexp package))
+            (htm (:h2 (str (getf plist :name)))
+                 ;;(getf plist :type)
+                 (:p "Syntax: " (str (getf plist :arglist)))
+                 (:p (str (getf plist :docstring)))
+                 (:p "defined in " (str (getf plist :source-file)))
+                 (:p "uses" (str (getf plist :uses))))))))
 
 (defun create-documentation-for-all-packages ()
   (mapcar #'create-documentation-sexp *rameau-packages*))
