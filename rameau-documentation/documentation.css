@@ -1,7 +1,7 @@
 .function-block {
     margin-left: 2em;
     margin-right: 2em;
-    padding-top: 5em;
+    clear: both;
 }
 
 .function-arg-list {
@@ -14,7 +14,7 @@
     margin-left: 5em;
     margin-bottom: 1em;
     float: left;
-    clear: left;
+    clear: both;
     padding-right: 1em;
     background-color: #eeeeff;
 }
@@ -51,7 +51,7 @@
     font-weight :bold;
     font-size: 12pt;
     font-family: verdana,arial,helvetica,sans-serif;
-    clear: left;
+    clear: both;
 }
 
 .example, .docstring, .uses-body {
@@ -105,12 +105,12 @@ h1 {
 }
 
 body {
-    background: #aaaadd;
+    background: #ddddff;
     font-family: sans-serif;
 }
 
 div.main {
-    background: #ccccff;
+    background: #eeeeff;
     opacity: 90%;
     width: 50em;
     margin: auto;

@@ -141,14 +141,13 @@ class is foo and content is bar."
                                    (if (member arg '(&optional &rest &key &body))
                                        (htm (:span :class "function-key" (str (stringify arg))))
                                        (htm (:span :class "function-arg" (str (stringify arg))))))))
-                   (when docstring
-                     (htm
-                      (:br)
-                      (:p :class "example-header" "Description:")
-                      (:p :class "docstring"
-                          (str (htmlize-docstring docstring))
-                          "Defined in " (htm (:a :href (concat url filename)
-                                                 (str (pathname-name filename)))))))
+                   (htm
+                    (:br)
+                    (:p :class "example-header" "Description:")
+                    (:p :class "docstring"
+                        (str (htmlize-docstring (or docstring "")))
+                        "Defined in " (htm (:a :href (concat url filename)
+                                               (str (pathname-name filename))))))
                    (when uses
                      (htm (:p :class "example-header" "Uses:")
                           (:p :class "uses-body"
