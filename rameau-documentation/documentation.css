@@ -1,44 +1,39 @@
-.function-arg-list {
-    font-family: mono;
-    display: inline-block;
-    border: solid 2px #cccccc;
-    border-collapse: collapse;
-    padding-left: 1em;
-    padding-right: 1em;
-    padding-bottom: .5em;
-    background-color: #eeeeff;
-}
-
 .function-block {
     margin-left: 2em;
 }
 
+.function-arg-list {
+    font-family: mono;
+    display: inline-block;
+    line-height: 0px;
+    border: solid 2px #cccccc;
+    border-collapse: collapse;
+    padding-left: 1em;
+    padding-right: 1em;
+    background-color: #eeeeff;
+}
+
 .function-key {
     color :magenta;
-    display: inherit;
 }
 
 .function-arg {
     font-style: italic;
-    display: inherit;
 }
 
 .function-name {
     font-weight :bold;
-    display: inherit;
     padding-right: 1pt;
 }
 
-p.docstring {
-    display: inline-block;
+.docstring {
     text-align: justify;
-    padding-right: 1pt;
+    padding-right: 2pt;
+    width: 65%;
 }
 
 .var {
-    padding-left: 1pt;
     font-style: italic;
-    display: inline-block;
 }
 
 .example-header {
@@ -47,10 +42,13 @@ p.docstring {
     font-family: verdana,arial,helvetica,sans-serif;
 }
 
+.example, .docstring, .uses-body {
+    margin-left: 2em;
+}
+
 .example {
     font-family: mono;
     display: inline-block;
-    margin-left: 2em;
     border: dotted 2px #cccccc;
     border-collapse: collapse;
     padding: 1em;
@@ -60,4 +58,10 @@ h2 {
     font-family: verdana,arial,helvetica,sans-serif;
     color: #000066;
     font-size: 12pt;
+    margin-top: 3em;
+    width: 68%;
+}
+
+.function-type {
+    float: right;
 }
