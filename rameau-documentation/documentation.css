@@ -1,0 +1,36 @@
+.function-arg-list {
+    font-family: mono;
+    display: inline-block;
+    border: solid 2px #cccccc;
+    border-collapse: collapse;
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-bottom: .5em;
+    background-color: #eeeeff;
+}
+
+.function-block {
+    margin-left: 2em;
+}
+
+.function-key {
+    color :magenta;
+    display: inherit;
+}
+
+.function-arg {
+    font-style: italic;
+    display: inherit;
+}
+
+.function-name {
+    font-weight :bold;
+    display: inherit;
+    padding-right: 1pt;
+}
+
+h2 {
+    font-family: verdana,arial,helvetica,sans-serif;
+    color: #000066;
+    font-size: 12pt;
+}
