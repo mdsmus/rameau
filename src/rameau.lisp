@@ -113,6 +113,8 @@ Exit @rameau.
   #+clisp(ext:exit)
   #+sbcl(sb-ext:quit))
 
+;; Compile this by hand if running under slime: (defun rameau-quit () (error "Quit."))
+
 (defun getenv (string)
   "[NOTEST]
 

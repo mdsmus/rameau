@@ -146,7 +146,8 @@
 
 (defun prepare-training-data-net (coral gabarito &optional
                                   (diff-func #'extract-diffs)
-                                  (feature #'make-sonority-pattern))
+                                  (feature #'make-sonority-pattern)
+                                  (chord #'make-chord-answer-pattern))
   (loop for c in coral
         for gab in gabarito
         for ds = (funcall diff-func c)
@@ -156,18 +157,18 @@
         else
         nconc (loop for d in ds
                     nconc (list (list (funcall feature c d)
-                                      (make-chord-answer-pattern gab d))))))
+                                      (funcall chord gab d))))))
 
 (defun run-my-net (x net extract-diff-fn fn)
   (let ((d (funcall extract-diff-fn x)))
     (get-class-chord-net d (run-net net (funcall fn x d)))))
 
-(defun write-data-set (data training-data value)
+(defun write-data-set (data training-data value &optional (chord-size 109))
   (let ((size (length data))
         (training-data (concat *neural-path* training-data)))
     (format t "* writing training data ~a~%" training-data)
     (with-open-file (f training-data :direction :output :if-exists :supersede)
-      (iter (initially (format f "~a ~a ~a~%" size value 109))
+      (iter (initially (format f "~a ~a ~a~%" size value chord-size))
             (for d in data)
             (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
             (format f "~{~a ~}~%" (second d))))))
@@ -319,3 +320,153 @@
 (add-algorithm (make-instance 'context-net
                               :name "EC-Net"
                               :description "A neural network classifier that considers surrounding sonorities as well."))
+
+;; The functional analysis contextual network
+
+(defparameter *tonal-key-size* (+ (get-module) 2))
+
+(defun extract-key-result (diff res)
+  (let ((pitch (iter (for i from 0 below (get-module))
+                     (for el in res)
+                     (finding i maximizing el)))
+        (mode (if (apply #'> (last res 2)) :major :minor)))
+    (make-tonal-key :center-pitch (module (+ diff pitch)) :mode mode)))
+
+(defun make-key-result (diff key)
+  (let ((result (repeat-list *tonal-key-size* 0)))
+    (incf (nth (module (- (tonal-key-center-pitch key) diff)) result))
+    (if (eq (tonal-key-mode key) :major)
+        (incf (nth (get-module) result))
+        (incf (nth (1+ (get-module)) result)))
+    result))
+
+;; (extract-key-result 10 (make-key-result 10 (make-tonal-key :center-pitch 55 :mode :minor)))
+
+(defparameter *function-number-size* 7)
+(defparameter *function-accident-size* 3)
+(defparameter *function-modes* '(:major :minor :augmented :diminished :half-diminished))
+(defparameter *function-mode-size* (1+ (length *function-modes*)))
+(defparameter *total-function-size* (+ *function-number-size* *function-accident-size* *function-mode-size*))
+
+(defun extract-function-result (res)
+  (let ((number (subseq res 0 *function-number-size*))
+        (accidentals (subseq res *function-number-size* (+ *function-number-size* *function-accident-size*)))
+        (mode (last res *function-mode-size*)))
+    (make-roman-function :degree-number (1+ (iter (for i from 0) (for el in number) (finding i maximizing el)))
+                         :degree-accidentals (1- (iter (for i from 0) (for el in accidentals) (finding i maximizing el)))
+                         :mode (nth (iter (for i from 0) (for el in mode) (finding i maximizing el)) *function-modes*))))
+
+(defun make-function-result (function)
+  (let ((number (repeat-list *function-number-size* 0))
+        (accidentals (repeat-list *function-accident-size* 0))
+        (mode (repeat-list *function-mode-size* 0))
+        (rm (roman-function-degree-number function))
+        (ac (roman-function-degree-accidentals function))
+        (md (roman-function-mode function)))
+    (incf (nth (1- rm) number))
+    (incf (nth (min 1 (1+ (max -1 ac))) accidentals))
+    (incf (nth (or (position md *function-modes*) 0) mode))
+    (append number accidentals mode)))
+
+;; (extract-function-result (make-function-result (make-roman-function :degree-number 2 :degree-accidentals -1 :mode :minor)))
+
+(defun get-function-net (diff res)
+  (let ((key (extract-key-result diff (firstn res *tonal-key-size*)))
+        (function (extract-function-result (nthcdr *tonal-key-size* res))))
+    (make-fchord :key key :roman-function function)))
+
+(defun function-net-result (fchord diff)
+  (append (make-key-result diff (fchord-key fchord)) (make-function-result (fchord-roman-function fchord))))
+
+(defun functional-training-data (alg)
+  (let* ((context-before (net-context-before alg))
+         (context-after (net-context-after alg)))
+    (labels ((context-extract-diffs (segmentos)
+               (extract-diffs (nth context-before segmentos)))
+             (context-extract-diff (segmento)
+               (extract-diff (nth context-before segmento)))
+             (context-extract-features (segmento &optional diff)
+               (let ((diff (or diff (context-extract-diff segmento))))
+                 (loop for s in segmento nconc (make-sonority-pattern s diff)))))
+      (loop for (a b) in *training-data* nconc
+            (prepare-training-data-net (contextualize a context-before context-after)
+                                       b
+                                       #'context-extract-diffs
+                                       #'context-extract-features
+                                       #'function-net-result)))))
+
+(defun functional-data-set (alg)
+  (write-data-set (functional-training-data alg)
+                  (context-data alg)
+                  (* (+ 1 (net-context-after alg) (net-context-before alg)) *value*)
+                  (+ *tonal-key-size* *total-function-size*)))
+
+(defun train-functional-net (alg)
+  (let ((fann-file (context-fann alg))
+        (data-file (context-data alg))
+        net)
+    (declare (special net))
+    (unless (cl-fad:file-exists-p (concat *neural-path* data-file))
+      (functional-data-set alg))
+    (unless (cl-fad:file-exists-p (concat *neural-path* fann-file))
+      (train-net 'net
+                 data-file
+                 (* (+ 1 (net-context-after alg) (net-context-before alg)) *value*)
+                 fann-file
+                 (context-hidden-units alg)))))
+
+(defun run-fun-net (x net extract-diff-fn fn)
+  (let ((d (funcall extract-diff-fn x)))
+    (get-function-net d (run-net net (funcall fn x d)))))
+
+(defun apply-functional-net (inputs options alg)
+  (let* ((fann-file (concat *neural-path* (context-fann alg)))
+         (context-before (net-context-before alg))
+         (context-after (net-context-after alg))
+         (context (butlast (contextualize inputs context-before context-after)
+                           context-before))
+         net)
+    (labels ((context-extract-diff (segmentos)
+               (extract-diff (nth context-before segmentos)))
+             (context-extract-features (segmento &optional diff)
+               (let ((diff (or diff (context-extract-diff segmento))))
+                 (loop for s in segmento nconc (make-sonority-pattern s diff)))))
+      (if (cl-fad:file-exists-p fann-file)
+          (progn
+            (setf net (load-from-file fann-file))
+            (add-inversions inputs (mapcar #L(run-fun-net !1 net #'context-extract-diff #'context-extract-features)
+                                           context)))
+          (progn
+            (train-functional-net alg)
+            (apply-functional-net inputs options alg))))))
+
+
+(defclass functional-net (rameau-algorithm)
+  ((context-data :accessor context-data :initarg :data :initform "functional-train.data" )
+   (context-fann :accessor context-fann :initarg :fann :initform "functional.fann" )
+   (context-before :accessor net-context-before :initarg :context-before :initform 1)
+   (context-after :accessor net-context-after :initarg :context-after :initform 3)
+   (hidden-units :accessor context-hidden-units :initarg :units :initform 22)
+   (version)))
+
+(defmethod functional-analysis (segments options (alg functional-net))
+  (apply-functional-net segments options alg))
+
+(defmethod do-options ((alg functional-net) options)
+  (awhen (aget :context-data (arg :options options))
+    (setf (context-data alg) it))
+  (awhen (aget :context-fann (arg :options options))
+    (setf (context-fann alg) it))
+  (awhen (aget :hidden-units (arg :options options))
+    (setf (context-hidden-units alg) it))
+  (awhen (aget :context-before (arg :options options))
+    (setf (net-context-before alg) it))
+  (awhen (aget :context-after (arg :options options))
+    (setf (net-context-after alg) it))
+  (when (aget :train (arg :options options))
+    (format t "Training functional net...~%")
+    (train-functional-net alg)))
+
+(add-falgorithm (make-instance 'functional-net
+                              :name "Tsui"
+                              :description "A neural network classifier for roman numeral functional analysis."))

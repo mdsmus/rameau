@@ -53,4 +53,4 @@ roman numeral functional analysis algorithms."
 
 (register-command :name "funalg"
                   :documentation "Give the specified roman numeral functional analysis algorithms the options passed with -o. Used for training."
-                  :action #'algorithms)
+                  :action #'funalg)
