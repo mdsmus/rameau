@@ -118,7 +118,7 @@ class is foo and content is bar."
   (with-open-file (file (format nil "~a/rameau-documentation/~(~a~).html" *rameau-path* package)
                         :direction :output :if-exists :supersede)
     (html-page file "Rameau API Documentation"
-      (:h1 (str package))
+      (:h1 (str (escape-string (string-upcase (stringify package)))))
       (:p1 (str (htmlize-docstring (documentation (find-package package) t))))
       (iter (for plist in (create-documentation-sexp package))
             (with test-file = (get-all-tests))
@@ -133,21 +133,21 @@ class is foo and content is bar."
              (:div :class "function-type"
                    (:h2 (fmt "[~a]" (getf plist :type))))
              (:div :class "function-name-header"
-                   (:h2 (str name)))
+                   (:h2 (str (escape-string (string-upcase (stringify name))))))
              (:div :class "function-block"
                    (:div :class "function-arg-list"
                          (:p (:span :class "function-name" (fmt "~(~a~)" name))
                              (iter (for arg in (getf plist :arglist))
                                    (if (member arg '(&optional &rest &key &body))
-                                       (htm (:span :class "function-key" (str (stringify arg))))
-                                       (htm (:span :class "function-arg" (str (stringify arg))))))))
+                                       (htm (:span :class "function-key" (str (escape-string (stringify arg)))))
+                                       (htm (:span :class "function-arg" (str (escape-string (stringify arg)))))))))
                    (htm
                     (:br)
                     (:p :class "example-header" "Description:")
                     (:p :class "docstring"
-                        (str (htmlize-docstring (or docstring "")))
+                        (str (escape-string (htmlize-docstring (or docstring ""))))
                         "Defined in " (htm (:a :href (concat url filename)
-                                               (str (pathname-name filename))))))
+                                               (str (escape-string (pathname-name filename)))))))
                    (when uses
                      (htm (:p :class "example-header" "Uses:")
                           (:p :class "uses-body"
