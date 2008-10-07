@@ -145,7 +145,7 @@ class is foo and content is bar."
                     (:br)
                     (:p :class "example-header" "Description:")
                     (:p :class "docstring"
-                        (str (escape-string (htmlize-docstring (or docstring ""))))
+                        (str (htmlize-docstring (escape-string (or docstring ""))))
                         "Defined in " (htm (:a :href (concat url filename)
                                                (str (escape-string (pathname-name filename)))))))
                    (when uses
