@@ -199,15 +199,17 @@ Checks if terminal @var{f} supports unicode.
   (let ((segmento (sorted segmento #'event-<)))
     (event-pitch (first segmento))))
 
-(defun random-color ()
-  "A nice random color."
-  (min 0.5 (random 1.0)))
+(defparameter *all-colors*
+  (iter (for symbol in-package :cl-colors :external-only t) (when (equal #\+ (char (symbol-name symbol) 0)) (collect (symbol-value symbol)))))
+
+(cl-colors:red (first *all-colors*))
 
 (defun cairo-random-stroke-fill-colors ()
   "Random stroke and fill colors for use with cairo."
-  (let* ((red (rameau::random-color))
-         (green (rameau::random-color))
-         (blue (rameau::random-color)))
+  (let* ((color (nth (random (length *all-colors*)) *all-colors*))
+         (red (cl-colors:red color))
+         (green (cl-colors:green color))
+         (blue (cl-colors:blue color)))
     (cl-cairo2:set-source-rgb red green blue)
     (list red green blue)))
 
