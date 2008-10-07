@@ -30,7 +30,7 @@ lisp-files = $(wildcard src/*.asd src/*.lisp tools/*.lisp src/tests/*.lisp src/a
 neural-path = $(maindir)/algorithms/
 
 
-.PHONY: update clean all doc update
+.PHONY: update clean all doc
 
 default: rameau 
 
@@ -42,12 +42,6 @@ all-rameau: rameau cmurameau clisprameau
 
 check: rameau
 	./rameau check all
-
-get-rameau-deps:
-	git submodule init
-	git submodule update
-	cd rameau-deps/lisp-libs && git checkout master && git pull
-	cd rameau-deps/cl-fann && git checkout master && git pull
 
 train:
 	./rameau algorithms -o train
@@ -80,8 +74,12 @@ eclrameau: $(lisp-files)
 clisprameau: $(lisp-files)
 	${clisp} -x "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" -x "(load \"tools/make-image.lisp\")"
 
-update: get-rameau-deps
+update: 
 	git pull --rebase
+	git submodule init
+	git submodule update
+	cd rameau-deps/lisp-libs && git checkout master && git pull
+	cd rameau-deps/cl-fann && git checkout master && git pull
 
 coral:
 	./rameau anal -f chora:$(c) -a es-net -S
