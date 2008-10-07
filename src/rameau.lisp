@@ -20,7 +20,7 @@
 
 (defmethod perform-analysis (segments options (algorithm rameau-algorithm))
   (declare (ignore options algorithm))
-  (mapcar #L(make-chord :root (print-event-note (first !1))) segments))
+  (error "Chord labeling not implemented for this algorithm.~%"))
 
 
 (defgeneric functional-analysis (segments options algorithm)
@@ -28,7 +28,7 @@
 
 (defmethod functional-analysis (segments options (algorithm rameau-algorithm))
   (declare (ignore options algorithm))
-  (mapcar #L(make-fchord :function 1 :center (event-pitch (first !1)) :key-mode :major) segments))
+  (error "Functional analysis not implemented for this algorithm;~%"))
 
 (defgeneric do-options (algorithm options)
   (:documentation "Process algorithm-specific options"))
