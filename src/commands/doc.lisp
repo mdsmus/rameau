@@ -159,10 +159,26 @@ class is foo and content is bar."
                                  (:br)
                                  (fmt "=> ~(~s~)" (second example)))))))))))
 
+(defun make-index-page (packages)
+  (with-open-file (file (format nil "~a/rameau-documentation/index.html" *rameau-path*)
+                        :direction :output :if-exists :supersede)
+    (html-page file "Rameau API Documentation"
+      (:h1 "Rameau")
+      (:p1 "A system for automatic harmonic analysis")
+      (:h2 "Packages:")
+      (:ul 
+       (iter (for package in packages)
+             (htm (:li (:a :href (format nil "~(~a~).html" package)
+                           (fmt "~a" (string-capitalize package)))
+                       (:p (str
+                            (htmlize-docstring
+                             (documentation (find-package package) t)))))))))))
+
 ;;; Basic command
 (defun document (options)
   "Document rameau."
   (declare (ignore options))
+  (make-index-page *rameau-packages*)
   (mapcar #'html-for-one-package *rameau-packages*))
 
 (register-command :name "document"
