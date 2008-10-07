@@ -479,7 +479,9 @@ or # as a prefix (as in bvi or #iii)."
   "Print roman number function @var{function}"
   (declare (ignore depth))
   (let* ((roman (number->roman (roman-function-degree-number function)))
-         (roman (if (eq :major (roman-function-mode function)) (string-upcase roman) (string-downcase roman)))
+         (roman (if (eq :major (roman-function-mode function))
+                    (string-upcase roman)
+                    (string-downcase roman)))
          (mode (case (roman-function-mode function)
                  (:major "")
                  (:minor "")
@@ -494,7 +496,8 @@ or # as a prefix (as in bvi or #iii)."
   "Find the root of roman function @var{roman-function} and key @var{key}"
   (+ (tonal-key-center-pitch key)
      (roman-function-degree-accidentals roman-function)
-     (nth (1- (roman-function-degree-number roman-function)) (get-scale-mode (tonal-key-mode key)))))
+     (nth (1- (roman-function-degree-number roman-function))
+          (get-scale-mode (tonal-key-mode key)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
