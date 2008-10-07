@@ -50,13 +50,13 @@
 
 (defun rameau-new-test-snippet (function)
   (newline 2)
-  (snippet-insert (concat "(define-test " function "\n"
-                          "$>(assert-equal $${resultado} (" function " $${argumentos})$.))")))
+  (snippet-insert (concat "(test " function "\n"
+                          "$>(is ($${compara} $${resultado} (" function " $${argumentos}))$.))")))
 
 (defun rameau-new-test-existing-file (file function)
   (find-file file)
   (goto-char (point-min)) ; beginning-of-buffer
-  (if (word-search-forward (concat "(define-test " function) nil t)
+  (if (word-search-forward (concat "(test " function) nil t)
       (princ 1)
       (progn
         (goto-char (point-max))
@@ -82,7 +82,7 @@
     (let ((function (thing-at-point 'symbol)))
       (end-of-line)
       (newline-and-indent)
-      (snippet-insert "(assert-equal $${resultado} (" function " $${argumentos}))"))))
+      (snippet-insert "(is ($${compara} $${resultado} (" function " $${argumentos})))"))))
 
 (define-key slime-mode-map [(alt control u)] 'rameau-cria-teste-defun)
 (define-key slime-mode-map [(control return)] 'rameau-new-test)
@@ -119,7 +119,7 @@
                 (progn
                   (find-file test-file)
                   (goto-char (point-min)) ;; beginning-of-buffer
-                  (if (word-search-forward (concat "(define-test " function) nil t)
+                  (if (word-search-forward (concat "(test " function) nil t)
                       (progn
                         (beginning-of-defun)
                         (copy-sexp))
@@ -167,5 +167,31 @@
 (define-key slime-mode-map [(alt control r)] 'rameau-run-test)
 (define-key slime-mode-map [(alt control s)] 'rameau-show-test)
 (define-key slime-mode-map [(control return)] 'rameau-new-test)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun ide-rameau ()
+  (slime-switch-to-output-buffer)
+  (insert "(require :rameau)")
+  (slime-repl-return)
+  (delete-other-windows)
+  (split-window-vertically)
+  (rameau-dired)
+  (goto-char (point-min))
+  (enlarge-window 10)
+  (remove-hook 'slime-connected-hook 'ide-rameau))
+
+(defun run-rameau ()
+  (interactive)
+  (add-hook 'slime-connected-hook 'ide-rameau)
+  (slime))
+
+(defun comment-sexp ()
+  (interactive)
+  (mark-sexp)
+  ;;(comment-region)
+  )
+
+(global-set-key [f8] 'run-rameau)
 
 (provide 'rameau)

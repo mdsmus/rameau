@@ -1,8 +1,7 @@
-;;(add-to-list 'load-path "~/emacs/elisp/slime/")
-;;(add-to-list 'load-path "~/src/rameau/tools")
-
-;;(require 'slime)
-(require 'gnus-art)
+(autoload 'article-remove-trailing-blank-lines "gnus-art" t)
+(autoload 'article-strip-blank-lines "gnus-art" t)
+(autoload 'article-strip-leading-blank-lines "gnus-art" t)
+(autoload 'article-strip-multiple-blank-lines "gnus-art" t)
 
 (setq indent-tabs-mode nil
       lisp-simple-loop-indentation 1
