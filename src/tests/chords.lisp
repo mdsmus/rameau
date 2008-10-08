@@ -27,6 +27,14 @@
   (is (equalp (make-chord :root "bb" :mode "m" :7th "") (parse-chord "bbm")))
   (is (equalp (make-chord :root "a" :mode "" :7th "") (parse-chord "a"))))
 
+(test print-chord
+  (let ((s (make-string-output-stream)))
+    (format s "~a" (make-chord :root "a" :mode "m" :7th "7+"))
+    (is (equalp "Am7+" (get-output-stream-string s)))))
+
+(test read-chords
+  (is (equalp "Am" (format nil "~a" (first (read-chords '(Am)))))))
+
 (test transpose-chords
   (is (equalp 
     (list (parse-chord "D") (parse-chord "E"))

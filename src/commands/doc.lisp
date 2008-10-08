@@ -88,8 +88,8 @@
 
 (defun pprint-to-string (object)
   (let ((s (make-string-output-stream))
-        (*PRINT-RIGHT-MARGIN* 70)
-        (*PRINT-CASE* :downcase))
+        (*print-right-margin* 65)
+        (*print-case* :downcase))
     (pprint object s)
     (subseq (get-output-stream-string s) 1)))
 
@@ -165,7 +165,7 @@ class is foo and content is bar."
                           (:span :class "example"
                                  (str (pprint-to-string (third example)))
                                  (:br)
-                                 (str (pprint-to-string (second example))))))))))))
+                                 (str (concat "=> " (pprint-to-string (second example)))))))))))))
 
 (defun make-index-page (packages)
   (with-open-file (file (format nil "~a/rameau-documentation/index.html" *rameau-path*)
