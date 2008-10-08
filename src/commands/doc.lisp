@@ -87,10 +87,11 @@
   (mapcan #'read-file-as-sexp (directory (concat *rameau-path* "src/tests/*.lisp"))))
 
 (defun pprint-to-string (object)
-  (let ((s (make-string-output-stream)))
+  (let ((s (make-string-output-stream))
+        (*PRINT-RIGHT-MARGIN* 70)
+        (*PRINT-CASE* :downcase))
     (pprint object s)
     (subseq (get-output-stream-string s) 1)))
-
 
 ;; (pprint-to-string '(defun foo (bar) (+ bar 2 34534534534 5345345345345345 345345345345 sfdfsdfsdfsdfsdfsdfsdfsdf sd fsdfsdfsdf sdf sdf sdf sdf sd fsdf sdf sdf sd f)))
 ;;; HTML
@@ -118,15 +119,16 @@ class is foo and content is bar."
          (str2 (cl-ppcre:regex-replace-all "@rameau" str1 "<span class='rameau'>rameau</span>")))
     (cl-ppcre:regex-replace-all "@(\\w+){([\\w-@%?!:\\*.~/]+)}" str2 "<span class='\\1'>\\2</span>")))
 
-(defun html-for-one-package (package)
-  "Generate documentation for package @var{package}"
-  (format t "Generating documentation for package ~a.~%" package)
-  (with-open-file (file (format nil "~a/rameau-documentation/~(~a~).html" *rameau-path* package)
+(defun html-for-one-package (package-name)
+  "Generate the html documentation for a package. The argument
+@var{package-name} is the symbol or keyword that names the package."
+  (format t "Generating documentation for package ~a.~%" package-name)
+  (with-open-file (file (format nil "~a/rameau-documentation/~(~a~).html" *rameau-path* package-name)
                         :direction :output :if-exists :supersede)
     (html-page file "Rameau API Documentation"
-      (:h1 (str (escape-string (string-upcase (stringify package)))))
-      (:p1 (str (htmlize-docstring (documentation (find-package package) t))))
-      (iter (for plist in (create-documentation-sexp package))
+      (:h1 (str (escape-string (string-upcase (stringify package-name)))))
+      (:p1 (str (htmlize-docstring (documentation (find-package package-name) t))))
+      (iter (for plist in (create-documentation-sexp package-name))
             (with test-file = (get-all-tests))
             (for name = (getf plist :name))
             (for docstring = (getf plist :docstring))
@@ -161,9 +163,9 @@ class is foo and content is bar."
                    (when example
                      (htm (:p :class "example-header" "Example:")
                           (:span :class "example"
-                                 (fmt "~(~a~)" (pprint-to-string (third example)))
+                                 (str (pprint-to-string (third example)))
                                  (:br)
-                                 (fmt "=> ~(~a~)" (pprint-to-string (second example))))))))))))
+                                 (str (pprint-to-string (second example))))))))))))
 
 (defun make-index-page (packages)
   (with-open-file (file (format nil "~a/rameau-documentation/index.html" *rameau-path*)
