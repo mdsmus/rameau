@@ -30,9 +30,14 @@ lisp-files = $(wildcard src/*.asd src/*.lisp tools/*.lisp src/tests/*.lisp src/a
 neural-path = $(maindir)/algorithms/
 
 
-.PHONY: update clean all doc
+.PHONY: update clean all doc train
 
 default: rameau 
+
+train: rameau
+	./rameau algorithms -o train -a net -f chor:1..6 exa:11..13 exa:23..28
+	./rameau algorithms -o train -a hmm tree bay knn -f chor:1..10 exa:11..13 chor:12 chor:14 chor:17..33
+	./rameau funalg -o train -f chor:1..3 exa:001 chor:006
 
 data:
 	./rameau report -f chor:042,044,046,048,050 chor:53..57
@@ -42,9 +47,6 @@ all-rameau: rameau cmurameau clisprameau
 
 check: rameau
 	./rameau check all
-
-train:
-	./rameau algorithms -o train
 
 visuals:
 	./rameau algorithms -o visualize

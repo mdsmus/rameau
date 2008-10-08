@@ -58,6 +58,7 @@
                                      (:file "algorithms")
                                      (:file "musicology")
                                      (:file "test")
+                                     (:file "setup")
                                      ))))
 
 (asdf:defsystem :rameau
@@ -66,8 +67,7 @@
     :author "Alexandre Passos e Pedro Kroger"
     :depends-on (:rameau-pkg :algorithms :commands :cl-lily)
     :serial t
-    :components ((:file "setup")
-                 (:file "package-test")
+    :components ((:file "package-test")
                  (:module tests
                           :serial t
                           :components ((:file "all")
