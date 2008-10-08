@@ -59,9 +59,8 @@
 
 (defun find-test-body (test-name test-file)
   "Find the body of a test names @var{test-name} in file @var{test-file}"
-  (flet ((get-first-test (test-list)
-           (second (third (first test-list)))))
-    (get-first-test (remove-if-not #L(eql test-name (second !1)) test-file))))
+  (flet ((get-first-test (test-list) (second (third (first test-list)))))
+    (get-first-test (remove-if-not #L(string= test-name (second !1)) test-file))))
 
 (defun document-function-or-macro :private (symbol &key (type :function) cross-func-ref-p)
   (append (list :package-name (get-package-name symbol)
@@ -87,6 +86,13 @@
   "Get all texts from rameau."
   (mapcan #'read-file-as-sexp (directory (concat *rameau-path* "src/tests/*.lisp"))))
 
+(defun pprint-to-string (object)
+  (let ((s (make-string-output-stream)))
+    (pprint object s)
+    (subseq (get-output-stream-string s) 1)))
+
+
+;; (pprint-to-string '(defun foo (bar) (+ bar 2 34534534534 5345345345345345 345345345345 sfdfsdfsdfsdfsdfsdfsdfsdf sd fsdfsdfsdf sdf sdf sdf sdf sd fsdf sdf sdf sd f)))
 ;;; HTML
 
 (defmacro html-page (stream title &body body)
@@ -155,9 +161,9 @@ class is foo and content is bar."
                    (when example
                      (htm (:p :class "example-header" "Example:")
                           (:span :class "example"
-                                 (fmt "~(~s~)" (third example))
+                                 (fmt "~(~a~)" (pprint-to-string (third example)))
                                  (:br)
-                                 (fmt "=> ~(~s~)" (second example)))))))))))
+                                 (fmt "=> ~(~a~)" (pprint-to-string (second example))))))))))))
 
 (defun make-index-page (packages)
   (with-open-file (file (format nil "~a/rameau-documentation/index.html" *rameau-path*)
