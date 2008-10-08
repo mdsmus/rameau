@@ -63,12 +63,10 @@
 
 .example {
     font-family: mono;
-    font-size: 70%;
     display: inline-block;
     border: dotted 2px #cccccc;
     border-collapse: collapse;
     padding: 1em;
-    white-space: pre;
 }
 
 h2 {
