@@ -88,7 +88,7 @@
                                         ;(format t "Done, processing arguments...~%")
   (let* ((*package* (find-package :rameau))
          (rameau-args (rameau-args))
-         (arguments (if rameau-args rameau-args (cl-ppcre:split " " args))))
+         (arguments (if args (cl-ppcre:split " " args) rameau-args)))
     (if arguments
         (iter (for command-list in (split-command-list arguments))
               (for cmd = (first command-list))

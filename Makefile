@@ -35,9 +35,7 @@ neural-path = $(maindir)/algorithms/
 default: rameau 
 
 train: rameau
-	./rameau algorithms -o train -a net -f chor:1..6 exa:11..13 exa:23..28
-	./rameau algorithms -o train -a hmm tree bay knn -f chor:1..10 exa:11..13 chor:12 chor:14 chor:17..33
-	./rameau funalg -o train -f chor:1..3 exa:001 chor:006
+	./rameau setup
 
 data:
 	./rameau report -f chor:042,044,046,048,050 chor:53..57
