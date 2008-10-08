@@ -87,7 +87,8 @@
   (mapcan #'read-file-as-sexp (directory (concat *rameau-path* "src/tests/*.lisp"))))
 
 (defun pprint-to-string (object)
-  (let ((s (make-string-output-stream)))
+  (let ((s (make-string-output-stream))
+        (*print-right-margin* 40))
     (pprint object s)
     (subseq (get-output-stream-string s) 1)))
 
