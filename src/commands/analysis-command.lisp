@@ -3,7 +3,7 @@
                           #:defparameter #:defvar #:defstruct #:defclass)
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:use :rameau :genoslib :cl :iterate :cl-lily)
-  (:documentation "The harmonic analysis commands for @rameau"))
+  (:documentation "The harmonic analysis commands for @rameau{}"))
 
 (in-package :rameau-analysis)
 

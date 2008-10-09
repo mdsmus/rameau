@@ -2,7 +2,7 @@
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:use :rameau :cl-lily :cl :cl-ppcre :iterate :genoslib :cl-who :hunchentoot :md5 :cl-store)
   (:export #:start-rameau-web)
-  (:documentation "The web interface for @rameau"))
+  (:documentation "The web interface for @rameau{}"))
 
 (in-package :rameau-web)
 

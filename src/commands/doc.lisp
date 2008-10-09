@@ -112,12 +112,51 @@
              (:div :class "main"
                    ,@body)))))
 
-(defun htmlize-docstring (string)
-  "Replace strings in the form of @foo{bar} and gerenate a span whose
-class is foo and content is bar."
-  (let* ((str1 (cl-ppcre:regex-replace-all "@link{([\\w+ ]+)}{([\\w-@%?!/:.]+)}" string "<a href='\\2'>\\1</a>"))
-         (str2 (cl-ppcre:regex-replace-all "@rameau" str1 "<span class='rameau'>rameau</span>")))
-    (cl-ppcre:regex-replace-all "@(\\w+){([\\w-@%?!:\\*.~/]+)}" str2 "<span class='\\1'>\\2</span>")))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defparameter *docstring-templates* nil)
+
+  (defmacro make-docstring-template (name (&rest args) &body body)
+    "Define a dosctring template named @var{name} that expands to the html code in @var{body}."
+    (let ((arg (gensym))
+          (str (gensym)))
+      `(push (list ,(stringify name)
+                   (lambda (,arg)
+                     (destructuring-bind ,args (mapcar #'stringify ,arg)
+                       (let ((,str ""))
+                         (declare (ignore ,str))
+                         (with-html-output-to-string (,str)
+                           ,@body)))))
+             *docstring-templates*))))
+
+(make-docstring-template var (name)
+  (:span :class "var" (str (escape-string name))))
+
+(make-docstring-template link (name url)
+  (:a :href url (str (escape-string name))))
+
+(make-docstring-template rameau ()
+  (:span :class "rameau" "rameau"))
+
+(make-docstring-template file (name)
+  (:a :href (str (concat "http://git.genos.mus.br/cgit.cgi?url=rameau/tree/src/" name ".lisp")) (str name)))
+
+(make-docstring-template foo (bar)
+  (str (concat "@&nbsp;foo{" bar "}")))
+
+(defun apply-replacement (name args string)
+  "Compute the correct replacement for template named @var{name} in @var{string}"
+  (iter (for (command function) in *docstring-templates*)
+        (when (string= command name)
+          (return (funcall function (cl-ppcre:split "\\s" args))))
+        (finally (error "Template ~a not found in \"~a\".~%" name string))))
+
+(let ((regex (cl-ppcre:create-scanner "@([a-z]*){([^}]*)}")))
+  (defun htmlize-docstring (string)
+    "Replace strings in the form of @foo{bar} and expand it to a user-defined template."
+    (iter (while (cl-ppcre:scan regex string))
+          (cl-ppcre:register-groups-bind (name args) (regex string)
+            (setf string (cl-ppcre:regex-replace regex string (apply-replacement name args string)))))
+    string))
 
 (defun html-for-one-package (package-name)
   "Generate the html documentation for a package. The argument

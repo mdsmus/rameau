@@ -54,7 +54,7 @@
   `(setf (gethash ,name (get-args ,options)) ,value))
 
 (defun make-default-arguments (command)
-  "Make default arguments for @rameau."
+  "Make default arguments for @rameau{}."
   (let ((options (make-instance 'arguments-table)))
     (iter (for (short long doc init list) in (get-all-flags command))
           (for cmd = (make-keyword long))
@@ -80,7 +80,7 @@
                      (cl-ppcre:split " " file-or-range))))))
 
 (defun process-option-list (options)
-  "Process the options in @{options}."
+  "Process the options in @var{options}."
   (iter (for op in options)
         (aif (search "=" op)
              (collect (list (make-keyword (subseq op 0 it))
