@@ -75,8 +75,11 @@
                   :used-by
                   (remove-functions-not-in-rameau (functions-used-by symbol))))))
 
+(defun sorted-symbols (package)
+  (sorted (iter (for symbol in-package package :external-only t) (collect symbol)) #'string< :key #'stringify))
+
 (defun create-documentation-sexp :private (package)
-  (iter (for symbol in-package package :external-only t)
+  (iter (for symbol in (sorted-symbols package))
         (when (fboundp symbol)
           (collect (if (macro-function symbol)
                        (document-function-or-macro symbol :type :macro)
