@@ -173,8 +173,8 @@
             (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
             (format f "~{~a ~}~%" (second d))))))
 
-(defun train-net (net training-data value net-file hidden-units)
-  (setf (symbol-value net) (make-net value hidden-units 109))
+(defun train-net (net training-data value net-file hidden-units &optional (out-size 109))
+  (setf (symbol-value net) (make-net value hidden-units out-size))
   (format t "* training the network~%")
   (train-on-file (symbol-value net) (concat *neural-path* training-data) 1500 100 0.1)
   (format t "* saving ~a~%" (concat *neural-path* net-file))
@@ -340,7 +340,7 @@
         (incf (nth (1+ (get-module)) result)))
     result))
 
-;; (extract-key-result 10 (make-key-result 10 (make-tonal-key :center-pitch 55 :mode :minor)))
+;; (extract-key-result 10 (make-key-result 10 (make-tonal-key :center-pitch 55 :mode :major)))
 
 (defparameter *function-number-size* 7)
 (defparameter *function-accident-size* 3)
@@ -348,13 +348,16 @@
 (defparameter *function-mode-size* (1+ (length *function-modes*)))
 (defparameter *total-function-size* (+ *function-number-size* *function-accident-size* *function-mode-size*))
 
+(defun maxi (list)
+  (iter (for el in list) (for i from 0) (finding i maximizing el)))
+
 (defun extract-function-result (res)
   (let ((number (subseq res 0 *function-number-size*))
         (accidentals (subseq res *function-number-size* (+ *function-number-size* *function-accident-size*)))
-        (mode (last res *function-mode-size*)))
-    (make-roman-function :degree-number (1+ (iter (for i from 0) (for el in number) (finding i maximizing el)))
-                         :degree-accidentals (1- (iter (for i from 0) (for el in accidentals) (finding i maximizing el)))
-                         :mode (nth (iter (for i from 0) (for el in mode) (finding i maximizing el)) *function-modes*))))
+        (mode (subseq res (+ *function-number-size* *function-accident-size*))))
+    (make-roman-function :degree-number (1+ (maxi number))
+                         :degree-accidentals (1- (maxi accidentals))
+                         :mode (nth (maxi mode) *function-modes*))))
 
 (defun make-function-result (function)
   (let ((number (repeat-list *function-number-size* 0))
@@ -368,7 +371,7 @@
     (incf (nth (or (position md *function-modes*) 0) mode))
     (append number accidentals mode)))
 
-;; (extract-function-result (make-function-result (make-roman-function :degree-number 2 :degree-accidentals -1 :mode :minor)))
+;; (extract-function-result (make-function-result (make-roman-function :degree-number 1 :degree-accidentals 0 :mode :minor)))
 
 (defun get-function-net (diff res)
   (let ((key (extract-key-result diff (firstn res *tonal-key-size*)))
@@ -413,7 +416,8 @@
                  data-file
                  (* (+ 1 (net-context-after alg) (net-context-before alg)) *value*)
                  fann-file
-                 (context-hidden-units alg)))))
+                 (context-hidden-units alg)
+                 (+ *tonal-key-size* *total-function-size*)))))
 
 (defun run-fun-net (x net extract-diff-fn fn)
   (let ((d (funcall extract-diff-fn x)))
@@ -434,8 +438,8 @@
       (if (cl-fad:file-exists-p fann-file)
           (progn
             (setf net (load-from-file fann-file))
-            (add-inversions inputs (mapcar #L(run-fun-net !1 net #'context-extract-diff #'context-extract-features)
-                                           context)))
+            (mapcar #L(run-fun-net !1 net #'context-extract-diff #'context-extract-features)
+                    context))
           (progn
             (train-functional-net alg)
             (apply-functional-net inputs options alg))))))
