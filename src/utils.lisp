@@ -377,7 +377,7 @@ by @var{cmp} and using @var{output} as a key."
 
 (defun good-turing-reestimate (vector xdim ydim)
   "Good-Turing reestimation of probabilities, extracted from
-this @link{paper http://www.grsampson.net/AGtf1.html}."
+this @link{paper}{http://www.grsampson.net/AGtf1.html}."
   (iter (for i from 0 below xdim)
         (let ((freqfreq (make-hash-table :test #'equal))
               (all-zero t))

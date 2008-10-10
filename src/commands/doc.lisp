@@ -120,7 +120,7 @@
 
   (defmacro make-docstring-template (name (&rest args) &body body)
     "Define a dosctring template named @var{name} that expands to the html code in @var{body}.
-These are expanded in @function{rameau-doc htmlize-docstring}."
+These are expanded in @function{rameau-doc}{htmlize-docstring}."
     (let ((arg (gensym))
           (str (gensym)))
       `(push (list ,(stringify name)
@@ -149,7 +149,7 @@ These are expanded in @function{rameau-doc htmlize-docstring}."
 (make-docstring-template function (package name)
   (:a :href
       (concat package ".html#" name)
-      (str name))))
+      (str name)))
 
 (make-docstring-template macro (package name)
   (:a :href (concat package ".html#" name)
@@ -162,17 +162,25 @@ These are expanded in @function{rameau-doc htmlize-docstring}."
   "Compute the correct replacement for template named @var{name} in @var{string}"
   (iter (for (command function) in *docstring-templates*)
         (when (string= command name)
-          (return (funcall function (cl-ppcre:split "\\s" args))))
+          (return (funcall function args)))
         (finally (error "Template ~a not found in \"~a\".~%" name string))))
 
-(let ((regex (cl-ppcre:create-scanner "@([a-z]*){([^}]*)}")))
+(defun all-arguments (arglist)
+  (let (args)
+    (cl-ppcre:do-register-groups (a) ("{([^}]*)}" arglist)
+      (push a args))
+    (reverse args)))
+
+(let ((regex (cl-ppcre:create-scanner "@([a-z]+)(({([^}]*)})*)")))
   (defun htmlize-docstring (string)
     "Replace strings in the form of @foo{bar} and expand it to a user-defined template."
     (iter (while (cl-ppcre:scan regex string))
           (cl-ppcre:register-groups-bind (name args) (regex string)
-            (setf string (regex-replace regex
-                                        string
-                                        (apply-replacement name args string)))))
+            (setf string (cl-ppcre:regex-replace regex
+                                                 string
+                                                 (apply-replacement name
+                                                                    (all-arguments args)
+                                                                    string)))))
     string))
 
 (defun html-for-one-package (package-name)
