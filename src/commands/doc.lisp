@@ -15,7 +15,7 @@
     "RAMEAU-TREE-ENARM" "RAMEAU-PARDO"))
 
 (defun swank-get-source-location :private (function-name)
-  (second (aget :location (first (swank-backend:find-definitions function-name)))))
+  (pathname (second (aget :location (first (swank-backend:find-definitions function-name))))))
 
 (defun find-source-file-of-function :private (function-name)
   ;; according to CLHS the readtable is reset after reading or
@@ -23,8 +23,8 @@
   ;; enable-sharp-l-syntax on the top of this file, it has to be
   ;; called here.
   (enable-sharp-l-syntax)
-  (let ((file-name (swank-get-source-location function-name)))
-    (cl-ppcre:regex-replace *rameau-path*  file-name "")))
+  (pathname-difference *default-pathname-defaults*
+                       (swank-get-source-location function-name)))
 
 (defun function-uses :private (function-name)
   (handler-case (swank-backend:list-callees function-name)
@@ -88,7 +88,7 @@
 
 (defun get-all-tests ()
   "Get all texts from rameau."
-  (mapcan #'read-file-as-sexp (directory (concat *rameau-path* "src/tests/*.lisp"))))
+  (mapcan #'read-file-as-sexp (directory "rameau:src;tests;*.lisp")))
 
 (defun pprint-to-string (object)
   (let ((s (make-string-output-stream))
@@ -183,14 +183,17 @@ These are expanded in @function{rameau-doc}{htmlize-docstring}."
                                                                     string)))))
     string))
 
+(defun make-doc-file (name)
+  (make-pathname :directory
+                 (list (translate-logical-pathname "rameau:rameau-documentation;"))
+                 :name (stringify name)
+                 :type "html"))
+
 (defun html-for-one-package (package-name)
   "Generate the html documentation for a package. The argument
 @var{package-name} is the symbol or keyword that names the package."
   (format t "Generating documentation for package ~a.~%" package-name)
-  (with-open-file (file (format nil
-                                "~a/rameau-documentation/~(~a~).html"
-                                *rameau-path*
-                                package-name)
+  (with-open-file (file (make-doc-file package-name)
                         :direction :output :if-exists :supersede)
     (html-page file "Rameau API Documentation"
       (:h1 (str (escape-string (string-upcase (stringify package-name)))))
@@ -236,7 +239,7 @@ These are expanded in @function{rameau-doc}{htmlize-docstring}."
                                  (str (concat "=> " (pprint-to-string (second example)))))))))))))
 
 (defun make-index-page (packages)
-  (with-open-file (file (format nil "~a/rameau-documentation/index.html" *rameau-path*)
+  (with-open-file (file (make-doc-file :index)
                         :direction :output :if-exists :supersede)
     (html-page file "Rameau API Documentation"
       (:h1 "Rameau")

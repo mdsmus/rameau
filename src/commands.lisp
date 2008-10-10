@@ -69,7 +69,7 @@
   (let* ((tmp (cl-ppcre:split ":" exp))
          (substring (first tmp))
          (file-or-range (second tmp))
-         (dir (search-music-dirs substring "music")))
+         (dir (search-for-directories substring (merge-pathnames "music/"))))
     (setf (arg :substring options) substring)
     (mapcar (lambda (item) (concat dir item ".ly"))
             (cond ((search ".." file-or-range)
