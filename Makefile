@@ -1,4 +1,4 @@
-SYSTEM = $(shell uname -s)
+SHELL = /bin/bash
 
 SBCL_BIN = sbcl
 LISP_BIN = lisp
@@ -116,10 +116,10 @@ distclean: cleanall clean-deps clean-analysis clean-score clean-midi clean-cache
 
 # remove os fasls do rameau, sem remover das bibliotecas
 lisp-clean: clean-lib
-	rm -rf ~/lisp/fasl/sbcl-1.0.20.8-linux-x86/$$HOME/src/rameau/src
+	find ~/lisp/fasl/ -name "rameau*" -type f -exec rm -rf {} \;
 
 lisp-clean-all: clean-lib clean
-	bash -c "rm -rf /var/cache/common-lisp-controller/\$${UID}/sbcl/local"
+	rm -rf /var/cache/common-lisp-controller/\$${UID}/sbcl/local
 	rm -rf ~/lisp/fasl/*
 
 clean-algs:
