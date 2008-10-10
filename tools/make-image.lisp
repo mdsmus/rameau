@@ -8,27 +8,41 @@
                   (space 0)
                   (speed 0)))
 
-#+(or sbcl ecl) (require 'asdf)
+(defparameter *main-path*
+  #+ecl (si::getcwd)
+  #+sbcl *default-pathname-defaults*
+  #+cmu (first (ext:search-list "default:"))
+  #+clisp (ext:default-directory))
 
-(defun main-path ()
-  (format nil "~a" (or #+ecl (si::getcwd)
-                       #+sbcl *default-pathname-defaults*
-                       #+cmu (first (ext:search-list "default:"))
-                       #+clisp (ext:default-directory))))
-
-(defparameter *asdf-file* (concatenate 'string (main-path) "rameau-deps/asdf/asdf.lisp"))
+(defparameter *asdf-file*
+  (merge-pathnames "rameau-deps/lisp-libs/asdf/asdf.lisp" *main-path*))
 
 #+(or clisp cmu) (load *asdf-file*)
+#+(or sbcl ecl) (require 'asdf)
 
-(push (concatenate 'string (main-path) "src/") asdf:*central-registry*)
-
-(defun get-dir-list (path)
-  (directory (concatenate 'string (main-path) path)))
+(push (merge-pathnames "src/" *main-path*) asdf:*central-registry*)
 
 (when *use-rameau-deps*
-  (loop for p in (append (get-dir-list "rameau-deps/*/*")
-                         (get-dir-list "rameau-deps/*")) do
-        (push (format nil "~a" p) asdf:*central-registry*)))
+  ;; use symbolics links on systems, but windows is pretty bad with
+  ;; links so we have to push them one by one
+  #-windows(push (merge-pathnames "rameau-deps/lisp-libs/systems/" *main-path*)
+                 asdf:*central-registry*)
+  #+windows
+  (loop for path in (directory (merge-pathnames "rameau-deps/*/*" *main-path*))
+        do (push path asdf:*central-registry*))
+
+  (loop for path in (directory (merge-pathnames "rameau-deps/*" *main-path*))
+        do (push path asdf:*central-registry*)))
+
+(defmethod asdf:perform :around ((o asdf:load-op) (c asdf:cl-source-file))
+  (handler-case (call-next-method o c)
+    (#+sbcl sb-ext:invalid-fasl 
+     #+allegro excl::file-incompatible-fasl-error
+     #+lispworks conditions:fasl-error
+     #+cmu ext:invalid-fasl
+     #-(or sbcl allegro lispworks cmu) error ()
+     (asdf:perform (make-instance 'asdf:compile-op) c)
+     (call-next-method))))
 
 (asdf:oos 'asdf:load-op :rameau :verbose nil)
 
