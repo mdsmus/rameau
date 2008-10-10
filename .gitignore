@@ -25,3 +25,4 @@ docs/choral-book/*.aux
 docs/choral-book/*.dvi
 docs/choral-book/*.log
 docs/choral-book/*.tex
+rameau-documentation/*.html

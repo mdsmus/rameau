@@ -102,6 +102,9 @@ doc: rameau
 	cd rameau-documentation; \
 	make
 
+clean-doc:
+	rm -f rameau-documentation/*.html
+
 clean:
 	rm -f rameau cmurameau eclrameau clisprameau checa-notas
 	rm -f web/cache.store

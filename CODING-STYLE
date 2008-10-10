@@ -83,11 +83,9 @@ Date:   Thu Apr 17 11:53:55 2008 -0300
 
    You can use a few formating commands inside the docstring:
 
-   @rameau
+   @rameau{}
    @var{name}
-   @func{name}
-   @macro{name}
-   @link{name}{url}
+   @link{name url}
    @file{name}
 
 ** 6.  language
