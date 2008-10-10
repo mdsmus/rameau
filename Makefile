@@ -102,9 +102,6 @@ doc: rameau
 	cd rameau-documentation; \
 	make
 
-clean-doc:
-	rm -f rameau-documentation/*.html
-
 clean:
 	rm -f rameau cmurameau eclrameau clisprameau checa-notas
 	rm -f web/cache.store
@@ -129,7 +126,7 @@ clean-analysis:
 	rm -f analysis/*
 
 clean-doc:
-	rm -f rameau-documentation/*.tex
+	rm -f rameau-documentation/*.{tex,html}
 
 clean-score:
 	rm -f music/*/*.{pdf,ps}
