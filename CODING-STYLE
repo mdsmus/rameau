@@ -87,6 +87,8 @@ Date:   Thu Apr 17 11:53:55 2008 -0300
    @var{name}
    @link{name url}
    @file{name}
+   @function{package name}
+   @macro{package name}
 
 ** 6.  language
    All code, comments and documentation should be in English.
