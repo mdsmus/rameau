@@ -192,7 +192,7 @@
           for answer = (second exemplo)
           do (train-context-nn alg (butlast (contextualize coral before-context after-context) before-context) answer n))))
 
-(defun classify-context (alg segmento options)
+(defun classify-context (alg segmento options &optional (extract #'extract-chord))
   (declare (ignore options))
   (let* ((diff (context-extract-diff alg segmento))
          (pitches (context-extract-features alg segmento diff))
@@ -203,7 +203,7 @@
           do 
           (let ((d (distance pitches key)))
             (setf knn (clip k (insert (list d key value) knn :key #'car))))
-          finally (return (get-class diff (mapcar #'second knn) (mapcar #'third knn))))))
+          finally (return (get-class diff (mapcar #'second knn) (mapcar #'third knn) extract)))))
 
 (defun prepare-answers-context (coral options alg)
   (let* ((before-context (cknn-before-context alg))
@@ -275,25 +275,11 @@
                                n
                                #'process-fchord))))
 
-(defun classify-functional (alg segmento options)
-  (declare (ignore options))
-  (let* ((diff (context-extract-diff alg segmento))
-         (pitches (context-extract-features alg segmento diff))
-         (k (cknn-k alg))
-         (nn (cknn-nn alg)))
-    (loop
-       for (key value) in nn 
-       with knn = nil
-       do 
-         (let ((d (distance pitches key)))
-           (setf knn (clip k (insert (list d key value) knn :key #'car))))
-       finally (return (get-class diff (mapcar #'second knn) (mapcar #'third knn) #'functional-extract-chord)))))
-
 (defun prepare-answers-functional (coral options alg)
   (let* ((before-context (cknn-before-context alg))
          (after-context (cknn-after-context alg))
          (c (contextualize coral before-context after-context)))
-    (mapcar #L(classify-functional alg !1 options) (butlast c before-context))))
+    (mapcar #L(classify-context alg !1 options #'functional-extract-chord) (butlast c before-context))))
 
 (defclass functional-knn (rameau-algorithm)
   ((ck :accessor cknn-k :initarg :ck :initform 1)
