@@ -51,9 +51,9 @@
           (format t "TEST: ~a~%" test-name)
           (fiveam:run! test-name))))
 
-(defun test-rameau (options)
-  "This function can't be named 'test' in order not to conflict with
-the function in fiveAM."
+(defun rameau-test (options)
+  ;; This function can't be named 'test' in order not to conflict with
+  ;; the function in fiveAM.
   (when (arg :unit options) (unit options))
   (when (arg :regression options) (regression options)))
 
@@ -65,7 +65,7 @@ the function in fiveAM."
   `(def-suite ,name :description ,description :in all))
 
 (register-command :name "test"
-                  :action #'test-rameau
+                  :action #'rameau-test
                   :options '(("-u" "unit" "run the unit tests" ("all") type-list)
                              ("-r" "regression" ""))
                   :documentation "Run unit and regression tests.")
