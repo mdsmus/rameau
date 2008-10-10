@@ -76,7 +76,8 @@
                   (remove-functions-not-in-rameau (functions-used-by symbol))))))
 
 (defun sorted-symbols (package)
-  (sorted (iter (for symbol in-package package :external-only t) (collect symbol)) #'string< :key #'stringify))
+  (sorted (iter (for symbol in-package package :external-only t) (collect symbol))
+          #'string< :key #'stringify))
 
 (defun create-documentation-sexp :private (package)
   (iter (for symbol in (sorted-symbols package))
@@ -96,7 +97,6 @@
     (pprint object s)
     (subseq (get-output-stream-string s) 1)))
 
-;; (pprint-to-string '(defun foo (bar) (+ bar 2 34534534534 5345345345345345 345345345345 sfdfsdfsdfsdfsdfsdfsdfsdf sd fsdfsdfsdf sdf sdf sdf sdf sd fsdf sdf sdf sd f)))
 ;;; HTML
 
 (defmacro html-page (stream title &body body)
@@ -141,7 +141,9 @@
   (:span :class "rameau" "rameau"))
 
 (make-docstring-template file (name)
-  (:a :href (str (concat "http://git.genos.mus.br/cgit.cgi?url=rameau/tree/src/" name ".lisp")) (str name)))
+  (:a :href
+      (str (concat "http://git.genos.mus.br/cgit.cgi?url=rameau/tree/src/" name ".lisp"))
+      (str name)))
 
 (make-docstring-template foo (bar)
   (str (concat "@&nbsp;foo{" bar "}")))
@@ -158,14 +160,19 @@
     "Replace strings in the form of @foo{bar} and expand it to a user-defined template."
     (iter (while (cl-ppcre:scan regex string))
           (cl-ppcre:register-groups-bind (name args) (regex string)
-            (setf string (cl-ppcre:regex-replace regex string (apply-replacement name args string)))))
+            (setf string (regex-replace regex
+                                        string
+                                        (apply-replacement name args string)))))
     string))
 
 (defun html-for-one-package (package-name)
   "Generate the html documentation for a package. The argument
 @var{package-name} is the symbol or keyword that names the package."
   (format t "Generating documentation for package ~a.~%" package-name)
-  (with-open-file (file (format nil "~a/rameau-documentation/~(~a~).html" *rameau-path* package-name)
+  (with-open-file (file (format nil
+                                "~a/rameau-documentation/~(~a~).html"
+                                *rameau-path*
+                                package-name)
                         :direction :output :if-exists :supersede)
     (html-page file "Rameau API Documentation"
       (:h1 (str (escape-string (string-upcase (stringify package-name)))))
