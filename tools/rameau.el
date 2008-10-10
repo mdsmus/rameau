@@ -194,4 +194,16 @@
 
 (global-set-key [f8] 'run-rameau)
 
+(defun open-ticket (ticket-number)
+  (browse-url (concat "http://bugs.genos.mus.br/issues/show/" ticket-number)))
+
+(defun rameau-ticket ()
+  (interactive)
+  (open-ticket (read-from-minibuffer "Ticket #:")))
+
+(defun rameau-find-ticket ()
+  (interactive)
+  (search-forward "#")
+  (open-ticket (thing-at-point 'word)))
+
 (provide 'rameau)
