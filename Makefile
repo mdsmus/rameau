@@ -3,9 +3,17 @@ SHELL = /bin/bash
 SBCL_BIN = sbcl
 LISP_BIN = lisp
 
+SYSTEM = $(shell uname -s)
+
+ifeq ($(SYSTEM), "Linux")
+	LIBC = /lib/libc.so.6
+else ifeq ($(findstring "CYGWIN",$(SYSTEM)), "CYGWIN")
+	LIBC = /lib/libc.a
+endif
+
 GIT_COMMIT = $(shell git log --pretty=format:%H -n 1)
 KERNEL_INFO = $(shell uname -a)
-LIBC_VERSION = $(shell /lib/libc.so.6 | grep -o "release version [0-9]\+\.[0-9]\+" | awk '{print $$3}')
+LIBC_VERSION = $(shell $(LIBC) | grep -o "release version [0-9]\+\.[0-9]\+" | awk '{print $$3}')
 RAMEAU_VERSION = $(shell grep "\* Rameau [0-9]\+\.[0-9]\+" RELEASE -m 1 -o | awk '{print $$3}')
 COMPILATION_DATE = $(shell date)
 USER = $(shell echo $$USER)
