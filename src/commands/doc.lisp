@@ -119,7 +119,8 @@
   (defparameter *docstring-templates* nil)
 
   (defmacro make-docstring-template (name (&rest args) &body body)
-    "Define a dosctring template named @var{name} that expands to the html code in @var{body}."
+    "Define a dosctring template named @var{name} that expands to the html code in @var{body}.
+These are expanded in @function{rameau-doc htmlize-docstring}."
     (let ((arg (gensym))
           (str (gensym)))
       `(push (list ,(stringify name)
@@ -143,6 +144,15 @@
 (make-docstring-template file (name)
   (:a :href
       (str (concat "http://git.genos.mus.br/cgit.cgi?url=rameau/tree/src/" name ".lisp"))
+      (str name)))
+
+(make-docstring-template function (package name)
+  (:a :href
+      (concat package ".html#" name)
+      (str name))))
+
+(make-docstring-template macro (package name)
+  (:a :href (concat package ".html#" name)
       (str name)))
 
 (make-docstring-template foo (bar)
@@ -190,7 +200,8 @@
              (:div :class "function-type"
                    (:h2 (fmt "[~a]" (getf plist :type))))
              (:div :class "function-name-header"
-                   (:h2 (str (escape-string (string-upcase (stringify name))))))
+                   (:a :name (escape-string (stringify name))
+                       (:h2 (str (escape-string (string-upcase (stringify name)))))))
              (:div :class "function-block"
                    (:div :class "function-arg-list"
                          (:p (:span :class "function-name" (fmt "~(~a~)" name))
