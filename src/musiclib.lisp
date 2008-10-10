@@ -443,7 +443,7 @@ or # as a prefix (as in bvi or #iii)."
   "Parse string @var{key} as a tonal key."
   (let ((mode (if (upper-case-p (char key 0)) :major :minor))
         (pitch (parse-note key)))
-    (make-tonal-key :center-pitch pitch :mode mode)))
+    (make-tonal-key :center-pitch (module pitch) :mode mode)))
 
 (defun print-tonal-key (key &optional stream (depth 0))
   "Print tonal key @var{key}."
@@ -494,10 +494,11 @@ or # as a prefix (as in bvi or #iii)."
 
 (defun roman-function-root (roman-function key)
   "Find the root of roman function @var{roman-function} and key @var{key}"
-  (+ (tonal-key-center-pitch key)
-     (roman-function-degree-accidentals roman-function)
-     (nth (1- (roman-function-degree-number roman-function))
-          (get-scale-mode (tonal-key-mode key)))))
+  (module
+   (+ (tonal-key-center-pitch key)
+      (roman-function-degree-accidentals roman-function)
+      (nth (1- (roman-function-degree-number roman-function))
+           (get-scale-mode (tonal-key-mode key))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
