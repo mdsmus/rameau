@@ -35,6 +35,11 @@
 
 (defmethod do-options ((algorithm rameau-algorithm) options))
 
+(defgeneric you-ok-p (algorithm)
+  (:documentation "True if the algorithm is ok and good to go."))
+
+(defmethod you-ok-p ((algorithm rameau-algorithm)) t)
+
 (defparameter *algorithms* nil)
 
 (defun add-algorithm (alg)
@@ -51,7 +56,8 @@ Filter @var{*algorithms*} so that only the ones specified in
       (remove-duplicates
        (loop for alg in algoritmos
              append (loop for i in algs
-                          when (> (count-subseq alg (string-downcase (alg-name i))) 0)
+                          when (and (> (count-subseq alg (string-downcase (alg-name i))) 0)
+                                    (you-ok-p i))
                           collect i)))
       algs))
 

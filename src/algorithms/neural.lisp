@@ -217,6 +217,9 @@
    (hidden-units :accessor chord-hidden-units :initarg :units :initform 30)
    (version)))
 
+(defmethod you-ok-p ((algorithm chord-net))
+  (not (eq (fann:with-fann) :fann-load-error)))
+
 (defmethod perform-analysis (segments options (alg chord-net))
   (dbg :neural "Starting neural net...~%")
   (let ((result (apply-e-chord-net segments options alg)))
@@ -300,6 +303,9 @@
    (hidden-units :accessor context-hidden-units :initarg :units :initform 22)
    (version)))
 
+(defmethod you-ok-p ((algorithm context-net))
+  (not (eq (fann:with-fann) :fann-load-error)))
+
 (defmethod perform-analysis (segments options (alg context-net))
   (apply-context-net segments options alg))
 
@@ -349,7 +355,10 @@
 (defparameter *total-function-size* (+ *function-number-size* *function-accident-size* *function-mode-size*))
 
 (defun maxi (list)
-  (iter (for el in list) (for i from 0) (finding i maximizing el)))
+  (iter (for el in list)
+        (for i from 0)
+        (finding i maximizing el)))
+
 
 (defun extract-function-result (res)
   (let ((number (subseq res 0 *function-number-size*))
@@ -452,6 +461,9 @@
    (context-after :accessor net-context-after :initarg :context-after :initform 3)
    (hidden-units :accessor context-hidden-units :initarg :units :initform 22)
    (version)))
+
+(defmethod you-ok-p ((algorithm functional-net))
+  (not (eq (fann:with-fann) :fann-load-error)))
 
 (defmethod functional-analysis (segments options (alg functional-net))
   (apply-functional-net segments options alg))
