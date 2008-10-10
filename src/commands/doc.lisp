@@ -118,9 +118,7 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defparameter *docstring-templates* nil)
 
-  (defmacro make-docstring-template (name (&rest args) &body body)
-    "Define a dosctring template named @var{name} that expands to the html code in @var{body}.
-These are expanded in @function{rameau-doc}{htmlize-docstring}."
+  (defun single-template :private (name args body)
     (let ((arg (gensym))
           (str (gensym)))
       `(push (list ,(stringify name)
@@ -130,7 +128,13 @@ These are expanded in @function{rameau-doc}{htmlize-docstring}."
                          (declare (ignore ,str))
                          (with-html-output-to-string (,str)
                            ,@body)))))
-             *docstring-templates*))))
+             *docstring-templates*)))
+  (defmacro make-docstring-template (name (&rest args) &body body)
+    "Define a dosctring template named @var{name} that expands to the html code in @var{body}.
+These are expanded in @function{rameau-doc}{htmlize-docstring}."
+    (if (listp name)
+        `(progn ,@(iter (for n in name) (collect (single-template n args body))))
+        (single-template name args body))))
 
 (make-docstring-template var (name)
   (:span :class "var" (str (escape-string name))))
@@ -146,13 +150,9 @@ These are expanded in @function{rameau-doc}{htmlize-docstring}."
       (str (concat "http://git.genos.mus.br/cgit.cgi?url=rameau/tree/src/" name ".lisp"))
       (str name)))
 
-(make-docstring-template function (package name)
+(make-docstring-template (macro function) (package name)
   (:a :href
       (concat package ".html#" name)
-      (str name)))
-
-(make-docstring-template macro (package name)
-  (:a :href (concat package ".html#" name)
       (str name)))
 
 (make-docstring-template foo (bar)
