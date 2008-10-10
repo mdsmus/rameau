@@ -205,10 +205,11 @@
   ;; chord-notes
   (let ((notes (notes alg))
         (specials (special-notes alg)))
-    (cl-cairo2:with-png-file ((concat *rameau-path* "docs/view-hmm-note-probabilities.png")
-                              'cl-cairo2:format-argb32
-                              900
-                              1050)
+    (cl-cairo2:with-png-file
+        ((logical-pathname-namestring "rameau:docs;view-hmm-note-probabilities.png")
+         'cl-cairo2:format-argb32
+         900
+         1050)
       (cl-cairo2:rectangle 0 0 900 1050)
       (cl-cairo2:set-source-rgb 1 1 1)
       (cl-cairo2:fill-path)
@@ -263,10 +264,11 @@
 (defun output-transition-images (alg)
   (let ((tr (trans alg))
         (str (special-trans alg)))
-    (cl-cairo2:with-png-file ((concat *rameau-path* "docs/view-hmm-trans-probabilities.png")
-                              'cl-cairo2:format-argb32
-                              8000
-                              500)
+    (cl-cairo2:with-png-file
+        ((logical-pathname-namestring "rameau:docs;view-hmm-trans-probabilities.png")
+         'cl-cairo2:format-argb32
+         8000
+         500)
       (cl-cairo2:rectangle 0 0 10000 600)
       (cl-cairo2:set-source-rgb 1 1 1)
       (cl-cairo2:fill-path)
@@ -319,10 +321,11 @@
 
 (defun output-prior-images (alg)
   (let ((tr (start-trans alg)))
-    (cl-cairo2:with-png-file ((concat *rameau-path* "docs/view-hmm-prior-probabilities.png")
-                              'cl-cairo2:format-argb32
-                              100
-                              23080)
+    (cl-cairo2:with-png-file
+        ((logical-pathname-namestring "rameau:docs;view-hmm-prior-probabilities.png")
+         'cl-cairo2:format-argb32
+         100
+         23080)
       (cl-cairo2:rectangle 0 0 110 23080)
       (cl-cairo2:set-source-rgb 1 1 1)
       (cl-cairo2:fill-path)
