@@ -457,3 +457,24 @@ up to @var{yd} on the second dimension"
 pathname."
   (remove-if-not #L(member name (rest (pathname-directory !1)) :test #'search)
                  (directory (merge-pathnames "*" dir))))
+
+(defun pathname-notdir (pathname)
+  "Return a pathname with just the filename and extension, i.e.
+without the directory."
+  (make-pathname :name (pathname-name pathname)
+                 :type (pathname-type pathname)))
+
+(defun pathname-subdir (pathname1 pathname2)
+  "Returns a pathname with the extra subdirectories that
+@var{pathname2} has in relation to @var{pathname2}."
+  (make-pathname :directory
+                 (cons :relative (subseq (pathname-directory pathname2)
+                                         (length (pathname-directory pathname1))))))
+
+(defun pathname-difference (pathname1 pathname2)
+  "Returns a pathname with the difference between @var{pathname2} and
+@var{pathname1}. It is usualy useful when both pathnames have similar
+structures."
+  (let ((filename (pathname-notdir pathname2))
+        (dir (pathname-subdir pathname1 pathname2)))
+    (merge-pathnames filename dir)))

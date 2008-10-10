@@ -115,3 +115,17 @@
    (with-fixture create-tmp-dir (tmpdir)
      (is (equal (list (make-pathname :directory `(:absolute "tmp" ,tmpdir)))
                 (search-for-directories tmpdir #p"/tmp/"))))))
+
+(test pathname-subdir
+  (is (equal #p"nada/mais/"
+             (pathname-subdir #p"/home/kroger/foo/bar/bla.lisp"
+                              #p"/home/kroger/foo/bar/nada/mais/bla.lisp"))))
+
+(test pathname-difference
+  (is (equal #p"src/foo.bar"
+             (pathname-difference #p"/home/kroger/src/rameau/"
+                                  #p"/home/kroger/src/rameau/src/foo.bar"))))
+
+(test pathname-notdir
+  (is (equal #p"foo.bar"
+             (pathname-notdir #p "/home/kroger/src/rameau/src/foo.bar"))))
