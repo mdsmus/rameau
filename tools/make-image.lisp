@@ -25,24 +25,14 @@
 (when *use-rameau-deps*
   ;; use symbolics links on systems, but windows is pretty bad with
   ;; links so we have to push them one by one
-  #-windows(push (merge-pathnames "rameau-deps/lisp-libs/systems/" *main-path*)
+  #-win32(push (merge-pathnames "rameau-deps/lisp-libs/systems/" *main-path*)
                  asdf:*central-registry*)
-  #+windows
-  (loop for path in (directory (merge-pathnames "rameau-deps/*/*" *main-path*))
+  #+win32
+  (loop for path in (directory (merge-pathnames "rameau-deps/*/*/" *main-path*))
         do (push path asdf:*central-registry*))
 
   (loop for path in (directory (merge-pathnames "rameau-deps/*" *main-path*))
         do (push path asdf:*central-registry*)))
-
-(defmethod asdf:perform :around ((o asdf:load-op) (c asdf:cl-source-file))
-  (handler-case (call-next-method o c)
-    (#+sbcl sb-ext:invalid-fasl 
-     #+allegro excl::file-incompatible-fasl-error
-     #+lispworks conditions:fasl-error
-     #+cmu ext:invalid-fasl
-     #-(or sbcl allegro lispworks cmu) error ()
-     (asdf:perform (make-instance 'asdf:compile-op) c)
-     (call-next-method))))
 
 (asdf:oos 'asdf:load-op :rameau :verbose nil)
 
