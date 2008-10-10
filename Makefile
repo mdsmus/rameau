@@ -24,6 +24,11 @@ hostname = $(shell hostname)
 maindir = $(shell pwd)
 c = 001
 
+prefix = /usr/local/
+INSTALL = /bin/install -c
+INSTALL_PROGRAM = ${INSTALL}
+INSTALL_DATA = cp -R
+
 ifeq ($(RAMEAUDEPS),t)
 	sbcl = $(SBCL_BIN) --disable-debugger --no-userinit
 	lisp = $(LISP_BIN) -noinit 
@@ -109,6 +114,21 @@ doc: rameau
 	./rameau doc
 	cd rameau-documentation; \
 	make
+
+install: train
+	$(INSTALL_PROGRAM) -d $(prefix)/share/rameau/
+	$(INSTALL_PROGRAM) -d $(prefix)/bin
+	$(INSTALL_PROGRAM) rameau $(prefix)/bin/
+	$(INSTALL_DATA) music $(prefix)/share/rameau/
+	$(INSTALL_DATA) web $(prefix)/share/rameau/
+	$(INSTALL_DATA) answer-sheets $(prefix)/share/rameau/
+	$(INSTALL_DATA) algorithms  $(prefix)/share/rameau/
+	# that's pretty bad!
+	chmod 666 $(prefix)/share/rameau/algorithms/*
+
+uninstall:
+	rm -rf $(prefix)/bin/rameau
+	rm -rf $(prefix)/share/rameau
 
 clean:
 	rm -f rameau cmurameau eclrameau clisprameau checa-notas

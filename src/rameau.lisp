@@ -4,11 +4,7 @@
 
 (enable-sharp-l-syntax)
 
-(defparameter *rameau-path*
-  (format nil "~a" (or #+sbcl *default-pathname-defaults*
-                       #+cmu (first (ext:search-list "default:"))
-                       #+clisp (ext:default-directory))))
-
+(defparameter *rameau-path* "/usr/local/share/rameau/")
 
 (defclass rameau-algorithm ()
   ((name :accessor alg-name :initarg :name)
