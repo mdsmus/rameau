@@ -450,3 +450,10 @@ up to @var{yd} on the second dimension"
   (if (integerp value)
       value
       (parse-integer value)))
+
+(defun search-for-directories (name dir)
+  "Return a list with the full pathname of all subdirectories in
+@var{dir} that has the string @var{name} in it. @var{Dir} must be a
+pathname."
+  (remove-if-not #L(member name (rest (pathname-directory !1)) :test #'search)
+                 (directory (merge-pathnames "*" dir))))

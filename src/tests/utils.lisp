@@ -78,7 +78,6 @@
   (is (equal '((NIL A B C) (A B C D) (B C D E) (C D E NIL) (D E NIL NIL))
              (contextualize '(a b c d e) 1 2))))
 
-
 (test sort-set
   (is (equal '(1 2 3) (sort-set '(2 3 1)))))
 
@@ -109,3 +108,10 @@
 
 (test make-keyword
   (is (eql :foo (make-keyword "FoO"))))
+
+(test search-for-directories
+  (is-false (search-for-directories "test12!" #p"/tmp/"))
+  (let ((tmpdir (symbol-name (gensym))))
+   (with-fixture create-tmp-dir (tmpdir)
+     (is (equal (list (make-pathname :directory `(:absolute "tmp" ,tmpdir)))
+                (search-for-directories tmpdir #p"/tmp/"))))))
