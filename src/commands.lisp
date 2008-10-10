@@ -31,8 +31,8 @@
 (defmacro get-flag (slot command flag)
   "Iterate through all flags and find whichever slot is interesting."
   `(iter (for (short long description start-value type) in (get-all-flags ,command))
-         (when (or (equalp short ,flag)
-                   (equalp long ,flag))
+         (when (or (equal short ,flag)
+                   (equal long ,flag))
            (return ,slot))))
 
 (defun get-flag-name (command flag)

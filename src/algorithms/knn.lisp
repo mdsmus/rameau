@@ -48,8 +48,8 @@
        it
        (setf (gethash key table) default)))
 
-(defun insert-count (chave acorde diff hash n)
-  (let ((acorde (process-chord acorde diff)))
+(defun insert-count (chave acorde diff hash n &optional (process #'process-chord))
+  (let ((acorde (funcall process acorde diff)))
     (if (aget acorde *examples*)
         (apush (cons chave n) (aget acorde *examples*))
         (aset acorde *examples* (list (cons chave n))))
@@ -72,7 +72,7 @@
         for answer = (second exemplo)
         do (train-1nn alg coral answer n)))
 
-(defun get-class (diff maxkey maxv)
+(defun get-class (diff maxkey maxv &optional (extract #'extract-chord))
   (declare (ignore maxkey))
   (let ((resultado (make-hash-table :test #'equal)))
     (loop for hash in maxv do
@@ -83,7 +83,7 @@
           with maxv = 0
           when (> (gethash k resultado) maxv) do (setf maxk k
                                                        maxv (gethash k resultado))
-          finally (return (extract-chord maxk diff)))))
+          finally (return (funcall extract maxk diff)))))
 
 (defun classify-k1 (segmento options alg)
   (declare (ignore options))
@@ -173,15 +173,15 @@
           nconc (loop for x in (extract-feature-list seg diff)
                       collect (/ x (+ 1 (* (abs peso) variance)))))))
 
-(defun train-context-nn (alg coral answer n)
+(defun train-context-nn (alg coral answer n &optional (process #'process-chord))
   (let ((nn (cknn-nn alg)))
     (loop for segmento in coral
           for acorde in answer
           for diff = (context-extract-diff alg segmento)
           for pitches = (context-extract-features alg segmento diff)
           do (if (listp acorde)
-                 (mapcar (lambda (x) (insert-count pitches x diff nn n)) acorde)
-                 (insert-count pitches acorde diff nn n)))))
+                 (mapcar (lambda (x) (insert-count pitches x diff nn n process)) acorde)
+                 (insert-count pitches acorde diff nn n process)))))
 
 (defun train-context (alg exemplos)
   (let ((before-context (cknn-before-context alg))
@@ -241,3 +241,88 @@
                 'context-knn
                 :name "EC-Knn"
                 :description "A k-nearest-neighbor classifier that considers a bit of contextual information."))
+
+
+;; Functional knn
+
+(defun process-fchord (fchord diff)
+  (let* ((fchord (transpose-fchord fchord (- diff)))
+         (key (fchord-key fchord))
+         (function (fchord-roman-function fchord)))
+    (list (tonal-key-center-pitch key)
+          (tonal-key-mode key)
+          (roman-function-mode function)
+          (roman-function-degree-number function)
+          (roman-function-degree-accidentals function))))
+
+(defun functional-extract-chord (list diff)
+  (destructuring-bind (key-pitch key-mode f-mode f-number f-acc) list
+    (let ((key (make-tonal-key :mode key-mode :center-pitch key-pitch))
+          (function (make-roman-function :degree-number f-number
+                                         :degree-accidentals f-acc
+                                         :mode f-mode)))
+      (transpose-fchord (make-fchord :key key :roman-function function) diff))))
+
+(defun train-functional (alg exemplos)
+  (let ((before-context (cknn-before-context alg))
+        (after-context (cknn-after-context alg)))
+    (loop for exemplo in exemplos
+          for coral = (first exemplo)
+          for n from 0
+          for answer = (second exemplo)
+          do (train-context-nn alg (butlast (contextualize coral before-context after-context) before-context)
+                               answer
+                               n
+                               #'process-fchord))))
+
+(defun classify-functional (alg segmento options)
+  (declare (ignore options))
+  (let* ((diff (context-extract-diff alg segmento))
+         (pitches (context-extract-features alg segmento diff))
+         (k (cknn-k alg))
+         (nn (cknn-nn alg)))
+    (loop
+       for (key value) in nn 
+       with knn = nil
+       do 
+         (let ((d (distance pitches key)))
+           (setf knn (clip k (insert (list d key value) knn :key #'car))))
+       finally (return (get-class diff (mapcar #'second knn) (mapcar #'third knn) #'functional-extract-chord)))))
+
+(defun prepare-answers-functional (coral options alg)
+  (let* ((before-context (cknn-before-context alg))
+         (after-context (cknn-after-context alg))
+         (c (contextualize coral before-context after-context)))
+    (mapcar #L(classify-functional alg !1 options) (butlast c before-context))))
+
+(defclass functional-knn (rameau-algorithm)
+  ((ck :accessor cknn-k :initarg :ck :initform 1)
+   (nn :accessor cknn-nn :initform (make-alist))
+   (before-context :accessor cknn-before-context :initarg :before-context :initform 1)
+   (after-context :accessor cknn-after-context :initarg :after-context :initform 0)
+   (variance :accessor cknn-variance :initarg :variance :initform 3/2)
+   (version :accessor cknn-version :initform 0)))
+
+(defmethod functional-analysis (segments options (alg functional-knn))
+  (prepare-answers-functional segments options alg))
+
+(defmethod do-options ((alg functional-knn) options)
+  (awhen (aget :ck (arg :options options))
+    (setf (cknn-k alg) it))
+  (awhen (aget :before-context (arg :options options))
+    (setf (cknn-before-context alg) it))
+  (awhen (aget :after-context (arg :options options))
+    (setf (cknn-after-context alg) it))
+  (awhen (aget :variance (arg :options options))
+    (setf (cknn-variance alg) it))
+  (when (and (aget :train (arg :options options))
+             (not (eql *version* (cknn-version alg))))
+    (format t "Training fknn...~%")
+    (train-functional alg *training-data*)
+    (setf (cknn-version alg) *version*)))
+
+
+(add-falgorithm (make-instance
+                'functional-knn
+                :name "F-Knn"
+                :description "A k-nearest-neighbor classifier that considers a bit of contextual information and does functional harmonic analysis."))
