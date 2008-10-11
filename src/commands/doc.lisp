@@ -15,7 +15,7 @@
     "RAMEAU-TREE-ENARM" "RAMEAU-PARDO"))
 
 (defun swank-get-source-location :private (function-name)
-  (pathname (second (aget :location (first (swank-backend:find-definitions function-name))))))
+  (second (aget :location (first (swank-backend:find-definitions function-name)))))
 
 (defun find-source-file-of-function :private (function-name)
   ;; according to CLHS the readtable is reset after reading or
@@ -23,8 +23,8 @@
   ;; enable-sharp-l-syntax on the top of this file, it has to be
   ;; called here.
   (enable-sharp-l-syntax)
-  (pathname-difference *default-pathname-defaults*
-                       (swank-get-source-location function-name)))
+  (awhen (swank-get-source-location function-name)
+    (pathname-difference (translate-logical-pathname "rameau:") it)))
 
 (defun function-uses :private (function-name)
   (handler-case (swank-backend:list-callees function-name)
@@ -147,7 +147,9 @@ These are expanded in @function{rameau-doc}{htmlize-docstring}."
 
 (make-docstring-template file (name)
   (:a :href
-      (str (concat "http://git.genos.mus.br/cgit.cgi?url=rameau/tree/src/" name ".lisp"))
+      (str (concat "http://git.genos.mus.br/cgit.cgi?url=rameau/tree/src/"
+                   (namestring name)
+                   ".lisp"))
       (str name)))
 
 (make-docstring-template (macro function) (package name)
@@ -185,7 +187,7 @@ These are expanded in @function{rameau-doc}{htmlize-docstring}."
 
 (defun make-doc-file (name)
   (make-pathname :directory
-                 (list (translate-logical-pathname "rameau:rameau-documentation;"))
+                 (logical-pathname-directory "rameau:rameau-documentation;")
                  :name (stringify name)
                  :type "html"))
 
@@ -201,7 +203,6 @@ These are expanded in @function{rameau-doc}{htmlize-docstring}."
             (with test-file = (get-all-tests))
             (for name = (getf plist :name))
             (for docstring = (getf plist :docstring))
-            ;;(for url = "http://bugs.genos.mus.br/repositories/entry/rameau/")
             (for url = "http://git.genos.mus.br/cgit.cgi?url=rameau/tree/")
             (for filename = (or (getf plist :source-file) ""))
             (for example = (find-test-body name test-file))
@@ -224,7 +225,7 @@ These are expanded in @function{rameau-doc}{htmlize-docstring}."
                     (:p :class "example-header" "Description:")
                     (:p :class "docstring"
                         (str (htmlize-docstring (escape-string (or docstring ""))))
-                        "Defined in " (htm (:a :href (concat url filename)
+                        "Defined in " (htm (:a :href (concat url (namestring filename))
                                                (str (escape-string (pathname-name filename)))))))
                    (when uses
                      (htm (:p :class "example-header" "Uses:")
@@ -235,7 +236,8 @@ These are expanded in @function{rameau-doc}{htmlize-docstring}."
                           (:span :class "example"
                                  (str (pprint-to-string (third example)))
                                  (:br)
-                                 (str (concat "=> " (pprint-to-string (second example)))))))))))))
+                                 (str (concat "=> " (pprint-to-string (second example)))))))))
+            (values)))))
 
 (defun make-index-page (packages)
   (with-output-file (file (make-doc-file :index))
