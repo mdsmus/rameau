@@ -196,10 +196,11 @@
                 (for name in (mapcar #'alg-name (analysis-algorithms anal)))
                 (for height = (+ 100 (* 20 (length alg))))
                 (for width = 500)
-                (cl-cairo2:with-png-file ((concat *rameau-path* "analysis/analysis-" (analysis-file-name anal) "-" name ".png")
-                                          'cl-cairo2:format-argb32
-                                          width
-                                          height)
+                (cl-cairo2:with-png-file
+                    ((make-analysis-file "png" "analysis" (analysis-file-name anal) name)
+                     'cl-cairo2:format-argb32
+                     width
+                     height)
                   (cl-cairo2:select-font-face "Vera" 'cl-cairo2:font-slant-normal 'cl-cairo2:font-weight-bold)
                   (cl-cairo2:set-font-size 20)
                   (cl-cairo2:rectangle 0 0 width height)

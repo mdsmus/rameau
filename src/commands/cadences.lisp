@@ -88,7 +88,9 @@
 (defun make-cadence-figure (cadences name)
   "Draw the cadence figure for the cadences."
   (make-random-state t)
-  (cl-cairo2:with-png-file ((format nil "~a/analysis/cadences-~a.png" *rameau-path* name) 'cl-cairo2:format-rgb24 2000 2000)
+  (cl-cairo2:with-png-file
+      ((make-analysis-file "png" "cadences" name)
+       'cl-cairo2:format-rgb24 2000 2000)
     (let* ((center (list 1000 1000))
            (boxes nil)
            (cadences (sorted (iter (for (cadence places) in-hashtable cadences)

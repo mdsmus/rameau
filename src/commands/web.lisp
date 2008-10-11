@@ -11,10 +11,10 @@
 (setf *catch-errors-p* nil)
 (defparameter *data* nil)
 
-(defparameter *rameau-web-dir* (concat *rameau-path* "web/"))
-(defparameter *results* (if (cl-fad:file-exists-p (concat *rameau-web-dir* "cache.store"))
-                            (restore (concat *rameau-web-dir* "cache.store"))
-                            (make-hash-table :test #'equal)))
+(defparameter *results*
+  (aif (cl-fad:file-exists-p (translate-logical-pathname "rameau:web;cache.store"))
+       (restore it)
+       (make-hash-table :test #'equal)))
 
 (defmacro standard-page ((&key title) &body body)
   `(with-html-output-to-string (*standard-output* nil :prologue t :indent t)
@@ -120,31 +120,31 @@
 
 (defun favicon ()
   (setf (content-type) "image/gif")
-  (binary-file-string (concat *rameau-web-dir* "static/favicon.ico")))
+  (binary-file-string (translate-logical-pathname "rameau:web;static;favicon.ico")))
 
 (push (create-prefix-dispatcher "/favicon.ico" 'favicon) *dispatch-table*)
 
 (defun logo-genos ()
   (setf (content-type) "image/png")
-  (binary-file-string (concat *rameau-web-dir* "static/genos.png")))
+  (binary-file-string (translate-logical-pathname "rameau:web;static;genos.png")))
 
 (push (create-prefix-dispatcher "/genos.png" 'logo-genos) *dispatch-table*)
 
 (defun logo-grande ()
   (setf (content-type) "image/png")
-  (binary-file-string (concat *rameau-web-dir* "static/background.png")))
+  (binary-file-string (translate-logical-pathname "rameau:web;static;background.png")))
 
 (push (create-prefix-dispatcher "/rameau/background.png" 'logo-grande) *dispatch-table*)
 
 (defun style-sheet ()
   (setf (content-type) "text/css")
-  (binary-file-string (concat *rameau-web-dir* "static/style.css")))
+  (binary-file-string (translate-logical-pathname "rameau:web;static;style.css")))
 
 (push (create-prefix-dispatcher "/style.css" 'style-sheet) *dispatch-table*)
 
 (defun javascript ()
   (setf (content-type) "application/javascript")
-  (binary-file-string (concat *rameau-web-dir* "static/scripts.js")))
+  (binary-file-string (translate-logical-pathname "rameau:web;static;scripts.js")))
 
 (push (create-prefix-dispatcher "/scripts.js" 'javascript) *dispatch-table*)
 
@@ -224,7 +224,11 @@ baixo = \\relative c {
         (t
          (let* ((n (or (parse-integer (or (parameter "chorale") "") :junk-allowed t) 1))
                 (c (get-chorale-string n)))
-           (file-string (concat *rameau-path* "music/chorales-bach/" c ".ly"))))))
+           (file-string
+            (make-pathname :directory
+                           (logical-pathname-directory "rameau:music;chorales-bach;")
+                           :name "da"
+                           :type "ly"))))))
 
 (defun grab-possible-answer-sheet ()
   (let ((an (parameter "answer")))
@@ -253,7 +257,10 @@ baixo = \\relative c {
                          (ast (get-ast-string code))
                          (notes (get-parsed-notes ast))
                          (segments (sonorities notes))
-                         (full-path (concat *rameau-web-dir* md5 ".ly"))
+                         (full-path
+                          (make-pathname :directory (logical-pathname-directory "rameau:web;")
+                                         :name md5
+                                         :type "ly"))
                          (analysis (make-analysis :segments segments
                                                   :results (mapcar #L(perform-analysis segments options !1)
                                                                    (arg :algorithms options))
@@ -271,7 +278,7 @@ baixo = \\relative c {
                     (setf (gethash md5 *results*) analysis
                           (arg :png options) t
                           (arg :lily options) t)
-                    (cl-store:store *results* (concat *rameau-web-dir* "cache.store"))
+                    (cl-store:store *results* (translate-logical-pathname "cache.store"))
                     (with-output-file (f full-path)
                       (format f "~a" code))
                     (rameau-analysis::analysis-lily options analysis))))
@@ -280,7 +287,7 @@ baixo = \\relative c {
 (push (create-prefix-dispatcher "/analysis" 'do-analysis) *dispatch-table*)
 
 (defun list-pngs (md5)
-  (iter (for file in (cl-fad:list-directory (concat *rameau-path* "analysis/")))
+  (iter (for file in (cl-fad:list-directory (translate-logical-pathname "rameau:analysis;")))
         (when (and (/= 0 (count-subseq md5 (pathname-name file)))
                    (/= 0 (count-subseq "png" (pathname-type file))))
           (collect  file))))
@@ -342,7 +349,7 @@ baixo = \\relative c {
   (awhen (parameter "page")
     (let ((page (format nil "~a" it)))
       (remhash page *results*)
-      (cl-store:store *results* (concat *rameau-web-dir* "cache.store")))
+      (cl-store:store *results* (translate-logical-pathname "cache.store")))
     (redirect "/rameau/results.htm")))
 
 (push (create-prefix-dispatcher "/rameau/clear-cache" 'clear-cache) *dispatch-table*)

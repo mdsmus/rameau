@@ -168,7 +168,7 @@
     (setf modes (iter (for (mode va) in-hashtable modes) (collect mode)))
     (build-confusion-matrixes confusion-matrix countings matrixes modes)
     (format t "Done building confusion matrix...~%")
-    (with-output-file (f (concat *rameau-path* "analysis/report.tex"))
+    (with-output-file (f (make-analysis-file "tex" "report"))
       (format f "
 \\documentclass{article}
 \\usepackage{amsmath}

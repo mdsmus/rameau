@@ -50,14 +50,6 @@ weak, superstrong and neutral, according to Schoenberg's theory of harmony."
          (append '(nil nil nil nil nil)
                  (all-chords-single options anal)))))
 
-(defun make-analysis-file (&rest args)
-  "Creates a pathname for a lilypond file in the format a-b-c.ly."
-  (make-pathname :directory
-                 (pathname-directory
-                  (translate-logical-pathname "rameau:analysis;"))
-                 :type "ly"
-                 :name (format nil "~{~a~^-~}" args)))
-
 (defun resolve-seventh (options)
   (let ((analysis (analyse-files options)))
     (iter (for next in (all-chords options analysis))
@@ -76,7 +68,7 @@ weak, superstrong and neutral, according to Schoenberg's theory of harmony."
                            (intervalo (and diferenca (interval->code (module diferenca)))))
                       (when intervalo
                         (with-output-file
-                            (f (make-analysis-file "seventh" (third chord) (fourth chord)))
+                            (f (make-analysis-file "ly" "seventh" (third chord) (fourth chord)))
                           (format f "~a" (make-lily-segments options
                                                              (list (second prev)
                                                                    (second chord)
@@ -186,7 +178,7 @@ weak, superstrong and neutral, according to Schoenberg's theory of harmony."
                   chorale
                   voice
                   (print-event-note note))
-          (with-output-file (f (make-analysis-file "ambito" chorale voice segno))
+          (with-output-file (f (make-analysis-file "ly" "ambito" chorale voice segno))
             (format f "~a" (make-lily-segments options (list pseg seg nseg)))))))
 
 (defun kostka-amb (options)
@@ -240,7 +232,7 @@ weak, superstrong and neutral, according to Schoenberg's theory of harmony."
                               segno
                               (mapcar #'event-voice-name segment))))))
           (when (and min max)
-            (with-output-file (f (make-analysis-file "cruzamento" (analysis-file-name anal) min max))
+            (with-output-file (f (make-analysis-file "ly" "cruzamento" (analysis-file-name anal) min max))
               (format f "~a" (make-lily-segments options (subseq (analysis-segments anal) min max))))))))
 
 (register-command :name "crossings"
@@ -282,10 +274,11 @@ as a lilypond snippet in analysis/cruzamento-<chorale>-<first-sonority>-<last-so
                                        (event-pitch n2)))))
                   (when (and f1 f2 (= d1 d2) (not (= d1 0)))
                     (unless strong
-                      (with-output-file (f (make-analysis-file "parallel"
-                                                             name
-                                                             (analysis-file-name anal)
-                                                             i))
+                      (with-output-file (f (make-analysis-file "ly"
+                                                               "parallel"
+                                                               name
+                                                               (analysis-file-name anal)
+                                                               i))
                         (format f "~a"
                                 (make-lily-segments
                                  options
@@ -330,10 +323,11 @@ as a lilypond snippet in analysis/cruzamento-<chorale>-<first-sonority>-<last-so
         (format t "Chorale ~a ~%" (analysis-file-name anal))
         (let ((ini (or (arg :start options) 0))
               (fim (or (arg :end options) 1000000)))
-          (with-output-file (f (make-analysis-file "segments"
-                                                 (analysis-file-name anal)
-                                                 ini
-                                                 fim))
+          (with-output-file (f (make-analysis-file "ly"
+                                                   "segments"
+                                                   (analysis-file-name anal)
+                                                   ini
+                                                   fim))
             (format f "~a"
                     (make-lily-segments
                      options

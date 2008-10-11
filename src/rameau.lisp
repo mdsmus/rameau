@@ -4,9 +4,6 @@
 
 (enable-sharp-l-syntax)
 
-(defparameter *rameau-path* "/usr/local/share/rameau/")
-(setf *default-pathname-defaults* #p"/home/kroger/src/rameau/")
-
 (defclass rameau-algorithm ()
   ((name :accessor alg-name :initarg :name)
    (tempered? :accessor alg-tempered? :initarg :tempered?)
