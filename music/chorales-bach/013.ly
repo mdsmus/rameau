@@ -27,8 +27,8 @@ soprano = \relative c'' {
   d4 e4 a,4\fermata c4   %10
   b4 a4 g4 a4 
   f8 e8 f4 e4\fermata a4 
-  g4 c2\fermata b4 
-  c4 g4 a4 b4 
+  g4 c2 b4 
+  c4\fermata g4 a4 b4 
   c8 d8 e4 d4 c4   %15
   b4 b4 a4\fermata
 }
