@@ -59,7 +59,7 @@ Filter @var{*algorithms*} so that only the ones specified in
                           when (and (> (count-subseq alg (string-downcase (alg-name i))) 0)
                                     (you-ok-p i))
                           collect i)))
-      algs))
+      (remove-if-not #'you-ok-p algs)))
 
 (defparameter *functional-algorithms* nil)
 
