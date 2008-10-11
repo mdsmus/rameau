@@ -483,3 +483,7 @@ structures."
   "Accepts a logical pathname and returns the namestring of the
 pathname translation."
   (namestring (translate-logical-pathname logical-pathname)))
+
+(defmacro with-output-file ((stream filespec) &body body)
+  `(with-open-file (,stream ,filespec :direction :output :if-exists :supersede)
+     ,@body))
