@@ -5,6 +5,7 @@
 (enable-sharp-l-syntax)
 
 (defparameter *rameau-path* "/usr/local/share/rameau/")
+(setf *default-pathname-defaults* #p"/home/kroger/src/rameau/")
 
 (defclass rameau-algorithm ()
   ((name :accessor alg-name :initarg :name)
@@ -59,7 +60,9 @@ Filter @var{*algorithms*} so that only the ones specified in
 
 (defun alg-file-name (alg)
   "The file name used to save an algorithm to disk."
-  (concat *rameau-path* "/algorithms/" (alg-name alg) ".store"))
+  (make-pathname :name (alg-name alg)
+                 :type "store"
+                 :directory "algorithms"))
 
 (defun load-alg (alg)
   "Load @var{alg} from disk, returning @var{alg} itself in case a failure happens."
@@ -155,15 +158,6 @@ Checks if terminal @var{f} supports unicode.
         collect (cond ((< x 10)  (format nil "00~a" x))
                       ((< x 100) (format nil "0~a" x))
                       (t (format nil "~a" x)))))
-
-(defun search-music-dirs (substring dir)
-  "Search for a directory in @var{dir} with @var{substring} in
-  its name." 
-  (search-string-in-list substring
-                         (mapcar #'namestring
-                                 (directory (format nil "~a/~a/*/"
-                                                    *rameau-path*
-                                                    dir)))))
 
 (defun path-parse-answer-sheet (file)
   "Find and parse the answer sheet for file @var{file}, if exists."

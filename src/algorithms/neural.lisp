@@ -20,7 +20,9 @@
 (defparameter *7th-length* 4)
 (defparameter *value* 96)
 (defparameter *neural-version* "-007-")
-(defparameter *neural-path* (concat *rameau-path* "algorithms/master-" *neural-version* "-"))
+(defparameter *neural-path*
+  ;;; FIXME: usar pathname
+  (logical-pathname-namestring (concat "rameau:algorithms;master-" *neural-version* "-")))
 
 ;;; general functions
 (defun extract-diffs (segmento)

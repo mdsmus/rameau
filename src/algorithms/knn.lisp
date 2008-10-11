@@ -119,10 +119,11 @@
           :key #'first))
 
 (defun visualize-knn-hash (alg)
-  (cl-cairo2:with-png-file ((concat *rameau-path* "analysis/view-knn.png")
-                            'cl-cairo2:format-argb32
-                            2000
-                            2000)
+  (cl-cairo2:with-png-file
+      ((logical-pathname-namestring "rameau:analysis;view-knn.png")
+       'cl-cairo2:format-argb32
+       2000
+       2000)
     (let ((nn (prepare (knn-nn alg)))
           (center (list 1000 1000)))
       (destructuring-bind (first-count first-chord first-vector) (first nn)

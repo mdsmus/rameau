@@ -124,7 +124,7 @@
   \\midi {}
 }
 ")))
-    (let* ((result-dir (concat *rameau-path* "/analysis/"))
+    (let* ((result-dir (translate-logical-pathname "rameau:analysis;"))
            (result-file (make-pathname :directory result-dir
                                        :name (concat "analysis-" (pathname-name (analysis-full-path analysis)))
                                        :type (pathname-type (analysis-full-path analysis))))
