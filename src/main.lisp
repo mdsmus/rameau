@@ -48,10 +48,12 @@
                     t)))))
 
 (defun parse-files :private (options)
-  (loop for file in (arg :files options) append
-        (if (search "/" file)
-            (list file)
-            (parse-file-name file options))))
+  (iter (for file in (arg :files options))
+        (appending (if (search ":" file)
+                       (parse-file-name file options)
+                       (if (cl-fad:file-exists-p file)
+                           (list file)
+                           (error "File ~a does not exist." file))))))
 
 ;; These variables are set in the makefile. Their definitions are only here
 ;; to stop rameau about from crashing in slime.
