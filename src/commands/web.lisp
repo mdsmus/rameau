@@ -231,7 +231,7 @@ baixo = \\relative c {
 (defun grab-possible-answer-sheet ()
   (let ((an (parameter "answer")))
     (if (and an (/= 0 (length an)))
-        (read-chords (read-from-string (format nil "(~a)" an)))
+        (read-fchords (read-from-string (format nil "(~a)" an)))
         (awhen (or (parameter "chorale") "999")
           (path-parse-functional-answer-sheet
            (first (parse-file-name (format nil "chor:~a" it)
