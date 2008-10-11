@@ -4,20 +4,20 @@ adjacency segments must be indicated with '-'
 Major chords: I, V, IV
 Minor chords: i, iv
 Diminished chords: vii°
-Half diminished chords: iiø
-Key center: @F, @d 
+Half diminished chords: iiø7
+Key center: F:, d:
 Secondary functions: V/IV, vii°/ii
-Sevenths: V7, iv7
+Sevenths: V7, iv7, vii°7
 Inversions: I6, V6.5
 Function repetition: -
 
 Example (choral 006):
 
-@F I
+F: I
 I V6 V2/IV IV6
 V - V6 V I IV
-I6 ii - I I6 V V7
-I I6 - V6.5/V V - - vi vi6 @C vi vi2
-ii6 ii V I @F I
-vii°6 I6 iiø6 V -
+I6 ii vii°6 I I6 V V7
+I I6 viiø/V V6.5/V V - - vi vi6 C: vi vi2
+ii6.5 ii7 V I F: I
+iiø7 vii°6 I6 iiø6.5 V -
 I
