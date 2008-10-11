@@ -484,6 +484,20 @@ structures."
 pathname translation."
   (namestring (translate-logical-pathname logical-pathname)))
 
+(defun logical-pathname-directory (logical-pathname)
+  "Accepts a logical pathname and returns the directory of the
+pathname translation. Useful to use in the :directory keyword of a
+make-pathname."
+  (pathname-directory (translate-logical-pathname logical-pathname)))
+
 (defmacro with-output-file ((stream filespec) &body body)
   `(with-open-file (,stream ,filespec :direction :output :if-exists :supersede)
      ,@body))
+
+(defun make-analysis-file (type &rest args)
+  "Creates a pathname for a lilypond file in the format a-b-c.ly."
+  (make-pathname :directory
+                 (pathname-directory
+                  (translate-logical-pathname "rameau:analysis;"))
+                 :type type
+                 :name (format nil "~{~a~^-~}" args)))
