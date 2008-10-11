@@ -75,9 +75,8 @@ weak, superstrong and neutral, according to Schoenberg's theory of harmony."
                            (sinal (and diferenca (if (< diferenca 0) "+" "-")))
                            (intervalo (and diferenca (interval->code (module diferenca)))))
                       (when intervalo
-                        (with-open-file
-                            (f (make-analysis-file "seventh" (third chord) (fourth chord))
-                               :direction :output :if-exists :supersede)
+                        (with-output-file
+                            (f (make-analysis-file "seventh" (third chord) (fourth chord)))
                           (format f "~a" (make-lily-segments options
                                                              (list (second prev)
                                                                    (second chord)
@@ -187,9 +186,7 @@ weak, superstrong and neutral, according to Schoenberg's theory of harmony."
                   chorale
                   voice
                   (print-event-note note))
-          (with-open-file (f (make-analysis-file "ambito" chorale voice segno)
-                             :direction :output
-                             :if-exists :supersede)
+          (with-output-file (f (make-analysis-file "ambito" chorale voice segno))
             (format f "~a" (make-lily-segments options (list pseg seg nseg)))))))
 
 (defun kostka-amb (options)
@@ -243,9 +240,7 @@ weak, superstrong and neutral, according to Schoenberg's theory of harmony."
                               segno
                               (mapcar #'event-voice-name segment))))))
           (when (and min max)
-            (with-open-file (f (make-analysis-file "cruzamento" (analysis-file-name anal) min max)
-                               :direction :output
-                               :if-exists :supersede)
+            (with-output-file (f (make-analysis-file "cruzamento" (analysis-file-name anal) min max))
               (format f "~a" (make-lily-segments options (subseq (analysis-segments anal) min max))))))))
 
 (register-command :name "crossings"
@@ -287,12 +282,10 @@ as a lilypond snippet in analysis/cruzamento-<chorale>-<first-sonority>-<last-so
                                        (event-pitch n2)))))
                   (when (and f1 f2 (= d1 d2) (not (= d1 0)))
                     (unless strong
-                      (with-open-file (f (make-analysis-file "parallel"
+                      (with-output-file (f (make-analysis-file "parallel"
                                                              name
                                                              (analysis-file-name anal)
-                                                             i)
-                                         :direction :output
-                                         :if-exists :supersede)
+                                                             i))
                         (format f "~a"
                                 (make-lily-segments
                                  options
@@ -337,12 +330,10 @@ as a lilypond snippet in analysis/cruzamento-<chorale>-<first-sonority>-<last-so
         (format t "Chorale ~a ~%" (analysis-file-name anal))
         (let ((ini (or (arg :start options) 0))
               (fim (or (arg :end options) 1000000)))
-          (with-open-file (f (make-analysis-file "segments"
+          (with-output-file (f (make-analysis-file "segments"
                                                  (analysis-file-name anal)
                                                  ini
-                                                 fim)
-                             :direction :output
-                             :if-exists :supersede)
+                                                 fim))
             (format f "~a"
                     (make-lily-segments
                      options

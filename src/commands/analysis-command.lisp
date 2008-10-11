@@ -124,7 +124,7 @@
   \\midi {}
 }
 ")))
-    (let* ((result-dir (translate-logical-pathname "rameau:analysis;"))
+    (let* ((result-dir (pathname-directory (translate-logical-pathname "rameau:analysis;")))
            (result-file (make-pathname :directory result-dir
                                        :name (concat "analysis-" (pathname-name (analysis-full-path analysis)))
                                        :type (pathname-type (analysis-full-path analysis))))
@@ -132,7 +132,7 @@
                                    :name (pathname-name result-file)
                                    :type "ps")))
       (ensure-directories-exist result-dir)
-      (with-open-file (f result-file :direction :output :if-exists :supersede)
+      (with-output-file (f result-file)
         (format f "~a" (print-ast (cdr ast))))
       (when (or (arg :lily options) (arg :view-score options))
         #+sbcl (progn

@@ -193,8 +193,7 @@ These are expanded in @function{rameau-doc}{htmlize-docstring}."
   "Generate the html documentation for a package. The argument
 @var{package-name} is the symbol or keyword that names the package."
   (format t "Generating documentation for package ~a.~%" package-name)
-  (with-open-file (file (make-doc-file package-name)
-                        :direction :output :if-exists :supersede)
+  (with-output-file (file (make-doc-file package-name))
     (html-page file "Rameau API Documentation"
       (:h1 (str (escape-string (string-upcase (stringify package-name)))))
       (:p1 (str (htmlize-docstring (documentation (find-package package-name) t))))
@@ -239,8 +238,7 @@ These are expanded in @function{rameau-doc}{htmlize-docstring}."
                                  (str (concat "=> " (pprint-to-string (second example)))))))))))))
 
 (defun make-index-page (packages)
-  (with-open-file (file (make-doc-file :index)
-                        :direction :output :if-exists :supersede)
+  (with-output-file (file (make-doc-file :index))
     (html-page file "Rameau API Documentation"
       (:h1 "Rameau")
       (:p1 "A system for automatic harmonic analysis")

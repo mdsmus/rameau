@@ -169,7 +169,7 @@
   (let ((size (length data))
         (training-data (concat *neural-path* training-data)))
     (format t "* writing training data ~a~%" training-data)
-    (with-open-file (f training-data :direction :output :if-exists :supersede)
+    (with-output-file (f training-data)
       (iter (initially (format f "~a ~a ~a~%" size value chord-size))
             (for d in data)
             (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))

@@ -272,7 +272,7 @@ baixo = \\relative c {
                           (arg :png options) t
                           (arg :lily options) t)
                     (cl-store:store *results* (concat *rameau-web-dir* "cache.store"))
-                    (with-open-file (f full-path :direction :output :if-exists :supersede)
+                    (with-output-file (f full-path)
                       (format f "~a" code))
                     (rameau-analysis::analysis-lily options analysis))))
             (redirect (format nil "/show-analysis?analysis=~a&chorale=~a" md5 (or (parameter "chorale") ""))))))))
