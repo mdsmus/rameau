@@ -478,3 +478,8 @@ structures."
   (let ((filename (pathname-notdir pathname2))
         (dir (pathname-subdir pathname1 pathname2)))
     (merge-pathnames filename dir)))
+
+(defun logical-pathname-namestring (logical-pathname)
+  "Accepts a logical pathname and returns the namestring of the
+pathname translation."
+  (namestring (translate-logical-pathname logical-pathname)))
