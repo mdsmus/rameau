@@ -22,6 +22,9 @@
 
 (push (merge-pathnames "src/" *main-path*) asdf:*central-registry*)
 
+(setf (logical-pathname-translations "rameau")
+      `(("**;*.*.*" ,(merge-pathnames "**/" *main-path*))))
+
 (when *use-rameau-deps*
   ;; use symbolics links on systems, but windows is pretty bad with
   ;; links so we have to push them one by one
