@@ -361,7 +361,7 @@ baixo = \\relative c {
     (format t "Starting rameau web on port ~a.~%" port)
     (format t "Open http://localhost:~a/rameau/index.html on your browser" port)
     (rameau-web::start-rameau-web port))
-  (loop))
+  (loop (sleep 10)))
 
 (register-command :name "web"
                   :action #'web
