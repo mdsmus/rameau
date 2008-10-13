@@ -58,12 +58,12 @@
 ;; These variables are set in the makefile. Their definitions are only here
 ;; to stop rameau about from crashing in slime.
 
-(defvar *rameau-version*)
-(defvar *compilation-date*)
-(defvar *user*)
-(defvar *git-commit*)
-(defvar *kernel-info*)
-(defvar *libc-version*)
+(defvar cl-user::*rameau-version*)
+(defvar cl-user::*compilation-date*)
+(defvar cl-user::*user*)
+(defvar cl-user::*git-commit*)
+(defvar cl-user::*kernel-info*)
+(defvar cl-user::*libc-version*)
 
 
 (defun print-about ()
