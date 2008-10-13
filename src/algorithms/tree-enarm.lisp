@@ -82,6 +82,9 @@
   ((tree :accessor tree-tree :initform nil)
    (version :accessor tree-version :initform 0)))
 
+(defmethod you-ok-p ((alg tree))
+  (tree-tree alg))
+
 (defun do-train-chord-tree (alg)
   (unless (tree-tree alg)
     (multiple-value-bind (corais gabaritos)

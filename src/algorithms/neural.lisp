@@ -218,7 +218,10 @@
    (version)))
 
 (defmethod you-ok-p ((algorithm chord-net))
-  (not (eq (with-fann) :fann-load-error)))
+  (let ((out (with-fann
+               (handler-case (load-from-file (concat *neural-path* (e-chord-fann algorithm)))
+                 (error (c) (declare (ignore c)) nil)))))
+    (and out (not (equal out :fann-load-error)))))
 
 (defmethod perform-analysis (segments options (alg chord-net))
   (with-fann
@@ -306,7 +309,10 @@
    (version)))
 
 (defmethod you-ok-p ((algorithm context-net))
-  (not (eq (with-fann) :fann-load-error)))
+  (let ((out (with-fann
+               (handler-case (load-from-file (concat *neural-path* (context-fann algorithm)))
+                 (error (c) (declare (ignore c)) nil)))))
+    (and out (not (equal out :fann-load-error)))))
 
 (defmethod perform-analysis (segments options (alg context-net))
   (with-fann (apply-context-net segments options alg)))
@@ -466,7 +472,10 @@
    (version)))
 
 (defmethod you-ok-p ((algorithm functional-net))
-  (not (eq (with-fann) :fann-load-error)))
+  (let ((out (with-fann
+               (handler-case (load-from-file (concat *neural-path* (context-fann algorithm)))
+                 (error (c) (declare (ignore c)) nil)))))
+    (and out (not (equal out :fann-load-error)))))
 
 (defmethod functional-analysis (segments options (alg functional-net))
   (with-fann

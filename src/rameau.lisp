@@ -46,6 +46,10 @@
   "Register algorithm instance @var{alg} with @rameau."
   (push alg *algorithms*))
 
+(defun load-algorithms (algorithms algs)
+  "Make sure the algorithms are ok and load them."
+  (remove-if-not #'you-ok-p (mapcar #'load-alg (filter-algorithms algorithms algs))))
+
 (defun filter-algorithms (algoritmos algs)
   "[NOTEST]
 
@@ -54,12 +58,11 @@ Filter @var{*algorithms*} so that only the ones specified in
 "
   (if algoritmos
       (remove-duplicates
-       (loop for alg in algoritmos
-             append (loop for i in algs
-                          when (and (> (count-subseq alg (string-downcase (alg-name i))) 0)
-                                    (you-ok-p i))
-                          collect i)))
-      (remove-if-not #'you-ok-p algs)))
+       (iter (for alg in algoritmos)
+             (appending (iter (for i in algs)
+                              (when (> (count-subseq alg (string-downcase (alg-name i))) 0)
+                                (collect i))))))
+      algs))
 
 (defparameter *functional-algorithms* nil)
 

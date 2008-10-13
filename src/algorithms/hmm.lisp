@@ -24,6 +24,9 @@
    (special-notes :accessor special-notes :initform nil)
    (version :accessor hmm-version :initform 0)))
 
+(defmethod you-ok-p ((alg hmm))
+  (and (start-trans alg) (notes alg) (special-notes alg)))
+
 (defparameter *version* 1)
 
 (defparameter *chords*
