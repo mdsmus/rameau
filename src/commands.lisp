@@ -94,7 +94,7 @@ information about the syntax."
                             (read-from-string (subseq op (1+ it) (length op)))))
              (collect (list (make-keyword op) t)))))
 
-(defparameter *commands* nil)
+(defvar *commands* nil)
 
 (defstruct command
   name documentation options action)

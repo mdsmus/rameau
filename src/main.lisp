@@ -58,13 +58,12 @@
 ;; These variables are set in the makefile. Their definitions are only here
 ;; to stop rameau about from crashing in slime.
 
-(defvar cl-user::*rameau-version*)
-(defvar cl-user::*compilation-date*)
-(defvar cl-user::*user*)
-(defvar cl-user::*git-commit*)
-(defvar cl-user::*kernel-info*)
-(defvar cl-user::*libc-version*)
-
+(defvar *rameau-version*)
+(defvar *compilation-date*)
+(defvar *user*)
+(defvar *git-commit*)
+(defvar *kernel-info*)
+(defvar *libc-version*)
 
 (defun print-about ()
   (macrolet ((get-info (info)
@@ -105,7 +104,7 @@
                   (print-about)
                   (return))
                 (unless command
-                  (print-fatal (concat cmd "is not a rameau command.~%"))
+                  (print-fatal (concat cmd " is not a rameau command.~%"))
                   (return))
                 (for options = (make-default-arguments command))
                 (iter (for (key value) in (parse-options command (rest command-list)))
