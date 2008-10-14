@@ -63,21 +63,28 @@
     options))
 
 (defun parse-file-name (exp options)
-  "Parse a file name @var{exp} with the options in @var{options}."
+  "Parse an expression representing files in the system. The item
+before : in @var{exp} is a subdirectory in @var{rameau:music;}. The
+item after : is a mini-language to describe the file or files to use.
+Things like chora:001 and chora:001..003 can be used in the input.
+This function returns a list with a full pathname for earch file to be
+analyzed. Please check the rameau user documentation for more
+information about the syntax."
   (unless (search ":" exp)
     (error "expression should be in the format <substring>:<expression>"))
   (let* ((tmp (cl-ppcre:split ":" exp))
          (substring (first tmp))
          (file-or-range (second tmp))
-         (dir (search-for-directories substring (merge-pathnames "music/"))))
+         (dir (search-for-directories substring
+                                      (translate-logical-pathname "rameau:music;"))))
     (setf (arg :substring options) substring)
-    (mapcar (lambda (item) (concat dir item ".ly"))
+    (mapcar (lambda (item) (make-pathname :directory (pathname-directory dir)
+                                     :name item :type "ly"))
             (cond ((search ".." file-or-range)
                    (files-range (cl-ppcre:split "\\.\\." file-or-range)))
                   ((search "," file-or-range)
                    (cl-ppcre:split "," file-or-range))
-                  (t (search " " file-or-range)
-                     (cl-ppcre:split " " file-or-range))))))
+                  (t (list file-or-range))))))
 
 (defun process-option-list (options)
   "Process the options in @var{options}."

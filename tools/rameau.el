@@ -170,30 +170,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun ide-rameau ()
-  (slime-switch-to-output-buffer)
-  (insert "(require :rameau)")
-  (slime-repl-return)
-  (delete-other-windows)
-  (split-window-vertically)
-  (rameau-dired)
-  (goto-char (point-min))
-  (enlarge-window 10)
-  (remove-hook 'slime-connected-hook 'ide-rameau))
-
-(defun run-rameau ()
-  (interactive)
-  (add-hook 'slime-connected-hook 'ide-rameau)
-  (slime))
-
-(defun comment-sexp ()
-  (interactive)
-  (mark-sexp)
-  ;;(comment-region)
-  )
-
-(global-set-key [f8] 'run-rameau)
-
 (defun open-ticket (ticket-number)
   (browse-url (concat "http://bugs.genos.mus.br/issues/show/" ticket-number)))
 
