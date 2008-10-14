@@ -113,8 +113,9 @@
   (is-false (search-for-directories "test12!" #p"/tmp/"))
   (let ((tmpdir (symbol-name (gensym))))
    (with-fixture create-tmp-dir (tmpdir)
-     (is (equal (list (make-pathname :directory `(:absolute "tmp" ,tmpdir)))
-                (search-for-directories tmpdir #p"/tmp/"))))))
+     (is (pathnames-equal-p
+          (make-pathname :directory `(:absolute "tmp" ,tmpdir))
+          (search-for-directories tmpdir #p"/tmp/"))))))
 
 (test pathname-subdir
   (is (equal #p"nada/mais/"
@@ -129,3 +130,10 @@
 (test pathname-notdir
   (is (equal #p"foo.bar"
              (pathname-notdir #p "/home/kroger/src/rameau/src/foo.bar"))))
+
+(test pathname-replace-directory
+  (with-fixture logical-pathname-translations ()
+    (is (pathnames-equal-p
+         #p"/tmp/rameau/answer-sheets/chorales-bach/001.pop"
+         (pathname-replace-directory #p"/tmp/rameau/music/chorales-bach/001.ly"
+                                     "rameau:music;" "rameau:answer-sheets;" "pop")))))

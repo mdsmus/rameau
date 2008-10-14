@@ -452,11 +452,10 @@ up to @var{yd} on the second dimension"
       (parse-integer value)))
 
 (defun search-for-directories (name dir)
-  "Return a list with the full pathname of all subdirectories in
-@var{dir} that has the string @var{name} in it. @var{Dir} must be a
-pathname."
-  (remove-if-not #L(member name (rest (pathname-directory !1)) :test #'search)
-                 (directory (merge-pathnames "*" dir))))
+  "Return the full pathname of the first subdirectory in @var{dir}
+that has the string @var{name} in it. @var{Dir} must be a pathname."
+  (first (remove-if-not #L(member name (rest (pathname-directory !1)) :test #'search)
+                        (directory (merge-pathnames "*" dir)))))
 
 (defun pathname-notdir (pathname)
   "Return a pathname with just the filename and extension, i.e.
@@ -478,6 +477,28 @@ structures."
   (let ((filename (pathname-notdir pathname2))
         (dir (pathname-subdir pathname1 pathname2)))
     (merge-pathnames filename dir)))
+
+(defun pathname-replace-directory (pathname from to result-type)
+  (let ((path (pathname-difference (translate-logical-pathname from)
+                                   pathname)))
+    (merge-pathnames (make-pathname :directory (pathname-directory path)
+                                    :name (pathname-name path)
+                                    :type result-type)
+                     (translate-logical-pathname to))))
+
+(defun pathnames-equal-p (pathname1 pathname2)
+  (and (pathnamep pathname1)
+       (pathnamep pathname2)
+       ;; don't check for host and device
+       ;;(equal (pathname-host pathname1) (pathname-host pathname2))
+       ;;(equal (pathname-device pathname1) (pathname-device pathname2))
+       (equal (pathname-directory pathname1) (pathname-directory pathname2))
+       (equal (pathname-name pathname1) (pathname-name pathname2))
+       (equal (pathname-type pathname1) (pathname-type pathname2))
+       (or (equal (pathname-version pathname1) (pathname-version pathname2))
+           (and (member (pathname-version pathname1) '(:newest nil))
+                (member (pathname-version pathname2) '(:newest nil))
+                t))))
 
 (defun logical-pathname-namestring (logical-pathname)
   "Accepts a logical pathname and returns the namestring of the
