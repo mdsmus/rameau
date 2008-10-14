@@ -139,16 +139,6 @@ Checks if terminal @var{f} supports unicode.
       (eq (stream-external-format f) nil)
       (eq (stream-external-format f) #+sbcl :utf-8 #-sbcl :default)))
 
-(defun read-user-config ()
-  "Read and load definitions from a user-set configuration file in
-@file{~/.rameaurc}.[NOTEST]"
-  (aif (cl-fad:file-exists-p (concat (getenv "HOME") "/.rameaurc"))
-       (loop for (var value) in (read-file-as-sexp it) do (setf (symbol-value var) value))))
-
-(read-user-config)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defun files-range (list)
   "All files in the range specified in @var{list}."
   (loop for x from (parse-integer (first list)) to (parse-integer (second list))
