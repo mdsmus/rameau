@@ -13,12 +13,12 @@
 (test arg
   (is (equalp 7.1 (arg :paper-width (make-default-arguments (get-command-by-name "anal"))))))
 
-(test parse-file-name
-  (is-true
-   (cl-fad:file-exists-p
-    (parse-file-name "chor:001"
-                     (make-default-arguments (get-command-by-name "anal"))))))
-
 (test process-option-list
   (is (equalp (process-option-list '("foo=bar" "baz")) '((:foo bar) (:baz t)))))
+
+(test parse-file-name
+  (is (pathnames-equal-p
+       (translate-logical-pathname "rameau:music;chorales-bach;001.ly")
+       (first (parse-file-name "chor:001"
+                               (make-default-arguments (get-command-by-name "anal")))))))
 
