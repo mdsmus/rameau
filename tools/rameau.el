@@ -163,6 +163,13 @@
       (insert (concat "(run-tests " test-name ")"))
       (slime-repl-return))))
 
+(defun rameau-run-all-tests ()
+  (interactive)
+  (slime-switch-to-output-buffer)
+  (goto-char slime-repl-input-start-mark)
+  (insert "(rameau:main \"test\")")
+  (slime-repl-return))
+  
 (define-key slime-mode-map [(alt control u)] 'rameau-cria-teste-defun)
 (define-key slime-mode-map [(alt control r)] 'rameau-run-test)
 (define-key slime-mode-map [(alt control s)] 'rameau-show-test)
