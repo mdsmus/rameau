@@ -29,7 +29,7 @@
 
 (defmethod do-options ((algorithm rameau-algorithm) options))
 
-(defparameter *algorithms* nil)
+(defvar *algorithms* nil)
 
 (defun add-algorithm (alg)
   "Register algorithm instance @var{alg} with @rameau."
