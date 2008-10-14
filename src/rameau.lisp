@@ -157,18 +157,23 @@ Checks if terminal @var{f} supports unicode.
                       (t (format nil "~a" x)))))
 
 (defun path-parse-answer-sheet (file)
-  "Find and parse the answer sheet for file @var{file}, if exists."
-  (let* ((full-file (cl-ppcre:regex-replace "music" file "answer-sheets"))
-         (full-file (cl-ppcre:regex-replace "\\.ly" full-file ".pop")))
-    (when (cl-fad:file-exists-p full-file)
-      (read-chords (read-file-as-sexp full-file)))))
+  "Find and parse the answer sheet for a given lilypond @var{file}, if
+exists."
+  (awhen (cl-fad:file-exists-p
+          (pathname-replace-directory file
+                                      "rameau:music;"
+                                      "rameau:answer-sheets;"
+                                      "pop"))
+    (read-chords (read-file-as-sexp it))))
 
 (defun path-parse-functional-answer-sheet (file)
   "Find and parse the answer sheet for file @var{file}, if exists."
-  (let* ((full-file (cl-ppcre:regex-replace "music" file "answer-sheets"))
-         (full-file (cl-ppcre:regex-replace "\\.ly" full-file ".fun")))
-    (when (cl-fad:file-exists-p full-file)
-      (get-fchords (file-string full-file)))))
+  (awhen (cl-fad:file-exists-p
+          (pathname-replace-directory file
+                                      "rameau:music;"
+                                      "rameau:answer-sheets;"
+                                      "fun"))
+    (get-fchords (file-string it))))
 
 (defparameter *training-data* nil)
 
