@@ -280,7 +280,7 @@ baixo = \\relative c {
                     (setf (gethash md5 *results*) analysis
                           (arg :png options) t
                           (arg :lily options) t)
-                    (cl-store:store *results* (translate-logical-pathname "cache.store"))
+                    (cl-store:store *results* (translate-logical-pathname "rameau:web;cache.store"))
                     (with-output-file (f full-path)
                       (format f "~a" code))
                     (rameau-analysis::analysis-lily options analysis))))
@@ -351,7 +351,7 @@ baixo = \\relative c {
   (awhen (parameter "page")
     (let ((page (format nil "~a" it)))
       (remhash page *results*)
-      (cl-store:store *results* (translate-logical-pathname "cache.store")))
+      (cl-store:store *results* (translate-logical-pathname "rameau:web;cache.store")))
     (redirect "/rameau/results.htm")))
 
 (push (create-prefix-dispatcher "/rameau/clear-cache" 'clear-cache) *dispatch-table*)
