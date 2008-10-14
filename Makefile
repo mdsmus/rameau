@@ -89,6 +89,8 @@ clisprameau: $(lisp-files)
 
 update: 
 	git pull --rebase
+
+update-modules:
 	git submodule init
 	git submodule update
 	cd rameau-deps/lisp-libs && git checkout master && git pull
