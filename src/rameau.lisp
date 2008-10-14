@@ -38,7 +38,7 @@
 
 (defun add-algorithm (alg)
   "Register algorithm instance @var{alg} with @rameau."
-  (push alg *algorithms*))
+  (pushnew alg *algorithms*))
 
 (defun load-algorithms (algorithms algs)
   "Make sure the algorithms are ok and load them."
