@@ -43,9 +43,9 @@ lisp-files = $(wildcard src/*.asd src/*.lisp tools/*.lisp src/tests/*.lisp src/a
 neural-path = $(maindir)/algorithms/
 
 
-.PHONY: update clean all doc train
+.PHONY: update clean all doc train data
 
-default: rameau 
+default: train
 
 train: rameau
 	./rameau setup
