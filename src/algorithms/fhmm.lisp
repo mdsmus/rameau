@@ -223,6 +223,9 @@
    (outputs :accessor out :initform nil)
    (version :accessor version :initform 0)))
 
+(defmethod you-ok-p ((alg functional-hmm))
+  (and (trans alg) (out alg) (version alg)))
+
 (defmethod do-options ((alg functional-hmm) options)
   (when (and (aget :train (arg :options options))
              (not (eql *version* (version alg))))

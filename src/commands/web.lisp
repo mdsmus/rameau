@@ -80,7 +80,7 @@
            (:p (:input :type "radio" :name "escolha" :value "chor" :onchange "habilita_chor()")
                (:label :for "escolha-2" "...or choose one of Bach's 371 Chorales")
                (:select :name "chorale" :id "chorale"  :disabled t
-                        (iter (for f in (parse-file-name "chor:1..371" (make-default-arguments (get-command-by-name "anal"))))
+                        (iter (for f in (parse-file-name "chor:1..371" (make-default-arguments (get-command-by-name "functional"))))
                               (let ((name (pathname-name f)))
                                 (htm (:option :value name (str name)))))))
            ;; FIXME: space should be defined in the css file
@@ -99,9 +99,10 @@
                  (:a :class "closebutton"
                      :href "javascript:void(0)" :onClick "toggle_visible(document.getElementById(\"algorithms\"));"
                      "X")
-                 (iter (for alg in (filter-algorithms nil *algorithms*))
+                 (iter (for alg in (filter-algorithms nil *functional-algorithms*))
                        (htm (:p (:input :type "checkbox" 
-                                        :checked (/= 0 (count-subseq "Net" (alg-name alg)))
+                                        :checked (or (/= 0 (count-subseq "Knn" (alg-name alg)))
+                                                     (/= 0 (count-subseq "Tsui" (alg-name alg))))
                                         :name (alg-name alg)
                                         :id (alg-name alg))
                                 (:label :for (alg-name alg) (fmt "<b>~a</b>:<i>~a</i>"
@@ -117,6 +118,7 @@
                  (str (an-form))))
 
 (push (create-prefix-dispatcher "/rameau/index.html" 'rameau-web) *dispatch-table*)
+(push (create-prefix-dispatcher "/rameau/" 'rameau-web) *dispatch-table*)
 
 (defun favicon ()
   (setf (content-type) "image/gif")
@@ -155,8 +157,8 @@
                 (collect (format nil "~(~x~)" i)))))
 
 (defun get-params-alg ()
-  (iter (for alg in (mapcar #'load-alg (filter-algorithms nil *algorithms*)))
-        (when (parameter (alg-name alg))
+  (iter (for alg in (mapcar #'load-alg (filter-algorithms nil *functional-algorithms*)))
+        (when (and (parameter (alg-name alg)) (you-ok-p alg))
           (collect alg))))
 
 (defun get-chorale-string (n)
@@ -233,11 +235,11 @@ baixo = \\relative c {
 (defun grab-possible-answer-sheet ()
   (let ((an (parameter "answer")))
     (if (and an (/= 0 (length an)))
-        (read-chords (read-from-string (format nil "(~a)" an)))
+        (read-fchords (read-from-string (format nil "(~a)" an)))
         (awhen (or (parameter "chorale") "999")
-          (path-parse-answer-sheet (first
-                                    (parse-file-name (format nil "chor:~a" it)
-                                                     (make-default-arguments (get-command-by-name "anal")))))))))
+          (path-parse-functional-answer-sheet
+           (first (parse-file-name (format nil "chor:~a" it)
+                                   (make-default-arguments (get-command-by-name "functional")))))))))
 
 (defun do-analysis ()
   (let ((code (get-params-code))
@@ -251,7 +253,7 @@ baixo = \\relative c {
                 (format t "Erro: ~a||||||~a"
                         code algs)
                 (progn
-                  (let* ((options (make-default-arguments (get-command-by-name "anal")))
+                  (let* ((options (make-default-arguments (get-command-by-name "functional")))
                          (options (progn (setf (arg :algorithms options) algs)
                                          options))
                          (ast (get-ast-string code))
@@ -262,7 +264,7 @@ baixo = \\relative c {
                                          :name md5
                                          :type "ly"))
                          (analysis (make-analysis :segments segments
-                                                  :results (mapcar #L(perform-analysis segments options !1)
+                                                  :results (mapcar #L(functional-analysis segments options !1)
                                                                    (arg :algorithms options))
                                                   :answer-sheet (grab-possible-answer-sheet)
                                                   :file-name md5
@@ -366,7 +368,7 @@ baixo = \\relative c {
     (format t "Starting rameau web on port ~a.~%" port)
     (format t "Open http://localhost:~a/rameau/index.html on your browser" port)
     (rameau-web::start-rameau-web port))
-  (loop))
+  (loop (sleep 10)))
 
 (register-command :name "web"
                   :action #'web

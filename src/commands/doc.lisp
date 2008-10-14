@@ -129,6 +129,7 @@
                          (with-html-output-to-string (,str)
                            ,@body)))))
              *docstring-templates*)))
+
   (defmacro make-docstring-template (name (&rest args) &body body)
     "Define a dosctring template named @var{name} that expands to the html code in @var{body}.
 These are expanded in @function{rameau-doc}{htmlize-docstring}."

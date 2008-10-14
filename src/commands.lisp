@@ -32,7 +32,7 @@
   "Iterate through all flags and find whichever slot is interesting."
   `(iter (for (short long description start-value type) in (get-all-flags ,command))
          (when (or (equal short ,flag)
-                   (equal long ,flag))
+                   (equal long (subseq ,flag 2)))
            (return ,slot))))
 
 (defun get-flag-name (command flag)

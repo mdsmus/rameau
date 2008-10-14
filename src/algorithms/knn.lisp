@@ -106,6 +106,9 @@
    (nn :accessor knn-nn :initform (make-alist))
    (version :accessor knn-version :initform 0)))
 
+(defmethod you-ok-p ((alg knn))
+  (first (knn-nn alg)))
+
 (defmethod perform-analysis (segments options (alg knn))
   (prepare-answers-k1 segments options alg))
 
@@ -220,6 +223,9 @@
    (variance :accessor cknn-variance :initarg :variance :initform 3/2)
    (version :accessor cknn-version :initform 0)))
 
+(defmethod you-ok-p ((alg context-knn))
+  (first (cknn-nn alg)))
+
 (defmethod perform-analysis (segments options (alg context-knn))
   (prepare-answers-context segments options alg))
 
@@ -289,6 +295,9 @@
    (after-context :accessor cknn-after-context :initarg :after-context :initform 0)
    (variance :accessor cknn-variance :initarg :variance :initform 3/2)
    (version :accessor cknn-version :initform 0)))
+
+(defmethod you-ok-p ((alg functional-knn))
+  (first (cknn-nn alg)))
 
 (defmethod functional-analysis (segments options (alg functional-knn))
   (prepare-answers-functional segments options alg))

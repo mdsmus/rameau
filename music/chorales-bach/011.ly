@@ -14,33 +14,33 @@ soprano = \relative c {
   \repeat volta 2 { 
     \partial 4 e''4 
     e c d e 
-    f2 d4 d 
+    f2 d4\fermata d 
     d c c b 
-    c2 r4 d 
+    c2\fermata r4 d 
     d d d e 
-    c2 c4 c 
+    c2 c4\fermata c 
     b c d d 
-    c2. } b4
+    c2.\fermata } b4
   b b b b 
-  c2 c4 b 
+  c2 c4 b\fermata 
   b b b b 
-  \partial 2. c2 c4
+  \partial 2. c2 c4\fermata
   \time 3/4
   \partial 4 e 
-  e d c d2 e4 f2. e2 e4 
+  e d c d2 e4 f2. e2\fermata e4 
   d2 d4 cis2 cis4 d2.~
-  d2 e4 
+  d2\fermata e4 
   e d c d2 e4 f2.
-  e2 e4 
+  e2\fermata e4 
   d2 d4 cis2 cis4
   d2.~
-  \partial 2 d2
+  \partial 2 d2\fermata
   \time 4/4
   \partial 4 e4 
   e c d e 
-  f2 d4 d 
+  f2 d4\fermata d 
   d c c b 
-  c2. 
+  c2.\fermata
 }
 
 
@@ -128,37 +128,37 @@ baixo = \relative c {
   \repeat volta 2 {
     \partial 4 c4 
     c c' b bes 
-    a g8 f bes4 fis 
+    a g8 f bes4\fermata fis 
     g8 f e4 f g 
-    c,2 r4 g 
+    c,2\fermata r4 g 
     g'8 fis g a b g c4 
-    f,2 f4 e8 f 
+    f,2 f4\fermata e8 f 
     g4 a8 g f4 g8 g, 
-    c2. } g4
+    c2.\fermata } g4
   g'8 fis e dis e d c b 
-  a2 a4 d 
+  a2 a4\fermata d 
   e8 f g a g[ f e d]
-  \partial 2. c2 c4
+  \partial 2. c2 c4\fermata
   \time 3/4
   \partial 4 c 
   c' b a b 
   a g a2 
-  b4 c2 c,4 
+  b4 c2\fermata c,4 
   g' a bes a 
   g a bes a 
-  g d2 a'4 
+  g d2\fermata a'4 
   gis2 a4 f2 e4 d2 
-  g4 c,2 cis4 
+  g4 c,2\fermata cis4 
   d e f e 
   f g fis g 
   g,
-  \partial 2 d'2 
+  \partial 2 d'2\fermata 
   \time 4/4
   \partial 4 a8 b
   c d e c f g f e 
   d e f d g a g f 
   e d e f g f g g, 
-  c2. 
+  c2.\fermata 
 }
 
 

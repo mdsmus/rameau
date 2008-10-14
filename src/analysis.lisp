@@ -38,10 +38,8 @@ If it is, please report a bug.~%" file)
   (apply #'mapcar #'list (analysis-results analysis)))
 
 (defun analyse-files (options)
-  (setf (arg :algorithms options) (mapcar #'load-alg
-                                          (filter-algorithms
-                                           (arg :algorithms options)
-                                           *algorithms*))
+  (setf (arg :algorithms options) (load-algorithms (arg :algorithms options)
+                                                   *algorithms*)
         (arg :options options) (process-option-list (arg :options options)))
   (unless (arg :algorithms options)
     (format t "No valid algorithm found.
@@ -70,10 +68,8 @@ Try omitting the \"-a\" option and trying again.~%")
                  :dur (durations segments)))))))
 
 (defun functional-analyse-files (options)
-  (setf (arg :algorithms options) (mapcar
-                                   #'load-alg
-                                   (filter-algorithms (arg :algorithms options)
-                                                      *functional-algorithms*))
+  (setf (arg :algorithms options) (load-algorithms (arg :algorithms options)
+                                                   *functional-algorithms*)
         (arg :options options) (process-option-list (arg :options options)))
   (unless (arg :algorithms options)
     (format t "No valid algorithm found.
