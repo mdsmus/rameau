@@ -58,7 +58,7 @@ Filter @var{*algorithms*} so that only the ones specified in
                                 (collect i))))))
       algs))
 
-(defparameter *functional-algorithms* nil)
+(defvar *functional-algorithms* nil)
 
 (defun add-falgorithm (alg)
   "Register functional algorithm @var{alg}."
@@ -68,7 +68,7 @@ Filter @var{*algorithms*} so that only the ones specified in
   "The file name used to save an algorithm to disk."
   (make-pathname :name (alg-name alg)
                  :type "store"
-                 :directory "algorithms"))
+                 :directory (logical-pathname-directory "rameau:algorithms;")))
 
 (defun load-alg (alg)
   "Load @var{alg} from disk, returning @var{alg} itself in case a failure happens."
