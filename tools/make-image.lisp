@@ -17,7 +17,8 @@
 (push (merge-pathnames "src/" *main-path*) asdf:*central-registry*)
 
 (setf (logical-pathname-translations "rameau")
-      `(("**;*.*.*" ,(merge-pathnames "**/" *install-path*))))
+      `(("user-data;*.*.*"      ,(merge-pathnames ".rameau/" (user-homedir-pathname)))
+        ("**;*.*.*" ,(merge-pathnames "**/" *install-path*))))
 
 (when *use-rameau-deps*
   ;; use symbolics links on systems, but windows is pretty bad with
