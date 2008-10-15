@@ -266,7 +266,7 @@ Parse a lilypond relative block.
               :key (event-key ev)
               :original-event (remove-text-reprs (event-original-event ev))
               :time-sig (event-time-sig ev)))
-                      
+(defmethod remove-text-reprs (n) n)
 
 (defun parse-assignment :private  (variable ign equal igna value)
   "[NOTEST]"
