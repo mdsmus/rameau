@@ -21,10 +21,24 @@
               ((> size 80)
                (format t "~&~3a ~a: ~a~%" x size line)))))
 
+(defun check-block-file (file)
+  "check for large chunks of code"
+  (loop for block in (cl-ppcre:split "\\n\\n" (file-string file))
+        for block-split = (split-sequence:split-sequence #\Newline block)
+        for size = (length block-split) do
+        (when (> size 35)
+          (write-line "*************************************************************")
+          (format t "~&~a: ~a~%      ~a~%" file size (subseq block-split 0 4)))))
+
 (defun list-all-rameau-files ()
   (directory (merge-pathnames "*/*.lisp"
                               (translate-logical-pathname "rameau:src;"))))
 
-(defun check-all-rameau-files ()
-  (loop for item in (list-all-rameau-files)
-        do (check-lines-file item) ))
+(defun map! (fn list)
+  (loop for item in list do (funcall fn item)))
+
+(defun check-lines ()
+  (map! #'check-lines-file (list-all-rameau-files)))
+
+(defun check-blocks ()
+  (map! #'check-block-file (list-all-rameau-files)))
