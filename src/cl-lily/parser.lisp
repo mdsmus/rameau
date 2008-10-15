@@ -250,9 +250,27 @@ Parse a lilypond relative block.
 "
   (make-instance 'transpose :expr block :from from :to to :text (list a ig from ign to igno block)))
 
+(defgeneric remove-text-reprs (foo))
+(defmethod remove-text-reprs ((ns note-sequence))
+  (make-note-sequence :notas (remove-text-reprs (note-sequence-notas ns))
+                      :start (note-sequence-start ns)
+                      :dur (note-sequence-dur ns)))
+(defmethod remove-text-reprs ((ls list))
+  (mapcar #'remove-text-reprs ls))
+(defmethod remove-text-reprs ((ev event))
+  (make-event :pitch (event-pitch ev)
+              :voice-name (event-voice-name ev)
+              :dur (event-dur ev)
+              :octave (event-octave ev)
+              :start (event-start ev)
+              :key (event-key ev)
+              :original-event (remove-text-reprs (event-original-event ev))
+              :time-sig (event-time-sig ev)))
+                      
+
 (defun parse-assignment :private  (variable ign equal igna value)
   "[NOTEST]"
-  (make-instance 'set-variable :varname variable :value value :text (list variable ign equal igna value)))
+  (make-instance 'set-variable :varname variable :value (remove-text-reprs (process-ast value)) :text (list variable ign equal igna value)))
 
 (defun parse-dur :private (dur)
   "[NOTEST]"

@@ -314,11 +314,10 @@ null or 'erro."
            (* one (/ value max)))
         zero)))
 
-(defun deep-copy (value)
+(defun deep-copy (value) 
   "Very ugly hack to do a deep copy of @var{value}"
-  (let ((name (concat "/tmp/foo" (stringify (random 10)))))
-    (cl-store:store value name)
-    (cl-store:restore name)))
+  (let ((*print-readably* t))
+    (read-from-string (format nil "~s" value))))
 
 (defun hash->ordered-list (table output cmp)
   "Create an ordered list with the elements of hashtable @var{hash} ordered
