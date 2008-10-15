@@ -240,12 +240,14 @@ self-explanatory, and they do this coding/decoding.
           (apply-e-chord-net inputs options alg)))))
 
 (defclass chord-net (rameau-algorithm)
-  ((chord-data :accessor e-chord-data :initarg :data
-               :initform (make-pathname-neural "chord-data" "fann"))
-   (chord-fann :accessor e-chord-fann :initarg :fann
-               :initform (make-pathname-neural "chord" "fann"))
+  ((chord-data :accessor e-chord-data :initarg :data)
+   (chord-fann :accessor e-chord-fann :initarg :fann)
    (hidden-units :accessor chord-hidden-units :initarg :units :initform 30)
    (version)))
+
+(defmethod initialize-instance :after ((object chord-net) &key &allow-other-keys)
+  (setf (e-chord-data object) (make-pathname-neural "chord-data" "fann")
+        (e-chord-fann object) (make-pathname-neural "chord" "fann")))
 
 (defmethod you-ok-p ((algorithm chord-net))
   (let ((out (with-fann
@@ -333,14 +335,16 @@ self-explanatory, and they do this coding/decoding.
             (apply-context-net inputs options alg))))))
 
 (defclass context-net (rameau-algorithm)
-  ((context-data :accessor context-data :initarg :data
-                 :initform (make-pathname-neural "context-train" "data") )
-   (context-fann :accessor context-fann :initarg :fann
-                 :initform (make-pathname-neural "context" "fann") )
+  ((context-data :accessor context-data :initarg :data)
+   (context-fann :accessor context-fann :initarg :fann)
    (context-before :accessor net-context-before :initarg :context-before :initform 1)
    (context-after :accessor net-context-after :initarg :context-after :initform 0)
    (hidden-units :accessor context-hidden-units :initarg :units :initform 22)
    (version)))
+
+(defmethod initialize-instance :after ((object context-net) &key &allow-other-keys)
+  (setf (context-data object) (make-pathname-neural "context-train" "data")
+        (context-fann object) (make-pathname-neural "context" "fann")))
 
 (defmethod you-ok-p ((algorithm context-net))
   (let ((out (with-fann
@@ -498,14 +502,16 @@ self-explanatory, and they do this coding/decoding.
 
 
 (defclass functional-net (rameau-algorithm)
-  ((context-data :accessor context-data :initarg :data
-                 :initform (make-pathname-neural "functional-train" "data"))
-   (context-fann :accessor context-fann :initarg :fann
-                 :initform (make-pathname-neural "functional" "fann"))
+  ((context-data :accessor context-data :initarg :data)
+   (context-fann :accessor context-fann :initarg :fann)
    (context-before :accessor net-context-before :initarg :context-before :initform 1)
    (context-after :accessor net-context-after :initarg :context-after :initform 3)
    (hidden-units :accessor context-hidden-units :initarg :units :initform 22)
    (version)))
+
+(defmethod initialize-instance :after ((object functional-net) &key &allow-other-keys)
+  (setf (context-data object) (make-pathname-neural "functional-train" "data")
+        (context-fann object) (make-pathname-neural "functional" "fann")))
 
 (defmethod you-ok-p ((algorithm functional-net))
   (let ((out (with-fann
