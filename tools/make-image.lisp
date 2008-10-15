@@ -8,12 +8,6 @@
                   (space 0)
                   (speed 0)))
 
-(defparameter *main-path*
-  #+ecl (si::getcwd)
-  #+sbcl *default-pathname-defaults*
-  #+cmu (first (ext:search-list "default:"))
-  #+clisp (ext:default-directory))
-
 (defparameter *asdf-file*
   (merge-pathnames "rameau-deps/lisp-libs/asdf/asdf.lisp" *main-path*))
 
@@ -23,7 +17,7 @@
 (push (merge-pathnames "src/" *main-path*) asdf:*central-registry*)
 
 (setf (logical-pathname-translations "rameau")
-      `(("**;*.*.*" ,(merge-pathnames "**/" *main-path*))))
+      `(("**;*.*.*" ,(merge-pathnames "**/" *install-path*))))
 
 (when *use-rameau-deps*
   ;; use symbolics links on systems, but windows is pretty bad with

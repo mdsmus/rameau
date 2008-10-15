@@ -2,12 +2,13 @@ SHELL = /bin/bash
 
 SBCL_BIN = sbcl
 LISP_BIN = lisp
+PWD = "$(shell pwd)/"
 
 SYSTEM = $(shell uname -s)
 
-ifeq ($(SYSTEM), "Linux")
+ifeq ($(SYSTEM), Linux)
 	LIBC = /lib/libc.so.6
-else ifeq ($(findstring "CYGWIN",$(SYSTEM)), "CYGWIN")
+else ifeq ($(findstring "CYGWIN",$(SYSTEM)), CYGWIN)
 	LIBC = /lib/libc.a
 endif
 
@@ -40,10 +41,8 @@ else
 endif
 
 lisp-files = $(wildcard src/*.asd src/*.lisp tools/*.lisp src/tests/*.lisp src/algorithms/*.lisp src/commands/*.lisp src/cl-lily/*.lisp)
-neural-path = $(maindir)/algorithms/
 
-
-.PHONY: update clean all doc train data
+.PHONY: update clean all doc train data all-rameau check visuals
 
 default: train
 
@@ -62,10 +61,8 @@ check: rameau
 visuals:
 	./rameau algorithms -o visualize
 
-rameau-deps:
-	$(MAKE) cl-fann rameau
-
-rameau: $(lisp-files) rameau-deps
+## rule build rameau to user instalation
+rameau-install: $(lisp-files)
 	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" \
 	--eval "(defparameter *git-commit* \"${GIT_COMMIT}\")" \
 	--eval "(defparameter *kernel-info* \"${KERNEL_INFO}\")" \
@@ -73,6 +70,20 @@ rameau: $(lisp-files) rameau-deps
 	--eval "(defparameter *rameau-version* \"${RAMEAU_VERSION}\")" \
 	--eval "(defparameter *compilation-date* \"${COMPILATION_DATE}\")" \
 	--eval "(defparameter *user* \"${USER}\")" \
+	--eval "(defparameter *main-path* \"${PWD}/\")" \
+	--eval "(defparameter *install-path* \"${prefix}/share/rameau/\")" \
+	--load "tools/make-image.lisp"
+
+rameau: $(lisp-files)
+	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" \
+	--eval "(defparameter *git-commit* \"${GIT_COMMIT}\")" \
+	--eval "(defparameter *kernel-info* \"${KERNEL_INFO}\")" \
+	--eval "(defparameter *libc-version* \"${LIBC_VERSION}\")" \
+	--eval "(defparameter *rameau-version* \"${RAMEAU_VERSION}\")" \
+	--eval "(defparameter *compilation-date* \"${COMPILATION_DATE}\")" \
+	--eval "(defparameter *user* \"${USER}\")" \
+	--eval "(defparameter *main-path* \"${PWD}/\")" \
+	--eval "(defparameter *install-path* \"${PWD}\")" \
 	--load "tools/make-image.lisp"
 
 checa-notas: tools/read-notes.lisp
@@ -109,15 +120,20 @@ indent:
 	emacs --batch $$file -q --load "${maindir}/tools/cl-indent" --load "${maindir}/tools/enforce-style" -f rameau-style ;\
 	done
 
-pauta:
-	wget -O pauta.html "http://wiki.genos.mus.br/PautaReuniao"
-
 doc: rameau
 	./rameau doc
 	cd rameau-documentation; \
 	make
 
-install: train
+build-install:
+	# compile rameau and training data on this directory. the goal
+	# here is only to generate the training data.
+	$(MAKE) train
+	# compile rameau again (but not the training data), but with a
+	# different destination path
+	$(MAKE) rameau-install
+
+install: 
 	$(INSTALL_PROGRAM) -d $(prefix)/share/rameau/
 	$(INSTALL_PROGRAM) -d $(prefix)/bin
 	$(INSTALL_PROGRAM) rameau $(prefix)/bin/
@@ -125,8 +141,6 @@ install: train
 	$(INSTALL_DATA) web $(prefix)/share/rameau/
 	$(INSTALL_DATA) answer-sheets $(prefix)/share/rameau/
 	$(INSTALL_DATA) algorithms  $(prefix)/share/rameau/
-	# that's pretty bad!
-	chmod 666 $(prefix)/share/rameau/algorithms/*
 
 uninstall:
 	rm -rf $(prefix)/bin/rameau
