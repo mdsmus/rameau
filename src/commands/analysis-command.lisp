@@ -124,19 +124,20 @@
   \\midi {}
 }
 ")))
-    (let* ((result-dir (pathname-directory (translate-logical-pathname "rameau:analysis;")))
+    (let* ((result-path (translate-logical-pathname "rameau:analysis;"))
+           (result-dir (pathname-directory result-path))
            (result-file (make-pathname :directory result-dir
                                        :name (concat "analysis-" (pathname-name (analysis-full-path analysis)))
                                        :type (pathname-type (analysis-full-path analysis))))
            (ps-file (make-pathname :directory result-dir
                                    :name (pathname-name result-file)
                                    :type "ps")))
-      (ensure-directories-exist result-dir)
+      (ensure-directories-exist result-file)
       (with-output-file (f result-file)
         (format f "~a" (print-ast (cdr ast))))
       (when (or (arg :lily options) (arg :view-score options))
         #+sbcl (progn
-                 (sb-posix:chdir result-dir)
+                 (sb-posix:chdir result-path)
                  (sb-ext:run-program "/usr/bin/lilypond" (list "-f"
                                                                "ps"
                                                                (when (arg :png options) "--png")
