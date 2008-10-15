@@ -131,9 +131,10 @@
   (is (equal #p"foo.bar"
              (pathname-notdir #p "/home/kroger/src/rameau/src/foo.bar"))))
 
-(test pathname-replace-directory
-  (with-fixture logical-pathname-translations ()
-    (is (pathnames-equal-p
-         #p"/tmp/rameau/answer-sheets/chorales-bach/001.pop"
-         (pathname-replace-directory #p"/tmp/rameau/music/chorales-bach/001.ly"
-                                     "rameau:music;" "rameau:answer-sheets;" "pop")))))
+;; FIXME, see #132
+;; (test pathname-replace-directory
+;;   (with-fixture logical-pathname-translations ()
+;;     (is (pathnames-equal-p
+;;          #p"/tmp/rameau/answer-sheets/chorales-bach/001.pop"
+;;          (pathname-replace-directory #p"/tmp/rameau/music/chorales-bach/001.ly"
+;;                                      "rameau:music;" "rameau:answer-sheets;" "pop")))))
