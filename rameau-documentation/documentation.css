@@ -18,6 +18,11 @@
     background-color: #eeeeff;
 }
 
+.mono {
+    font-family: monospace;
+    whitespace: pre;
+}
+
 .function-key {
     color :magenta;
 }

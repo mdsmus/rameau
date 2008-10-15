@@ -2,7 +2,10 @@
   (:import-from #:arnesi "AIF" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX" "AWHEN")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
   (:use #:cl #:rameau #:genoslib #:iterate :cl-lily)
-  (:documentation "A hidden markov model and a bayesian chord labelers."))
+  (:documentation "A hidden markov model and a bayesian chord labelers.
+
+A nice discussion of how they work is found in @file{docs/hmm.tex}.
+"))
 
 (in-package :rameau-hmm)
 

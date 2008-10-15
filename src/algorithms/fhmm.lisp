@@ -2,41 +2,48 @@
   (:import-from #:arnesi "AIF" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX" "AWHEN")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
   (:use #:cl #:rameau #:genoslib #:iterate :cl-lily)
-  (:documentation "A hidden markov model and a bayesian roman numeral functional analysis thingies."))
+  (:documentation " A hidden markov model and a bayesian roman numeral
+functional analysis thingies.
 
+The plan, so far, is to try to cut as much as humanly possible the
+size of the stochastic matrices. This is hard. So, for the transition
+matrix, we're doing the following:
+
+(degree * key-mode) -> module(new-key-pitch - current-key-pitch) * degree * key-mode
+
+This allows us to have \"only\" 926100 entries in this matrix, which
+is far too many, if you ask me, but I have no idea about how can I
+break this further down. Probably there will be many virtual 0s in the
+modulation parts, but I've got to look at the data to figure this out.
+
+The output matrix will be:
+
+(degree * key-mode) -> module(note-pitch - key-pitch)
+
+Which has the unfortunate 8820 entries, also far too many. I don't
+think we have enough data to reliably estimate these values, but I
+will need to check.
+
+The keyword :out stands for the beggining/end of a piece. It's the
+thing responsible for making sure cadences do happen, for example.
+
+The by far biggest table is the viterbi table. It has to really
+encompass all possibilities for each sonority (as far as I can tell
+there is no trivial way of cutting it down). Its dimensions are:
+
+(key * degree) -> sonority
+
+The overall algorithm is a pretty traditional Hidden Markov Model, and
+a discussion of how can one be written is easy to find on the
+web (@link{wikipedia}{http://en.wikipedia.org/wiki/Hidden_markov_model}
+is a good starting point).
+
+"))
+; ;;  " <-- for some reason font-lock likes this.
 (in-package :rameau-fhmm)
 
 (enable-sharp-l-syntax)
 
-;;; The plan, so far, is to try to cut as much as humanly possible the
-;;; size of the stochastic matrices. This is hard. So, for the
-;;; transition matrix, we're doing the following:
-;;;
-;;; (degree * key-mode) -> module(new-key-pitch - current-key-pitch) * degree * key-mode
-;;;
-;;; This allows us to have "only" 926100 entries in this matrix ---
-;;; far too much, if you ask me, but I have no idea about how can I
-;;; break this further down. Probably there will be many virtual 0s in
-;;; the modulation parts, but I've got to look at the data to figure
-;;; this out.
-;;;
-;;; The output matrix will be:
-;;;
-;;; (degree * key-mode) -> module(note-pitch - key-pitch)
-;;;
-;;; Which has the unfortunate 8820 entries, also far too many. I don't
-;;; think we have enough data to reliably estimate these values, but I
-;;; will need to check.
-;;;
-;;; The keyword :out stands for the beggining/end of a piece. It's the
-;;; thing responsible for making sure cadences do happen, for example.
-;;;
-;;; The by far biggest table is the viterbi table. It has to really
-;;; encompass all possibilities for each sonority (as far as I can
-;;; tell there is no trivial way of cutting it down). Its dimensions
-;;; are:
-;;;
-;;; (key * degree) -> sonority
 
 (defparameter *version* 6)
 

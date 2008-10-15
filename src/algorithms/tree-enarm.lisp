@@ -5,7 +5,12 @@
   (:import-from #:arnesi "AIF" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
   (:use #:cl #:rameau #:machine-learning #:genoslib :cl-lily)
-  (:documentation "A decision tree for chord labeling"))
+  (:documentation "A decision tree for chord labeling.
+
+One problem with this implementation is that it is not scalable at
+all. It only supports sonorities of exactly four pitches. I'll be glad
+when it leaves @rameau.
+"))
 
 (in-package :rameau-tree-enarm)
 

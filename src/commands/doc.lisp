@@ -161,6 +161,9 @@ These are expanded in @function{rameau-doc}{htmlize-docstring}."
 (make-docstring-template foo (bar)
   (str (concat "@&nbsp;foo{" bar "}")))
 
+(make-docstring-template mono (text)
+  (:span :class "mono" (str (escape-string text))))
+
 (defun apply-replacement (name args string)
   "Compute the correct replacement for template named @var{name} in @var{string}"
   (iter (for (command function) in *docstring-templates*)
@@ -174,17 +177,21 @@ These are expanded in @function{rameau-doc}{htmlize-docstring}."
       (push a args))
     (reverse args)))
 
-(let ((regex (cl-ppcre:create-scanner "@([a-z]+)(({([^}]*)})*)")))
+(let ((regex (cl-ppcre:create-scanner "@([a-z]+)(({([^}]*)})*)"))
+      (pbreaks (cl-ppcre:create-scanner "\\n\\n")))
   (defun htmlize-docstring (string)
     "Replace strings in the form of @foo{bar} and expand it to a user-defined template."
-    (iter (while (cl-ppcre:scan regex string))
-          (cl-ppcre:register-groups-bind (name args) (regex string)
-            (setf string (cl-ppcre:regex-replace regex
-                                                 string
-                                                 (apply-replacement name
-                                                                    (all-arguments args)
-                                                                    string)))))
-    string))
+    (let ((string (concat "<p>"
+                          (cl-ppcre:regex-replace-all pbreaks string "</p><p>")
+                          "</p>")))
+      (iter (while (cl-ppcre:scan regex string))
+            (cl-ppcre:register-groups-bind (name args) (regex string)
+              (setf string (cl-ppcre:regex-replace regex
+                                                   string
+                                                   (apply-replacement name
+                                                                      (all-arguments args)
+                                                                      string)))))
+      string)))
 
 (defun make-doc-file (name)
   (make-pathname :directory

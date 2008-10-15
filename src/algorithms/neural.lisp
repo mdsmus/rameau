@@ -1,14 +1,39 @@
-;;; load fann
-(eval-when (:compile-toplevel :load-toplevel)
-  (asdf:oos 'asdf:load-op :fann))
-
 ;;; define package
 (defpackage :rameau-neural
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:import-from #:alexandria "SWITCH")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
   (:use #:cl #:fann #:rameau #:iterate #:genoslib :cl-lily)
-  (:documentation "Neural networks for chord labeling"))
+  (:documentation "Neural networks for chord labeling
+
+Since we use multilayer perceptrons as our neural networks, training
+and running them is rather simple, provided one finds a representation
+of the inputs and the outputs in an amenable form. Here, this is
+considered an N-of-M codification, but some sources diverge.
+
+Our inputs are, for each sonority, the frequencies of the pitches in
+it, in relation to its bass. For more than one sonority (in contextual
+networks), all the pitches are in relation to the central sonority's
+bass.
+
+The output, for the chord labeling networks, is something like:
+
+@mono{(get-module)} pitches
+
+some modes
+
+some sevenths
+
+some extra for marking non-chord-tones and augmented sixths
+
+
+For the functional neural network, the output is an M-of-N
+codification of our augmented-sixth format which is, I hope,
+simpler. The functions @function{rameau-neural}{get-function-net} and
+@function{rameau-neural}{function-net-result} should be
+self-explanatory, and they do this coding/decoding.
+
+"))
 
 (in-package :rameau-neural)
 

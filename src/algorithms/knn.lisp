@@ -2,23 +2,28 @@
   (:import-from #:arnesi "AIF" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX" "AWHEN")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
   (:use #:cl #:rameau #:genoslib #:iterate :cl-lily)
-  (:documentation "K-Nearest-Neighbor classification for chord labeling."))
+  (:documentation "K-Nearest-Neighbor classification for chord labeling.
+
+A k-nearest-neighbor chord finder, for use in Rameau.
+
+The training examples as stored in an alist, keyed by their
+pitches. In the e-knn version, only one sonority is stored at a time,
+while in the ec-knn a few surrouding sonorities are also stored.
+
+The values in the alist are also alists. These lists are keyed by the
+classes for that example (there can be more than one) and the values
+are the counts for how many times each class appears.
+
+Each such list is stored in the algorithm as its @var{nn}
+variable. The algorithms can be tuned by changin the default value of
+@var{k} and changing the amount of context available to the contextual
+ones. @var{knn} and @var{context-knn} are already optimally tuned for
+Bach chorales.
+"))
 
 (in-package :rameau-knn)
 
 (enable-sharp-l-syntax)
-
-;; src/algoritmos/knn.lisp
-;; A k-nearest-neighbor chord finder, for use in Rameau.
-
-;; The training examples as stored in an alist, keyed by their
-;; pitches. In the e-knn version, only one sonority is stored at a
-;; time, while in the ec-knn a few surrouding sonorities are also
-;; stored.
-
-;; The values in the alist are also alists. These lists are keyed by
-;; the classes for that example (there can be more than one) and the
-;; values are the counts for how many times each class appears.
 
 (defparameter *examples* (make-alist))
 (defparameter *version* 1)
