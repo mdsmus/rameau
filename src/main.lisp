@@ -86,7 +86,6 @@
 (defun main (&optional args)
   "You can run main from the REPL with all arguments as a
   string: (main \"analysis chorales -v -f 001\")"
-                                        ;(format t "Done, processing arguments...~%")
   (safe-with-backtrace (:condition nil
                         :print-error-msg (format t "Rameau could not operate.~%")
                         :exit t)
