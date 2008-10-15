@@ -16,21 +16,21 @@ soprano = \relative c' {
   e4 e4 e4 
   b'2 cis4 
   d4 cis4 b4 
-  a2. 
+  a2.\fermata 
   b4 cis4 dis4   %5
   e2 b4 
   d4 cis2 
-  b2 b4 
+  b2\fermata b4 
   d4 c4 b4 
   a4 g4 fis4   %10
   g4 e2 
-  d2 d4 
+  d2\fermata d4 
   g2 a4 
   b2 a4 
   g4 d'2   %15
-  b2 a4 
+  b2\fermata a4 
   g4 fis2 
-  e2. 
+  e2.\fermata 
   
 }
 
@@ -82,21 +82,21 @@ baixo = \relative c {
   e8 fis8 g4 a4~ 
   a4 gis4 a4 
   fis4 d4 e4 
-  a,2. 
+  a,2.\fermata
   gis'4 a4 fis4   %5
   e8 dis8 e8 fis8 g4 
   fis4 e4 fis4 
-  b,2 e4 
+  b,2\fermata e4 
   fis2 g4 
   cis,2 d4   %10
   b4 g4 a4 
-  d2 b4 
+  d2\fermata b4 
   e2 fis4 
   g4 dis2 
   e4 b'4 fis4   %15
-  g2 a4 
+  g2\fermata a4 
   b4 b,2 
-  e2. 
+  e2.\fermata
   
 }
 
