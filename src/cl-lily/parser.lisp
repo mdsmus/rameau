@@ -294,7 +294,7 @@ Parse the length of a dotted note."
 Parse an empty duration.
 "
   (make-instance 'dur-node
-                 :dur nil
+                 :dur 0
                  :text nil))
 
 (defun make-anacruz :private (ign igno dur)
@@ -371,7 +371,7 @@ with the other ones.
   tree)
 
 (defmethod correct-durations ((tree event))
-  (if (event-dur tree)
+  (if (/= 0 (event-dur tree))
       (setf *dur* (event-dur tree))
       (setf (event-dur tree) *dur*))
   tree)
