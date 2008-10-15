@@ -62,7 +62,7 @@ Filter @var{*algorithms*} so that only the ones specified in
 
 (defun add-falgorithm (alg)
   "Register functional algorithm @var{alg}."
-  (push alg *functional-algorithms*))
+  (pushnew alg *functional-algorithms*))
 
 (defun alg-file-name (alg)
   "The file name used to save an algorithm to disk."
