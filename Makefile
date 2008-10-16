@@ -2,7 +2,7 @@ SHELL = /bin/bash
 
 SBCL_BIN = sbcl
 LISP_BIN = lisp
-PWD = "$(shell pwd)/"
+PWD = "$(shell pwd -P)/"
 
 SYSTEM = $(shell uname -s)
 
