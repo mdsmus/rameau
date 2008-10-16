@@ -1,6 +1,6 @@
 ;;; -*- Mode: LISP; Syntax: COMMON-LISP; Package: CL-USER; Base: 10 -*-
 (asdf:defsystem :rameau-base
-  :depends-on (:yacc :lexer :cl-fad :cl-ppcre :cl-store :arnesi #-windows :cffi :alexandria :ltk :iterate :swank #-windows :fann :cl-who :fiveam)
+  :depends-on (:yacc :lexer :cl-fad :cl-ppcre :cl-store :arnesi :cffi :alexandria :ltk :iterate :swank :fann :cl-who :fiveam)
   :components ((:file "rameau-base")))
 
 (asdf:defsystem :genoslib
@@ -36,7 +36,7 @@
   :depends-on (:rameau-pkg :cl-store :vecto :cl-lily)
   :components ((:module algorithms
                         :components ((:file "hmm")
-                                     #-windows (:file "neural")
+                                     (:file "neural")
                                      (:file "pardo")
                                      (:file "knn")
                                      (:file "tree-enarm")
@@ -44,14 +44,14 @@
                                      ))))
 
 (asdf:defsystem :commands
-  :depends-on (:rameau-pkg :cl-lily :cl-store :vecto :cl-who :algorithms #-windows :hunchentoot :md5 :cl-fad :cl-base64 :cl-store)
+  :depends-on (:rameau-pkg :cl-lily :cl-store :vecto :cl-who :algorithms #-win32 :hunchentoot :md5 :cl-fad :cl-base64 :cl-store)
   :serial t
   :components ((:file "package-test")
                (:module commands
                         :serial t
                         :components ((:file "analysis-command")
                                      (:file "cadences")
-                                     #-windows (:file "web")
+                                     #-win32 (:file "web")
                                      (:file "doc")
                                      (:file "stat")
                                      (:file "algorithms")
