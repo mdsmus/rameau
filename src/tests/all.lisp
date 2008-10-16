@@ -8,7 +8,7 @@
          (progn
            (ensure-directories-exist dir)
            (&body))
-      (genoslib:delete-directory-and-files dir :if-does-not-exist :ignore))))
+      (cl-fad:delete-directory-and-files dir :if-does-not-exist :ignore))))
 
 (def-fixture logical-pathname-translations ()
   (let ((default-translations (logical-pathname-translations "rameau")))

@@ -12,7 +12,7 @@
 (defparameter *data* nil)
 
 (defparameter *results*
-  (aif (genoslib:file-exists-p (translate-logical-pathname "rameau:web;cache.store"))
+  (aif (cl-fad:file-exists-p (translate-logical-pathname "rameau:web;cache.store"))
        (restore it)
        (make-hash-table :test #'equal)))
 
@@ -289,7 +289,7 @@ baixo = \\relative c {
 (push (create-prefix-dispatcher "/analysis" 'do-analysis) *dispatch-table*)
 
 (defun list-pngs (md5)
-  (iter (for file in (genoslib:list-directory (translate-logical-pathname "rameau:analysis;")))
+  (iter (for file in (cl-fad:list-directory (translate-logical-pathname "rameau:analysis;")))
         (when (and (/= 0 (count-subseq md5 (pathname-name file)))
                    (/= 0 (count-subseq "png" (pathname-type file))))
           (collect  file))))

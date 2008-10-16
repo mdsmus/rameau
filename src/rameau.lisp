@@ -158,7 +158,7 @@ Checks if terminal @var{f} supports unicode.
 (defun path-parse-answer-sheet (file)
   "Find and parse the answer sheet for a given lilypond @var{file}, if
 exists."
-  (awhen (genoslib:file-exists-p
+  (awhen (cl-fad:file-exists-p
           (pathname-replace-directory file
                                       "rameau:music;"
                                       "rameau:answer-sheets;"
@@ -167,7 +167,7 @@ exists."
 
 (defun path-parse-functional-answer-sheet (file)
   "Find and parse the answer sheet for file @var{file}, if exists."
-  (awhen (genoslib:file-exists-p
+  (awhen (cl-fad:file-exists-p
           (pathname-replace-directory file
                                       "rameau:music;"
                                       "rameau:answer-sheets;"

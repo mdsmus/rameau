@@ -593,7 +593,7 @@ with the other ones.
 
 Parse lilypond file @var{filename} as a sequence of notes.
 "
-  (when (genoslib:file-exists-p filename)
+  (when (cl-fad:file-exists-p filename)
     (let ((*filename* filename))
       (declare (special *filename*))
       (get-parsed-notes-string (file-string filename)))))
@@ -603,7 +603,7 @@ Parse lilypond file @var{filename} as a sequence of notes.
 
 Parse lilypond file @var{filename} as an ast.
 "
-  (when (genoslib:file-exists-p filename)
+  (when (cl-fad:file-exists-p filename)
     (let ((*filename* filename))
       (declare (special *filename*))
       (get-ast-string (file-string filename)))))
