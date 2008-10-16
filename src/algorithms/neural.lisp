@@ -513,8 +513,8 @@ self-explanatory, and they do this coding/decoding.
             (apply-functional-net inputs options alg))))))
 
 (defclass functional-net (rameau-algorithm)
-  ((context-data :accessor context-data :initarg :data)
-   (context-fann :accessor context-fann :initarg :fann)
+  ((context-data :accessor context-data :initarg :data :initform nil)
+   (context-fann :accessor context-fann :initarg :fann :initform nil)
    (context-before :accessor net-context-before :initarg :context-before :initform 1)
    (context-after :accessor net-context-after :initarg :context-after :initform 3)
    (hidden-units :accessor context-hidden-units :initarg :units :initform 22)
