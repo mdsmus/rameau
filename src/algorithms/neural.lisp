@@ -250,7 +250,7 @@ self-explanatory, and they do this coding/decoding.
        it
        (make-pathname-neural "chord-data" "fann")))
 
-(defmethod e-chord-data ((obj chord-net))
+(defmethod e-chord-fann ((obj chord-net))
   (aif (slot-value obj 'chord-fann)
        it
        (make-pathname-neural "data" "fann")))
@@ -511,7 +511,6 @@ self-explanatory, and they do this coding/decoding.
           (progn
             (train-functional-net alg)
             (apply-functional-net inputs options alg))))))
-
 
 (defclass functional-net (rameau-algorithm)
   ((context-data :accessor context-data :initarg :data)
