@@ -8,7 +8,7 @@
                   (space 0)
                   (speed 0)))
 
-+#+win32(defparameter *main-path* *default-pathname-defaults*)
+#+win32(defparameter *main-path* *default-pathname-defaults*)
 
 (defparameter *asdf-file*
   (merge-pathnames "rameau-deps/lisp-libs/asdf/asdf.lisp" *main-path*))

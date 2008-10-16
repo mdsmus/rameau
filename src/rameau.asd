@@ -18,7 +18,7 @@
                                      (:file "parser-grammar")))))
 
 (asdf:defsystem :rameau-pkg
-  :depends-on (:rameau-base :genoslib :cl-store :cl-fad :vecto :cl-cairo2 :cl-lily)
+  :depends-on (:rameau-base :genoslib :cl-store :cl-fad :vecto :cl-cairo2 #+win32 :cl-cairo2-win :cl-lily)
   :serial t
   :components ((:file "packages")
                #+sbcl(:file "sbcl")
