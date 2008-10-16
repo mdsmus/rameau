@@ -51,7 +51,7 @@
   (iter (for file in (arg :files options))
         (appending (if (search ":" file)
                        (parse-file-name file options)
-                       (if (cl-fad:file-exists-p file)
+                       (if (genoslib:file-exists-p file)
                            (list file)
                            (error "File ~a does not exist." file))))))
 

@@ -218,9 +218,9 @@ self-explanatory, and they do this coding/decoding.
 (defun train-e-chord-net (alg)
   (let (net)
     (declare (special net))
-    (unless (cl-fad:file-exists-p (e-chord-data alg))
+    (unless (genoslib:file-exists-p (e-chord-data alg))
       (e-chord-data-set alg))
-    (unless (cl-fad:file-exists-p (e-chord-fann alg))
+    (unless (genoslib:file-exists-p (e-chord-fann alg))
       (train-net 'net 
                  (e-chord-data alg)
                  *value*
@@ -230,7 +230,7 @@ self-explanatory, and they do this coding/decoding.
 (defun apply-e-chord-net (inputs options alg)
   (let ((fann-file (e-chord-fann alg))
         net)
-    (if (cl-fad:file-exists-p fann-file)
+    (if (genoslib:file-exists-p fann-file)
         (progn
           (setf net (load-from-file fann-file))
           (add-inversions inputs (mapcar #L(run-my-net !1 net #'extract-diff #'make-sonority-pattern)
@@ -304,9 +304,9 @@ self-explanatory, and they do this coding/decoding.
         (data-file (context-data alg))
         net)
     (declare (special net))
-    (unless (cl-fad:file-exists-p data-file)
+    (unless (genoslib:file-exists-p data-file)
       (context-data-set alg))
-    (unless (cl-fad:file-exists-p fann-file)
+    (unless (genoslib:file-exists-p fann-file)
       (train-net 'net
                  data-file
                  (* (+ 1 (net-context-after alg) (net-context-before alg)) *value*)
@@ -325,7 +325,7 @@ self-explanatory, and they do this coding/decoding.
              (context-extract-features (segmento &optional diff)
                (let ((diff (or diff (context-extract-diff segmento))))
                  (loop for s in segmento nconc (make-sonority-pattern s diff)))))
-      (if (cl-fad:file-exists-p fann-file)
+      (if (genoslib:file-exists-p fann-file)
           (progn
             (setf net (load-from-file fann-file))
             (add-inversions inputs (mapcar #L(run-my-net !1 net #'context-extract-diff #'context-extract-features)
@@ -468,9 +468,9 @@ self-explanatory, and they do this coding/decoding.
         (data-file (context-data alg))
         net)
     (declare (special net))
-    (unless (cl-fad:file-exists-p data-file)
+    (unless (genoslib:file-exists-p data-file)
       (functional-data-set alg))
-    (unless (cl-fad:file-exists-p fann-file)
+    (unless (genoslib:file-exists-p fann-file)
       (train-net 'net
                  data-file
                  (* (+ 1 (net-context-after alg) (net-context-before alg)) *value*)
@@ -494,7 +494,7 @@ self-explanatory, and they do this coding/decoding.
              (context-extract-features (segmento &optional diff)
                (let ((diff (or diff (context-extract-diff segmento))))
                  (loop for s in segmento nconc (make-sonority-pattern s diff)))))
-      (if (cl-fad:file-exists-p fann-file)
+      (if (genoslib:file-exists-p fann-file)
           (progn
             (setf net (load-from-file fann-file))
             (mapcar #L(run-fun-net !1 net #'context-extract-diff #'context-extract-features)

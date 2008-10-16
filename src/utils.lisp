@@ -521,3 +521,83 @@ make-pathname."
                   (translate-logical-pathname "rameau:analysis;"))
                  :type type
                  :name (format nil "~{~a~^-~}" args)))
+
+(defun list-directory (dirname)
+  "Returns a fresh list of pathnames corresponding to the truenames of
+all files within the directory named by the non-wild pathname
+designator DIRNAME.  The pathnames of sub-directories are returned in
+directory form - see PATHNAME-AS-DIRECTORY."
+  (when (wild-pathname-p dirname)
+    (error "Can only list concrete directory names."))
+  #+:ecl 
+  (let ((dir (pathname-as-directory dirname)))
+    (concatenate 'list
+                 (directory (merge-pathnames (pathname "*/") dir))
+                 (directory (merge-pathnames (pathname "*.*") dir))))
+  #-:ecl 
+  (let ((wildcard (directory-wildcard dirname)))
+    #+:abcl (system::list-directory dirname)
+    #+(or :sbcl :cmu :scl :lispworks) (directory wildcard)
+    #+(or :openmcl :digitool) (directory wildcard :directories t)
+    #+:allegro (directory wildcard :directories-are-files nil)
+    #+:clisp (nconc (directory wildcard :if-does-not-exist :keep)
+                    (directory (clisp-subdirectories-wildcard wildcard)))
+    #+:cormanlisp (nconc (directory wildcard)
+                         (cl::directory-subdirs dirname)))
+  #-(or :sbcl :cmu :scl :lispworks :openmcl :allegro :clisp :cormanlisp :ecl :abcl :digitool)
+  (error "LIST-DIRECTORY not implemented"))
+
+(defun file-exists-p (pathspec)
+  "Checks whether the file named by the pathname designator PATHSPEC
+exists and returns its truename if this is the case, NIL otherwise.
+The truename is returned in `canonical' form, i.e. the truename of a
+directory is returned as if by PATHNAME-AS-DIRECTORY."
+  #+(or :sbcl :lispworks :openmcl :ecl :digitool) (probe-file pathspec)
+  #+:allegro (or (excl:probe-directory (pathname-as-directory pathspec))
+                 (probe-file pathspec))
+  #+(or :cmu :scl :abcl) (or (probe-file (pathname-as-directory pathspec))
+                             (probe-file pathspec))
+  #+:cormanlisp (or (and (ccl:directory-p pathspec)
+                         (pathname-as-directory pathspec))
+                    (probe-file pathspec))
+  #+:clisp (or (ignore-errors
+                 (let ((directory-form (pathname-as-directory pathspec)))
+                   (when (ext:probe-directory directory-form)
+                     directory-form)))
+               (ignore-errors
+                 (probe-file (pathname-as-file pathspec))))
+  #-(or :sbcl :cmu :scl :lispworks :openmcl :allegro :clisp :cormanlisp :ecl :abcl :digitool)
+  (error "FILE-EXISTS-P not implemented"))
+
+(defun delete-directory-and-files (dirname &key (if-does-not-exist :error))
+  "Recursively deletes all files and directories within the directory
+designated by the non-wild pathname designator DIRNAME including
+DIRNAME itself.  IF-DOES-NOT-EXIST must be one of :ERROR or :IGNORE
+where :ERROR means that an error will be signaled if the directory
+DIRNAME does not exist."
+  #+:allegro (excl.osi:delete-directory-and-files dirname
+                                                  :if-does-not-exist if-does-not-exist)
+  #-:allegro (walk-directory dirname
+                             (lambda (file)
+                               (cond ((directory-pathname-p file)
+                                      #+:lispworks (lw:delete-directory file)
+                                      #+:cmu (multiple-value-bind (ok err-number)
+                                                 (unix:unix-rmdir (namestring (truename file)))
+                                               (unless ok
+                                                 (error "Error number ~A when trying to delete ~A"
+                                                        err-number file)))
+                                      #+:scl (multiple-value-bind (ok errno)
+                                                 (unix:unix-rmdir (ext:unix-namestring (truename file)))
+                                               (unless ok
+                                                 (error "~@<Error deleting ~S: ~A~@:>"
+                                                        file (unix:get-unix-error-msg errno))))
+                                      #+:sbcl (sb-posix:rmdir file)
+                                      #+:clisp (ext:delete-dir file)
+                                      #+:openmcl (ccl:delete-directory file)
+                                      #+:cormanlisp (win32:delete-directory file)
+                                      #+:ecl (si:rmdir file)
+                                      #+(or :abcl :digitool) (delete-file file))
+                                     (t (delete-file file))))
+                             :directories t
+                             :if-does-not-exist if-does-not-exist)
+  (values))
