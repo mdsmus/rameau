@@ -8,7 +8,7 @@ SYSTEM = $(shell uname -s)
 
 ifeq ($(SYSTEM), Linux)
 	LIBC = /lib/libc.so.6
-else ifeq ($(findstring "CYGWIN",$(SYSTEM)), CYGWIN)
+else ifeq ($(findstring CYGWIN,$(SYSTEM)), CYGWIN)
 	LIBC = /lib/libc.a
 endif
 
@@ -70,7 +70,7 @@ rameau-install: $(lisp-files)
 	--eval "(defparameter *rameau-version* \"${RAMEAU_VERSION}\")" \
 	--eval "(defparameter *compilation-date* \"${COMPILATION_DATE}\")" \
 	--eval "(defparameter *user* \"${USER}\")" \
-	--eval "(defparameter *main-path* \"${PWD}/\")" \
+	--eval "(defparameter *main-path* \"${PWD}\")" \
 	--eval "(defparameter *install-path* \"${prefix}/share/rameau/\")" \
 	--load "tools/make-image.lisp"
 

@@ -8,6 +8,8 @@
                   (space 0)
                   (speed 0)))
 
++#+win32(defparameter *main-path* *default-pathname-defaults*)
+
 (defparameter *asdf-file*
   (merge-pathnames "rameau-deps/lisp-libs/asdf/asdf.lisp" *main-path*))
 
@@ -25,6 +27,7 @@
   ;; links so we have to push them one by one
   #-win32(push (merge-pathnames "rameau-deps/lisp-libs/systems/" *main-path*)
                  asdf:*central-registry*)
+
   #+win32
   (loop for path in (directory (merge-pathnames "rameau-deps/*/*/" *main-path*))
         do (push path asdf:*central-registry*))
