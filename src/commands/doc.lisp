@@ -212,7 +212,10 @@ These are expanded in @function{rameau-doc}{htmlize-docstring}."
             (for name = (getf plist :name))
             (for docstring = (getf plist :docstring))
             (for url = "http://git.genos.mus.br/cgit.cgi?url=rameau/tree/")
-            (for filename = (or (getf plist :source-file) ""))
+            (for source-file = (getf plist :source-file))
+            (for filename = (if (and source-file (not (equal source-file "")))
+                                source-file
+                                (make-pathname)))
             (for example = (find-test-body name test-file))
             (for uses = (getf plist :uses))
             (htm
@@ -239,7 +242,7 @@ These are expanded in @function{rameau-doc}{htmlize-docstring}."
                      (htm (:p :class "example-header" "Uses:")
                           (:p :class "uses-body"
                               (fmt "~{~(~a~^, ~)~}" uses))))
-                   (when example
+                   (when (and example (listp example))
                      (htm (:p :class "example-header" "Example:")
                           (:span :class "example"
                                  (str (pprint-to-string (third example)))

@@ -3,8 +3,8 @@
 
 #+sbcl(proclaim '(optimize
                   (compilation-speed 0)
-                  (debug 2)
-                  (safety 2)
+                  (debug 3)
+                  (safety 3)
                   (space 0)
                   (speed 0)))
 
