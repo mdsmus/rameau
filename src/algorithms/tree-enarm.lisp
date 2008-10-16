@@ -91,10 +91,11 @@ when it leaves @rameau.
   (tree-tree alg))
 
 (defun do-train-chord-tree (alg)
-  (unless (tree-tree alg)
-    (multiple-value-bind (corais gabaritos)
-        (unzip *training-data*)
-      (train-chord-tree alg corais gabaritos))))
+  (when *training-data*
+    (unless (tree-tree alg)
+      (multiple-value-bind (corais gabaritos)
+          (unzip *training-data*)
+        (train-chord-tree alg corais gabaritos)))))
 
 (defmethod perform-analysis (segments options (alg tree))
   (do-classification segments options alg))
