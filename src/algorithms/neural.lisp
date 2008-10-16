@@ -240,14 +240,20 @@ self-explanatory, and they do this coding/decoding.
           (apply-e-chord-net inputs options alg)))))
 
 (defclass chord-net (rameau-algorithm)
-  ((chord-data :accessor e-chord-data :initarg :data)
-   (chord-fann :accessor e-chord-fann :initarg :fann)
+  ((chord-data :accessor e-chord-data :initform nil)
+   (chord-fann :accessor e-chord-fann :initform nil)
    (hidden-units :accessor chord-hidden-units :initarg :units :initform 30)
    (version)))
 
-(defmethod initialize-instance :after ((object chord-net) &key &allow-other-keys)
-  (setf (e-chord-data object) (make-pathname-neural "chord-data" "fann")
-        (e-chord-fann object) (make-pathname-neural "chord" "fann")))
+(defmethod e-chord-data ((obj chord-net))
+  (aif (slot-value obj 'chord-data)
+       it
+       (make-pathname-neural "chord-data" "fann")))
+
+(defmethod e-chord-data ((obj chord-net))
+  (aif (slot-value obj 'chord-fann)
+       it
+       (make-pathname-neural "data" "fann")))
 
 (defmethod you-ok-p ((algorithm chord-net))
   (let ((out (with-fann
@@ -335,16 +341,22 @@ self-explanatory, and they do this coding/decoding.
             (apply-context-net inputs options alg))))))
 
 (defclass context-net (rameau-algorithm)
-  ((context-data :accessor context-data :initarg :data)
-   (context-fann :accessor context-fann :initarg :fann)
+  ((context-data :accessor context-data :initarg :data :initform nil)
+   (context-fann :accessor context-fann :initarg :fann :initform nil)
    (context-before :accessor net-context-before :initarg :context-before :initform 1)
    (context-after :accessor net-context-after :initarg :context-after :initform 0)
    (hidden-units :accessor context-hidden-units :initarg :units :initform 22)
    (version)))
 
-(defmethod initialize-instance :after ((object context-net) &key &allow-other-keys)
-  (setf (context-data object) (make-pathname-neural "context-train" "data")
-        (context-fann object) (make-pathname-neural "context" "fann")))
+(defmethod context-data ((obj context-net))
+  (aif (slot-value obj 'context-data)
+       it
+       (make-pathname-neural "context-train" "data")))
+
+(defmethod context-fann ((obj context-net))
+  (aif (slot-value obj 'context-fann)
+       it
+       (make-pathname-neural "context" "fann")))
 
 (defmethod you-ok-p ((algorithm context-net))
   (let ((out (with-fann
@@ -509,9 +521,15 @@ self-explanatory, and they do this coding/decoding.
    (hidden-units :accessor context-hidden-units :initarg :units :initform 22)
    (version)))
 
-(defmethod initialize-instance :after ((object functional-net) &key &allow-other-keys)
-  (setf (context-data object) (make-pathname-neural "functional-train" "data")
-        (context-fann object) (make-pathname-neural "functional" "fann")))
+(defmethod context-data ((obj functional-net))
+  (aif (slot-value obj 'context-data)
+       it
+       (make-pathname-neural "functional-train" "data")))
+
+(defmethod context-fann ((obj functional-net))
+  (aif (slot-value obj 'context-fann)
+       it
+       (make-pathname-neural "functional" "fann")))
 
 (defmethod you-ok-p ((algorithm functional-net))
   (let ((out (with-fann
