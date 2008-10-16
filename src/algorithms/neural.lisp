@@ -256,30 +256,24 @@ self-explanatory, and they do this coding/decoding.
        (make-pathname-neural "data" "fann")))
 
 (defmethod you-ok-p ((algorithm chord-net))
-  (let ((out (with-fann
-               (handler-case (load-from-file (e-chord-fann algorithm))
-                 (error (c)
-                   (declare (ignore c))
-                   nil)))))
-    (and out (not (equal out :fann-load-error)))))
+  (handler-case (progn (load-from-file (e-chord-fann algorithm)) t)
+    (error (c)   (format t "Error: ~a~%" c)  nil)))
 
 (defmethod perform-analysis (segments options (alg chord-net))
-  (with-fann
-    (dbg :neural "Starting neural net...~%")
-    (let ((result (apply-e-chord-net segments options alg)))
-      (dbg :neural "LEaving neural net...~%")
-      result)))
+  (dbg :neural "Starting neural net...~%")
+  (let ((result (apply-e-chord-net segments options alg)))
+    (dbg :neural "LEaving neural net...~%")
+    result))
 
 (defmethod do-options ((alg chord-net) options)
-  (with-fann
-    (awhen (aget :e-chord-data (arg :options options))
-      (setf (e-chord-data alg) it))
-    (awhen (aget :e-chord-fann (arg :options options))
-      (setf (e-chord-fann alg) it))
-    (awhen (aget :hidden-units (arg :options options))
-      (setf (chord-hidden-units alg) it))
-    (when (aget :train (arg :options options))
-      (train-e-chord-net alg))))
+  (awhen (aget :e-chord-data (arg :options options))
+    (setf (e-chord-data alg) it))
+  (awhen (aget :e-chord-fann (arg :options options))
+    (setf (e-chord-fann alg) it))
+  (awhen (aget :hidden-units (arg :options options))
+    (setf (chord-hidden-units alg) it))
+  (when (aget :train (arg :options options))
+    (train-e-chord-net alg)))
 
 (add-algorithm (make-instance 'chord-net
                               :name "ES-Net"
@@ -359,28 +353,25 @@ self-explanatory, and they do this coding/decoding.
        (make-pathname-neural "context" "fann")))
 
 (defmethod you-ok-p ((algorithm context-net))
-  (let ((out (with-fann
-               (handler-case (load-from-file (context-fann algorithm))
-                 (error (c) (declare (ignore c)) nil)))))
-    (and out (not (equal out :fann-load-error)))))
+  (handler-case (progn (load-from-file (context-fann algorithm)) t)
+    (error (c) (format t "Error: ~a~%" c) nil)))
 
 (defmethod perform-analysis (segments options (alg context-net))
-  (with-fann (apply-context-net segments options alg)))
+  (apply-context-net segments options alg))
 
 (defmethod do-options ((alg context-net) options)
-  (with-fann
-    (awhen (aget :context-data (arg :options options))
-      (setf (context-data alg) it))
-    (awhen (aget :context-fann (arg :options options))
-      (setf (context-fann alg) it))
-    (awhen (aget :hidden-units (arg :options options))
-      (setf (context-hidden-units alg) it))
-    (awhen (aget :context-before (arg :options options))
-      (setf (net-context-before alg) it))
-    (awhen (aget :context-after (arg :options options))
-      (setf (net-context-after alg) it))
-    (when (aget :train (arg :options options))
-      (train-context-net alg))))
+  (awhen (aget :context-data (arg :options options))
+    (setf (context-data alg) it))
+  (awhen (aget :context-fann (arg :options options))
+    (setf (context-fann alg) it))
+  (awhen (aget :hidden-units (arg :options options))
+    (setf (context-hidden-units alg) it))
+  (awhen (aget :context-before (arg :options options))
+    (setf (net-context-before alg) it))
+  (awhen (aget :context-after (arg :options options))
+    (setf (net-context-after alg) it))
+  (when (aget :train (arg :options options))
+    (train-context-net alg)))
 
 (add-algorithm (make-instance 'context-net
                               :name "EC-Net"
@@ -531,30 +522,26 @@ self-explanatory, and they do this coding/decoding.
        (make-pathname-neural "functional" "fann")))
 
 (defmethod you-ok-p ((algorithm functional-net))
-  (let ((out (with-fann
-               (handler-case (load-from-file (context-fann algorithm))
-                 (error (c) (declare (ignore c)) nil)))))
-    (and out (not (equal out :fann-load-error)))))
+  (handler-case (progn (load-from-file (context-fann algorithm)) t)
+    (error (c) (format t "Error: ~a~%" c) nil)))
 
 (defmethod functional-analysis (segments options (alg functional-net))
-  (with-fann
-    (apply-functional-net segments options alg)))
+    (apply-functional-net segments options alg))
 
 (defmethod do-options ((alg functional-net) options)
-  (with-fann 
-    (awhen (aget :context-data (arg :options options))
-      (setf (context-data alg) it))
-    (awhen (aget :context-fann (arg :options options))
-      (setf (context-fann alg) it))
-    (awhen (aget :hidden-units (arg :options options))
-      (setf (context-hidden-units alg) it))
-    (awhen (aget :context-before (arg :options options))
-      (setf (net-context-before alg) it))
-    (awhen (aget :context-after (arg :options options))
-      (setf (net-context-after alg) it))
-    (when (aget :train (arg :options options))
-      (format t "Training functional net...~%")
-      (train-functional-net alg))))
+  (awhen (aget :context-data (arg :options options))
+    (setf (context-data alg) it))
+  (awhen (aget :context-fann (arg :options options))
+    (setf (context-fann alg) it))
+  (awhen (aget :hidden-units (arg :options options))
+    (setf (context-hidden-units alg) it))
+  (awhen (aget :context-before (arg :options options))
+    (setf (net-context-before alg) it))
+  (awhen (aget :context-after (arg :options options))
+    (setf (net-context-after alg) it))
+  (when (aget :train (arg :options options))
+    (format t "Training functional net...~%")
+    (train-functional-net alg)))
 
 (add-falgorithm (make-instance 'functional-net
                               :name "Tsui"
