@@ -45,7 +45,7 @@ is a good starting point).
 (enable-sharp-l-syntax)
 
 
-(defparameter *version* 6)
+(defparameter *version* 7)
 
 (eval-when (:compile-toplevel :load-toplevel)
 (let* ((natural-pitches (mapcar #'parse-note '("a" "b" "c" "d" "e" "f" "g")))
@@ -204,7 +204,7 @@ is a good starting point).
                   (let ((in (input->number (make-input prev)))
                         (out (toutput->number (make-toutput chord prev))))
                     (incf (aref pvec in out))))))
-    (dirichlett-smooth pvec *ninputs* *ntoutputs*)))
+    (good-turing-reestimate pvec *ninputs* *ntoutputs*)))
 
 (defun estimate-note-probabilities (fchords chorales)
   (let ((pvec (make-array (list *ninputs* *nnotes*) :initial-element 0)))
@@ -216,13 +216,15 @@ is a good starting point).
                       (incf (aref pvec
                                   (input->number (make-input chord))
                                   (interval (tonal-key-center-pitch (fchord-key chord)) p))))))
-    (dirichlett-smooth pvec *ninputs* *nnotes*)))
+    (good-turing-reestimate pvec *ninputs* *nnotes*)))
 
 (defun train-functional-hmm (alg)
   (let ((fchords (mapcar #'second *training-data*))
         (segments (mapcar #'first *training-data*)))
     (setf (trans alg) (estimate-transition-probabilities fchords)
           (out alg) (estimate-note-probabilities fchords segments))
+    (assert (trans alg))
+    (assert (out alg))
     alg))
 
 (defclass functional-hmm (rameau-algorithm)
@@ -236,6 +238,7 @@ is a good starting point).
 (defmethod do-options ((alg functional-hmm) options)
   (when (and (aget :train (arg :options options))
              (not (eql *version* (version alg))))
+    (format t "Training.~%")
     (train-functional-hmm alg)
     (setf (version alg) *version*)))
 
@@ -296,4 +299,4 @@ is a good starting point).
 
 ;; (trace train-functional-hmm)
 ;; (rameau-main:main "functional -f chor:006")
-;; (trans (load-alg(first *functional-algorithms*)))
+;; (let ((a (load-alg(first *functional-algorithms*)))) (setf (version a) 0) (save-alg a))

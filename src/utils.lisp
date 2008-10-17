@@ -414,8 +414,6 @@ this @link{paper}{http://www.grsampson.net/AGtf1.html}."
                      (P0 (if (eql 0 total) 1d0  (/ (first n) total))) ; the expected frequency of unseen events
                      (p (compute-p r* (reduce #'+ n-prime) P0 total-r total-r*)))
                 (iter (for j from 0 below ydim)
-                      (dbg :good-turing " j ~a  i ~a r ~a p ~a~%"
-                           j i r p)
                       (when (and (position (aref vector i j) r)
                                  (nth (position (aref vector i j) r :test #'eql) p)
                                  (< (nth (position (aref vector i j) r :test #'eql) p)
@@ -429,8 +427,7 @@ this @link{paper}{http://www.grsampson.net/AGtf1.html}."
                                                 0.5d0)
                                                (t (nth (position (aref vector i j) r) p)))
                                          'double-float))))
-                (dbg :good-turing "R ~a,N ~a, ~%    i ~a, r* ~a, ~% r*total ~a,   n-prime ~a, ~%   P0 ~a, freq ~a~%"
-                     r n i r* (iter (for r in r*) (sum r)) n-prime P0 freq)))))
+                (dbg :good-n-r-total "#N~%~{~a~%~}#R:~{~a~%~}#p:~{~a~%~}#Total:~a~%" n r p total)))))
   vector)
 
 (defun exp-add (vector i yd)
