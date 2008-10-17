@@ -348,7 +348,21 @@ by @var{cmp} and using @var{output} as a key."
   "Computes (exp (coerce x 'double-float))"
   (exp (coerce x 'double-float)))
 
-(defun compute-r* :private (n r)
+(defun least-squares (logr logz)
+  (if (< 2 (length logr))
+      (let* ((rbar (/ (reduce #'+ logr) (length logr)))
+             (zbar (/ (reduce #'+ logz) (length logz)))
+             (beta (/ (iter (for r in logr) (for z in logz) (sum (* (- r rbar) (- z zbar))))
+                      (iter (for r in logr) (sum (square (- r rbar))))))
+             (alpha (- zbar (* rbar beta))))
+        (list alpha beta))
+      (list 0 1)))
+
+(defun regress (r params)
+  (destructuring-bind (alpha beta) params
+    (dexp (+ alpha (* beta r)))))
+         
+(defun compute-r* :private (n r params)
   (let ((x-still-good t))
     (append
      (iter (for nr+1 in n)
@@ -357,22 +371,22 @@ by @var{cmp} and using @var{output} as a key."
            (for rr previous rr+1)
            (when (and nr+1 nr rr+1 rr)
              (for x = (* (1+ rr) (/ nr+1 nr)))
-             (for y = (* (1+ rr) (/ (dexp (1+ rr)) (dexp rr))))
+             (for y = (* (1+ rr) (/ (regress (1+ rr) params) (regress rr params))))
              (for in = (> (abs (- x y))
                           (* 1.96d0 (sqrt (abs
                                            (* (* (1+ rr) (1+ rr))
                                               (/ nr+1 (* nr nr))
                                               (1+ (/ nr+1 nr))))))))
-             (when (and x-still-good (not in))
+             (when (or (and x-still-good (not in))
+                       (/= rr+1 (1+ rr)))
                (setf x-still-good nil))
              (if x-still-good (collect x) (collect y))))
-     (list (* (1+ (last1 r)) (/ (dexp (1+ (last1 r))) (dexp (last1 r))))))))
+     (list (* (1+ (last1 r)) (/ (regress (1+ (last1 r)) params) (regress (last1 r) params)))))))
 
-(defun compute-p :private (r* n-prime P0 total-r total-r*)
+(defun compute-p :private (r* nn P0 total-r total-r*)
   (iter (for rr* in r*)
-        (for nn in n-prime)
-        (collect (* (- 1 P0) (/ (* total-r (/ rr* nn))
-                                total-r*)))))
+        (collect (* (- 1 P0) (/ rr* nn))))); (/ (* total-r )
+                               ; total-r*)))))
 
 (defun good-turing-reestimate (vector xdim ydim)
   "Good-Turing reestimation of probabilities, extracted from
@@ -390,13 +404,15 @@ this @link{paper}{http://www.grsampson.net/AGtf1.html}."
               (let* ((freq (hash->ordered-list freqfreq #L(list !1 !2) #L(< (first !1) (first !2))))
                      (r (cdr (mapcar #'first freq))) ; the frequencies in the data
                      (n (cdr (mapcar #'second freq))) ; the number of times each frequency shows up
+                     (z (compute-z r n))
+                     (regr (least-squares (mapcar #'ilog r) (mapcar #'ilog z)))
                      (total (iter (for rr in r) (for nn in n) (sum (* rr nn)))) ; the total number of observations
-                     (r* (compute-r* n r))
-                     (total-r (iter (for rr in r) (sum rr)))
-                     (total-r* (iter (for rr in r*) (sum rr)))
+                     (r* (compute-r* n r regr))
+                     (total-r (reduce #'+ r))
+                     (total-r* (reduce #'+ r*))
                      (n-prime (mapcar #'* n r*))
-                     (P0 (if (eql 0 total) 1d0  (/ (* total-r (/ (first n) total)) total-r*))) ; the expected frequency of unseen events
-                     (p (compute-p r* n-prime P0 total-r total-r*)))
+                     (P0 (if (eql 0 total) 1d0  (/ (first n) total))) ; the expected frequency of unseen events
+                     (p (compute-p r* (reduce #'+ n-prime) P0 total-r total-r*)))
                 (iter (for j from 0 below ydim)
                       (dbg :good-turing " j ~a  i ~a r ~a p ~a~%"
                            j i r p)
@@ -406,7 +422,7 @@ this @link{paper}{http://www.grsampson.net/AGtf1.html}."
                                     0))
                         (error "Valor menor que 0 ~a~%" p))
                       (setf (aref vector i j)
-                            (log (coerce (cond ((= 0 (aref vector i j)) 
+                            (log (coerce (cond ((= 0 (aref vector i j))
                                                 (/ P0 (second (first freq))))
                                                ((and (= 1 (length r))
                                                      (not (= 0 (aref vector i j))))
@@ -429,8 +445,8 @@ up to @var{yd} on the second dimension"
   (iter (for j from 0 below yd)
         (collect (exp (aref vector i j)))))
 
-;; (format t "~a~%" (exp-add (good-turing-reestimate (make-array (list 1 12) :initial-contents '((0 0 0 11 11 1 2 1 1 1 0 1))) 1 12) 0 12))
-;; (format t "~a~%" (exp-add (rameau-fhmm:dirichlett-smooth (make-array (list 1 12) :initial-contents '((0 0 0 11 11 1 2 1 1 1 0 1))) 1 12) 0 12))
+;; (format t "~{~a~%~}~%" (exp-map (good-turing-reestimate (make-array (list 1 12) :initial-contents '((0 0 0 11 11 1 2 1 1 1 0 1))) 1 12) 0 12))
+;; (format t "~{~a~%~}~%" (exp-map (rameau-fhmm:dirichlett-smooth (make-array (list 1 12) :initial-contents '((0 0 0 11 11 1 2 1 1 1 0 1))) 1 12) 0 12))
 
 (defun make-number-hash-table (function list)
   "Makes a hash table associating the elements of \\textt{list} with incresing integers."
