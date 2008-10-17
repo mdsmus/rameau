@@ -177,21 +177,6 @@ is a good starting point).
           (iter (for pitch in sonority)
                 (sum (aref vector input (interval center-pitch pitch))))))))
 
-(defun not-zero (value not-zero)
-  (if (= 0d0 value)
-      not-zero
-      value))
-
-(defun dirichlett-smooth (array sizea sizeb)
-  (iter (for i from 0 below sizea)
-        (declare (fixnum i))
-        (let ((sum (iter (for j from 0 below sizeb) (sum (aref array i j))))
-              (zeros (iter (for j from 0 below sizeb) (counting (= 0 (aref array i j))))))
-          (iter (for j from 0 below sizeb)
-                (setf (aref array i j)
-                      (log (/ (not-zero (aref array i j) (/ 1 (+ 0.00000001d0 zeros))) (1+ sum)))))))
-  array)
-
 (defun get-tran (vector vit pvit)
   (aref vector (nviterbi->ninput pvit) (nviterbi->toutput vit pvit)))
 
