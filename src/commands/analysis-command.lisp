@@ -199,10 +199,10 @@
                 (for width = 500)
                 (cl-cairo2:with-png-file
                     ((make-analysis-file "png" "analysis" (analysis-file-name anal) name)
-                     'cl-cairo2:format-argb32
+                     :argb32
                      width
                      height)
-                  (cl-cairo2:select-font-face "Vera" 'cl-cairo2:font-slant-normal 'cl-cairo2:font-weight-bold)
+                  (cl-cairo2:select-font-face "Vera" :nolmal :bold)
                   (cl-cairo2:set-font-size 20)
                   (cl-cairo2:rectangle 0 0 width height)
                   (cl-cairo2:set-source-rgb 1 1 1)

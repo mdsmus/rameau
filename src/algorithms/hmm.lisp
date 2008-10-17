@@ -213,14 +213,14 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
         (specials (special-notes alg)))
     (cl-cairo2:with-png-file
         ((logical-pathname-namestring "rameau:docs;view-hmm-note-probabilities.png")
-         'cl-cairo2:format-argb32
+         :argb32
          900
          1050)
       (cl-cairo2:rectangle 0 0 900 1050)
       (cl-cairo2:set-source-rgb 1 1 1)
       (cl-cairo2:fill-path)
       (cl-cairo2:set-source-rgb 0 0 0)
-      (cl-cairo2:select-font-face "Vera" 'cl-cairo2:font-slant-normal 'cl-cairo2:font-weight-normal)
+      (cl-cairo2:select-font-face "Vera" :normal :normal)
       (cl-cairo2:set-font-size 10)
       (dbg :hmm-prof "Putting the notenames~%")
       (iter (for i from 0 to 95)
@@ -272,14 +272,14 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
         (str (special-trans alg)))
     (cl-cairo2:with-png-file
         ((logical-pathname-namestring "rameau:docs;view-hmm-trans-probabilities.png")
-         'cl-cairo2:format-argb32
+         :argb32
          8000
          500)
       (cl-cairo2:rectangle 0 0 10000 600)
       (cl-cairo2:set-source-rgb 1 1 1)
       (cl-cairo2:fill-path)
       (cl-cairo2:set-source-rgb 0 0 0)
-      (cl-cairo2:select-font-face "Vera" 'cl-cairo2:font-slant-normal 'cl-cairo2:font-weight-normal)
+      (cl-cairo2:select-font-face "Vera" :normal :normal)
       (cl-cairo2:set-font-size 10)
       (dbg :hmm-prof "Putting the input labels~%")
       (iter (for i from 0)
@@ -329,14 +329,14 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
   (let ((tr (start-trans alg)))
     (cl-cairo2:with-png-file
         ((logical-pathname-namestring "rameau:docs;view-hmm-prior-probabilities.png")
-         'cl-cairo2:format-argb32
+         :argb32
          100
          23080)
       (cl-cairo2:rectangle 0 0 110 23080)
       (cl-cairo2:set-source-rgb 1 1 1)
       (cl-cairo2:fill-path)
       (cl-cairo2:set-source-rgb 0 0 0)
-      (cl-cairo2:select-font-face "Vera" 'cl-cairo2:font-slant-normal 'cl-cairo2:font-weight-normal)
+      (cl-cairo2:select-font-face "Vera" :normal :normal)
       (cl-cairo2:set-font-size 10)
       (dbg :hmm-prof "Putting the output labels~%")
       (iter (for i from 0)

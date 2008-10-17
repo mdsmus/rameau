@@ -90,7 +90,7 @@
   (make-random-state t)
   (cl-cairo2:with-png-file
       ((make-analysis-file "png" "cadences" name)
-       'cl-cairo2:format-rgb24 2000 2000)
+       :rgb24 2000 2000)
     (let* ((center (list 1000 1000))
            (boxes nil)
            (cadences (sorted (iter (for (cadence places) in-hashtable cadences)
@@ -98,7 +98,7 @@
                              #L(> (length (second !1))
                                   (length (second !2)))))
            (max-size (length (second (first cadences)))))
-      (cl-cairo2:select-font-face "Times" 'cl-cairo2:font-slant-normal 'cl-cairo2:font-weight-normal)
+      (cl-cairo2:select-font-face "Times" :normal :normal)
       (cl-cairo2:rectangle 0 0 2000 2000)
       (cl-cairo2:set-source-rgb 1 1 1)
       (cl-cairo2:fill-path)

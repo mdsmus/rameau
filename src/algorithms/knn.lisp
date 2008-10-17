@@ -129,7 +129,7 @@ Bach chorales.
 (defun visualize-knn-hash (alg)
   (cl-cairo2:with-png-file
       ((logical-pathname-namestring "rameau:analysis;view-knn.png")
-       'cl-cairo2:format-argb32
+       :argb32
        2000
        2000)
     (let ((nn (prepare (knn-nn alg)))
@@ -139,7 +139,7 @@ Bach chorales.
         (cl-cairo2:rectangle 0 0 2000 2000)
         (cl-cairo2:set-source-rgb 1 1 1)
         (cl-cairo2:fill-path)
-        (cl-cairo2:select-font-face "Vera" 'cl-cairo2:font-slant-normal 'cl-cairo2:font-weight-normal)
+        (cl-cairo2:select-font-face "Vera" :normal :normal)
         (iter (for (count chord vector) in  nn)
               (let* ((angle (random (* 2 pi)))
                      (distance (distance first-vector vector))
