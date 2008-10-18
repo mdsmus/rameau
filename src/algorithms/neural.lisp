@@ -44,7 +44,7 @@ self-explanatory, and they do this coding/decoding.
 (defparameter *mode-length* 5)
 (defparameter *7th-length* 4)
 (defparameter *value* 96)
-(defparameter *neural-version* "007")
+(defparameter *neural-version* "008")
 (defparameter *neural-prefix* "master")
 
 (defun make-pathname-neural (filename type)
@@ -400,7 +400,7 @@ self-explanatory, and they do this coding/decoding.
 
 (defparameter *function-number-size* 7)
 (defparameter *function-accident-size* 3)
-(defparameter *function-modes* '(:major :minor :augmented :diminished :half-diminished))
+(defparameter *function-modes* '(:major :minor :augmented :diminished :half-diminished :german-sixth :italian-sixth :french-sixth))
 (defparameter *function-mode-size* (1+ (length *function-modes*)))
 (defparameter *total-function-size* (+ *function-number-size* *function-accident-size* *function-mode-size*))
 
@@ -430,7 +430,7 @@ self-explanatory, and they do this coding/decoding.
     (incf (nth (or (position md *function-modes*) 0) mode))
     (append number accidentals mode)))
 
-;; (extract-function-result (make-function-result (make-roman-function :degree-number 1 :degree-accidentals 0 :mode :minor)))
+;; (extract-function-result (make-function-result (make-roman-function :degree-number 1 :degree-accidentals 0 :mode :german-sixth)))
 
 (defun get-function-net (diff res)
   (let ((key (extract-key-result diff (firstn res *tonal-key-size*)))
