@@ -143,11 +143,11 @@
             (make-event :key '(C MAJOR) :time-sig 1 :pitch 2
                         :octave 1
                         :start 0
-                        :dur nil)
+                        :dur 0)
             (make-event :key '(C MAJOR) :time-sig 1 :pitch 3
                         :octave 1
                         :start 0
-                        :dur nil)
+                        :dur 0)
             (make-event :key '(C MAJOR) :time-sig 1 :pitch 3
                         :octave 1
                         :start 0
@@ -155,7 +155,7 @@
             (make-event :key '(C MAJOR) :time-sig 1 :pitch 4
                         :octave 1
                         :start 0
-                        :dur nil))))
+                        :dur 0))))
       (correct-durations notas)
       (mapcar #'event-dur notas)))))
 
