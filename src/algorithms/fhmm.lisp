@@ -45,7 +45,7 @@ is a good starting point).
 (enable-sharp-l-syntax)
 
 
-(defparameter *version* 7)
+(defparameter *version* 8)
 
 (eval-when (:compile-toplevel :load-toplevel)
 (let* ((natural-pitches (mapcar #'parse-note '("a" "b" "c" "d" "e" "f" "g")))
@@ -55,7 +55,7 @@ is a good starting point).
                    (nconcing (iter (for pitch in key-pitches)
                                    (collect (make-tonal-key :mode mode :center-pitch pitch))))))
        (degree-numbers (list 1 2 3 4 5 6 7))
-       (degree-modes (list :major :minor :augmented :diminished :half-diminished))
+       (degree-modes (list :major :minor :augmented :diminished :half-diminished :german-sixth :french-sixth :italian-sixth))
        (degree-accidentals (list -1 0 1))
        (degrees (iter (for n in degree-numbers)
                       (nconcing
@@ -285,3 +285,4 @@ is a good starting point).
 ;; (trace train-functional-hmm)
 ;; (rameau-main:main "functional -f chor:006")
 ;; (let ((a (load-alg(first *functional-algorithms*)))) (setf (version a) 0) (save-alg a))
+;; (let ((a (load-alg(first *functional-algorithms*)))) (version a))
