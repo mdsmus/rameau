@@ -463,31 +463,47 @@ or # as a prefix (as in bvi or #iii)."
         ((equal mode-symbol "+") :augmented)
         (t (error "Chord-type not recognized: ~a ~a~%" function mode-symbol))))
 
+(defparameter *augmented-sixth-modes* '(:german-sixth :french-sixth :italian-sixth))
+
 (defun parse-roman-function (function)
   "Parse string @var{function} ad a roman number function."
-  (cl-ppcre:register-groups-bind (accidentals roman-function mode-symbol extra)
-      ("^(#|b)*(iii|ii|iv|i|v|vi|vii|III|II|IV|I|V|VI|VII)(°|ø|\\+)?([\\.1234567]*)$" function)
-    (let* ((tonal-function (roman->number roman-function))
-           (mode (parse-mode (char roman-function 0) mode-symbol)))
-      (values
-       (make-roman-function :degree-number tonal-function
-                            :mode mode
-                            :degree-accidentals (number-of-accidentals (or accidentals "") :latin))
-       extra))))
+  (acond ((cl-ppcre:register-groups-bind (accidentals roman-function mode-symbol extra)
+           ("^(#|b)*(iii|ii|iv|i|v|vi|vii|III|II|IV|I|V|VI|VII)(°|ø|\\+)?([\\.1234567]*)$" function)
+            (let* ((tonal-function (roman->number roman-function))
+                   (mode (parse-mode (char roman-function 0) mode-symbol)))
+              (values
+               (make-roman-function :degree-number tonal-function
+                                    :mode mode
+                                    :degree-accidentals (number-of-accidentals (or accidentals "") :latin))
+               extra)))
+          it)
+         ((cl-ppcre:register-groups-bind (type)
+              ("([a-zA-Z]{2})\\+6" (string-downcase function))
+            (make-roman-function :degree-number 1
+                                 :mode (case (make-keyword type)
+                                         (:al :german-sixth)
+                                         (:fr :french-sixth)
+                                         (:it :italian-sixth))
+                                 :degree-accidentals 0)))))
 
 (defun print-roman-function (function &optional stream (depth 0))
   "Print roman number function @var{function}"
   (declare (ignore depth))
   (let* ((roman (number->roman (roman-function-degree-number function)))
-         (roman (if (eq :major (roman-function-mode function))
-                    (string-upcase roman)
-                    (string-downcase roman)))
+         (roman (cond ((eq :major (roman-function-mode function))
+                       (string-upcase roman))
+                      ((member (roman-function-mode function) *augmented-sixth-modes*)
+                       "")
+                      (t (string-downcase roman))))
          (mode (case (roman-function-mode function)
                  (:major "")
                  (:minor "")
                  (:half-diminished "ø")
                  (:diminished "°")
                  (:augmented "+")
+                 (:german-sixth "Al+6")
+                 (:french-sixth "Fr+6")
+                 (:italian-sixth "It+6")
                  (t (roman-function-mode function))))
          (accidentals (number->accidental (roman-function-degree-accidentals function))))
     (format stream "~a~a~a" accidentals roman mode)))

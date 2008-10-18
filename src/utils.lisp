@@ -1,5 +1,5 @@
 (defpackage :genoslib
-  (:import-from #:arnesi "AIF" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
+  (:import-from #:arnesi "AIF" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX" "ACOND")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
   (:import-from #:alexandria "SWITCH" "FLATTEN")
   (:use #:cl #:iterate)
