@@ -199,7 +199,7 @@ Bach chorales.
           for coral = (first exemplo)
           for n from 0
           for answer = (second exemplo)
-          do (train-context-nn alg (butlast (contextualize coral before-context after-context) before-context) answer n))))
+          do (train-context-nn alg (contextualize coral before-context after-context) answer n))))
 
 (defun classify-context (alg segmento options &optional (extract #'extract-chord))
   (declare (ignore options))
@@ -218,7 +218,7 @@ Bach chorales.
   (let* ((before-context (cknn-before-context alg))
          (after-context (cknn-after-context alg))
          (c (contextualize coral before-context after-context)))
-    (add-inversions coral (mapcar #L(classify-context alg !1 options) (butlast c before-context)))))
+    (add-inversions coral (mapcar #L(classify-context alg !1 options) c))))
 
 (defclass context-knn (rameau-algorithm)
   ((ck :accessor cknn-k :initarg :ck :initform 1)
@@ -282,7 +282,7 @@ Bach chorales.
           for coral = (first exemplo)
           for n from 0
           for answer = (second exemplo)
-          do (train-context-nn alg (butlast (contextualize coral before-context after-context) before-context)
+          do (train-context-nn alg (contextualize coral before-context after-context)
                                answer
                                n
                                #'process-fchord))))
@@ -291,7 +291,7 @@ Bach chorales.
   (let* ((before-context (cknn-before-context alg))
          (after-context (cknn-after-context alg))
          (c (contextualize coral before-context after-context)))
-    (mapcar #L(classify-context alg !1 options #'functional-extract-chord) (butlast c before-context))))
+    (mapcar #L(classify-context alg !1 options #'functional-extract-chord) c)))
 
 (defclass functional-knn (rameau-algorithm)
   ((ck :accessor cknn-k :initarg :ck :initform 1)

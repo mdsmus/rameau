@@ -206,9 +206,9 @@ Every element is part of @var{n} groups. The list is padded with nulls."
 
 (defun contextualize (segments before after)
   "Contextualize music @var{segments} by putting @var{before} segments before and @var{after} segments after each segment."
-  (butlast (group (append (repeat-list before nil) segments)
+  (butlast (group (append (repeat-list before nil) segments (repeat-list after nil))
                   (+ 1 before after))
-           (max 0 (1- after))))
+           (+ before after)))
 
 (defun string-member (item list)
   "Tests whether there is an item in @var{list} with the same
