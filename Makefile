@@ -86,6 +86,9 @@ rameau: $(lisp-files)
 	--eval "(defparameter *install-path* \"${PWD}\")" \
 	--load "tools/make-image.lisp"
 
+user-tests: rameau
+	tools/test-rameau < tools/tests
+
 checa-notas: tools/read-notes.lisp
 	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" --load "tools/make-image-read-notes.lisp"
 

@@ -1,18 +1,22 @@
 #!/bin/sh
 
-./rameau 
+#IFS=$'\;'
+while read result error test
+do
+    out=$(./rameau $test)
+    regexp=$(echo $out | grep -i "^\(error\|fatal\)")
+    if [ "$regexp" == "" ]
+    then
+        echo "[OK]: rameau $test"
+    else
+        if [ "$error" == "err" ]
+        then
+            echo "[OK]: rameau $test"
+        else
+            echo "[ERROR]: rameau $test"
+            echo "      $regexp"
+        fi
+    fi
+done
 
-./rameau anal
-
-./rameau anal -f
-
-./rameau anal -f chora:001
-
-./rameau anal -f 001
-
-./rameau foobar
-
-./rameau help
-
-./rameau -f foo
 

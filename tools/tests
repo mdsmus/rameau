@@ -1,0 +1,10 @@
+0 ok
+0 err    -f foo
+0 anal
+0 err    anal -f
+0 err    anal -f foobar
+0 err    foobar
+0 err    help
+0 ok     -h
+0 err    -f chora:001 analysis
+0 ok     anal -f chora:001
