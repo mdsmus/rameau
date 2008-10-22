@@ -1,6 +1,6 @@
-;;; -*- Mode: LISP; Syntax: COMMON-LISP; Package: CL-USER; Base: 10 -*-
 (asdf:defsystem :rameau-base
-  :depends-on (:yacc :lexer :cl-fad :cl-ppcre :cl-store :arnesi :cffi :alexandria :ltk :iterate :swank :fann :cl-who :fiveam)
+  :depends-on (:yacc :lexer :cl-fad :cl-ppcre :cl-store :arnesi :cffi
+                     :alexandria :ltk :iterate :swank :fann :cl-who :fiveam)
   :components ((:file "rameau-base")))
 
 (asdf:defsystem :genoslib
@@ -18,7 +18,8 @@
                                      (:file "parser-grammar")))))
 
 (asdf:defsystem :rameau-pkg
-  :depends-on (:rameau-base :genoslib :cl-store :cl-fad :vecto :cl-cairo2 #+win32 :cl-cairo2-win :cl-lily)
+  :depends-on (:rameau-base :genoslib :cl-store :cl-fad :vecto :cl-cairo2
+                            #+win32 :cl-cairo2-win :cl-lily)
   :serial t
   :components ((:file "packages")
                #+sbcl(:file "sbcl")
@@ -44,7 +45,8 @@
                                      ))))
 
 (asdf:defsystem :commands
-  :depends-on (:rameau-pkg :cl-lily :cl-store :vecto :cl-who :algorithms #-win32 :hunchentoot :md5 :cl-fad :cl-base64 :cl-store)
+  :depends-on (:rameau-pkg :cl-lily :cl-store :vecto :cl-who :algorithms
+                           #-win32 :hunchentoot :md5 :cl-fad :cl-base64 :cl-store)
   :serial t
   :components ((:file "package-test")
                (:module commands
