@@ -11,7 +11,8 @@ Lisp process."
           (compute-overhead)))
   (let ((time-info-list ())
         (no-call-name-list ()))
-    (loop for name being the hash-keys in *profiled-fun-name->info* using (hash-value pinfo) do
+    (loop for name being the hash-keys in *profiled-fun-name->info*
+          using (hash-value pinfo) do
           (unless (eq (fdefinition name)
                       (profile-info-encapsulation-fun pinfo))
             (warn "Function ~S has been redefined, so times may be inaccurate.~@
