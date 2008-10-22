@@ -41,7 +41,7 @@
       (if (and (listp atual) (eq '* (first atual)))
           (nconc
            (reduce #'append (repeat-list (second atual)
-                                         (expand-multiplications (rest (rest atual)))))
+                                         (expand-multiplications (subseq atual 2))))
            (expand-multiplications resto))
           (cons atual (expand-multiplications resto))))))
 
@@ -61,7 +61,8 @@
 (defun print-chord (struct stream depth)
   "Print chord @var{struct} to stream @var{stream}, ignoring @var{depth}."
   (declare (ignore depth))
-  (format stream "~:(~a~)~@[~a~]~@[~:(~a~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[/~:(~a~)~]"
+  (format stream
+          "~:(~a~)~@[~a~]~@[~:(~a~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[~:((~a)~)~]~@[/~:(~a~)~]"
           (chord-root struct)
           (if #+sbcl(unicode-term stream) #-sbcl t
               (chord-mode struct)
@@ -112,23 +113,22 @@ position."
          (error "don't know inversion ~a" it))))
 
 (defun %parse-chord :private (chord)
-  (let* ((6+ (second (multiple-value-list (cl-ppcre:scan-to-strings "(al|fr|it)+\\+6" (stringify chord)))))
+  (let* ((6+ (second (multiple-value-list (scan-to-strings "(al|fr|it)+\\+6"
+                                                           (stringify chord)))))
          (poplist (cl-ppcre:split "/" (stringify chord)))
          (bass-note (second poplist)))
     (if 6+
         (make-augmented-sixth :type (make-keyword (elt 6+ 0)))
-        (cl-ppcre:register-groups-bind (root mode 7th 9th 11th 13th)
+        (register-groups-bind (root mode 7th 9th 11th 13th)
             ("([cdefgab]+[#b]?)(m|°|ø|!|\\+)?(7[\\+-]?)?\\.?(9[b\\#]?)?\\.?(11[b\\#]?)?\\.?(13[b\\#]?)?"
              (first poplist) :sharedp t)
           (make-chord :root root
-                      ;; mode = nil é maior
-                      :mode (or mode "")
+                      :mode (or mode "") ; mode = nil é maior
                       :bass bass-note
                       :inversion (return-inversion root bass-note)
                       :7th (if (and (string= 7th "7") (string= mode "°"))
                                "7-"
                                (or 7th ""))
-
                       :9th 9th
                       :11th 11th
                       :13th 13th)))))
@@ -143,58 +143,56 @@ position."
     (t (%parse-chord chord))))
 
 (defun read-chords (list)
-  "[NOTEST]
-
-Parse the chords in list @var{list}.
-"
+  "Parse the chords in list @var{list}.[NOTEST]"
   (mapcar #'parse-chord (expand-chords list)))
 
 (defun transpose-chord (c n)
-  "[NOTEST]
-
-Transpose chord @var{c} by @var{n} pitches.
-"
-  (if (chord-p c)
-      (make-chord :root (print-note (code->notename
-                                     (+ n
-                                        (parse-note
-                                         (chord-root c))))
-                                    :latin)
-                  :bass (chord-bass c)
-                  :mode (chord-mode c)
-                  :inversion (chord-inversion c)
-                  :7th (chord-7th c)
-                  :9th (chord-9th c)
-                  :11th (chord-11th c)
-                  :13th (chord-13th c))
-      c))
+  "Transpose chord @var{c} by @var{n} pitches.[NOTEST]"
+  (let ((root (print-note (code->notename (+ n (parse-note (chord-root c))))
+                          :latin)))
+    (if (chord-p c)
+        (make-chord :root root
+                    :bass (chord-bass c)
+                    :mode (chord-mode c)
+                    :inversion (chord-inversion c)
+                    :7th (chord-7th c)
+                    :9th (chord-9th c)
+                    :11th (chord-11th c)
+                    :13th (chord-13th c))
+        c)))
 
 (defun transpose-chords (chords n)
   (loop for c in chords
-        collect (transpose-chord (if (listp c) (find-if #'chord-p c) c)
+        collect (transpose-chord (if (listp c)
+                                     (find-if #'chord-p c)
+                                     c)
                                  n)))
 
 (defgeneric %compare-answer-sheet (answer answer-sheet &optional tempered?)
   (:documentation "Compare an answer sheet"))
 
 (defmethod %compare-answer-sheet (result (answer-sheet list) &optional tempered?)
-  (some #'identity (mapcar #L(%compare-answer-sheet result !1 tempered?) answer-sheet)))
+  (some #'identity (mapcar #L(%compare-answer-sheet result !1 tempered?)
+                           answer-sheet)))
 
 (defmethod %compare-answer-sheet (result answer-sheet &optional tempered?)
   (declare (ignore result answer-sheet tempered?))
   nil)
 
-(defmethod %compare-answer-sheet ((result chord) (answer-sheet chord) &optional tempered?)
+(defmethod %compare-answer-sheet ((result chord) (answer-sheet chord)
+                                  &optional tempered?)
   (and (funcall (if tempered? #'enharmonicaly-equal-p #'equalp)
                 (chord-root result) (chord-root answer-sheet))
        (equalp (chord-mode result) (chord-mode answer-sheet))
        (equal (chord-7th result) (chord-7th answer-sheet))))
 
-(defmethod %compare-answer-sheet ((result melodic-note) (answer melodic-note) &optional tempered?)
+(defmethod %compare-answer-sheet ((result melodic-note) (answer melodic-note)
+                                  &optional tempered?)
   (declare (ignore tempered?))
   t)
 
-(defmethod %compare-answer-sheet ((result augmented-sixth) (answer-sheet augmented-sixth) &optional tempered?)
+(defmethod %compare-answer-sheet ((result augmented-sixth) (answer-sheet augmented-sixth)
+                                  &optional tempered?)
   (declare (ignore tempered?))
   (equalp (stringify (augmented-sixth-type result))
           (stringify (augmented-sixth-type answer-sheet))))
@@ -206,26 +204,21 @@ Transpose chord @var{c} by @var{n} pitches.
       (%compare-answer-sheet answer answer-sheet tempered?)
       (some (lambda (x) (%compare-answer-sheet answer x tempered?)) answer-sheet)))
 
-(defun add-inversion (segmento acorde)
-  "[NOTEST]
-
-Label the chord @var{acorde} with the inversion found in @var{segmento}.
-"
-  (let ((inv (first (list-events segmento))))
-    (if (chord-p acorde)
-        (make-chord :root (chord-root acorde)
-                    :7th (chord-7th acorde)
-                    :mode (chord-mode acorde)
-                    :bass (unless (equal inv (chord-root acorde))
+(defun add-inversion (segment chord)
+  "Label the chord @var{chord} with the inversion found in
+@var{segmento}.[NOTEST]"
+  (let ((inv (first (list-events segment))))
+    (if (chord-p chord)
+        (make-chord :root (chord-root chord)
+                    :7th (chord-7th chord)
+                    :mode (chord-mode chord)
+                    :bass (unless (equal inv (chord-root chord))
                             inv))
-        acorde)))
+        chord)))
 
 (defun add-inversions (segmentos acordes)
-  "[NOTEST]
-
-Label all chords in @var{acordes} with the appropriate inversion
-according to the music in @var{segmentos}.
-"
+  "Label all chords in @var{acordes} with the appropriate inversion
+according to the music in @var{segmentos}.[NOTEST]"
   (mapcar #'add-inversion segmentos acordes))
 
 (defun 7th-pitch (chord)
