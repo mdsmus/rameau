@@ -1,13 +1,15 @@
 (defpackage :genoslib
   (:import-from #:arnesi "AIF" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX" "ACOND")
-  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
+  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter
+                          #:defvar #:defstruct)
   (:import-from #:alexandria "SWITCH" "FLATTEN")
   (:use #:cl #:iterate #:cl-ppcre)
   (:export
    #:tempered
    #:tonal
    )
-  (:documentation "The core utilities developed by Genos. Generic lisp functions and musical niceties."))
+  (:documentation "The core utilities developed by Genos. Generic lisp
+  functions and musical niceties."))
 
 (in-package :genoslib)
 
@@ -71,15 +73,17 @@
   "Defines @var{funcname} just as defun, but with a cache around it. [NOTEST]"
   (labels ((varnames (symbols)
              (cons 'list
-                   (loop for s in symbols unless (and (symbolp s)
-                                                      (eql #\&  (aref (symbol-name s) 0)))
+                   (loop for s in symbols
+                         unless (and (symbolp s)
+                                     (eql #\&  (aref (symbol-name s) 0)))
                          collect (if (atom s) s (first s))))))
     (let ((cache (gensym)))
       `(let ((,cache (make-hash-table :test #'equal)))
          (defun ,funcname ,args
            (aif (gethash ,(varnames args) ,cache)
                 it
-                (setf (gethash ,(varnames args) ,cache) (progn ,@body))))))))
+                (setf (gethash ,(varnames args) ,cache)
+                      (progn ,@body))))))))
 
 (defun concat (&rest strings)
   "Concatenate strings @var{strings}."
@@ -205,8 +209,11 @@ Every element is part of @var{n} groups. The list is padded with nulls."
     (cons (firstn lista n) (group (rest lista) n))))
 
 (defun contextualize (segments before after)
-  "Contextualize music @var{segments} by putting @var{before} segments before and @var{after} segments after each segment."
-  (butlast (group (append (repeat-list before nil) segments (repeat-list after nil))
+  "Contextualize music @var{segments} by putting @var{before} segments
+before and @var{after} segments after each segment."
+  (butlast (group (append (repeat-list before nil)
+                          segments
+                          (repeat-list after nil))
                   (+ 1 before after))
            (+ before after)))
 
@@ -218,12 +225,13 @@ string representation as @var{item}."
 ;; Alist helper functions
 
 (defun make-alist ()
-  "Makes an empty alist, to be used with other alist helper functions in this package. [NOTEST]"
+  "Makes an empty alist, to be used with other alist helper functions
+in this package. [NOTEST]"
   (list nil))
 
 (defun apush (obj place)
-  "Destructively modifies alist @var{place} and puts @var{obj}
-as its car."
+  "Destructively modifies alist @var{place} and puts @var{obj} as its
+car."
   (let ((ap (car place))
         (dp (cdr place)))
     (setf (car place) obj
@@ -231,9 +239,9 @@ as its car."
   place)
 
 (defun aget (key list &optional default)
-  "Get element keyed by @var{key} from alist @var{list}. If it
-does not exist, insert and return @var{default} unless default is
-null or 'erro."
+  "Get element keyed by @var{key} from alist @var{list}. If it does
+not exist, insert and return @var{default} unless default is null or
+'erro."
   (aif (assoc key list :test #'equal)
        (second it)
        (progn
@@ -248,7 +256,8 @@ null or 'erro."
        (setf (second (assoc ,key ,list :test #'equal)) ,value)))
 
 (defmacro aincf (key list &optional (amount 1))
-  "Increment the value of @var{key} in alist @var{list} by @var{amount}."
+  "Increment the value of @var{key} in alist @var{list} by
+@var{amount}."
   `(if (eq 'erro (aget ,key ,list 'erro))
        (aset ,key ,list ,amount)
        (incf (car (cdr (assoc ,key ,list :test #'equal))) ,amount)))
@@ -273,8 +282,8 @@ null or 'erro."
 
 (defun sublist-of-args (list char)
   "Return the sublist of @var{list} for the arg in @var{char}."
-  ;; tem um bug quando repete proxima flag imediatamente: (@a foo @a bar)
-  ;; entra em loop recursivo
+  ;; tem um bug quando repete proxima flag imediatamente: (@a foo @a
+  ;; bar) entra em loop recursivo
   (labels ((next-flag (list)
              (iter (for item in (rest list))
                    (unless (consp item)
@@ -306,7 +315,8 @@ null or 'erro."
     (values argmax max)))
 
 (defun normalize (zero one min max value)
-  "Draw a line from @var{zero} = @var{min} to @var{one} = @var{max} and find @var{value} in it." 
+  "Draw a line from @var{zero} = @var{min} to @var{one} = @var{max}
+and find @var{value} in it."
   (let ((value (- value min))
         (max (- max min)))
     (if (/= 0 max)
@@ -320,20 +330,22 @@ null or 'erro."
     (read-from-string (format nil "~s" value))))
 
 (defun hash->ordered-list (table output cmp)
-  "Create an ordered list with the elements of hashtable @var{hash} ordered
-by @var{cmp} and using @var{output} as a key."
+  "Create an ordered list with the elements of hashtable @var{hash}
+ordered by @var{cmp} and using @var{output} as a key."
   (sorted (iter (for (k v) in-hashtable table)
                 (collect (funcall output k v)))
           cmp))
 
 (defun ilog (x)
-  "A convenient function to avoid floating-point underflow when computing (log 0)"
+  "A convenient function to avoid floating-point underflow when
+computing (log 0)"
   (if (equal x 0)
       most-negative-double-float
       (log x)))
 
 (defun compute-z :private (r n)
-  (iter (for k in (append (list 0) r (list (- (* 2 (last1 r)) (first (last r 2))))))
+  (iter (for k in (append (list 0) r (list (- (* 2 (last1 r))
+                                              (first (last r 2))))))
         (for j previous k)
         (for i previous j)
         (for nk in (append (list 0) n (list 0)))
@@ -352,8 +364,11 @@ by @var{cmp} and using @var{output} as a key."
   (if (< 2 (length logr))
       (let* ((rbar (/ (reduce #'+ logr) (length logr)))
              (zbar (/ (reduce #'+ logz) (length logz)))
-             (beta (/ (iter (for r in logr) (for z in logz) (sum (* (- r rbar) (- z zbar))))
-                      (iter (for r in logr) (sum (square (- r rbar))))))
+             (beta (/ (iter (for r in logr)
+                         (for z in logz)
+                         (sum (* (- r rbar) (- z zbar))))
+                   (iter (for r in logr)
+                         (sum (square (- r rbar))))))
              (alpha (- zbar (* rbar beta))))
         (list alpha beta))
       (list 0 1)))
@@ -384,9 +399,7 @@ by @var{cmp} and using @var{output} as a key."
      (list (* (1+ (last1 r)) (/ (regress (1+ (last1 r)) params) (regress (last1 r) params)))))))
 
 (defun compute-p :private (r* nn P0 total-r total-r*)
-  (iter (for rr* in r*)
-        (collect (* (- 1 P0) (/ rr* nn))))); (/ (* total-r )
-                               ; total-r*)))))
+  (mapcar #L(* (- 1 P0) (/ !1 nn)) r*))
 
 (defun good-turing-reestimate (vector xdim ydim)
   "Good-Turing reestimation of probabilities, extracted from
@@ -400,18 +413,25 @@ this @link{paper}{http://www.grsampson.net/AGtf1.html}."
                 (incf (gethash (aref vector i j) freqfreq 0)))
           (if all-zero
               (iter (for j from 0 below ydim)
-                    (setf (aref vector i j) (log (coerce (/ 1 ydim) 'double-float))))
-              (let* ((freq (hash->ordered-list freqfreq #L(list !1 !2) #L(< (first !1) (first !2))))
-                     (r (cdr (mapcar #'first freq))) ; the frequencies in the data
-                     (n (cdr (mapcar #'second freq))) ; the number of times each frequency shows up
+                    (setf (aref vector i j)
+                          (log (coerce (/ 1 ydim) 'double-float))))
+              (let* ((freq (hash->ordered-list freqfreq
+                                               #L(list !1 !2)
+                                               #L(< (first !1) (first !2))))
+                     ;; the frequencies in the data
+                     (r (cdr (mapcar #'first freq)))
+                     ;; the number of times each frequency shows up
+                     (n (cdr (mapcar #'second freq)))
                      (z (compute-z r n))
                      (regr (least-squares (mapcar #'ilog r) (mapcar #'ilog z)))
-                     (total (iter (for rr in r) (for nn in n) (sum (* rr nn)))) ; the total number of observations
+                     ;; the total number of observations
+                     (total (iter (for rr in r) (for nn in n) (sum (* rr nn))))
                      (r* (compute-r* n r regr))
                      (total-r (reduce #'+ r))
                      (total-r* (reduce #'+ r*))
                      (n-prime (mapcar #'* n r*))
-                     (P0 (if (eql 0 total) 1d0  (/ (first n) total))) ; the expected frequency of unseen events
+                     ;; the expected frequency of unseen events
+                     (P0 (if (eql 0 total) 1d0  (/ (first n) total))) 
                      (p (compute-p r* (reduce #'+ n-prime) P0 total-r total-r*)))
                 (iter (for j from 0 below ydim)
                       (when (and (position (aref vector i j) r)
@@ -427,7 +447,8 @@ this @link{paper}{http://www.grsampson.net/AGtf1.html}."
                                                 0.5d0)
                                                (t (nth (position (aref vector i j) r) p)))
                                          'double-float))))
-                (dbg :good-n-r-total "#N~%~{~a~%~}#R:~{~a~%~}#p:~{~a~%~}#Total:~a~%" n r p total)))))
+                (dbg :good-n-r-total "#N~%~{~a~%~}#R:~{~a~%~}#p:~{~a~%~}#Total:~a~%"
+                     n r p total)))))
   vector)
 
 (defun exp-add (vector i yd)
@@ -442,11 +463,9 @@ up to @var{yd} on the second dimension"
   (iter (for j from 0 below yd)
         (collect (exp (aref vector i j)))))
 
-;; (format t "~{~a~%~}~%" (exp-map (good-turing-reestimate (make-array (list 1 12) :initial-contents '((0 0 0 11 11 1 2 1 1 1 0 1))) 1 12) 0 12))
-;; (format t "~{~a~%~}~%" (exp-map (rameau-fhmm:dirichlett-smooth (make-array (list 1 12) :initial-contents '((0 0 0 11 11 1 2 1 1 1 0 1))) 1 12) 0 12))
-
 (defun make-number-hash-table (function list)
-  "Makes a hash table associating the elements of \\textt{list} with incresing integers."
+  "Makes a hash table associating the elements of \\textt{list} with
+incresing integers."
   (let ((table (make-hash-table :test function)))
     (iter (for i from 0)
           (for el in list)
