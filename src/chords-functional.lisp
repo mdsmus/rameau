@@ -31,18 +31,15 @@
 
 (defun transpose-fchord (fchord pitches)
   "Transpose fchord @var{fchord} by @var{pitches}"
-  (make-fchord :7th (fchord-7th fchord)
-               :9th (fchord-9th fchord)
-               :11th (fchord-11th fchord)
-               :13th (fchord-13th fchord)
-               :inversion (fchord-inversion fchord)
-               :roman-function (fchord-roman-function fchord)
-               :key (make-tonal-key :center-pitch (module (+ pitches
-                                                             (tonal-key-center-pitch
-                                                              (fchord-key fchord))))
-                                    :mode (tonal-key-mode (fchord-key fchord)))))
-
-
+  (let ((center-pitch (+ pitches (tonal-key-center-pitch (fchord-key fchord)))))
+    (make-fchord :7th (fchord-7th fchord)
+                 :9th (fchord-9th fchord)
+                 :11th (fchord-11th fchord)
+                 :13th (fchord-13th fchord)
+                 :inversion (fchord-inversion fchord)
+                 :roman-function (fchord-roman-function fchord)
+                 :key (make-tonal-key :center-pitch (module center-pitch)
+                                      :mode (tonal-key-mode (fchord-key fchord))))))
 
 (defun match-inversion :private (inversion-list)
   (nthcdr 2 (assoc (mapcar #'parse-integer (sort inversion-list #'string>))
@@ -61,38 +58,45 @@
             (if center-function
                 (let* ((func (parse-roman-function center-function))
                        (root (roman-function-root func key))
-                       (mode (if (eq :major (roman-function-mode func)) :major :minor)))
-                  (%parse-fchord function (make-tonal-key :center-pitch root :mode mode)))
-                (let* ((root (roman-function-root roman-function key)))
-                  (make-fchord :root root
-                               :bass nil
-                               :7th 7th
-                               :key key
-                               :roman-function roman-function))))))))
+                       (mode (if (eql :major (roman-function-mode func))
+                                 :major
+                                 :minor)))
+                  (%parse-fchord function (make-tonal-key :center-pitch root
+                                                          :mode mode)))
+                (make-fchord :root (roman-function-root roman-function key)
+                             :bass nil
+                             :7th 7th
+                             :key key
+                             :roman-function roman-function)))))))
 
 (defun parse-fchords (chords center)
   "Parse the fchords in @var{chords} as having @var{center} as their key."
   (mapcar #'(lambda (chord)
               (if (consp chord)
-                  (mapcar #L(unless (equal '- !1) (%parse-fchord (symbol-name !1) center)) chord)
+                  (mapcar #L(unless (equal '- !1)
+                              (%parse-fchord (symbol-name !1) center))
+                          chord)
                   (%parse-fchord (symbol-name chord) center)))
           chords))
 
 (defun read-fchords (list)
   "Read the fchords in @var{list}."
-  (iter (for chord in (iter (for item in (sublist-of-args list #\@))
-                            (for center = (parse-tonal-key (subseq (symbol-name (first item)) 1)))
-                            (for chords = (rest item))
-                            (nconcing (parse-fchords chords center))))
-        (with last-chord = nil)
-        (when chord
-          (setf last-chord chord))
-        (collect last-chord)))
+  (flet ((get-key (list)
+           (subseq (symbol-name (first list)) 1)))
+    (iter (for chord in (mapcan #L(parse-fchords (rest !1)
+                                                 (parse-tonal-key (get-key !1)))
+                                (sublist-of-args list #\@)))
+          (with last-chord = nil)
+          (when chord
+            (setf last-chord chord))
+          (collect last-chord))))
 
 (defun get-fchords (string)
   "Read the fchords from @var{string}."
-  (read-fchords
-   (read-from-string-as-sexp (cl-ppcre:regex-replace-all "([A-Ga-g](#|b)*):" string "@\\1") :preserve)))
+  (read-fchords (read-from-string-as-sexp (regex-replace-all "([A-Ga-g](#|b)*):"
+                                                             string
+                                                             "@\\1")
+                                          :preserve)))
 
 (defun mode->keyword (mode)
   "Match the chord-mode @var{mode} with the appropriate fchord-mode keyword."
@@ -114,8 +118,9 @@ center. center must be a string and scale-mode a keyword."
                :11th (chord-11th chord)
                :13th (chord-13th chord)
                :key center
-               :roman-function (get-roman-function (chord-root chord) (mode->keyword (chord-mode chord)) center)
-               ))
+               :roman-function (get-roman-function (chord-root chord)
+                                                   (mode->keyword (chord-mode chord))
+                                                   center)))
 
 (defmethod chord->fchord (chord center)
   "Fallback for non-chord tones and augmented sixths until we do have a syntax for it. FIXME."
@@ -144,7 +149,9 @@ center. center must be a string and scale-mode a keyword."
             (for chord in fchords)
             (for this-chord =  chord)
             (if (same-key current-key (fchord-key chord))
-                (setf chord (make-fchord :key nil :7th (fchord-7th chord) :roman-function (fchord-roman-function chord)))
+                (setf chord (make-fchord :key nil
+                                         :7th (fchord-7th chord)
+                                         :roman-function (fchord-roman-function chord)))
                 (setf current-key (fchord-key chord)))
             (when (equalp chord last-chord)
               (setf chord '-))
@@ -157,4 +164,4 @@ center. center must be a string and scale-mode a keyword."
 ;; (trace parse-roman-function)
 ;; (cleanup-keys (path-parse-functional-answer-sheet "/home/top/programas/analise-harmonica/music/chorales-bach/006.ly"))
 ;; (%parse-fchord "vi6" "F")
-;; (chord->fchord (make-chord :root "a" :mode "") (make-tonal-key :center-pitch 0 :mode :minor))o
+;; (chord->fchord (make-chord :root "a" :mode "") (make-tonal-key :center-pitch 0 :mode :minor))
