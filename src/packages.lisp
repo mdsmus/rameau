@@ -43,7 +43,7 @@
            )
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defgeneric
                           #:defparameter #:defvar #:defstruct #:defclass)
-  (:use #:genoslib #:cl #:iterate #:cl-who #:cl-lily)
+  (:use #:genoslib #:cl #:iterate #:cl-who #:cl-lily #:cl-ppcre)
   (:documentation "The core @rameau framework."))
 
 (in-package :rameau)
