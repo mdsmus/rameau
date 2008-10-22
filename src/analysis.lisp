@@ -85,10 +85,9 @@ Try omitting the \"-a\" option and trying again.~%")
             (collect
                 (make-analysis
                  :segments segments
-                 :results (mapcar #L(main-perform-functional-analysis
-                                     segments
-                                     options
-                                     !1)
+                 :results (mapcar #L(main-perform-functional-analysis segments
+                                                                      options
+                                                                      !1)
                                   (arg :algorithms options))
                  :answer-sheet (path-parse-functional-answer-sheet file)
                  :file-name (pathname-name file)
@@ -98,5 +97,3 @@ Try omitting the \"-a\" option and trying again.~%")
                  :ast (file-ast file)
                  :full-path file
                  :dur (durations segments)))))))
-
-
