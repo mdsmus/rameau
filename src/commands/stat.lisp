@@ -22,40 +22,44 @@
 
 (defun collect-data (options)
   (let* ((analysis (analyse-files options))
-         (a (first analysis)))
+         (a (first analysis))
+         (res (iter (for i in (analysis-algorithms (first analysis)))
+                    (collect (list 0)))))
     (format t "~5a|" " ")
     (iter (for alg in (analysis-algorithms a))
           (format t "~7a|" (alg-name alg)))
     (format t "~%")
-    (let ((res (iter (for i in (analysis-algorithms (first analysis))) (collect (list 0)))))
-      (iter (for anal in analysis)
-            (when (analysis-answer-sheet anal)
-              (format t "~5a|" (analysis-file-name anal))
-              (iter (for r in (analysis-results anal))
-                    (for i from 0)
-                    (let ((c (count-hits r (analysis-answer-sheet anal))))
-                      (format t "~6,2f%|" (% c (length r)))
-                      (apush (% c (length r)) (nth i res))))
-              (format t "~%")))
-      (format t "Medias:~%~5a|" " ")
-      (iter (for r in res)
-            (format t "~6,2f%|" (average (butlast r))))
-      (format t "~%Desvios:~%~5a|" " ")
-      (iter (for r in res)
-            (format t "~6,2f |" (stddev (butlast r) (average (butlast r)))))
-      (format t "~%"))))
+    (iter (for anal in analysis)
+          (when (analysis-answer-sheet anal)
+            (format t "~5a|" (analysis-file-name anal))
+            (iter (for r in (analysis-results anal))
+                  (with size = (length r))
+                  (for c = (count-hits r (analysis-answer-sheet anal)))
+                  (for i from 0)
+                  (format t "~6,2f%|" (% c size))
+                  (apush (% c size) (nth i res)))
+            (format t "~%")))
+    (format t "Medias:~%~5a|" " ")
+    (iter (for r in res)
+          (format t "~6,2f%|" (average (butlast r))))
+    (format t "~%Desvios:~%~5a|" " ")
+    (iter (for r in res)
+          (format t "~6,2f |" (stddev (butlast r) (average (butlast r)))))
+    (format t "~%")))
 
 (register-command :name "collect-data"
                   :action #'collect-data
-                  :documentation  "Collect accuracy data on the chord labeling algorithms specified.")
-
+                  :documentation "Collect accuracy data on the chord
+                  labeling algorithms specified.")
 
 (defun answer->mode (answer)
-  (cond ((chord-p answer) (list :chord
-                                (make-keyword (chord-mode answer))
-                                (make-keyword (chord-7th answer))))
+  (cond ((chord-p answer)
+         (list :chord
+               (make-keyword (chord-mode answer))
+               (make-keyword (chord-7th answer))))
         ((melodic-note-p answer) (list :non-chord-tone))
-        ((augmented-sixth-p answer) (list :aug6 (make-keyword (augmented-sixth-type answer))))
+        ((augmented-sixth-p answer)
+         (list :aug6 (make-keyword (augmented-sixth-type answer))))
         (t nil)))
 
 (defun make-precision-table (f name func algorithms answer correct obtained modes)
@@ -109,11 +113,14 @@
         (for c in confusion-matrix)
         (for co in countings)
         (for i from 0)
-        (let ((conf (make-array (list (length modes) (length modes)) :initial-element 0)))
-          (iter (for ((an ga) count) in-hashtable c)
-                (incf (aref conf (position ga modes :test #'equal) (position an modes :test #'equal))
-                      (% count (gethash ga co 0.0000000001))))
-          (setf (nth i matrixes) conf))))
+        (for conf = (make-array (list (length modes) (length modes))
+                                :initial-element 0))
+        (iter (for ((an ga) count) in-hashtable c)
+              (incf (aref conf
+                          (position ga modes :test #'equal)
+                          (position an modes :test #'equal))
+                    (% count (gethash ga co 0.0000000001))))
+        (setf (nth i matrixes) conf)))
 
 (defun /0 (a b)
   (if (zerop b) 0 (/ a b)))
@@ -130,6 +137,9 @@
   (sqrt (* (precision m re right ob)
            (recall    m re right ob))))
 
+(defun %make-hash (list)
+  (iter (for i in list) (collect (make-hash-table :test #'equal))))
+
 (defun report (options)
   (let* ((analysis (analyse-files options))
          (algorithms (analysis-algorithms (first analysis)))
@@ -139,9 +149,9 @@
                           (collect (make-hash-table :test #'equal))))
          (modes (make-hash-table :test #'equal))
          (matrixes (repeat-list (length algorithms) nil))
-         (obtained (iter (for i in algorithms) (collect (make-hash-table :test #'equal))))
-         (correct (iter (for i in algorithms) (collect (make-hash-table :test #'equal))))
-         (answer (iter (for i in algorithms) (collect (make-hash-table :test #'equal)))))
+         (obtained (%make-hash algorithms))
+         (correct (%make-hash algorithms))
+         (answer (%make-hash algorithms)))
     (iter (for anal in analysis)
           (iter (for alg in algorithms)
                 (for r in (analysis-results anal))
@@ -215,4 +225,6 @@
 
 (register-command :name "report"
                   :action #'report
-                  :documentation "Collect precision, recall, f-measure and confusion matrixes for the chord labeling algorithms specified.")
+                  :documentation "Collect precision, recall, f-measure
+                  and confusion matrixes for the chord labeling
+                  algorithms specified.")
