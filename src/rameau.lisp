@@ -1,6 +1,4 @@
 (in-package :rameau)
-;;; As funções dependentes de implementação devem ficar aqui
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (enable-sharp-l-syntax)
 
@@ -45,16 +43,15 @@
   (remove-if-not #'you-ok-p (mapcar #'load-alg (filter-algorithms algorithms algs))))
 
 (defun filter-algorithms (algoritmos algs)
-  "[NOTEST]
-
-Filter @var{*algorithms*} so that only the ones specified in
-@var{algoritmos} are returned.
-"
+  "Filter @var{*algorithms*} so that only the ones specified in
+@var{algoritmos} are returned.[NOTEST]"
   (if algoritmos
       (remove-duplicates
        (iter (for alg in algoritmos)
              (appending (iter (for i in algs)
-                              (when (> (count-subseq alg (string-downcase (alg-name i))) 0)
+                              (when (> (count-subseq alg
+                                                     (string-downcase (alg-name i)))
+                                       0)
                                 (collect i))))))
       algs))
 
@@ -81,10 +78,7 @@ Filter @var{*algorithms*} so that only the ones specified in
   (cl-store:store alg (alg-file-name alg)))
 
 (defun rameau-profile ()
-  "[NOTEST]
-
-Profile all functions in @var{Rameau}.
-"
+  "Profile all functions in @var{Rameau}. [NOTEST]"
   #+sbcl(progn
           (setf sb-profile::*print-functions-not-called* nil)
           (sb-profile:profile "RAMEAU")
@@ -94,8 +88,7 @@ Profile all functions in @var{Rameau}.
           (sb-profile:profile "RAMEAU-NEURAL")
           (sb-profile:profile "RAMEAU-TREE-ENARM")
           (sb-profile:profile "RAMEAU-MAIN")
-          (sb-profile:profile "GENOSLIB")
-          )
+          (sb-profile:profile "GENOSLIB"))
   #+cmu (progn
           (profile:profile-all :package "RAMEAU")
           (profile:profile-all :package "RAMEAU-PARDO")
@@ -103,47 +96,34 @@ Profile all functions in @var{Rameau}.
           (profile:profile-all :package "GENOSLIB")))
 
 (defun rameau-report ()
-  "[NOTEST]
-
-Report the results from a profile.
-"
+  "Report the results from a profile.[NOTEST]"
   #+sbcl(sb-profile:report)
   #+cmu(profile:report-time))
 
 (defun rameau-quit ()
-  "[NOTEST]
-
-Exit @rameau.
-"
+  "Exit @rameau.[NOTEST]"
   #+clisp(ext:exit)
   #+sbcl(sb-ext:quit))
 
-;; Compile this by hand if running under slime: (defun rameau-quit () (error "Quit."))
+;; Compile this by hand if running under slime:
+;; (defun rameau-quit () (error "Quit."))
 
 (defun getenv (string)
-  "[NOTEST]
-
-Get environment variable @var{string} from the environment.
-"
+  "Get environment variable @var{string} from the environment.[NOTEST]"
   #+sbcl(sb-ext:posix-getenv string)
   #+cmu(cdr (assoc (intern string :keyword) ext:*environment-list*))
   #+clisp(ext:getenv string))
 
 (defun remove-comma-if-needed (text)
-  "[NOTEST]
-
-Remove the commas from @var{text} and replace them with dots in
-case we a in a portuguese language environment. Needed for fann.
-"
+  "Remove the commas from @var{text} and replace them with dots in
+case we a in a portuguese language environment. Needed for
+fann.[NOTEST]"
   (if (= 1 (count-subseq "pt" (getenv "LANG")))
       (substitute #\, #\. text)
       text))
 
 (defun unicode-term (f)
-  "[NOTEST]
-
-Checks if terminal @var{f} supports unicode.
-"
+  "Checks if terminal @var{f} supports unicode.[NOTEST]"
   (or (null f)
       (eq (stream-external-format f) nil)
       (eq (stream-external-format f) #+sbcl :utf-8 #-sbcl :default)))
@@ -191,7 +171,9 @@ exists."
     (event-pitch (first segmento))))
 
 (defparameter *all-colors*
-  (iter (for symbol in-package :cl-colors :external-only t) (when (equal #\+ (char (symbol-name symbol) 0)) (collect (symbol-value symbol)))))
+  (iter (for symbol in-package :cl-colors :external-only t)
+        (when (equal #\+ (char (symbol-name symbol) 0))
+          (collect (symbol-value symbol)))))
 
 (cl-colors:red (first *all-colors*))
 
@@ -210,11 +192,13 @@ exists."
 
 (defun cairo-set-stroke-fill-colors (colors)
   "Set stroke and fill colors using cairo."
-  (cl-cairo2:set-source-rgb (first colors) (second colors) (third colors)))
+  (apply #'cl-cairo2:set-source-rgb colors))
 
-(defmacro safe-with-backtrace ((&key condition print-error-msg exit return) &body code)
-  "Runs @var{code} with error protection, calling @var{print-error-msg} if there's
-an error and doing a backtrace if running on sbcl and @var{condition} is true at runtime."
+(defmacro safe-with-backtrace ((&key condition print-error-msg exit return)
+                               &body code)
+  "Runs @var{code} with error protection, calling
+@var{print-error-msg} if there's an error and doing a backtrace if
+running on sbcl and @var{condition} is true at runtime."
   (let ((err (gensym)))
     `(handler-bind ((error (lambda (,err)
                              ,print-error-msg
