@@ -1,4 +1,5 @@
 (in-package #:genoslib)
+
 (export '(a b c d e f g
           a# b# c# d# e# f# g#
           ab bb cb db eb fb gb
@@ -41,20 +42,22 @@ third. Quantity is optional when equal to 1. [NOTEST]"
            (:b 0)  (:b 1)  (:b 2)  (:b 3)  (:b 4)  (:b 5)  (:b 7)
            (:c -6) (:c -5) (:c -4) (:c -3) (:c -2) (:c -1)))
         (tonal-intervals
-         '((1 :perfect) (1 :aug) (1 :aug 2) (1 :aug 3) (1 :aug 4) (1 :aug 5) (1 :aug 6)
-           (2 :dim 6) (2 :dim 5) (2 :dim 4) (2 :dim 3) (2 :dim 2) (2 :dim) (2 :min) (2 :maj) (2 :aug)
-           (2 :aug 2) (2 :aug 3) (2 :aug 4) (2 :aug 5) (2 :aug 6) 
-           (3 :dim 6) (3 :dim 5) (3 :dim 4) (3 :dim 3) (3 :dim 2) (3 :dim)
-           (3 :min) (3 :maj) (3 :aug) (3 :aug 2) (3 :aug 3) (3 :aug 4) (3 :aug 5) (3 :aug 6)
-           (4 :dim 6) (4 :dim 5) (4 :dim 4) (4 :dim 3) (4 :dim 2) (4 :dim)
-           (4 :perfect) (4 :aug) (4 :aug 2) (4 :aug 3) (4 :aug 4) (4 :aug 5) (4 :aug 6) (4 :aug 7)
-           (5 :dim 6) (5 :dim 5) (5 :dim 4) (5 :dim 3) (5 :dim 2) (5 :dim)
-           (5 :perfect) (5 :aug) (5 :aug 2) (5 :aug 3) (5 :aug 4) (5 :aug 5) (5 :aug 6)
+         '((1 :perfect) (1 :aug) (1 :aug 2) (1 :aug 3) (1 :aug 4) (1 :aug 5)
+           (1 :aug 6) (2 :dim 6) (2 :dim 5) (2 :dim 4) (2 :dim 3) (2 :dim 2)
+           (2 :dim) (2 :min) (2 :maj) (2 :aug) (2 :aug 2) (2 :aug 3) (2 :aug 4)
+           (2 :aug 5) (2 :aug 6) (3 :dim 6) (3 :dim 5) (3 :dim 4) (3 :dim 3)
+           (3 :dim 2) (3 :dim) (3 :min) (3 :maj) (3 :aug) (3 :aug 2) (3 :aug 3)
+           (3 :aug 4) (3 :aug 5) (3 :aug 6) (4 :dim 6) (4 :dim 5) (4 :dim 4)
+           (4 :dim 3) (4 :dim 2) (4 :dim) (4 :perfect) (4 :aug) (4 :aug 2)
+           (4 :aug 3) (4 :aug 4) (4 :aug 5) (4 :aug 6) (4 :aug 7) (5 :dim 6)
+           (5 :dim 5) (5 :dim 4) (5 :dim 3) (5 :dim 2) (5 :dim) (5 :perfect)
+           (5 :aug) (5 :aug 2) (5 :aug 3) (5 :aug 4) (5 :aug 5) (5 :aug 6)
            (6 :dim 6) (6 :dim 5) (6 :dim 4) (6 :dim 3) (6 :dim 2) (6 :dim)
-           (6 :min) (6 :maj) (6 :aug) (6 :aug 2) (6 :aug 3) (6 :aug 4) (6 :aug 5) (6 :aug 6)
-           (7 :dim 6) (7 :dim 5) (7 :dim 4) (7 :dim 3) (7 :dim 2) (7 :dim)
-           (7 :min) (7 :maj) (7 :aug) (7 :aug 2) (7 :aug 3) (7 :aug 4) (7 :aug 5) (7 :aug 6)
-           (1 :dim 6) (1 :dim 5) (1 :dim 4) (1 :dim 3) (1 :dim 2) (1 :dim) (8 :perfect)))
+           (6 :min) (6 :maj) (6 :aug) (6 :aug 2) (6 :aug 3) (6 :aug 4) (6 :aug 5)
+           (6 :aug 6) (7 :dim 6) (7 :dim 5) (7 :dim 4) (7 :dim 3) (7 :dim 2)
+           (7 :dim) (7 :min) (7 :maj) (7 :aug) (7 :aug 2) (7 :aug 3) (7 :aug 4)
+           (7 :aug 5) (7 :aug 6) (1 :dim 6) (1 :dim 5) (1 :dim 4) (1 :dim 3)
+           (1 :dim 2) (1 :dim) (8 :perfect)))
         (tempered-intervals
          '((1 :perfect) (2 :min) (2 :maj) (3 :min) (3 :maj) (4 :perfect)
            (5 :dim) (5 :perfect) (6 :min) (6 :maj) (7 :min) (7 :maj) (8 :perfect)))
@@ -166,7 +169,8 @@ first argument to this function, otherwise it could mistakenly return
 This is a low level function, you should use parse-note instead."
   (let ((note-code-tonal
          (%my-position (list (make-keyword (subseq note 0 1))
-                             (number-of-accidentals (subseq note 1) representation))
+                             (number-of-accidentals (subseq note 1)
+                                                    representation))
                        (get-system-notes 'tonal)
                        :test #'equal))
         (note-code-tempered
@@ -178,7 +182,8 @@ This is a low level function, you should use parse-note instead."
       (tonal note-code-tonal)
       (tempered note-code-tempered))))
 
-(let ((test-note (cl-ppcre:create-scanner "^[a-g]((es)*|(is)*|#*|b*)$" :case-insensitive-mode t)))
+(let ((test-note (create-scanner "^[a-g]((es)*|(is)*|#*|b*)$"
+                                 :case-insensitive-mode t)))
   (defun note? (string)
     "Test if a string can represent a note."
     (cl-ppcre:scan test-note string)))
@@ -204,8 +209,10 @@ notas sem acidentes, como 'd', 'e', etc."
       (let ((note (string-downcase note)))
         (module 
          (cond ((eql (length note) 1) (%note->code (make-keyword note)))
-               ((match-note-representation note :lily) (%parse-note note :lily *system*))
-               ((match-note-representation note :latin) (%parse-note note :latin *system*))
+               ((match-note-representation note :lily)
+                (%parse-note note :lily *system*))
+               ((match-note-representation note :latin)
+                (%parse-note note :latin *system*))
                (t (error "type of note is unknown"))))))))
 
 (defun notename->code (note)
@@ -227,7 +234,9 @@ accidental and a representation."
 (defcached print-note (note-code &optional (representation :latin))
   "Retuns a string of a note according to a note-code and
 representation."
-  (format nil "~(~a~)~a" (first note-code) (print-accidentals (second note-code) representation)))
+  (format nil "~(~a~)~a"
+          (first note-code)
+          (print-accidentals (second note-code) representation)))
 
 (defun latin->lily (note)
   "Accepts a string with a note in latin representation and returns a
@@ -314,8 +323,7 @@ set, including the interval between the last and first notes."
 permutation of a set, including the overall interval of the set, and
 the inverval between the second and first note. This format is used to
 determine the normal and prime form."
-  (loop
-        for rotation in (set-rotate (sort-set (remove-duplicates set)))
+  (loop for rotation in (set-rotate (sort-set (remove-duplicates set)))
         for set-size = (interval (last1 rotation) (first rotation))
         for set-beg-size = (interval (second rotation) (first rotation))
         collect (list rotation (module set-size) (module set-beg-size))))
@@ -352,11 +360,10 @@ interval between the first and second notes."
   "Retuns the prime form of a set. Only on a tempered system."
   (assert (eq *system* 'tempered))
   (let ((nf-transposition (set-transpose (normal-form set) 0))
-        (nf-inversion (set-inversion (normal-form set) 0)))
-    (set-transpose-to-0
-     (smallest-set
-      (smaller-sets (sort-form-list (append (set-form-list nf-inversion)
-                                            (set-form-list nf-transposition))))))))
+        (nf-inversion (set-inversion (normal-form set) 0))
+        (sorted-list (sort-form-list (append (set-form-list nf-inversion)
+                                             (set-form-list nf-transposition)))))
+    (set-transpose-to-0 (smallest-set (smaller-sets sorted-list)))))
 
 (defun set-equal? (set1 set2 &optional (form 'normal))
   "Test if two sets are the same. The default option is to see if the
@@ -423,9 +430,11 @@ or # as a prefix (as in bvi or #iii)."
   scale-mode must be keywords. get-roman-function is smart enough to
   understand different inputs for notes such as cis and c#."
   (with-system tonal
-    (let* ((interval (interval (parse-note fundamental) (tonal-key-center-pitch center)))
+    (let* ((interval (interval (parse-note fundamental)
+                               (tonal-key-center-pitch center)))
            (interval-code (interval->code interval))
-           (base-note (nth (1- (first interval-code)) (get-scale-mode (tonal-key-mode center)))))
+           (base-note (nth (1- (first interval-code))
+                           (get-scale-mode (tonal-key-mode center)))))
       (make-roman-function :degree-number (first interval-code)
                            :degree-accidentals (- interval base-note)
                            :mode mode))))
@@ -463,18 +472,18 @@ or # as a prefix (as in bvi or #iii)."
         ((equal mode-symbol "+") :augmented)
         (t (error "Chord-type not recognized: ~a ~a~%" function mode-symbol))))
 
-(defparameter *augmented-sixth-modes* '(:german-sixth :french-sixth :italian-sixth))
-
 (defun parse-roman-function (function)
   "Parse string @var{function} ad a roman number function."
-  (acond ((cl-ppcre:register-groups-bind (accidentals roman-function mode-symbol extra)
+  (acond ((register-groups-bind (accidentals roman-function mode-symbol extra)
            ("^(#|b)*(iii|ii|iv|i|v|vi|vii|III|II|IV|I|V|VI|VII)(°|ø|\\+)?([\\.1234567]*)$" function)
             (let* ((tonal-function (roman->number roman-function))
-                   (mode (parse-mode (char roman-function 0) mode-symbol)))
+                   (mode (parse-mode (char roman-function 0) mode-symbol))
+                   (degree-accidentals (number-of-accidentals (or accidentals "")
+                                                              :latin)))
               (values
                (make-roman-function :degree-number tonal-function
                                     :mode mode
-                                    :degree-accidentals (number-of-accidentals (or accidentals "") :latin))
+                                    :degree-accidentals degree-accidentals)
                extra)))
           it)
          ((cl-ppcre:register-groups-bind (type)
@@ -492,7 +501,8 @@ or # as a prefix (as in bvi or #iii)."
   (let* ((roman (number->roman (roman-function-degree-number function)))
          (roman (cond ((eq :major (roman-function-mode function))
                        (string-upcase roman))
-                      ((member (roman-function-mode function) *augmented-sixth-modes*)
+                      ((member (roman-function-mode function)
+                               '(:german-sixth :french-sixth :italian-sixth))
                        "")
                       (t (string-downcase roman))))
          (mode (case (roman-function-mode function)
