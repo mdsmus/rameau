@@ -13,7 +13,9 @@
            (no-string
             (cond ((zerop (arg :max-print-error options)) no)
                   ((> s2 (arg :max-print-error options))
-                   (format nil "~a ..." (subseq no 0 (arg :max-print-error options))))
+                   (format nil
+                           "~a ..."
+                           (subseq no 0 (arg :max-print-error options))))
                   (t no))))
       (format t "  [OK]: ~a [NO]: ~a ~@[~a ~]~%" (length ok) s2 no-string))))
 
