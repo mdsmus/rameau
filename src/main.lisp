@@ -17,7 +17,7 @@
 (defun print-help :private ()
   (iter (for (key value) in (append *common-flags* (mapcar #'make-command-option-list *commands*)))
         (for documentation in (cons "" (mapcar #'command-documentation *commands*)))
-        (format t "~%~:@(* ~a~)~%" (substitute #\Space #\- key :test #'equal))
+        (format t "~%~:@(* ~a~)~%" (dashs->space key))
         (format t "    ~a~%" documentation)
         (iter (for (short long help) in value)
               (format t "~4T~4a--~25a ~a~%" short long (remove #\Newline help)))))
