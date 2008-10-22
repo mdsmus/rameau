@@ -135,6 +135,10 @@
   (is (equal "foo bar bla"
              (dashs->space "foo-bar-bla"))))
 
+(test quote-string
+  (is (equal "\"foo\""
+             (quote-string "foo"))))
+
 ;; FIXME, see #132
 ;; (test pathname-replace-directory
 ;;   (with-fixture logical-pathname-translations ()
