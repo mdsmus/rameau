@@ -2,6 +2,40 @@
 
 (enable-sharp-l-syntax)
 
+(defparameter *lily-score-string*
+  "\\score {
+  <<
+    \\new StaffGroup <<
+      \\override StaffGroup.SystemStartBracket #'style = #'line 
+      \\new Staff \\with {\\remove \"Time_signature_engraver\" } {
+        <<
+          \\key ~a \\~a
+          \\new Voice = \"soprano\" { \\voiceOne ~a }
+          \\new Voice = \"alto\" { \\voiceTwo ~a }
+        >>
+      }
+      \\new Staff \\with {\\remove \"Time_signature_engraver\" }{
+        <<
+          \\key ~a \\~a
+          \\clef \"bass\"
+          \\new Voice = \"tenor\" {\\voiceOne ~a }
+          \\new Voice = \"baixo\" { \\voiceTwo ~a \\bar \"|.\"}
+        >>
+      }
+    >>
+  >>
+  \\layout {}
+  \\midi {}
+}~%
+ \\paper {
+  paper-width = ~a\\cm
+  paper-height = ~a\\cm
+  line-width = 8\\cm
+  top-margin = -.5\\cm
+  left-margin = -1.2\\cm
+  tagline = 0
+}~%")
+
 (defun make-variable  (name content)
   "Create a lilypond variable named @var{name} with value @var{content}"
   (concat name " = " content "
@@ -20,24 +54,19 @@
 
 (defun intervalo (s1 s2)
   "Retorna o intervalo entre dois segmentos."
-  (if (null s2)
-      0
+  (if s2
       (- (event-start (first s2))
-         (event-end (first s1)))))
+         (event-end (first s1)))
+      0))
 
 (defun make-lily-sonorities (notes)
-  (make-variable "sonorities" 
-                 (concat " \\lyricmode {
- \\set Stanza = \"Sonority\""
-                         (make-lily-list
-                          (loop for x from 1
-                                for s = notes then (rest s)
-                                unless s return res
-                                collect (format nil "\"~a\" " x) into res))
-                                        ;unless (= 0 (intervalo (first s) (second s)))
-                                        ;collect "\" \" " into res))
-
-                         "}")))
+  (let ((content (loop for x from 1
+                       for s = notes then (rest s)
+                       unless s return res
+                       collect (format nil "\"~a\" " x) into res)))
+    (make-variable "sonorities"
+                  (format nil " \\lyricmode {~%\\set Stanza = \"Sonority\"~a}")
+                  (make-lily-list content))))
 
 (defun frac->dur-lily (dur)
   "Convert duration @var{dur} to a lilypond-style duration"
@@ -73,42 +102,33 @@
   "\\new Devnull = \"nowhere\" \\texto")
 
 (defun print-compare-answer-sheet (analysis answer name options cleaned)
-  "Print analysis @var{analysis} as a lilypond source matching it with answer sheet @var{answer}."
-  (make-variable (remove #\- name)
-                 (concat " \\lyricmode {
- \\set stanza = \""
-                         (substitute #\Space #\- name)
-                         "\"
-"
-                         (make-lily-list
-                          (loop for al in analysis
-                             for ans =  answer then (rest ans)
-                             for an = (first ans)
-                             for cl in cleaned
-                             collect (if (or (null answer) (compare-answer-sheet al an))
-                                         (concat "\"" (format nil "~a" cl) "\"")
-                                         (if (arg :no-color options)
-                                             (concat "\\markup { \\roman \\italic \\bold \""
-                                                     (format nil "~a" cl)
-                                                     "\"}")
-                                             (concat "\\markup { \\roman \\italic \\bold \\with-color #(x11-color '"
-                                                     (substitute #\Space #\- (arg :wrong-answer-color options))
-                                                     ") "
-                                                     "\""
-                                                     (format nil "~a" cl)
-                                                     "\"}")))))
-                         "}
-")))
+  "Print analysis @var{analysis} as a lilypond source matching it with
+answer sheet @var{answer}."
+  (let* ((markup-no-color "\\markup { \\roman \\italic \\bold \"~a\"}")
+         (markup-color "\\markup { \\roman \\italic \\bold \\with-color #(x11-color '~a)\"~a\"}")
+         (color (dashs->space (arg :wrong-answer-color options)))
+         (content (loop for al in analysis
+                        for ans =  answer then (rest ans)
+                        for an = (first ans)
+                        for cl in cleaned
+                        collect (if (or (null answer) (compare-answer-sheet al an))
+                                    (concat "\"" (format nil "~a" cl) "\"")
+                                    (if (arg :no-color options)
+                                        (format nil markup-no-color cl)
+                                        (format nil markup-color color cl))))))
+    (make-variable (remove #\- name)
+                   (format nil
+                           " \\lyricmode {~%\\set stanza = \"~a\"~%~a}~%"
+                           (dashs->space name)
+                           (make-lily-list content)))))
 
 (defun make-answer-sheet (answer)
   "Create the lilypond source for the answer-sheet answer."
   (make-variable "answer"
-                 (concat "\\lyricmode {
-  \\set stanza = \"Answer\" "
-                         (make-lily-list (mapcar #L(format nil "\"~a\"" !1) (cleanup-keys answer)))
-                         "}
-
-")))
+                 (format nil
+                         "\\lyricmode {~%\\set stanza = \"Answer\" ~a}~%"
+                         (make-lily-list (mapcar #L(format nil "\"~a\"" !1)
+                                                 (cleanup-keys answer))))))
 
 (defun make-note-list (notes)
   (let (notelist
@@ -138,55 +158,22 @@
                                  (show-octave (event-octave note))
                                  (frac->dur-lily (event-dur note)))))))
 
+(defun %get-voice (voice segments)
+  (add-rests (make-note-list (mapcar #L(extract-note !1 (make-event :voice-name voice))
+                                     segments))))
+
 (defun make-lily-segments (options segments)
-  "Make the lilypond for a chorale snippet based on segments @var{segments}."
-  (let ((baixos (add-rests (make-note-list (mapcar #L(extract-note !1 (make-event :voice-name "\"baixo\"")) segments))))
-        (tenores (add-rests (make-note-list (mapcar #L(extract-note !1 (make-event :voice-name "\"tenor\"")) segments))))
-        (altos (add-rests (make-note-list (mapcar #L(extract-note !1 (make-event :voice-name "\"alto\"")) segments))))
-        (sopranos (add-rests (make-note-list (mapcar #L(extract-note !1 (make-event :voice-name "\"soprano\"")) segments)))))
-    (format nil "\\score {
-  <<
-    \\new StaffGroup <<
-      \\override StaffGroup.SystemStartBracket #'style = #'line 
-      \\new Staff \\with {\\remove \"Time_signature_engraver\" } {
-        <<
-          \\key ~a \\~a
-          \\new Voice = \"soprano\" { \\voiceOne ~a }
-          \\new Voice = \"alto\" { \\voiceTwo ~a }
-        >>
-      }
-      \\new Staff \\with {\\remove \"Time_signature_engraver\" }{
-        <<
-          \\key ~a \\~a
-          \\clef \"bass\"
-          \\new Voice = \"tenor\" {\\voiceOne ~a }
-          \\new Voice = \"baixo\" { \\voiceTwo ~a \\bar \"|.\"}
-        >>
-      }
-    >>
-  >>
-  \\layout {}
-  \\midi {}
-}
-
- \\paper {
-  paper-width = ~a\\cm
-  paper-height = ~a\\cm
-  line-width = 8\\cm
-  top-margin = -.5\\cm
-  left-margin = -1.2\\cm
-  tagline = 0
-}
-
-"
-            (string-downcase (first (event-key (first (first segments)))))
-            (string-downcase (second (event-key (first (first segments)))))
-            sopranos
-            altos
-            (string-downcase (first (event-key (first (first segments)))))
-            (string-downcase (second (event-key (first (first segments)))))
-            tenores
-            baixos
+  "Make the lilypond for a chorale snippet based on @var{segments}."
+  (destructuring-bind (key mode) (event-key (first (first segments)))
+    (format nil
+            *lily-score-string*
+            key
+            mode
+            (%get-voice "\"soprano\"" segments)
+            (%get-voice "\"alto\"" segments)
+            key
+            mode
+            (%get-voice "\"tenor\"" segments)
+            (%get-voice "\"baixo\"" segments)
             (arg :paper-width options)
             (arg :paper-height options))))
-
