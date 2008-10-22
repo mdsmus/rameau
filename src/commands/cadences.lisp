@@ -31,10 +31,11 @@
 
 (defun normalize-to-key (fchord first-key)
   "Normalize fchord @var{fchord} to be in relation to @var{key}."
-  (let ((this-key (fchord-key fchord)))
+  (let* ((this-key (fchord-key fchord))
+         (center-pitch (interval (tonal-key-center-pitch first-key)
+                                 (tonal-key-center-pitch this-key))))
     (make-fchord :roman-function (fchord-roman-function fchord)
-                 :key (make-tonal-key :center-pitch (interval (tonal-key-center-pitch first-key)
-                                                              (tonal-key-center-pitch this-key))
+                 :key (make-tonal-key :center-pitch  center-pitch
                                       :mode (tonal-key-mode this-key))
                  :inversion (fchord-inversion fchord)
                  :bass (fchord-bass fchord)
@@ -45,14 +46,18 @@
     (push (list file-name segno)
           (gethash (reduce #'concat
                            (mapcar #L(format nil "~a " !1)
-                                   (cleanup-keys (mapcar #L(normalize-to-key !1 key) chords))))
+                                   (cleanup-keys (mapcar #L(normalize-to-key !1 key)
+                                                         chords))))
                    hash))))
 
+(defun sorted-cadences (cadences)
+  (sorted (iter (for (cadence places) in-hashtable cadences)
+                (collect (list cadence places)))
+          #L(> (length (second !1))
+               (length (second !2)))))
+
 (defun show-cadence-hash :private (options cadences)
-  (iter (for (cadence  places) in (sorted (iter (for (cadence places) in-hashtable cadences)
-                                                (collect (list cadence places)))
-                                          #L(< (length (second !1))
-                                               (length (second !2)))))
+  (iter (for (cadence  places) in (sorted-cadences cadences))
         (if (< (make-int (arg :max-print-error options))
                (length places))
             (format t "  ~a found ~a times (max ~a)~%"
@@ -73,7 +78,8 @@
 
 (defun collides (boxa boxb)
   "True if the boxes collide."
-  (destructuring-bind ((cxa cya dxa dya &rest foo) (cxb cyb dxb dyb &rest bar))
+  (destructuring-bind ((cxa cya dxa dya &rest foo)
+                       (cxb cyb dxb dyb &rest bar))
       (list boxa boxb)
     (declare (ignore foo bar))
     (and (> (+ 10 dxa dxb) (abs (- cxa cxb)))
@@ -93,10 +99,7 @@
        :rgb24 2000 2000)
     (let* ((center (list 1000 1000))
            (boxes nil)
-           (cadences (sorted (iter (for (cadence places) in-hashtable cadences)
-                                   (collect (list cadence places)))
-                             #L(> (length (second !1))
-                                  (length (second !2)))))
+           (cadences (sorted-cadences cadences))
            (max-size (length (second (first cadences)))))
       (cl-cairo2:select-font-face "Times" :normal :normal)
       (cl-cairo2:rectangle 0 0 2000 2000)
@@ -104,8 +107,13 @@
       (cl-cairo2:fill-path)
       (iter (for (cadence  places) in cadences)
             (for i from 1)
-            (let* ((size (genoslib::normalize 10d0 55d0 0d0 max-size  (length places)))
-                   (dim (append (text-dimensions cadence size) (list cadence size)))
+            (let* ((size (genoslib::normalize 10d0
+                                              55d0
+                                              0d0
+                                              max-size
+                                              (length places)))
+                   (dim (append (text-dimensions cadence size)
+                                (list cadence size)))
                    (angle (random (* 2 pi)))
                    (cenx (first center))
                    (ceny (second center))
@@ -114,13 +122,15 @@
                    (stepy (* 10 (sin angle))))
               (iter (for n from 1 to 220)
                     (always (some #'identity (mapcar #L(collides !1 box) boxes)))
-                    (setf box (cons (+ (first box) stepx) (cons (+ (second box) stepy) dim))))
+                    (setf box (cons (+ (first box) stepx)
+                                    (cons (+ (second box) stepy) dim))))
               (push box boxes)))
       (iter (for (cx cy dx dy cadence size) in boxes)
             (for i from 1)
             (for (red green blue) = (cairo-random-stroke-fill-colors))
             (cl-cairo2:set-font-size size)
-            (multiple-value-bind (xbear ybear xwidth yheight) (cl-cairo2:text-extents cadence)
+            (multiple-value-bind (xbear ybear xwidth yheight)
+                (cl-cairo2:text-extents cadence)
               (cl-cairo2:move-to (+ (- cx xwidth) xbear)
                                  (- (- cy yheight) ybear)))
             (cl-cairo2:text-path cadence)
@@ -138,19 +148,26 @@
                                        anal
                                        (arg :cadence-number options))))
             (iter (for chords in prep)
-                  (add-to-cadence-hash cadences (mapcar #'first chords) (third (first chords)) (fourth (first chords))))
-            (add-to-cadence-hash last-cadences (mapcar #'first (last1 prep)) (third (first (last1 prep))) "end")))
+                  (add-to-cadence-hash cadences
+                                       (mapcar #'first chords)
+                                       (third (first chords))
+                                       (fourth (first chords))))
+            (add-to-cadence-hash last-cadences
+                                 (mapcar #'first (last1 prep))
+                                 (third (first (last1 prep)))
+                                 "end")))
     (format t "All cadences:~%")
     (show-cadence-hash options cadences)
     (make-cadence-figure cadences "cadences")
     (format t "Cadences in the end:~%")
     (show-cadence-hash options last-cadences)
-    (make-cadence-figure last-cadences "last-cadences")
-    ))
+    (make-cadence-figure last-cadences "last-cadences")))
 
 (register-command :name "cadences"
                   :action #'cadences
                   :options '(("-z" "cadence-number" "number of chords to consider" 4 type-integer))
-                  :documentation "Detect the chord progressions and cadences in the specified files using the first specified
-roman numeral functional analysis algorithm. The chord progressions will be in
-analysis/cadences-cadences.png and the cadences will be in analysis/cadences-last-cadences.png")
+                  :documentation "Detect the chord progressions and
+cadences in the specified files using the first specified roman
+numeral functional analysis algorithm. The chord progressions will be
+in analysis/cadences-cadences.png and the cadences will be in
+analysis/cadences-last-cadences.png")
