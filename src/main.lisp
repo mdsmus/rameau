@@ -2,7 +2,6 @@
 
 (enable-sharp-l-syntax)
 
-
 (defun rameau-args ()
   "The command-line arguments, minus the first one."
   #+sbcl (rest sb-ext:*posix-argv*)

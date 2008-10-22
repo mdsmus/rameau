@@ -7,6 +7,7 @@
 
 (in-package :rameau-analysis)
 
+(enable-sharp-l-syntax)
 
 (defparameter *analysis-options*
     '(("" "dont-compare" "don't compare the results with the answer sheet")
@@ -37,13 +38,14 @@
     (iter (for algo in (arg :algorithms options))
           (print-chord-column options (alg-name algo)))
     (print-hline-term size-line)
-    (iter (with right-answer-list = (make-list number-algorithms :initial-element 0))
+    (iter (with right-answer-list = (make-list number-algorithms
+                                               :initial-element 0))
           (for note in (analysis-notes analysis))
           (for dur in (analysis-dur analysis))
           (for seg-number from 1)
           (for answer in (analysis-answer-sheet analysis))
           (for result in (make-result-list analysis))
-          (for comparison = (mapcar (lambda (x) (compare-answer-sheet x answer)) result))
+          (for comparison = (mapcar #L(compare-answer-sheet !1 answer) result))
           (setf right-answer-list (inc-bool-list comparison right-answer-list))
           (print-line-term options seg-number note dur answer)
           (iter (for res in result)
@@ -56,7 +58,7 @@
                  (print-chord-column options (alg-name algo)))
            (print-hline-term size-line)
            (print-footer-term "CORRECT(%)" size-line number-algorithms options)
-           (iter (for i in (mapcar (lambda (x) (% x seg-number)) right-answer-list))
+           (iter (for i in (mapcar #L(% !1 seg-number) right-answer-list))
                  (print-chord-column options (format nil "~,2f" i)))
            (format t "~%")
            (print-hline-term size-line)
@@ -84,6 +86,27 @@
              (format t "~&TOTAL SONORITIES: ~a~%" seg-number))
            (format t "~%")))))
 
+(defun %make-score-list (object variables stream)
+  (append (list (get-output-stream-string variables)
+                "\\score { "
+                "<< "
+                (make-devnull-voice)
+                "  ")
+          (node-text object)
+          (list (get-output-stream-string stream)
+                " >>
+  \\layout {
+    \\context {
+      \\Lyrics
+      \\override LyricSpace #'minimum-distance = #1.0
+      \\override LyricText #'font-size = #-1
+      \\override LyricText #'font-family = #'roman
+    }
+  }
+  \\midi {}
+}
+")))
+
 (defun analysis-lily (options analysis)
   "Displays the analysis in @var{analysis} as a lilypond score."
   (let* ((ast (analysis-ast analysis))
@@ -96,56 +119,33 @@
     (format in-score (make-lyrics "sonorities"))
     (loop for al in (arg :algorithms options)
           for re in (analysis-results analysis)
-          do (format variables (print-compare-answer-sheet re
-                                                           (analysis-answer-sheet analysis)
-                                                           (alg-name al)
-                                                           options
-                                                           (cleanup-keys re)))
+          do (format variables
+                     (print-compare-answer-sheet re
+                                                 (analysis-answer-sheet analysis)
+                                                 (alg-name al)
+                                                 options
+                                                 (cleanup-keys re)))
           (format in-score (make-lyrics (alg-name al))))
     (when (analysis-answer-sheet analysis)
       (format variables (make-answer-sheet (analysis-answer-sheet analysis)))
       (format in-score (make-lyrics "answer")))
-    (setf (node-text score) (append (list (get-output-stream-string variables)
-                                          "\\score { "
-                                          "<< "
-                                          (make-devnull-voice)
-                                          "  ")
-                                    (node-text music)
-                                    (list (get-output-stream-string in-score)
-                                          " >>
-  \\layout {
-    \\context {
-      \\Lyrics
-      \\override LyricSpace #'minimum-distance = #1.0
-      \\override LyricText #'font-size = #-1
-      \\override LyricText #'font-family = #'roman
-    }
-  }
-  \\midi {}
-}
-")))
+    (setf (node-text score) (%make-score-list music variables in-score))
     (let* ((result-path (translate-logical-pathname "rameau:analysis;"))
            (result-dir (pathname-directory result-path))
+           (full-path (analysis-full-path analysis))
+           (name (concat "analysis-" (pathname-name full-path)))
            (result-file (make-pathname :directory result-dir
-                                       :name (concat "analysis-" (pathname-name (analysis-full-path analysis)))
-                                       :type (pathname-type (analysis-full-path analysis))))
+                                       :name name
+                                       :type (pathname-type full-path)))
            (ps-file (make-pathname :directory result-dir
                                    :name (pathname-name result-file)
                                    :type "ps")))
+      (print full-path)
       (ensure-directories-exist result-file)
       (with-output-file (f result-file)
         (format f "~a" (print-ast (cdr ast))))
-      (when (or (arg :lily options) (arg :view-score options))
-        #+sbcl (progn
-                 (sb-posix:chdir result-path)
-                 (sb-ext:run-program "/usr/bin/lilypond" (list "-f"
-                                                               "ps"
-                                                               (when (arg :png options) "--png")
-                                                               (file-namestring result-file)))))
-      (when (or (arg :gv options) (arg :view-score options))
-        #+sbcl (sb-ext:run-program "/usr/bin/gv" (list (file-namestring ps-file))))
-      )))
-
+      (run-lily options result-path result-path)
+      (run-gv options ps-file))))
 
 ;;; Analysis
 (defun analysis (options)
@@ -160,7 +160,8 @@
             (analysis-lily options anal)))))
 
 (register-command :name "analysis"
-                  :documentation "Perform chord labeling with the specified algorithms on the specified files."
+                  :documentation "Perform chord labeling with the
+                  specified algorithms on the specified files."
                   :action #'analysis
                   :options *analysis-options*)
 
@@ -169,15 +170,20 @@
   "Run functional analysis according to options."
   (let ((analysis (functional-analyse-files options)))
     (iter (for anal in analysis)
-          (cond ((arg :dont-compare options) (analysis-terminal-no-answer options anal))
+          (cond ((arg :dont-compare options)
+                 (analysis-terminal-no-answer options anal))
                 ((analysis-answer-sheet anal)
                  (analysis-terminal options anal))
                 (t (analysis-terminal-no-answer options anal)))
-          (when (or (arg :score options) (arg :view-score options) (arg :lily options))
+          (when (or (arg :score options)
+                    (arg :view-score options)
+                    (arg :lily options))
             (analysis-lily options anal)))))
 
 (register-command :name "functional"
-                  :documentation "Perform roman numeral functional analysis with the specified functional algorithms on the specified files."
+                  :documentation "Perform roman numeral functional
+                  analysis with the specified functional algorithms on
+                  the specified files."
                   :action #'functional
                   :options *analysis-options*)
 
@@ -224,17 +230,20 @@
                                 (cl-cairo2:set-font-size (max 5 (min 15 (* 35 pitch))))
                                 (aif (gethash p pitch-colors)
                                      (cairo-set-stroke-fill-colors it)
-                                     (setf (gethash p pitch-colors) (cairo-random-stroke-fill-colors)))
+                                     (setf (gethash p pitch-colors)
+                                           (cairo-random-stroke-fill-colors)))
                                 (cl-cairo2:move-to  (+ 20 i) cur-h)
                                 (cl-cairo2:show-text (print-note (code->notename p)))))
                         (cl-cairo2:set-font-size 20)
                         (aif (gethash (equivalent-pitch re) pitch-colors)
                              (cairo-set-stroke-fill-colors it)
-                             (setf (gethash (equivalent-pitch re) pitch-colors) (cairo-random-stroke-fill-colors)))
+                             (setf (gethash (equivalent-pitch re) pitch-colors)
+                                   (cairo-random-stroke-fill-colors)))
                         (cl-cairo2:move-to 400 (- cur-h 5))
                         (cl-cairo2:show-text cho)))))))
 
 (register-command :name "view"
                   :action #'view-analysis
-                  :documentation   "Pretty visualization of the notes and chords produced by the chord labeling algorithms. The
-result will be in analysis/analysis-<file>-<algorithm>.png")
+                  :documentation "Pretty visualization of the notes
+and chords produced by the chord labeling algorithms. The result will
+be in analysis/analysis-<file>-<algorithm>.png")
