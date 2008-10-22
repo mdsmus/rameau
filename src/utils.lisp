@@ -558,22 +558,6 @@ make-pathname."
   "Replace all dashs in a string by spaces."
   (substitute #\Space #\- string))
 
-(defun run-lily (options result-path result-file)
-  #+sbcl (progn
-           (sb-posix:chdir result-path)
-           (sb-ext:run-program "lilypond"
-                               (list "-f"
-                                     "ps"
-                                     (when (arg :png options) "--png")
-                                     (file-namestring result-file))
-                               :search t)))
-
-(defun run-gv (options ps-file)
-  #+sbcl (sb-ext:run-program "gv"
-                             (list (file-namestring ps-file))
-                             :search t))
-
 (defun quote-string (string)
   "Add a pair of double quotes to a string."
   (format nil "\"~a\"" string))
-

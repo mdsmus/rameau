@@ -65,8 +65,8 @@
                        unless s return res
                        collect (format nil "\"~a\" " x) into res)))
     (make-variable "sonorities"
-                  (format nil " \\lyricmode {~%\\set Stanza = \"Sonority\"~a}")
-                  (make-lily-list content))))
+                  (format nil " \\lyricmode {~%\\set Stanza = \"Sonority\"~a}"
+                          (make-lily-list content)))))
 
 (defun frac->dur-lily (dur)
   "Convert duration @var{dur} to a lilypond-style duration"
