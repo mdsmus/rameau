@@ -131,6 +131,10 @@
   (is (equal #p"foo.bar"
              (pathname-notdir #p "/home/kroger/src/rameau/src/foo.bar"))))
 
+(test dashs->space
+  (is (equal "foo bar bla"
+             (dashs->space "foo-bar-bla"))))
+
 ;; FIXME, see #132
 ;; (test pathname-replace-directory
 ;;   (with-fixture logical-pathname-translations ()

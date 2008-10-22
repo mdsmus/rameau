@@ -534,3 +534,7 @@ make-pathname."
                   (translate-logical-pathname "rameau:analysis;"))
                  :type type
                  :name (format nil "~{~a~^-~}" args)))
+
+(defun dashs->space (string)
+  "Replace all dashs in a string by spaces."
+  (substitute #\Space #\- string))
