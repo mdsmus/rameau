@@ -10,12 +10,13 @@
   #+clisp ext:*args*)
 
 (defun maptrace :private (lista-string &optional (trace 'trace))
-  (let ((expr (append (list trace) (mapcar2 #'read-from-string #'string-upcase lista-string))))
-    (eval expr)))
+  (eval (append (list trace)
+                (mapcar2 #'read-from-string #'string-upcase lista-string))))
 
 ;;; Print messages
 (defun print-help :private ()
-  (iter (for (key value) in (append *common-flags* (mapcar #'make-command-option-list *commands*)))
+  (iter (for (key value) in (append *common-flags*
+                                    (mapcar #'make-command-option-list *commands*)))
         (for documentation in (cons "" (mapcar #'command-documentation *commands*)))
         (format t "~%~:@(* ~a~)~%" (dashs->space key))
         (format t "    ~a~%" documentation)
@@ -109,7 +110,9 @@
                 (iter (for (key value) in (parse-options command (rest command-list)))
                       (if key
                           (setf (arg key options) value)
-                          (return-from main  (progn (format t "ERROR: command not found. Exiting.~%") 1))))
+                          (return-from main
+                            (progn (format t "ERROR: command not found. Exiting.~%")
+                                   1))))
                 (aif (arg :debug options)
                      (mapcar2 #'rameau-debug #'make-keyword it)
                      (rameau-undebug))
