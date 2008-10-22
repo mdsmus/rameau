@@ -561,3 +561,17 @@ make-pathname."
 (defun quote-string (string)
   "Add a pair of double quotes to a string."
   (format nil "\"~a\"" string))
+
+(defun run-lily (options result-path result-file)
+  #+sbcl (progn
+           (sb-posix:chdir result-path)
+           (sb-ext:run-program "lilypond"
+                               (append (list "-f" "ps")
+                                       (when (arg :png options) (list "--png"))
+                                       (list (file-namestring result-file)))
+                               :search t)))
+
+(defun run-gv (options ps-file)
+  #+sbcl (sb-ext:run-program "gv"
+                             (list (file-namestring ps-file))
+                             :search t))

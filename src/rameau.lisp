@@ -210,18 +210,3 @@ running on sbcl and @var{condition} is true at runtime."
                              ,return)))
        ,@code)))
 
-(defun run-lily (options result-path result-file)
-  (when (or (arg :lily options) (arg :view-score options))
-    #+sbcl (progn
-             (sb-posix:chdir result-path)
-             (sb-ext:run-program "lilypond"
-                                 (append (list "-f" "ps")
-                                         (when (arg :png options) (list "--png"))
-                                         (list (file-namestring result-file)))
-                                 :search t))))
-
-(defun run-gv (options ps-file)
-  (when (or (arg :gv options) (arg :view-score options))
-        #+sbcl (sb-ext:run-program "gv"
-                                   (list (file-namestring ps-file))
-                                   :search t)))

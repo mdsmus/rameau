@@ -144,8 +144,10 @@
       (ensure-directories-exist result-file)
       (with-output-file (f result-file)
         (format f "~a" (print-ast (cdr ast))))
-      (run-lily options result-path result-file)
-      (run-gv options ps-file))))
+      (when (or (arg :lily options) (arg :view-score options))
+        (run-lily options result-path result-file))
+      (when (or (arg :gv options) (arg :view-score options))
+        (run-gv options ps-file)))))
 
 ;;; Analysis
 (defun analysis (options)
