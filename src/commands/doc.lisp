@@ -1,14 +1,13 @@
 (defpackage :rameau-doc
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
-  (:use :rameau :cl :iterate :genoslib :cl-who))
+  (:use :rameau :cl :iterate :genoslib :cl-who :cl-ppcre))
 
 (in-package :rameau-doc)
 
 (enable-sharp-l-syntax)
 
 (defparameter *rameau-packages*
-  ;; falta rameau e rameau-doc
   '("RAMEAU" "RAMEAU-BASE" "GENOSLIB" "CL-LILY" "RAMEAU-WEB" "RAMEAU-ALG-COMMANDS"
     "RAMEAU-ANALYSIS" "RAMEAU-CADENCES" "RAMEAU-DOC" "RAMEAU-MUSICOLOGY"
     "RAMEAU-STAT" "RAMEAU-WEB" "RAMEAU-HMM" "RAMEAU-NEURAL" "RAMEAU-KNN"
@@ -55,14 +54,15 @@
 (defun parse-documentation (docstring)
   "Remove extraneous tags from string @var{docstring}"
   (when docstring
-    (cl-ppcre:regex-replace "\\[NOTEST\\]" docstring "")))
+    (regex-replace "\\[NOTEST\\]" docstring "")))
 
 (defun find-test-body (test-name test-file)
   "Find the body of a test names @var{test-name} in file @var{test-file}"
   (flet ((get-first-test (test-list) (second (third (first test-list)))))
     (get-first-test (remove-if-not #L(string= test-name (second !1)) test-file))))
 
-(defun document-function-or-macro :private (symbol &key (type :function) cross-func-ref-p)
+(defun document-function-or-macro :private (symbol &key (type :function)
+                                                   cross-func-ref-p)
   (append (list :package-name (get-package-name symbol)
                 :name symbol
                 :type type
@@ -103,17 +103,17 @@
   "Standard rameau documentation page markup."
   `(with-html-output (,stream nil :prologue t :indent t)
      (:html
-            (:head 
-             (:meta :http-equiv "Content-Type" 
-                    :content    "text/html;charset=utf-8")
-             (:title ,title)
-             (:link :rel "icon"
-                  :type "image/gif"
-                  :href "/favicon.ico")
-             (:link :rel "stylesheet" :href "documentation.css"))
-            (:body
-             (:div :class "main"
-                   ,@body)))))
+      (:head 
+       (:meta :http-equiv "Content-Type" 
+              :content    "text/html;charset=utf-8")
+       (:title ,title)
+       (:link :rel "icon"
+              :type "image/gif"
+              :href "/favicon.ico")
+       (:link :rel "stylesheet" :href "documentation.css"))
+      (:body
+       (:div :class "main"
+             ,@body)))))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defparameter *docstring-templates* nil)
@@ -131,8 +131,9 @@
              *docstring-templates*)))
 
   (defmacro make-docstring-template (name (&rest args) &body body)
-    "Define a dosctring template named @var{name} that expands to the html code in @var{body}.
-These are expanded in @function{rameau-doc}{htmlize-docstring}."
+    "Define a dosctring template named @var{name} that expands to the
+html code in @var{body}. These are expanded in
+@function{rameau-doc}{htmlize-docstring}."
     (if (listp name)
         `(progn ,@(iter (for n in name) (collect (single-template n args body))))
         (single-template name args body))))
@@ -173,24 +174,24 @@ These are expanded in @function{rameau-doc}{htmlize-docstring}."
 
 (defun all-arguments (arglist)
   (let (args)
-    (cl-ppcre:do-register-groups (a) ("{([^}]*)}" arglist)
+    (do-register-groups (a) ("{([^}]*)}" arglist)
       (push a args))
     (reverse args)))
 
-(let ((regex (cl-ppcre:create-scanner "@([a-z]+)(({([^}]*)})*)"))
-      (pbreaks (cl-ppcre:create-scanner "\\n\\n")))
+(let ((regex (create-scanner "@([a-z]+)(({([^}]*)})*)"))
+      (pbreaks (create-scanner "\\n\\n")))
   (defun htmlize-docstring (string)
-    "Replace strings in the form of @foo{bar} and expand it to a user-defined template."
-    (let ((string (concat "<p>"
-                          (cl-ppcre:regex-replace-all pbreaks string "</p><p>")
-                          "</p>")))
-      (iter (while (cl-ppcre:scan regex string))
-            (cl-ppcre:register-groups-bind (name args) (regex string)
-              (setf string (cl-ppcre:regex-replace regex
-                                                   string
-                                                   (apply-replacement name
-                                                                      (all-arguments args)
-                                                                      string)))))
+    "Replace strings in the form of @foo{bar} and expand it to a
+user-defined template."
+    (let ((string (format nil "<p>~a</p>"
+                          (regex-replace-all pbreaks string "</p><p>"))))
+      (iter (while (scan regex string))
+            (register-groups-bind (name args) (regex string)
+              (setf string (regex-replace regex
+                                          string
+                                          (apply-replacement name
+                                                             (all-arguments args)
+                                                             string)))))
       string)))
 
 (defun make-doc-file (name)
@@ -199,13 +200,21 @@ These are expanded in @function{rameau-doc}{htmlize-docstring}."
                  :name (stringify name)
                  :type "html"))
 
+(defun %html-string (symbol &optional uppcasep)
+  "Convert a symbol to string in order to be used in the html
+  documentation."
+  (escape-string (funcall (if uppcasep
+                              #'string-upcase
+                              #'identity)
+                          (stringify symbol))))
+
 (defun html-for-one-package (package-name)
   "Generate the html documentation for a package. The argument
 @var{package-name} is the symbol or keyword that names the package."
   (format t "Generating documentation for package ~a.~%" package-name)
   (with-output-file (file (make-doc-file package-name))
     (html-page file "Rameau API Documentation"
-      (:h1 (str (escape-string (string-upcase (stringify package-name)))))
+      (:h1 (str (%html-string package-name :upcase)))
       (:p1 (str (htmlize-docstring (documentation (find-package package-name) t))))
       (iter (for plist in (create-documentation-sexp package-name))
             (with test-file = (get-all-tests))
@@ -222,32 +231,38 @@ These are expanded in @function{rameau-doc}{htmlize-docstring}."
              (:div :class "function-type"
                    (:h2 (fmt "[~a]" (getf plist :type))))
              (:div :class "function-name-header"
-                   (:a :name (escape-string (stringify name))
-                       (:h2 (str (escape-string (string-upcase (stringify name)))))))
+                   (:a :name (%html-string name)
+                       (:h2 (str (%html-string name :upcase)))))
              (:div :class "function-block"
                    (:div :class "function-arg-list"
                          (:p (:span :class "function-name" (fmt "~(~a~)" name))
                              (iter (for arg in (getf plist :arglist))
                                    (if (member arg '(&optional &rest &key &body))
-                                       (htm (:span :class "function-key" (str (escape-string (stringify arg)))))
-                                       (htm (:span :class "function-arg" (str (escape-string (stringify arg)))))))))
+                                       (htm (:span :class "function-key"
+                                                   (str (%html-string arg))))
+                                       (htm (:span :class "function-arg"
+                                                   (str (%html-string arg))))))))
                    (htm
                     (:br)
                     (:p :class "example-header" "Description:")
                     (:p :class "docstring"
                         (str (htmlize-docstring (escape-string (or docstring ""))))
-                        "Defined in " (htm (:a :href (concat url (namestring filename))
-                                               (str (escape-string (pathname-name filename)))))))
+                        "Defined in "
+                        (htm (:a :href (concat url (namestring filename))
+                                 (str (escape-string (pathname-name filename)))))))
                    (when uses
                      (htm (:p :class "example-header" "Uses:")
                           (:p :class "uses-body"
                               (fmt "~{~(~a~^, ~)~}" uses))))
                    (when (and example (listp example))
-                     (htm (:p :class "example-header" "Example:")
-                          (:span :class "example"
-                                 (str (pprint-to-string (third example)))
-                                 (:br)
-                                 (str (concat "=> " (pprint-to-string (second example)))))))))
+                     (destructuring-bind (&optional ignore result cmd &rest rest)
+                         example
+                       (htm (:p :class "example-header" "Example:")
+                            (:span :class "example"
+                                   (str (pprint-to-string cmd))
+                                   (:br)
+                                   (str (concat "=> "
+                                                (pprint-to-string result)))))))))
             (values)))))
 
 (defun make-index-page (packages)
