@@ -359,9 +359,9 @@ interval between the first and second notes."
 (defun prime-form (set)
   "Retuns the prime form of a set. Only on a tempered system."
   (assert (eq *system* 'tempered))
-  (let ((nf-transposition (set-transpose (normal-form set) 0))
-        (nf-inversion (set-inversion (normal-form set) 0))
-        (sorted-list (sort-form-list (append (set-form-list nf-inversion)
+  (let* ((nf-transposition (set-transpose (normal-form set) 0))
+         (nf-inversion (set-inversion (normal-form set) 0))
+         (sorted-list (sort-form-list (append (set-form-list nf-inversion)
                                              (set-form-list nf-transposition)))))
     (set-transpose-to-0 (smallest-set (smaller-sets sorted-list)))))
 
