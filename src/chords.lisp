@@ -230,5 +230,5 @@ according to the music in @var{segmentos}.[NOTEST]"
            ((or (equal "7-" (chord-7th chord))
                 (and (equal "°" (chord-mode chord))
                      (equal "7" (chord-7th chord))))
-            (+ root (code->interval '(7 dim))))
-           (t (+ root (code->interval '(7 min))))))))
+            (+ root (code->interval '(7 :dim))))
+           (t (+ root (code->interval '(7 :min))))))))

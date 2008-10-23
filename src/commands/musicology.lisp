@@ -124,54 +124,44 @@
 progressions found in the chorales are strong, weak, superstrong and
 neutral, according to Schoenberg's theory of harmony.") 
 
+(defun has-7th (chord seg)
+  (when (not (equal "" (chord-7th chord)))
+    (first (member (7th-pitch chord) seg :key #'event-pitch))))
+
+(defun resolve-seventh-classifier (context)
+  (destructuring-bind ((i ig ps &rest igno)
+                       (ignor ignore seg chord &rest ignore1)
+                       (ignore2 ignore3 nseg &rest ignore4))
+      context
+    (declare (ignore i ig igno ignor ignore ignore1 ignore2 ignore3 ignore4))
+    (when (and  ps seg chord nseg (chord-p chord) (has-7th chord seg))
+      (let* ((note (has-7th chord seg))
+             (pnote (extract-note ps note))
+             (nnote (extract-note nseg note))
+             (diferenca (- (absolute-pitch note)
+                           (absolute-pitch nnote)))
+             (sinal (and diferenca (if (< diferenca 0) "up" "down")))
+             (pitches (mapcar #'event-pitch (list pnote note nnote)))
+             (pitches (mapcar #L(interval !1 (second pitches)) pitches)))
+        (format nil "prepare with a~15a, resolved with a ~15a ~5a"
+                (print-interval (first pitches))
+                (print-interval (third pitches))
+                sinal)))))
+
+(register-musicology-command :name "resolve-seventh"
+                             :classifier #'resolve-seventh-classifier
+                             :context 3
+                             :display #'text-show-hash
+                             :doc "Show a summary of all the
+seventh-note resolutions found in the files. Only for Bach chorales
+or other media with voicing information.")
+
 (defun all-chords (options analysis)
   (iter (for anal in analysis)
         (nconcing
          (append '(nil nil nil nil nil)
                  (all-chords-single options anal)))))
 
-(defun resolve-seventh (options)
-  (let ((analysis (analyse-files options)))
-    (iter (for next in (all-chords options analysis))
-          (for chord previous next)
-          (for prev previous chord)
-          (when (and chord next prev (chord-p (first chord))
-                     (not (equal "" (chord-7th (first chord)))))
-            (let* ((pitch (7th-pitch (first chord)))
-                   (voices (remove-if-not #L(equal (event-pitch !1) pitch)
-                                          (second chord))))
-              (iter (for voice in voices)
-                    (let* ((nota1 (extract-note (second prev) voice))
-                           (nota2 (extract-note (second chord) voice))
-                           (nota3 (extract-note (second next) voice))
-                           (diferenca (and nota1 nota2 nota3
-                                           (- (absolute-pitch nota2)
-                                              (absolute-pitch nota3))))
-                           (sinal (and diferenca (if (< diferenca 0) "+" "-")))
-                           (intervalo (and diferenca (interval->code (module diferenca)))))
-                      (when intervalo
-                        (with-output-file
-                            (f (make-analysis-file "ly" "seventh" (third chord)
-                                                   (fourth chord)))
-                          (format f "~a" (make-lily-segments options
-                                                             (list (second prev)
-                                                                   (second chord)
-                                                                   (second next)))))
-                        (format t "  ~3a ~3a ~9a de ~2a setima ~2a resolve ~2a ~a~9a~%"
-                                (third chord)
-                                (fourth chord)
-                                (event-voice-name nota1)
-                                (print-event-note nota1)
-                                (print-event-note nota2)
-                                (print-event-note nota3)
-                                sinal
-                                intervalo)))))))))
-
-(register-command :name "resolve-seventh"
-                  :action #'resolve-seventh
-                  :documentation "Show a summary of all the
-                  seventh-note resolutions found in the files. Only
-                  for Bach chorales.")
 
 (defun jumps (options)
   (let ((jumps (make-hash-table :test #'equal))
