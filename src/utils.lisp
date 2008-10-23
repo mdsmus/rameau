@@ -1,17 +1,13 @@
-(defpackage :genoslib
+(defpackage :genos-utils
   (:import-from #:arnesi "AIF" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX" "ACOND")
-  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter
+  (:shadowing-import-from #:genos-base #:defun #:defmacro #:defparameter
                           #:defvar #:defstruct)
   (:import-from #:alexandria "SWITCH" "FLATTEN")
-  (:use #:cl #:iterate #:cl-ppcre)
-  (:export
-   #:tempered
-   #:tonal
-   )
+  (:use #:cl #:iterate)
   (:documentation "The core utilities developed by Genos. Generic lisp
-  functions and musical niceties."))
+  functions."))
 
-(in-package :genoslib)
+(in-package :genos-utils)
 
 (enable-sharp-l-syntax)
 

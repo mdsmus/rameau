@@ -113,13 +113,13 @@ position."
          (error "don't know inversion ~a" it))))
 
 (defun %parse-chord :private (chord)
-  (let* ((6+ (second (multiple-value-list (scan-to-strings "(al|fr|it)+\\+6"
-                                                           (stringify chord)))))
+  (let* ((6+ (second (multiple-value-list (cl-ppcre:scan-to-strings "(al|fr|it)+\\+6"
+                                                                    (stringify chord)))))
          (poplist (cl-ppcre:split "/" (stringify chord)))
          (bass-note (second poplist)))
     (if 6+
         (make-augmented-sixth :type (make-keyword (elt 6+ 0)))
-        (register-groups-bind (root mode 7th 9th 11th 13th)
+        (cl-ppcre:register-groups-bind (root mode 7th 9th 11th 13th)
             ("([cdefgab]+[#b]?)(m|°|ø|!|\\+)?(7[\\+-]?)?\\.?(9[b\\#]?)?\\.?(11[b\\#]?)?\\.?(13[b\\#]?)?"
              (first poplist) :sharedp t)
           (make-chord :root root
@@ -226,7 +226,7 @@ according to the music in @var{segmentos}.[NOTEST]"
   (let ((root (parse-note (chord-root chord))))
     (module
      (cond ((equal "7+" (chord-7th chord))
-            (+ root (code->interval '(7 genoslib::maj))))
+            (+ root (code->interval '(7 :maj))))
            ((or (equal "7-" (chord-7th chord))
                 (and (equal "°" (chord-mode chord))
                      (equal "7" (chord-7th chord))))

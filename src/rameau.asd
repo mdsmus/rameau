@@ -1,15 +1,15 @@
-(asdf:defsystem :rameau-base
-  :depends-on (:yacc :lexer :cl-fad :cl-ppcre :cl-store :arnesi :cffi
-                     :alexandria :ltk :iterate :swank :fann :cl-who :fiveam)
-  :components ((:file "rameau-base")))
+(asdf:defsystem :genos-utils
+  :depends-on (:arnesi :alexandria :iterate)
+  :serial t
+  :components ((:file "genos-base")
+               (:file "utils")))
 
-(asdf:defsystem :genoslib
-  :depends-on (:rameau-base)
-  :components ((:file "utils")
-               (:file "musiclib" :depends-on ("utils"))))
+(asdf:defsystem :musiclib
+  :depends-on (:genos-utils :arnesi :alexandria :iterate :cl-ppcre)
+  :components ((:file "musiclib")))
 
 (asdf:defsystem :cl-lily
-  :depends-on (:rameau-base :genoslib)
+  :depends-on (:genos-utils :musiclib :arnesi :alexandria :iterate :yacc :lexer :cl-ppcre :cl-fad)
   :components ((:module cl-lily
                         :serial t
                         :components ((:file "format")
@@ -18,8 +18,8 @@
                                      (:file "parser-grammar")))))
 
 (asdf:defsystem :rameau-pkg
-  :depends-on (:rameau-base :genoslib :cl-store :cl-fad :vecto :cl-cairo2
-                            #+win32 :cl-cairo2-win :cl-lily)
+  :depends-on (:genos-utils :musiclib :arnesi :iterate :alexandria :cl-lily :cl-ppcre :cl-store :cl-fad
+                            :cl-cairo2 #+win32 :cl-cairo2-win :cl-colors)
   :serial t
   :components ((:file "packages")
                #+sbcl(:file "sbcl")
@@ -34,7 +34,7 @@
                ))
  
 (asdf:defsystem :algorithms
-  :depends-on (:rameau-pkg :cl-store :vecto :cl-lily)
+  :depends-on (:rameau-pkg :cl-store :cl-cairo2 :cl-lily :fann :machine-learning :cl-fad)
   :components ((:module algorithms
                         :components ((:file "hmm")
                                      (:file "neural")
@@ -45,7 +45,7 @@
                                      ))))
 
 (asdf:defsystem :commands
-  :depends-on (:rameau-pkg :cl-lily :cl-store :vecto :cl-who :algorithms
+  :depends-on (:rameau-pkg :cl-lily :cl-store :cl-who :algorithms :swank :fiveam
                            #-win32 :hunchentoot :md5 :cl-fad :cl-base64 :cl-store)
   :serial t
   :components ((:file "package-test")
@@ -66,7 +66,7 @@
     :name "rameau"
     :version "4.0"
     :author "Alexandre Passos e Pedro Kroger"
-    :depends-on (:rameau-pkg :algorithms :commands :cl-lily)
+    :depends-on (:rameau-pkg :algorithms :commands)
     :serial t
     :components ((:file "package-test")
                  (:module tests

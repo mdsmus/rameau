@@ -116,7 +116,7 @@ information about the syntax."
 
 (defun print-all-options (options)
   "Print all the options in @var{options}."
-  (maphash #'(lambda (key val) (format t "~a ~a~%" key val)) table))
+  (maphash #'(lambda (key val) (format t "~a ~a~%" key val)) (get-args options)))
 
 (defun make-command-option-list (command)
   "Makes a list with @var{command}'s name and options to be printed by print-help."

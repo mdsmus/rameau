@@ -1,5 +1,4 @@
 (in-package #:rameau-test)
-(use-package :genoslib)
 
 (defsuite segment "Tests for the segment file")
 (in-suite segment)

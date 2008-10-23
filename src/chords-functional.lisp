@@ -93,9 +93,9 @@
 
 (defun get-fchords (string)
   "Read the fchords from @var{string}."
-  (read-fchords (read-from-string-as-sexp (regex-replace-all "([A-Ga-g](#|b)*):"
-                                                             string
-                                                             "@\\1")
+  (read-fchords (read-from-string-as-sexp (cl-ppcre:regex-replace-all "([A-Ga-g](#|b)*):"
+                                                                      string
+                                                                      "@\\1")
                                           :preserve)))
 
 (defun mode->keyword (mode)

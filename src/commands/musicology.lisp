@@ -1,8 +1,6 @@
 (defpackage :rameau-musicology
-  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defgeneric
-                          #:defparameter #:defvar #:defstruct #:defclass)
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
-  (:use :rameau :genoslib :cl :iterate :cl-lily)
+  (:use :rameau :genos-utils :musiclib :cl :iterate :cl-lily)
   (:documentation "The computational musicology commands for @rameau"))
 
 (in-package :rameau-musicology)
@@ -50,7 +48,7 @@ progressions found in the chorales are strong, weak, superstrong and
 neutral, according to Schoenberg's theory of harmony."
                   :action #'schoenberg)
 
-(defun all-chords :private (options analysis)
+(defun all-chords (options analysis)
   (iter (for anal in analysis)
         (nconcing
          (append '(nil nil nil nil nil)
@@ -177,7 +175,7 @@ neutral, according to Schoenberg's theory of harmony."
                   :documentation "List the ranges of the voices in the
                   analysed files. Only for Bach chorales.")
 
-(defun print-report-ambito :private (notes min max segs chorale voice options)
+(defun print-report-ambito (notes min max segs chorale voice options)
   (iter (for next in notes)
         (for segno from 0)
         (for note previous next)
@@ -218,7 +216,7 @@ neutral, according to Schoenberg's theory of harmony."
                   voices in a chorale are different from KP rules.
                   Only for Bach chorales.")
 
-(defun repeated-notes :private (segmento)
+(defun repeated-notes (segmento)
   (/= 4 (length (remove-duplicates (sorted segmento #'event-<)
                                    :test #'equal
                                    :key #L(cons (event-pitch !1)
@@ -265,7 +263,7 @@ as a lilypond snippet in
 analysis/cruzamento-<chorale>-<first-sonority>-<last-sonority>.ly")
 
 
-(defun intervals :private (segment number)
+(defun intervals (segment number)
   (iter (for n in segment)
         (for s previous n)
         (when (and n s)
@@ -274,12 +272,12 @@ analysis/cruzamento-<chorale>-<first-sonority>-<last-sonority>.ly")
                                                      (event-pitch s))))))
             (return (list s n))))))
 
-(defun get-strong :private (strong? segments)
+(defun get-strong (strong? segments)
   (if strong?
       (remove-if-not #L(integerp (* 4 (event-dur (first !1)))) segments)
       segments))
 
-(defun do-parallel :private (options analysis number name strong)
+(defun do-parallel (options analysis number name strong)
   #+sbcl(declare (sb-ext:muffle-conditions sb-ext::warning))
   (iter (for anal in analysis)
         (iter (for n in (get-strong strong (analysis-segments anal)))

@@ -1,15 +1,13 @@
 (defpackage :rameau-cadences
-  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defgeneric
-                          #:defparameter #:defvar #:defstruct #:defclass)
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
-  (:use :rameau :genoslib :cl :iterate)
+  (:use :rameau :genos-utils :musiclib :cl :iterate)
   (:documentation "The cadence detection code for @rameau"))
 
 (in-package :rameau-cadences)
 
 (enable-sharp-l-syntax)
 
-(defun remove-repeated-fchords :private (chords)
+(defun remove-repeated-fchords (chords)
   (let (last-chord)
     (iter (for chord in chords)
           (for prev previous chord)
@@ -24,7 +22,7 @@
                 (collect chord)
                 (setf last-chord chord))))))
 
-(defun prepare-cadence :private (options anal n)
+(defun prepare-cadence (options anal n)
   (butlast (group (remove-repeated-fchords (all-chords-single options anal))
                   n)
            (1- n)))
@@ -41,7 +39,7 @@
                  :bass (fchord-bass fchord)
                  :7th (fchord-7th fchord))))
 
-(defun add-to-cadence-hash :private (hash chords file-name segno)
+(defun add-to-cadence-hash (hash chords file-name segno)
   (let ((key (fchord-key (first chords))))
     (push (list file-name segno)
           (gethash (reduce #'concat
@@ -56,7 +54,7 @@
           #L(> (length (second !1))
                (length (second !2)))))
 
-(defun show-cadence-hash :private (options cadences)
+(defun show-cadence-hash (options cadences)
   (iter (for (cadence  places) in (sorted-cadences cadences))
         (if (< (make-int (arg :max-print-error options))
                (length places))
@@ -107,11 +105,11 @@
       (cl-cairo2:fill-path)
       (iter (for (cadence  places) in cadences)
             (for i from 1)
-            (let* ((size (genoslib::normalize 10d0
-                                              55d0
-                                              0d0
-                                              max-size
-                                              (length places)))
+            (let* ((size (normalize 10d0
+                                    55d0
+                                    0d0
+                                    max-size
+                                    (length places)))
                    (dim (append (text-dimensions cadence size)
                                 (list cadence size)))
                    (angle (random (* 2 pi)))

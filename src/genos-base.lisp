@@ -1,10 +1,10 @@
-(defpackage :rameau-base
+(defpackage :genos-base
   (:documentation "Macros to replace the standard @var{def*} macros with
 equivalents that export symbols by default.")
   (:shadow :defun :defmacro :defparameter :defvar :defstruct :defclass :defgeneric)
   (:use #:cl))
 
-(in-package :rameau-base)
+(in-package :genos-base)
 
 (cl:defun %parse-defmethod (cdr-of-form)
   ;; copied from sbcl

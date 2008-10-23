@@ -1,8 +1,6 @@
 (defpackage :rameau-analysis
-  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defgeneric
-                          #:defparameter #:defvar #:defstruct #:defclass)
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
-  (:use :rameau :genoslib :cl :iterate :cl-lily)
+  (:use :rameau :genos-utils :musiclib :cl :iterate :cl-lily)
   (:documentation "The harmonic analysis commands for @rameau"))
 
 (in-package :rameau-analysis)

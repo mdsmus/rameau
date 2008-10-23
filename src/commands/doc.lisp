@@ -1,7 +1,6 @@
 (defpackage :rameau-doc
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
-  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defparameter #:defvar #:defstruct)
-  (:use :rameau :cl :iterate :genoslib :cl-who :cl-ppcre))
+  (:use :rameau :cl :iterate :genos-utils :cl-who))
 
 (in-package :rameau-doc)
 
@@ -13,10 +12,10 @@
     "RAMEAU-STAT" "RAMEAU-WEB" "RAMEAU-HMM" "RAMEAU-NEURAL" "RAMEAU-KNN"
     "RAMEAU-TREE-ENARM" "RAMEAU-PARDO"))
 
-(defun swank-get-source-location :private (function-name)
+(defun swank-get-source-location (function-name)
   (second (aget :location (first (swank-backend:find-definitions function-name)))))
 
-(defun find-source-file-of-function :private (function-name)
+(defun find-source-file-of-function (function-name)
   ;; according to CLHS the readtable is reset after reading or
   ;; compiling a file. For some reason it is not enought to call
   ;; enable-sharp-l-syntax on the top of this file, it has to be
@@ -25,20 +24,20 @@
   (awhen (swank-get-source-location function-name)
     (pathname-difference (translate-logical-pathname "rameau:") it)))
 
-(defun function-uses :private (function-name)
+(defun function-uses (function-name)
   (handler-case (swank-backend:list-callees function-name)
     (serious-condition () (list function-name))
     (:no-error (expr) (mapcar #'first expr))))
 
-(defun functions-used-by :private (function-name)
+(defun functions-used-by (function-name)
   (handler-case (swank-backend:list-callers function-name)
     (serious-condition () (list function-name))
     (:no-error (expr) (mapcar #'first expr))))
 
-(defun get-package-name :private (symbol)
+(defun get-package-name (symbol)
   (package-name (symbol-package symbol)))
 
-(defun rameau-package-p :private (item)
+(defun rameau-package-p (item)
   (flet ((get-package-name (el)
            (if (listp el)
                (unless (listp (second el))
@@ -47,21 +46,21 @@
     (when (member (get-package-name item) *rameau-packages* :test #'equalp)
       t)))
 
-(defun remove-functions-not-in-rameau :private (list)
+(defun remove-functions-not-in-rameau (list)
   (mapcar #'(lambda (item) (if (listp item) (second item) item))
           (remove-if-not #'rameau-package-p list)))
 
 (defun parse-documentation (docstring)
   "Remove extraneous tags from string @var{docstring}"
   (when docstring
-    (regex-replace "\\[NOTEST\\]" docstring "")))
+    (cl-ppcre:regex-replace "\\[NOTEST\\]" docstring "")))
 
 (defun find-test-body (test-name test-file)
   "Find the body of a test names @var{test-name} in file @var{test-file}"
   (flet ((get-first-test (test-list) (second (third (first test-list)))))
     (get-first-test (remove-if-not #L(string= test-name (second !1)) test-file))))
 
-(defun document-function-or-macro :private (symbol &key (type :function)
+(defun document-function-or-macro (symbol &key (type :function)
                                                    cross-func-ref-p)
   (append (list :package-name (get-package-name symbol)
                 :name symbol
@@ -79,7 +78,7 @@
   (sorted (iter (for symbol in-package package :external-only t) (collect symbol))
           #'string< :key #'stringify))
 
-(defun create-documentation-sexp :private (package)
+(defun create-documentation-sexp (package)
   (iter (for symbol in (sorted-symbols package))
         (when (fboundp symbol)
           (collect (if (macro-function symbol)
@@ -118,7 +117,7 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defparameter *docstring-templates* nil)
 
-  (defun single-template :private (name args body)
+  (defun single-template (name args body)
     (let ((arg (gensym))
           (str (gensym)))
       `(push (list ,(stringify name)
@@ -174,24 +173,24 @@ html code in @var{body}. These are expanded in
 
 (defun all-arguments (arglist)
   (let (args)
-    (do-register-groups (a) ("{([^}]*)}" arglist)
+    (cl-ppcre:do-register-groups (a) ("{([^}]*)}" arglist)
       (push a args))
     (reverse args)))
 
-(let ((regex (create-scanner "@([a-z]+)(({([^}]*)})*)"))
-      (pbreaks (create-scanner "\\n\\n")))
+(let ((regex (cl-ppcre:create-scanner "@([a-z]+)(({([^}]*)})*)"))
+      (pbreaks (cl-ppcre:create-scanner "\\n\\n")))
   (defun htmlize-docstring (string)
     "Replace strings in the form of @foo{bar} and expand it to a
 user-defined template."
     (let ((string (format nil "<p>~a</p>"
-                          (regex-replace-all pbreaks string "</p><p>"))))
-      (iter (while (scan regex string))
-            (register-groups-bind (name args) (regex string)
-              (setf string (regex-replace regex
-                                          string
-                                          (apply-replacement name
-                                                             (all-arguments args)
-                                                             string)))))
+                          (cl-ppcre:regex-replace-all pbreaks string "</p><p>"))))
+      (iter (while (cl-ppcre:scan regex string))
+            (cl-ppcre:register-groups-bind (name args) (regex string)
+              (setf string (cl-ppcre:regex-replace regex
+                                                   string
+                                                   (apply-replacement name
+                                                                      (all-arguments args)
+                                                                      string)))))
       string)))
 
 (defun make-doc-file (name)

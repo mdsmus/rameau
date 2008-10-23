@@ -1,9 +1,9 @@
 (defpackage :cl-lily
-  (:shadowing-import-from #:rameau-base #:defun #:defmacro #:defgeneric
+  (:shadowing-import-from #:genos-base #:defun #:defmacro #:defgeneric
                           #:defparameter #:defvar #:defstruct #:defclass)
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:import-from #:alexandria "FLATTEN")
-  (:use :genoslib :cl :iterate)
+  (:use :musiclib :genos-utils :cl :iterate)
   (:export :node-text)
   (:documentation "Lilypond parsing and writing libraries"))
 

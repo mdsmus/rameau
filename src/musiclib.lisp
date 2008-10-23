@@ -1,4 +1,18 @@
-(in-package #:genoslib)
+(defpackage :musiclib
+  (:import-from #:arnesi "AIF" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX" "ACOND")
+  (:shadowing-import-from #:genos-base #:defun #:defmacro #:defparameter
+                          #:defvar #:defstruct)
+  (:import-from #:alexandria "SWITCH" "FLATTEN")
+  (:use #:cl #:iterate #:cl-ppcre #:genos-utils)
+  (:export
+   #:tempered
+   #:tonal
+   )
+  (:documentation "The core utilities developed by Genos. Generic lisp
+  functions and musical niceties."))
+
+
+(in-package #:musiclib)
 
 (export '(a b c d e f g
           a# b# c# d# e# f# g#
