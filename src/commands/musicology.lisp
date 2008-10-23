@@ -163,50 +163,21 @@ or other media with voicing information.")
          (append '(nil nil nil nil nil)
                  (all-chords-single options anal)))))
 
-(defun jumps (options)
-  (let ((jumps (make-hash-table :test #'equal))
-        (analysis (analyse-files options)))
-    (iter (for anal in analysis)
-          (let ((notes (parse-file (analysis-full-path anal)))
-                (voices nil))
-            (iter (for note in notes)
-                  (setf voices (union voices (list (event-voice-name note)))))
-            (iter (for voice in voices)
-                  (let* ((ns (iter (for note in notes)
-                                   (if (equal (event-voice-name note) voice)
-                                       (collect note))))
-                         (total (length ns)))
-                    (iter (for n in ns)
-                          (for i from 0)
-                          (for p previous n)
-                          (when (and n p)
-                            (push (list (analysis-file-name anal)
-                                        (* 100.0 (/ i total))
-                                        voice
-                                        (print-event-note p)
-                                        (print-event-note n))
-                                  (gethash (absolute-interval-code n p)
-                                           jumps))))))))
-    (if (arg :verbose options)
-        (iter (for (k v) in-hashtable jumps)
-              (format t "~20a: ~%" (print-absolute-interval k))
-              (if (< (length v) (make-int (arg :max-print-error options)))
-                  (iter (for i in v)
-                        (for n from 0)
-                        (format t "          chorale ~a in ~,2f%, of voice ~a from ~a to ~a~%"
-                                (first i)
-                                (second i)
-                                (third i)
-                                (fourth i)
-                                (fifth i)))
-                  (format t "               ~a saltos" (length v)))
-              (format t "~%~%"))
-        (iter (for (k v) in-hashtable jumps)
-              (format t "~20a: ~a~%" (print-absolute-interval k) (length v))))))
+(defun jumps-classifier (context)
+  (destructuring-bind ((i ig seg &rest ignore)
+                       (ign igno nseg &rest ignore2))
+      context
+    (declare (ignore i ig ign igno ignore ignore2))
+    (iter (for (pnote note) in (zip seg nseg))
+          (when (eq :self (event-original-event pnote))
+            (collect (print-absolute-interval 
+                      (absolute-interval-code note pnote)))))))
 
-(register-command :name "jumps"
-                  :action #'jumps
-                  :documentation "List all the steps and leaps in the
+
+(register-musicology-command :name "jumps"
+                             :classifier #'jumps-classifier
+                             :context 2
+                             :doc "List all the steps and leaps in the
                   analysed files. Only for Bach chorales.")
 
 (defun ambito (options)
