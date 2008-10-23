@@ -70,8 +70,8 @@
 (defun lily-show-hash (hash options)
   (iter (with name = (arg :command options))
         (for (chorale segments) in-hashtable hash)
-        (for max = (reduce #'max segments))
-        (for min = (reduce #'min segments))
+        (for max = (1+ (reduce #'max segments)))
+        (for min = (1- (reduce #'min segments)))
         (for file = (first (member chorale
                                    (arg :files options)
                                    :key #'pathname-name)))
@@ -312,42 +312,30 @@ or other media with voicing information.")
                                    :key #L(cons (event-pitch !1)
                                                 (event-octave !1))))))
 
-(defun cruzamento (options)
-  (iter (for anal in (analyse-files options))
-        (let ((notes (analysis-segments anal))
-              min max)
-          (iter (for segment in notes)
-                (for segno from 0)
-                (destructuring-bind (baixo tenor alto soprano)
-                    (sorted segment #'event-<)
-                  (when (= 4 (length segment))
-                    (unless (or
-                             (and (equal (event-voice-name baixo) "\"baixo\"")
-                                  (equal (event-voice-name tenor) "\"tenor\"")
-                                  (equal (event-voice-name alto) "\"alto\"")
-                                  (equal (event-voice-name soprano) "\"soprano\""))
-                             (repeated-notes segment))
-                      (unless min
-                        (setf min segno))
-                      (setf max (1+ segno))
-                      (format t "Cruzamento coral ~a segmento ~5a ordem ~a~%"
-                              (analysis-file-name anal)
-                              segno
-                              (mapcar #'event-voice-name segment))))))
-          (when (and min max)
-            (with-output-file (f (make-analysis-file "ly"
-                                                     "cruzamento"
-                                                     (analysis-file-name anal)
-                                                     min
-                                                     max))
-              (format f "~a" (make-lily-segments options
-                                                 (subseq (analysis-segments anal)
-                                                         min
-                                                         max))))))))
+(defun crossing-classifier (context)
+  (destructuring-bind ((i ig segment &rest ignore))
+      context
+    (declare (ignore i ig ignore))
+    (when (= 4 (length segment))
+      (destructuring-bind (bass tenor alto soprano) (sorted segment #'event-<)
+        (unless (or (and (equal (event-voice-name bass) "\"baixo\"")
+                         (equal (event-voice-name tenor) "\"tenor\"")
+                         (equal (event-voice-name alto) "\"alto\"")
+                         (equal (event-voice-name soprano) "\"soprano\""))
+                    (repeated-notes segment))
+          (format nil "Crossing ~a ~a ~a ~a"
+                  (event-voice-name bass)
+                  (event-voice-name tenor)
+                  (event-voice-name alto)
+                  (event-voice-name soprano)))))))
 
-(register-command :name "crossings"
-                  :action #'cruzamento
-                  :documentation "Find all voice crossings in the
+
+(register-musicology-command :name "crossings"
+                             :classifier #'crossing-classifier
+                             :display #'frequency-text-show-hash
+                             :chorale-display #'lily-show-hash
+                             :context 1
+                             :doc "Find all voice crossings in the
 specified files. Only for Bach chorales. Each crossing will be saved
 as a lilypond snippet in
 analysis/cruzamento-<chorale>-<first-sonority>-<last-sonority>.ly")

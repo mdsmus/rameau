@@ -164,16 +164,17 @@ answer sheet @var{answer}."
 
 (defun make-lily-segments (options segments)
   "Make the lilypond for a chorale snippet based on @var{segments}."
-  (destructuring-bind (key mode) (event-key (first (first segments)))
-    (format nil
-            *lily-score-string*
-            (stringify key)
-            (stringify mode)
-            (%get-voice "\"soprano\"" segments)
-            (%get-voice "\"alto\"" segments)
-            (stringify key)
-            (stringify mode)
-            (%get-voice "\"tenor\"" segments)
-            (%get-voice "\"baixo\"" segments)
-            (arg :paper-width options)
-            (arg :paper-height options))))
+  (when segments
+    (destructuring-bind (key mode) (event-key (first (first segments)))
+      (format nil
+              *lily-score-string*
+              (stringify key)
+              (stringify mode)
+              (%get-voice "\"soprano\"" segments)
+              (%get-voice "\"alto\"" segments)
+              (stringify key)
+              (stringify mode)
+              (%get-voice "\"tenor\"" segments)
+              (%get-voice "\"baixo\"" segments)
+              (arg :paper-width options)
+              (arg :paper-height options)))))
