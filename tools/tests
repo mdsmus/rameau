@@ -8,3 +8,4 @@
 0 ok     -h
 0 err    -f chora:001 analysis
 0 ok     anal -f chora:001
+0 ok     doc
