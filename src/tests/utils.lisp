@@ -139,6 +139,10 @@
   (is (equal "\"foo\""
              (quote-string "foo"))))
 
+(test zip
+  (is (equal (zip '(1 2 3) '(a b c) '(d e f))
+             '((1 a d) (2 b e) (3 c f)))))
+
 ;; FIXME, see #132
 ;; (test pathname-replace-directory
 ;;   (with-fixture logical-pathname-translations ()

@@ -7,46 +7,122 @@
 
 (enable-sharp-l-syntax)
 
+(defun do-classifier (classifier hash contextual)
+  (destructuring-bind (chor seg segm answ &rest results) (first contextual)
+    (declare (ignore segm answ results))
+    (awhen (funcall classifier contextual)
+      (if (gethash it hash)
+          (push (list chor seg) (gethash it hash))
+          (setf (gethash it hash) (list (list chor seg)))))))
+
+(defun count-occurences-into-hash (analysis context-window classifier)
+  (let ((h (make-hash-table :test #'equalp)))
+    (iter (for anal in analysis)
+          (for segno = (iter (for i from 0)
+                             (for e in (analysis-segments anal))
+                             (collect i)))
+          (for results = (analysis-results anal))
+          (for answer = (analysis-answer-sheet anal))
+          (for segments = (analysis-segments anal))
+          (for choraleno = (repeat-list (length answer)
+                                        (analysis-file-name anal)))
+          (for full-list = (apply #'zip (append (list choraleno
+                                                    segno
+                                                    segments
+                                                    answer)
+                                              results)))
+          (for contextual = (butlast (group full-list context-window)
+                                     (1- context-window)))
+          (mapcar #L(do-classifier classifier h !1) contextual))
+    h))
+
+(defun sorted-hash (hash)
+  "The elements in a frequency hash, sorted by least common first."
+  (sorted (all-elements-hash hash) #'< :key #L(length (second !1))))
+
+(defun text-show-hash (hash options)
+  "Show a frequency hash as text."
+  (iter (for (k v) in (sorted-hash hash))
+        (if (< (length v) (arg :max-print-error options))
+            (format t " ~20a: ~{~a ~}~%" k v)
+            (format t " ~20a: ~a~%" k (length v)))))
+
+(defun frequency-text-show-hash (hash options)
+  "Show a frequency hash as frequencies"
+  (declare (ignore options))
+  (iter (with elements = (sorted-hash hash))
+        (with total = (reduce #'+ elements :key #L(length (second !1))))
+        (for (k v) in elements)
+        (format t " ~20a: ~,1f% (~a of ~a)~%"
+                k
+                (% (length v) total)
+                (length v)
+                total)))
+
+(defun make-musicology-action (classifier context display functional)
+  (lambda (options)
+    (let* ((analysis (if functional
+                         (functional-analyse-files options)
+                         (analyse-files options)))
+           (hash (count-occurences-into-hash analysis
+                                             context
+                                             classifier)))
+      (cond ((arg :freq options) (frequency-text-show-hash hash options))
+            ((arg :text options) (text-show-hash hash options))
+            (t (funcall display hash options))))))
+    
+(defun register-musicology-command (&key classifier
+                                    (context 1)
+                                    functional
+                                    (display #'text-show-hash)
+                                    name
+                                    doc
+                                    options)
+  (register-command :name name
+                    :documentation doc
+                    :options (append options
+                                     '(("" "freq" "Show as a frequency hash")
+                                       ("" "text" "Show as a text hash")
+                                       ("" "context" "Override default context"
+                                        1 'rameau::type-int)
+                                       ("-m" "max-print-error"
+                                        "Maximum number of elements to be printed."
+                                        10
+                                        'rameau::type-int)))
+                    :action (make-musicology-action classifier
+                                                    context
+                                                    display
+                                                    functional)))
+
 (defun %pith-intersection (s1 s2)
   "Calculate the intersection between the pitches of two sonorities."
   (intersection (remove-duplicates (mapcar #'event-pitch s1))
                 (remove-duplicates (mapcar #'event-pitch s2))))
 
-(defun schoenberg (options)
-  (let ((analysis (analyse-files options))
-        ascending
-        descending
-        superstrong
-        neutral)
-    (iter (for anal in analysis)
-          (with chords = (remove-if-not #'chord-p
-                                        (all-chords-single options anal)
-                                        :key #'first))
-          (iter (for (chord sonority chorale segno) in chords)
-                (for p previous chord)
-                (for ps previous sonority)
-                (when (and p ps chord sonority)
-                  (cond ((equal (chord-root p) (chord-root chord))
-                         (push (list chorale segno) neutral))
-                        ((null (%pith-intersection ps sonority))
-                         (push (list chorale segno) superstrong))
-                        ((and (member (parse-note (chord-root chord))
-                                      (mapcar #'event-pitch ps)))
-                         (push (list chorale segno) descending))
-                        ((%pith-intersection ps sonority)
-                         (push (list chorale segno) ascending))
-                        (t (format t "Error: ~a ~a ~a ~a~%" p chord chorale segno))))))
-    (let ((total (length (append ascending descending superstrong neutral))))
-      (format t "  Ascending: ~,1f%~%" (% (length ascending) total))
-      (format t " Descending: ~,1f%~%" (% (length descending) total))
-      (format t "Superstrong: ~,1f%~%" (% (length superstrong) total))
-      (format t "    Neutral: ~,1f%~%" (% (length neutral) total)))))
+(defun schoenberg-classifier (context)
+  (destructuring-bind ((chorale segno ps ignore0 p &rest ignore1)
+                       (ignore2 ignore3 sonority ignore4 chord &rest ignore5))
+      context
+    (declare (ignore chorale segno ignore0 ignore1 ignore2 ignore3 ignore4 ignore5))
+    (when (and p ps chord sonority (chord-p chord) (chord-p p))
+      (cond ((equal (chord-root p) (chord-root chord))
+             "Neutral")
+            ((null (%pith-intersection ps sonority))
+             "Superstrong")
+            ((and (member (parse-note (chord-root chord))
+                          (mapcar #'event-pitch ps)))
+             "Descending")
+            ((%pith-intersection ps sonority)
+             "Ascending")
+            (t "Unexpected")))))
 
-(register-command :name "schoenberg"
-                  :documentation "Collect stats on how many chord
+(register-musicology-command :classifier #'schoenberg-classifier
+                             :name "schoenberg"
+                             :context 2
+                             :display #'frequency-text-show-hash
+                             :doc "Collect stats on how many chord
 progressions found in the chorales are strong, weak, superstrong and
-neutral, according to Schoenberg's theory of harmony."
-                  :action #'schoenberg)
+neutral, according to Schoenberg's theory of harmony.") 
 
 (defun all-chords (options analysis)
   (iter (for anal in analysis)
