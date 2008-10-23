@@ -167,12 +167,12 @@ answer sheet @var{answer}."
   (destructuring-bind (key mode) (event-key (first (first segments)))
     (format nil
             *lily-score-string*
-            key
-            mode
+            (stringify key)
+            (stringify mode)
             (%get-voice "\"soprano\"" segments)
             (%get-voice "\"alto\"" segments)
-            key
-            mode
+            (stringify key)
+            (stringify mode)
             (%get-voice "\"tenor\"" segments)
             (%get-voice "\"baixo\"" segments)
             (arg :paper-width options)

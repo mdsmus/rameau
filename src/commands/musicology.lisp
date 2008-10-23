@@ -7,17 +7,21 @@
 
 (enable-sharp-l-syntax)
 
-(defun do-classifier (classifier hash contextual)
+(defun do-classifier (classifier hash chorale-hash contextual)
   (destructuring-bind (chor seg segm answ &rest results) (first contextual)
     (declare (ignore segm answ results))
-    (awhen (listify (funcall classifier contextual))
+    (awhen (genos-utils::listify (funcall classifier contextual))
       (iter (for i in it)
+            (if (gethash chor chorale-hash)
+                (push seg (gethash chor chorale-hash))
+                (setf (gethash chor chorale-hash) (list seg)))
             (if (gethash it hash)
                 (push (list chor seg) (gethash i hash))
                 (setf (gethash i hash) (list (list chor seg))))))))
 
 (defun count-occurences-into-hash (analysis context-window classifier)
-  (let ((h (make-hash-table :test #'equalp)))
+  (let ((h (make-hash-table :test #'equalp))
+        (c (make-hash-table :test #'equalp)))
     (iter (for anal in analysis)
           (for segno = (iter (for i from 0)
                              (for e in (analysis-segments anal))
@@ -34,8 +38,8 @@
                                               results)))
           (for contextual = (butlast (group full-list context-window)
                                      (1- context-window)))
-          (mapcar #L(do-classifier classifier h !1) contextual))
-    h))
+          (mapcar #L(do-classifier classifier h c !1) contextual))
+    (values h c)))
 
 (defun sorted-hash (hash)
   "The elements in a frequency hash, sorted by least common first."
@@ -60,22 +64,66 @@
                 (length v)
                 total)))
 
-(defun make-musicology-action (classifier context display functional)
+(defun empty-show-hash (hash options)
+  (declare (ignore hash options)))
+
+(defun lily-show-hash (hash options)
+  (iter (with name = (arg :command options))
+        (for (chorale segments) in-hashtable hash)
+        (for max = (reduce #'max segments))
+        (for min = (reduce #'min segments))
+        (for file = (first (member chorale
+                                   (arg :files options)
+                                   :key #'pathname-name)))
+        (with-output-file (f (make-analysis-file "ly"
+                                                 name
+                                                 chorale
+                                                 min
+                                                 max))
+          (format f "~a" (make-lily-segments options
+                                             (subseq (sonorities
+                                                      (parse-file file))
+                                                     min
+                                                     max))))))
+
+(defun lily-each-hash (hash options)
+  (iter (with name = (arg :command options))
+        (for (chorale segments) in-hashtable hash)
+        (for file = (first (member chorale
+                                   (arg :files options)
+                                   :key #'pathname-name)))
+        (iter (for s in segments)
+              (with-output-file (f (make-analysis-file "ly"
+                                                       name
+                                                       chorale
+                                                       (1- s)
+                                                       (1+ s)))
+                (format f "~a" (make-lily-segments options
+                                                   (subseq (sonorities
+                                                            (parse-file file))
+                                                           (1- s)
+                                                           (1+ s))))))))
+
+(defun make-musicology-action (classifier context display functional chor-dis name)
   (lambda (options)
     (let* ((analysis (if functional
                          (functional-analyse-files options)
-                         (analyse-files options)))
-           (hash (count-occurences-into-hash analysis
-                                             context
-                                             classifier)))
-      (cond ((arg :freq options) (frequency-text-show-hash hash options))
-            ((arg :text options) (text-show-hash hash options))
-            (t (funcall display hash options))))))
+                         (analyse-files options))))
+      (setf (arg :command options) name)
+      (multiple-value-bind (hash chorale-hash)
+          (count-occurences-into-hash analysis context classifier)
+        (cond ((arg :freq options) (frequency-text-show-hash hash options))
+              ((arg :text options) (text-show-hash hash options))
+              (t (funcall display hash options)))
+        (cond ((arg :all-lily options) (lily-show-hash chorale-hash options))
+              ((arg :each-lily options) (lily-each-hash chorale-hash options))
+              (t (funcall chor-dis chorale-hash options)))))))
     
 (defun register-musicology-command (&key classifier
                                     (context 1)
                                     functional
                                     (display #'text-show-hash)
+                                    (chorale-display #'empty-show-hash)
                                     name
                                     doc
                                     options)
@@ -84,6 +132,10 @@
                     :options (append options
                                      '(("" "freq" "Show as a frequency hash")
                                        ("" "text" "Show as a text hash")
+                                       ("" "all-lily"
+                                        "Create a lily for all matches")
+                                       ("" "each-lily"
+                                        "Create a lily for each match")
                                        ("" "context" "Override default context"
                                         1 'rameau::type-int)
                                        ("-m" "max-print-error"
@@ -93,7 +145,9 @@
                     :action (make-musicology-action classifier
                                                     context
                                                     display
-                                                    functional)))
+                                                    functional
+                                                    chorale-display
+                                                    name)))
 
 (defun %pith-intersection (s1 s2)
   "Calculate the intersection between the pitches of two sonorities."
@@ -172,7 +226,6 @@ or other media with voicing information.")
           (when (eq :self (event-original-event pnote))
             (collect (print-absolute-interval 
                       (absolute-interval-code note pnote)))))))
-
 
 (register-musicology-command :name "jumps"
                              :classifier #'jumps-classifier
