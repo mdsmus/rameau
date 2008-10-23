@@ -1,6 +1,6 @@
 (defpackage :rameau-cadences
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
-  (:use :rameau :genos-utils :musiclib :cl :iterate)
+  (:use :rameau :cl-utils :cl-music :cl :iterate)
   (:documentation "The cadence detection code for @rameau"))
 
 (in-package :rameau-cadences)

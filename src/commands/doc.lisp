@@ -1,6 +1,6 @@
 (defpackage :rameau-doc
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
-  (:use :rameau :cl :iterate :genos-utils :cl-who))
+  (:use :rameau :cl :iterate :cl-utils :cl-who))
 
 (in-package :rameau-doc)
 

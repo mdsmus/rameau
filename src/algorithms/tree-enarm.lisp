@@ -1,6 +1,6 @@
 (defpackage :rameau-tree-enarm
   (:import-from #:arnesi "AIF" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
-  (:use #:cl #:rameau #:machine-learning #:musiclib #:genos-utils :cl-lily)
+  (:use #:cl #:rameau #:machine-learning #:cl-music #:cl-utils :cl-lily)
   (:documentation "A decision tree for chord labeling.
 
 One problem with this implementation is that it is not scalable at

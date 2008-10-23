@@ -1,6 +1,6 @@
 (asdf:defsystem :rameau-pkg
-  :depends-on (:genos-utils :musiclib :arnesi :iterate :alexandria :cl-lily :cl-ppcre :cl-store :cl-fad
-                            :cl-cairo2 #+win32 :cl-cairo2-win :cl-colors)
+  :depends-on (:cl-utils :cl-music :arnesi :iterate :alexandria :cl-lily :cl-ppcre :cl-store :cl-fad
+                         :cl-cairo2 #+win32 :cl-cairo2-win :cl-colors)
   :serial t
   :components ((:file "packages")
                #+sbcl(:file "sbcl")
@@ -53,8 +53,6 @@
                  (:module tests
                           :serial t
                           :components ((:file "all")
-                                       (:file "utils")
-                                       (:file "musiclib")
                                        (:file "format")
                                        (:file "parser")
                                        (:file "segment")

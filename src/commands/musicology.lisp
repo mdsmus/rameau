@@ -1,6 +1,6 @@
 (defpackage :rameau-musicology
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
-  (:use :rameau :genos-utils :musiclib :cl :iterate :cl-lily)
+  (:use :rameau :cl-utils :cl-music :cl :iterate :cl-lily)
   (:documentation "The computational musicology commands for @rameau"))
 
 (in-package :rameau-musicology)
@@ -10,7 +10,7 @@
 (defun do-classifier (classifier hash chorale-hash contextual)
   (destructuring-bind (chor seg segm answ &rest results) (first contextual)
     (declare (ignore segm answ results))
-    (awhen (genos-utils::listify (funcall classifier contextual))
+    (awhen (cl-utils::listify (funcall classifier contextual))
       (iter (for i in it)
             (if (gethash chor chorale-hash)
                 (push seg (gethash chor chorale-hash))

@@ -11,9 +11,9 @@
            #:parse-file-name
            #:*command-names*
            )
-  (:shadowing-import-from #:genos-base #:defun #:defmacro #:defgeneric
+  (:shadowing-import-from #:export-symbols #:defun #:defmacro #:defgeneric
                           #:defparameter #:defvar #:defstruct #:defclass)
-  (:use #:genos-utils :musiclib #:cl #:iterate #:cl-lily)
+  (:use #:cl-utils :cl-music #:cl #:iterate #:cl-lily)
   (:documentation "The core @rameau framework."))
 
 (in-package :rameau)

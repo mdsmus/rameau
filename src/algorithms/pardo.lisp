@@ -1,6 +1,6 @@
 (defpackage :rameau-pardo
   (:import-from #:arnesi "AIF" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
-  (:use #:rameau #:cl #:genos-utils #:musiclib :cl-lily)
+  (:use #:rameau #:cl #:cl-utils #:cl-music :cl-lily)
   (:documentation "Pardo and Birmingham's algorithm for chord labeling"))
 
 (in-package #:rameau-pardo)

@@ -2,7 +2,7 @@
 (defpackage :rameau-neural
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
   (:import-from #:alexandria "SWITCH")
-  (:use #:cl #:fann #:rameau #:iterate #:genos-utils #:musiclib :cl-lily)
+  (:use #:cl #:fann #:rameau #:iterate #:cl-utils #:cl-music :cl-lily)
   (:documentation "Neural networks for chord labeling
 
 Since we use multilayer perceptrons as our neural networks, training

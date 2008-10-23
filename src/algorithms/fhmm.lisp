@@ -1,6 +1,6 @@
 (defpackage :rameau-fhmm
   (:import-from #:arnesi "AIF" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX" "AWHEN")
-  (:use #:cl #:rameau #:genos-utils #:musiclib #:iterate :cl-lily)
+  (:use #:cl #:rameau #:cl-utils #:cl-music #:iterate :cl-lily)
   (:documentation " A hidden markov model and a bayesian roman numeral
 functional analysis thingies.
 
