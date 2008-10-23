@@ -222,7 +222,8 @@ or other media with voicing information.")
                        (ign igno nseg &rest ignore2))
       context
     (declare (ignore i ig ign igno ignore ignore2))
-    (iter (for (pnote note) in (zip seg nseg))
+    (iter (for (pnote note) in (zip (sorted seg #'event-<)
+                                    (sorted nseg #'event-<)))
           (when (eq :self (event-original-event pnote))
             (collect (print-absolute-interval 
                       (absolute-interval-code note pnote)))))))
