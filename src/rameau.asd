@@ -1,13 +1,3 @@
-(asdf:defsystem :genos-utils
-  :depends-on (:arnesi :alexandria :iterate)
-  :serial t
-  :components ((:file "genos-base")
-               (:file "utils")))
-
-(asdf:defsystem :musiclib
-  :depends-on (:genos-utils :arnesi :alexandria :iterate :cl-ppcre)
-  :components ((:file "musiclib")))
-
 (asdf:defsystem :cl-lily
   :depends-on (:genos-utils :musiclib :arnesi :alexandria :iterate :yacc :lexer :cl-ppcre :cl-fad)
   :components ((:module cl-lily
