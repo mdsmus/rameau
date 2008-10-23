@@ -1,12 +1,3 @@
-(asdf:defsystem :cl-lily
-  :depends-on (:genos-utils :musiclib :arnesi :alexandria :iterate :yacc :lexer :cl-ppcre :cl-fad)
-  :components ((:module cl-lily
-                        :serial t
-                        :components ((:file "format")
-                                     (:file "segment")
-                                     (:file "parser")
-                                     (:file "parser-grammar")))))
-
 (asdf:defsystem :rameau-pkg
   :depends-on (:genos-utils :musiclib :arnesi :iterate :alexandria :cl-lily :cl-ppcre :cl-store :cl-fad
                             :cl-cairo2 #+win32 :cl-cairo2-win :cl-colors)

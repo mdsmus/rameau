@@ -143,7 +143,7 @@
       (with-output-file (f result-file)
         (format f "~a" (print-ast (cdr ast))))
       (when (or (arg :lily options) (arg :view-score options))
-        (run-lily options result-path result-file))
+        (run-lily options result-path result-file (arg :png options)))
       (when (or (arg :gv options) (arg :view-score options))
         (run-gv options ps-file)))))
 
