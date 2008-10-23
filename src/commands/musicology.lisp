@@ -10,10 +10,11 @@
 (defun do-classifier (classifier hash contextual)
   (destructuring-bind (chor seg segm answ &rest results) (first contextual)
     (declare (ignore segm answ results))
-    (awhen (funcall classifier contextual)
-      (if (gethash it hash)
-          (push (list chor seg) (gethash it hash))
-          (setf (gethash it hash) (list (list chor seg)))))))
+    (awhen (listify (funcall classifier contextual))
+      (iter (for i in it)
+            (if (gethash it hash)
+                (push (list chor seg) (gethash i hash))
+                (setf (gethash i hash) (list (list chor seg))))))))
 
 (defun count-occurences-into-hash (analysis context-window classifier)
   (let ((h (make-hash-table :test #'equalp)))
@@ -161,7 +162,6 @@ or other media with voicing information.")
         (nconcing
          (append '(nil nil nil nil nil)
                  (all-chords-single options anal)))))
-
 
 (defun jumps (options)
   (let ((jumps (make-hash-table :test #'equal))
