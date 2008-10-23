@@ -15,7 +15,7 @@
             (if (gethash chor chorale-hash)
                 (push seg (gethash chor chorale-hash))
                 (setf (gethash chor chorale-hash) (list seg)))
-            (if (gethash it hash)
+            (if (gethash i hash)
                 (push (list chor seg) (gethash i hash))
                 (setf (gethash i hash) (list (list chor seg))))))))
 
@@ -295,6 +295,20 @@ specified files. Only for Bach chorales. Each crossing will be saved
 as a lilypond snippet in
 analysis/cruzamento-<chorale>-<first-sonority>-<last-sonority>.ly")
 
+(defun chords-classifier (context)
+  (destructuring-bind ((chor segno segm ans chord &rest ignore))
+      context
+    (declare (ignore chor segno segm ans ignore))
+    (if (chord-p chord)
+        (format nil "~a ~a" (chord-mode chord) (chord-7th chord))
+        (format nil "~a" chord))))
+
+(register-musicology-command :name "chords"
+                             :classifier #'chords-classifier
+                             :context 1
+                             :display #'frequency-text-show-hash
+                             :doc "List all the chords in the analyzes
+files.")
 
 (defun intervals (segment number)
   (iter (for n in segment)
