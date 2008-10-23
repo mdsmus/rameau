@@ -7,10 +7,10 @@
 (enable-sharp-l-syntax)
 
 (defparameter *rameau-packages*
-  '("RAMEAU" "RAMEAU-BASE" "GENOSLIB" "CL-LILY" "RAMEAU-WEB" "RAMEAU-ALG-COMMANDS"
-    "RAMEAU-ANALYSIS" "RAMEAU-CADENCES" "RAMEAU-DOC" "RAMEAU-MUSICOLOGY"
-    "RAMEAU-STAT" "RAMEAU-WEB" "RAMEAU-HMM" "RAMEAU-NEURAL" "RAMEAU-KNN"
-    "RAMEAU-TREE-ENARM" "RAMEAU-PARDO"))
+  '("RAMEAU" "GENOS-BASE" "GENOS-UTILS" "MUSICLIB" "CL-LILY" "RAMEAU-WEB"
+    "RAMEAU-ALG-COMMANDS" "RAMEAU-ANALYSIS" "RAMEAU-CADENCES" "RAMEAU-DOC"
+    "RAMEAU-MUSICOLOGY" "RAMEAU-STAT" "RAMEAU-WEB" "RAMEAU-HMM" "RAMEAU-NEURAL"
+    "RAMEAU-KNN" "RAMEAU-TREE-ENARM" "RAMEAU-PARDO"))
 
 (defun swank-get-source-location (function-name)
   (second (aget :location (first (swank-backend:find-definitions function-name)))))
