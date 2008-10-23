@@ -233,78 +233,32 @@ or other media with voicing information.")
                              :doc "List all the steps and leaps in the
                   analysed files. Only for Bach chorales.")
 
-(defun ambito (options)
-  (let ((analysis (analyse-files options)))
-    (iter (for anal in analysis)
-          (let ((notes (parse-file (analysis-full-path anal)))
-                (voices nil))
-            (iter (for note in notes)
-                  (setf voices (union voices (list (event-voice-name note)))))
-            (iter (for voice in voices)
-                  (let ((ns (iter (for note in notes)
-                                  (if (equal (event-voice-name note) voice)
-                                      (collect note))))
-                        (min (make-event :pitch 95 :octave 100))
-                        (max (make-event :pitch 0 :octave -100)))
-                    (iter (for note in ns)
-                          (when (event-< note min)
-                            (setf min note))
-                          (when (event-< max note)
-                            (setf max note)))
-                    (format t "Chorale ~a voice ~10a min ~2a ~2a max ~2a ~2a~%"
-                            (analysis-file-name anal)
-                            voice
-                            (print-event-note min)
-                            (+ 3 (event-octave min))
-                            (print-event-note max)
-                            (+ 3 (event-octave max)))
-                    ))))))
+(defun make-report (name segment min-pitch min-octave max-pitch max-octave)
+  (let ((note (extract-note segment (make-event :voice-name (quote-string name))))
+        (min-ev (make-event :pitch min-pitch :octave min-octave))
+        (max-ev (make-event :pitch max-pitch :octave max-octave)))
+    (when (or (event-< note min-ev) (event-< max-ev note))
+      (format nil "~a ~a ~a"
+              name
+              (print-event-note note)
+              (+ 3 (event-octave note))))))
 
-(register-command :name "range"
-                  :action #'ambito
-                  :documentation "List the ranges of the voices in the
-                  analysed files. Only for Bach chorales.")
+(defun kostka-amb-classifier (context)
+  (destructuring-bind ((i ig segment &rest ignore)) context
+    (declare (ignore i ig ignore))
+    (remove-if #'null
+               (list (make-report "baixo" segment 28 -1 0 1)
+                     (make-report "tenor" segment 0 0 55 1)
+                     (make-report "alto" segment 55 0 14 2)
+                     (make-report "soprano" segment 0 1 55 2)))))
 
-(defun print-report-ambito (notes min max segs chorale voice options)
-  (iter (for next in notes)
-        (for segno from 0)
-        (for note previous next)
-        (for nseg in segs)
-        (for seg previous nseg)
-        (for pseg previous seg)
-        (when (and note
-                   (or (event-< note min)
-                       (event-< max note)))
-          (format t "Chorale ~a voice ~10a note ~a~%" 
-                  chorale
-                  voice
-                  (print-event-note note))
-          (with-output-file (f (make-analysis-file "ly" "ambito" chorale voice segno))
-            (format f "~a" (make-lily-segments options (list pseg seg nseg)))))))
-
-(defun make-report (name anal options min-pitch min-octave max-pitch max-octave)
-  (print-report-ambito (mapcar #L(extract-note !1 (make-event :voice-name
-                                                              (quote-string name)))
-                               (analysis-segments anal))
-                       (make-event :pitch min-pitch :octave min-octave)
-                       (make-event :pitch max-pitch :octave max-octave)
-                       (analysis-segments anal)
-                       (analysis-file-name anal)
-                       name
-                       options))
-
-(defun kostka-amb (options)
-  (iter (for anal in (analyse-files options))
-        (make-report "baixo" anal options 28 -1 0 1)
-        (make-report "tenor" anal options 0 0 55 1)
-        (make-report "alto" anal options 55 0 14 2)
-        (make-report "soprano" anal options 0 1 55 2)))
-
-(register-command :name "kostka-amb"
-                  :action #'kostka-amb
-                  :documentation "Show where the note ranges for the
-                  voices in a chorale are different from KP rules.
-                  Only for Bach chorales.")
+(register-musicology-command :name "kostka-amb"
+                             :classifier #'kostka-amb-classifier
+                             :display #'frequency-text-show-hash
+                             :chorale-display #'lily-each-hash
+                             :doc "Show where the note ranges for the
+voices in a chorale are different from KP rules.
+Only for Bach chorales.")
 
 (defun repeated-notes (segmento)
   (/= 4 (length (remove-duplicates (sorted segmento #'event-<)
