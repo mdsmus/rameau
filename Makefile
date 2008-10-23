@@ -109,6 +109,9 @@ update-modules:
 	git submodule update
 	cd rameau-deps/lisp-libs && git checkout master && git pull
 	cd rameau-deps/cl-fann && git checkout master && git pull
+	cd rameau-deps/cl-music && git checkout master && git pull
+	cd rameau-deps/cl-utils && git checkout master && git pull
+	cd rameau-deps/cl-lily && git checkout master && git pull
 
 coral:
 	./rameau anal -f chora:$(c) -a es-net -S
