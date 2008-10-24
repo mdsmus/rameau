@@ -1,3 +1,27 @@
-* dependencies
+Dependencies
+============
 
-cairo2
+To build rameau you'll have to install a few number of lisp libraries.
+If you are a lisp developer you'll probably want to install all
+libraries under the "lisp" section at
+http://git.genos.mus.br/cgit.cgi. If you want to compile rameau the
+easiest way, just issue the commands:
+
+    make LOCALDEPS=t update-deps rameau
+
+This command will download all necessary libraries and compile rameau.
+Every time you want to compile rameau you should issue this command.
+After the first time it will just update the libraries, without
+downloading the full thing again (that is, it will be faster)
+
+To compile rameau you'll need also to install the following programs:
+
+    cairo2
+
+To use rameau you'll need to install the following programs:
+
+    cairo2 lilypond
+
+%%% Local Variables: 
+%%% mode: doc
+%%% End: 

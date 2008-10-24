@@ -19,13 +19,13 @@ RAMEAU_VERSION = $(shell grep "\* Rameau [0-9]\+\.[0-9]\+" RELEASE -m 1 -o | awk
 COMPILATION_DATE = $(shell date)
 USER = $(shell echo $$USER)
 
-RAMEAU_DEPS = cl-fann cl-music cl-utils cl-lily
+RAMEAU_DEPS = cl-fann cl-music cl-utils cl-lily lisp-libs
 
 dep-update =  $(shell cd rameau-deps/$1 && git pull)
 dep-checkout = $(shell cd rameau-deps && git clone git://genos.mus.br/$1)
 
 TRAIN_NAME = $(shell git branch | grep "*" | cut -f 2 -d ' ')-$(TRAIN_VERSION)
-LOCALDEPS = t
+LOCALDEPS = nil
 hostname = $(shell hostname)
 maindir = $(shell pwd)
 c = 001
@@ -217,4 +217,3 @@ clean-web:
 
 clean-deps:
 	rm -rf rameau-deps
-
