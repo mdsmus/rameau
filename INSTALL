@@ -22,6 +22,27 @@ To use rameau you'll need to install the following programs:
 
     cairo2 lilypond
 
+Developing rameau
+=================
+
+If you will work developing rameau you'll probably want to install the
+lisp libraries locally. Download the lisp libraries in same place, let
+say ~/lisp, and add the following code to your ~/.sbclrc:
+
+    (require :asdf)
+
+    (defvar *lisp-dirs* #p"/home/kroger/lisp/")
+    (defvar *rameau-location* #p"/home/kroger/src/rameau/src/")
+
+    (push *rameau-location* asdf:*central-registry*)
+    (push (merge-pathnames "lisp-libs/systems/" *lisp-dirs*) asdf:*central-registry*)
+
+    (loop for item in (directory (merge-pathnames "*" *lisp-dirs*))
+          (push item asdf:*central-registry*))
+
+Don't forget to change the directory names accordinly (and don't use
+tilde in place of "/home/<your user name>")
+
 %%% Local Variables: 
 %%% mode: doc
 %%% End: 
