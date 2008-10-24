@@ -19,8 +19,13 @@ RAMEAU_VERSION = $(shell grep "\* Rameau [0-9]\+\.[0-9]\+" RELEASE -m 1 -o | awk
 COMPILATION_DATE = $(shell date)
 USER = $(shell echo $$USER)
 
+RAMEAU_DEPS = cl-fann cl-music cl-utils cl-lily
+
+dep-update =  $(shell cd rameau-deps/$1 && git pull)
+dep-checkout = $(shell cd rameau-deps && git clone git://genos.mus.br/$1)
+
 TRAIN_NAME = $(shell git branch | grep "*" | cut -f 2 -d ' ')-$(TRAIN_VERSION)
-RAMEAUDEPS = t
+LOCALDEPS = t
 hostname = $(shell hostname)
 maindir = $(shell pwd)
 c = 001
@@ -29,8 +34,7 @@ prefix = /usr/local/
 INSTALL = /bin/install -c
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_DATA = cp -R
-
-ifeq ($(RAMEAUDEPS),t)
+ifeq ($(LOCALDEPS),t)
 	sbcl = $(SBCL_BIN) --disable-debugger --no-userinit
 	lisp = $(LISP_BIN) -noinit 
 	clisp = clisp -ansi -K full -norc
@@ -42,7 +46,7 @@ endif
 
 lisp-files = $(wildcard src/*.asd src/*.lisp tools/*.lisp src/tests/*.lisp src/algorithms/*.lisp src/commands/*.lisp src/cl-lily/*.lisp)
 
-.PHONY: update clean all doc train data all-rameau check visuals
+.PHONY: update clean all doc train data all-rameau check visuals update-deps
 
 default: train
 
@@ -63,7 +67,7 @@ visuals:
 
 ## rule build rameau to user instalation
 rameau-install: $(lisp-files)
-	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" \
+	${sbcl} --eval "(defparameter *use-rameau-deps* ${LOCALDEPS})" \
 	--eval "(defparameter *git-commit* \"${GIT_COMMIT}\")" \
 	--eval "(defparameter *kernel-info* \"${KERNEL_INFO}\")" \
 	--eval "(defparameter *libc-version* \"${LIBC_VERSION}\")" \
@@ -75,7 +79,7 @@ rameau-install: $(lisp-files)
 	--load "tools/make-image.lisp"
 
 rameau: $(lisp-files)
-	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" \
+	${sbcl} --eval "(defparameter *use-rameau-deps* ${LOCALDEPS})" \
 	--eval "(defparameter *git-commit* \"${GIT_COMMIT}\")" \
 	--eval "(defparameter *kernel-info* \"${KERNEL_INFO}\")" \
 	--eval "(defparameter *libc-version* \"${LIBC_VERSION}\")" \
@@ -90,19 +94,31 @@ user-tests: rameau
 	tools/test-rameau < tools/tests
 
 checa-notas: tools/read-notes.lisp
-	${sbcl} --eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" --load "tools/make-image-read-notes.lisp"
+	${sbcl} --eval "(defparameter *use-rameau-deps* ${LOCALDEPS})" --load "tools/make-image-read-notes.lisp"
 
 cmurameau: $(lisp-files)
-	${lisp} -eval "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" -load "tools/make-image.lisp"
+	${lisp} -eval "(defparameter *use-rameau-deps* ${LOCALDEPS})" -load "tools/make-image.lisp"
 
 eclrameau: $(lisp-files)
 	ecl -eval  "(load \"tools/make-image.lisp\")"
 
 clisprameau: $(lisp-files)
-	${clisp} -x "(defparameter *use-rameau-deps* ${RAMEAUDEPS})" -x "(load \"tools/make-image.lisp\")"
+	${clisp} -x "(defparameter *use-rameau-deps* ${LOCALDEPS})" -x "(load \"tools/make-image.lisp\")"
 
 update: 
 	git pull --rebase
+
+update-deps:
+	$(if $(wildcard rameau-deps), $(MAKE) pull-deps, $(MAKE) clone-deps)
+
+pull-deps:
+	$(foreach dep, $(RAMEAU_DEPS), @echo $(call dep-update,$(dep)))
+
+clone-deps: rameau-deps
+	$(foreach dep, $(RAMEAU_DEPS), @echo $(call dep-checkout,$(dep)))
+
+rameau-deps:
+	mkdir rameau-deps
 
 update-modules:
 	git submodule init
