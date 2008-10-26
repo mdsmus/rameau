@@ -8,4 +8,22 @@
 0 ok     -h
 0 err    -f chora:001 analysis
 0 ok     anal -f chora:001
+0 ok     func -f chora:001
 0 ok     doc
+0 ok     setup
+0 ok     test
+0 ok     print-segments --start 0 --end 10 -f chora:001
+0 ok     octaves -f chora:001
+0 ok     fifths -f chora:001
+0 ok     chords -f chora:001
+0 ok     crossings -f chora:001
+0 ok     kostka-amb -f chora:001
+0 ok     jumps -f chora:001
+0 ok     resolve-seventh -f chora:001
+0 ok     schoenberg -f chora:001
+0 ok     funalg -f chora:001
+0 ok     report
+0 ok     collect-data
+0 ok     document
+0 ok     cadences -f chora:001
+0 ok     view  -f chora:001
