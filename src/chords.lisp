@@ -148,18 +148,18 @@ position."
 
 (defun transpose-chord (c n)
   "Transpose chord @var{c} by @var{n} pitches.[NOTEST]"
-  (let ((root (print-note (code->notename (+ n (parse-note (chord-root c))))
-                          :latin)))
     (if (chord-p c)
-        (make-chord :root root
-                    :bass (chord-bass c)
-                    :mode (chord-mode c)
-                    :inversion (chord-inversion c)
-                    :7th (chord-7th c)
-                    :9th (chord-9th c)
-                    :11th (chord-11th c)
-                    :13th (chord-13th c))
-        c)))
+        (let ((root (print-note (code->notename (+ n (parse-note (chord-root c))))
+                                :latin)))
+          (make-chord :root root
+                      :bass (chord-bass c)
+                      :mode (chord-mode c)
+                      :inversion (chord-inversion c)
+                      :7th (chord-7th c)
+                      :9th (chord-9th c)
+                      :11th (chord-11th c)
+                      :13th (chord-13th c)))
+        c))
 
 (defun transpose-chords (chords n)
   (loop for c in chords

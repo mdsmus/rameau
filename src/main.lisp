@@ -86,12 +86,12 @@
 (defun main (&optional args)
   "You can run main from the REPL with all arguments as a
   string: (main \"analysis chorales -v -f 001\")"
-  (safe-with-backtrace (:condition nil
-                        :print-error-msg (format t "Rameau could not operate.~%")
-                        :exit t)
-    (let* ((*package* (find-package :rameau))
-           (rameau-args (rameau-args))
-           (arguments (if args (cl-ppcre:split " " args) rameau-args)))
+  (let* ((*package* (find-package :rameau))
+         (rameau-args (rameau-args))
+         (arguments (if args (cl-ppcre:split " " args) rameau-args)))
+    (safe-with-backtrace (:condition (member "-d" arguments :test #'equalp)
+                          :print-error-msg (format t "Rameau could not operate.~%")
+                          :exit t)
       (if arguments
           (iter (for command-list in (split-command-list arguments))
                 (for cmd = (first command-list))
