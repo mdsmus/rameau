@@ -19,7 +19,7 @@
   (length (remove-if #'null (mapcar #'compare-answer-sheet res gab))))
 
 (defun collect-data (options)
-  (let* ((analysis (analyse-files options))
+  (let* ((analysis (analyse-files options :chord-names))
          (a (first analysis))
          (res (iter (for i in (analysis-algorithms (first analysis)))
                     (collect (list 0)))))
@@ -139,7 +139,7 @@
   (iter (for i in list) (collect (make-hash-table :test #'equal))))
 
 (defun report (options)
-  (let* ((analysis (analyse-files options))
+  (let* ((analysis (analyse-files options :chord-names))
          (algorithms (analysis-algorithms (first analysis)))
          (confusion-matrix (iter (for a in algorithms)
                                  (collect (make-hash-table :test #'equal))))

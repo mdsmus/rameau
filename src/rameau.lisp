@@ -38,9 +38,18 @@
   "Register algorithm instance @var{alg} with @rameau."
   (pushnew alg *algorithms*))
 
-(defun load-algorithms (algorithms algs)
+(defun get-algorithm-opt (algorithm-type chord functional)
+ (case algorithm-type
+   (:chord-names chord)
+   (:roman-analysis functional)
+   (t (error "Algorithmn type ~a is unknown." algorithm-type))))
+
+(defun load-algorithms (algorithms algorithm-type)
   "Make sure the algorithms are ok and load them."
-  (remove-if-not #'you-ok-p (mapcar #'load-alg (filter-algorithms algorithms algs))))
+  (let ((algs (get-algorithm-opt algorithm-type
+                                 *algorithms*
+                                 *functional-algorithms*)))
+   (remove-if-not #'you-ok-p (mapcar #'load-alg (filter-algorithms algorithms algs)))))
 
 (defun filter-algorithms (algoritmos algs)
   "Filter @var{*algorithms*} so that only the ones specified in

@@ -148,16 +148,22 @@
         (run-gv options ps-file)))))
 
 ;;; Analysis
+(defun %analysis (options algorithm-type)
+  "Run analysis according to options."
+  (iter (for anal in (analyse-files options algorithm-type))
+        (cond ((arg :dont-compare options)
+               (analysis-terminal-no-answer options anal))
+              ((analysis-answer-sheet anal)
+               (analysis-terminal options anal))
+              (t (analysis-terminal-no-answer options anal)))
+        (when (or (arg :score options)
+                  (arg :view-score options)
+                  (arg :lily options))
+          (analysis-lily options anal))))
+
 (defun analysis (options)
   "Run analysis according to options."
-  (let ((analysis (analyse-files options)))
-    (iter (for anal in analysis)
-          (cond ((arg :dont-compare options) (analysis-terminal-no-answer options anal))
-                ((analysis-answer-sheet anal)
-                 (analysis-terminal options anal))
-                (t (analysis-terminal-no-answer options anal)))
-          (when (or (arg :score options) (arg :view-score options) (arg :lily options))
-            (analysis-lily options anal)))))
+  (%analysis options :chord-names))
 
 (register-command :name "analysis"
                   :documentation "Perform chord labeling with the
@@ -168,17 +174,7 @@
 
 (defun functional (options)    
   "Run functional analysis according to options."
-  (let ((analysis (functional-analyse-files options)))
-    (iter (for anal in analysis)
-          (cond ((arg :dont-compare options)
-                 (analysis-terminal-no-answer options anal))
-                ((analysis-answer-sheet anal)
-                 (analysis-terminal options anal))
-                (t (analysis-terminal-no-answer options anal)))
-          (when (or (arg :score options)
-                    (arg :view-score options)
-                    (arg :lily options))
-            (analysis-lily options anal)))))
+  (%analysis options :roman-analysis))
 
 (register-command :name "functional"
                   :documentation "Perform roman numeral functional
@@ -196,7 +192,7 @@
 
 (defun view-analysis (options)
   "Run analysis according to options and show the output as a cairo graph."
-  (let ((analysis (analyse-files options))
+  (let ((analysis (analyse-files options :chord-names))
         (pitch-colors (make-hash-table :test #'equal)))
     (iter (for anal in analysis)
           (iter (for alg in (analysis-results anal))

@@ -138,7 +138,7 @@
 
 (defun cadences (options)
   "Run analysis and report the found cadences."
-  (let ((analysis (functional-analyse-files options))
+  (let ((analysis (analyse-files options :roman-function))
         (cadences (make-hash-table :test #'equal))
         (last-cadences (make-hash-table :test #'equal)))
     (iter (for anal in analysis)
