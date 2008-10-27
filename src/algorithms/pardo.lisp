@@ -124,7 +124,8 @@
                   (pardo-grade-result x))
                 (score-sonority-notes (second template)
                                       sonority
-                                      (mapcar #'code->notename *notas-interessantes-tonal*)))))
+                                      (mapcar #'code->notename
+                                              *notas-interessantes-tonal*)))))
     (dolist (r results)
       (setf (pardo-grade-answer r) (cons (stringify (pardo-grade-root r))
                                          (first template))))
@@ -167,7 +168,9 @@
 
 (add-algorithm (make-instance 'pardo
                               :name "S-PB"
-                              :description "The original algorithm decribed in Pardo and Birmingham's papers."))
+                              :description "The original algorithm
+                              decribed in Pardo and Birmingham's
+                              papers."))
 
 (deftemplates *incf-pardo-templates* 
   (("" "") (0 28 55))
@@ -213,6 +216,7 @@
 
 (let ((es-pb (make-instance 'es-pardo
                               :name "ES-PB"
-                              :description "Our extension of Pardo and Birmingham's algorithm.")))
+                              :description "Our extension of Pardo and
+                              Birmingham's algorithm.")))
   (add-algorithm es-pb)
   (add-falgorithm es-pb))
