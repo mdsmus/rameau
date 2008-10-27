@@ -32,24 +32,20 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
 (defparameter *version* 1)
 
 (defparameter *chords*
-  (iter (for root from 0 to 95)
-        (declare (fixnum root))
-        (appending (iter (for mode in '("" "m" "+" "°" "ø" "!"))
-                         (appending (iter (for seventh in '("" "7" "7-" "7+"))
-                                          (collect (make-chord :root (print-note (code->notename root) :latin)
-                                                               :mode mode
-                                                               :7th seventh))))))))
+  (iter (for (root mode seventh) in (cartesian-product (range 0 95)
+                                                       '("" "m" "+" "°" "ø" "!")
+                                                       '("" "7" "7-" "7+")))
+        (collect (make-chord :root (print-note (code->notename root) :latin)
+                             :mode mode
+                             :7th seventh))))
 
 (defparameter *modes*
-  (iter (for mode in '("" "m" "+" "°" "ø" "!"))
-        (appending (iter (for seventh in '("" "7" "7-" "7+"))
-                         (collect (make-chord :root "C"
-                                              :mode mode
-                                              :7th seventh))))))
+  (iter (for (mode seventh) in (cartesian-product '("" "m" "+" "°" "ø" "!")
+                                                  '("" "7" "7-" "7+")))
+        (collect (make-chord :root "C" :mode mode :7th seventh))))
 
 (defparameter *nct* (list (make-melodic-note)))
-(defparameter *aug6s* (iter (for type in '("al" "fr" "it"))
-                            (collect (make-augmented-sixth :type type))))
+(defparameter *aug6s* (mapcar #L(make-augmented-sixth :type !1) '("al" "fr" "it")))
 
 (defparameter *specials* (append *nct* *aug6s*))
 
@@ -114,14 +110,16 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
                         (collect (list c a))))))
 
 (defun reroot (prev chord)
-  (if (chord-p chord)
-      (make-chord :root (print-note (code->notename (module (- (the fixnum (parse-note (chord-root chord)))
-                                                               (the fixnum (parse-note (chord-root prev)))))))
-                  :mode (chord-mode chord)
-                  :7th (chord-7th chord))
-      (if (listp chord)
-          (make-melodic-note)
-          chord)))
+  (flet ((diff-root (prev chord)
+           (module (- (the fixnum (parse-note (chord-root chord)))
+                      (the fixnum (parse-note (chord-root prev)))))))
+    (if (chord-p chord)
+        (make-chord :root (print-note (code->notename (diff-root prev chord)))
+                    :mode (chord-mode chord)
+                    :7th (chord-7th chord))
+        (if (listp chord)
+            (make-melodic-note)
+            chord))))
 
 (defun not-zero (value not-zero)
   (if (= 0d0 value)
@@ -131,35 +129,46 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
 (defun dirichlett-smooth (array sizea sizeb)
   (iter (for i from 0 below sizea)
         (declare (fixnum i))
-        (let ((sum (iter (for j from 0 below sizeb) (sum (aref array (+ (* sizeb i) j)))))
-              (zeros (iter (for j from 0 below sizeb) (counting (= 0 (aref array (+ (* sizeb i) j)))))))
+        (let ((sum (iter (for j from 0 below sizeb)
+                         (sum (aref array (+ (* sizeb i) j)))))
+              (zeros (iter (for j from 0 below sizeb)
+                           (counting (= 0 (aref array (+ (* sizeb i) j)))))))
           (iter (for j from 0 below sizeb)
                 (setf (aref array (+ (* sizeb i) j))
-                      (log (/ (not-zero (aref array (+ (* sizeb i) j)) (/ 1 (+ 0.00000001d0 zeros))) (1+ sum))))))))
+                      (log (/ (not-zero (aref array (+ (* sizeb i) j))
+                                        (/ 1 (+ 0.00000001d0 zeros)))
+                              (1+ sum))))))))
 
 (defun estimate-transitions (chords)
-  (let ((transitions (make-array (* *nmodes* *nlabels*) :initial-element 0d0 :element-type 'double-float)))
+  (let ((transitions (make-array (* *nmodes* *nlabels*)
+                                 :initial-element 0d0 :element-type 'double-float)))
     (iter (for c in chords)
           (for p previous c)
           (when (and p c (chord-p p))
-            (incf (aref transitions (+ (* *nlabels* (mode->number p)) (label->number (reroot p c)))))))
+            (incf (aref transitions (+ (* *nlabels* (mode->number p))
+                                       (label->number (reroot p c)))))))
     (dirichlett-smooth transitions *nmodes* *nlabels*)
     transitions))
 
 (defun estimate-special-transitions (chords)
-  (let ((transitions (make-array (* *nmodes* *nlabels*) :initial-element 0d0 :element-type 'double-float)))
+  (let ((transitions (make-array (* *nmodes* *nlabels*)
+                                 :initial-element 0d0 :element-type 'double-float)))
     (iter (for c in chords)
           (for p previous c)
           (when (and p c (not (chord-p p)) (not (listp p)))
-            (incf (aref transitions (+ (* *nlabels* (special->number p)) (label->number c))))))
+            (incf (aref transitions (+ (* *nlabels* (special->number p))
+                                       (label->number c))))))
     (dirichlett-smooth transitions *nmodes* *nlabels*)
     transitions))
 
 (defun estimate-chord-notes (pairs)
   (let ((pairs (mapcar #L(and (chord-p (second !1))
-                              (list (mode->number (second !1)) (mapcar #'event-pitch (first !1)) (parse-note (chord-root (second !1)))))
+                              (list (mode->number (second !1))
+                                    (mapcar #'event-pitch (first !1))
+                                    (parse-note (chord-root (second !1)))))
                        pairs))
-        (probs (make-array (list (* *nmodes* 96)) :initial-element 0d0 :element-type 'double-float)))
+        (probs (make-array (list (* *nmodes* 96))
+                           :initial-element 0d0 :element-type 'double-float)))
     (iter (for (label notes root) in pairs)
           (and label notes root
                (iter (for n in notes)
@@ -177,9 +186,11 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
 (defun estimate-special-notes (pairs)
   (let ((pairs (mapcar #L(and (not (listp (second !1)))
                               (not (chord-p (second !1)))
-                              (list (special->number (get-special (second !1))) (mapcar #'event-pitch (first !1))))
+                              (list (special->number (get-special (second !1)))
+                                    (mapcar #'event-pitch (first !1))))
                        pairs))
-        (probs (make-array (list (* *nspecials* 96)) :initial-element 0d0 :element-type 'double-float)))
+        (probs (make-array (list (* *nspecials* 96))
+                           :initial-element 0d0 :element-type 'double-float)))
     (iter (for (label notes) in pairs)
           (and label notes
                (iter (for n in notes)
@@ -188,7 +199,8 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
     probs))
 
 (defun estimate-start-trans (chords)
-  (let ((start (make-array *nlabels* :element-type 'double-float :initial-element 0d0)))
+  (let ((start (make-array *nlabels*
+                           :element-type 'double-float :initial-element 0d0)))
     (iter (for c in chords)
           (if (listp c)
               (iter (for cc in c)
@@ -250,8 +262,10 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
               (iter (for j from 0 below 96)
                     (cl-cairo2:rectangle (+ 70 (* 30 n))
                                          (* 10 j)
-                                         (normalize 0d0 4d0 min max (aref notes (+ (* 96 i) j)))
-                                         (normalize 0d0 4d0 min max (aref notes (+ (* 96 i) j))))
+                                         (normalize 0d0 4d0 min max
+                                                    (aref notes (+ (* 96 i) j)))
+                                         (normalize 0d0 4d0 min max
+                                                    (aref notes (+ (* 96 i) j))))
                     (cl-cairo2:fill-path))
               (dbg :hmm-prof "One more line --- ~a of ~a ~%" i *nlabels*))
         (dbg :hmm-prof "Now the special chords.~%")
@@ -261,8 +275,10 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
               (iter (for j from 0 below 96)
                     (cl-cairo2:rectangle (+ 70 (* 30 m))
                                          (* 10 j)
-                                         (normalize 0d0 4d0 min max (aref specials (+ (* 96 n) j)))
-                                         (normalize 0d0 4d0 min max (aref specials (+ (* 96 n) j))))
+                                         (normalize 0d0 4d0 min max
+                                                    (aref specials (+ (* 96 n) j)))
+                                         (normalize 0d0 4d0 min max
+                                                    (aref specials (+ (* 96 n) j))))
                     (cl-cairo2:fill-path))
               (dbg :hmm-prof "One more line --- ~a of ~a ~%" i *nlabels*))))))
 
@@ -292,7 +308,8 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
       (dbg :hmm-prof "Putting the output labels~%")
       (iter (for i from 0)
             (for c in *labels*)
-            (cl-cairo2:move-to (+ 40 (* 3 i)) (+ 410 (mod (* 10 i) 100)))
+            (cl-cairo2:move-to (+ 40 (* 3 i))
+                               (+ 410 (mod (* 10 i) 100)))
             (cl-cairo2:show-text (format nil "~a" c)))
       (dbg :hmm-prof "Finding the minimal and maximal weights~%")
       (cl-cairo2:set-source-rgb 1 0 0)
@@ -310,8 +327,10 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
               (iter (for j from 0 below *nlabels*)
                     (cl-cairo2:rectangle (+ 40 (* 3 j))
                                          (+ 50 (* 10 i))
-                                         (normalize 0d0 4d0 min max (aref tr (+ (* *nlabels* i) j)))
-                                         (normalize 0d0 4d0 min max (aref tr (+ (* *nlabels* i) j))))
+                                         (normalize 0d0 4d0 min max
+                                                    (aref tr (+ (* *nlabels* i) j)))
+                                         (normalize 0d0 4d0 min max
+                                                    (aref tr (+ (* *nlabels* i) j))))
                     (cl-cairo2:fill-path))
               (dbg :hmm-prof "One more line --- ~a of ~a ~%" i *nlabels*))
         (iter (for n from *nmodes* below (+ *nmodes* *nspecials*))
@@ -319,8 +338,10 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
               (iter (for j from 0 below *nlabels*)
                     (cl-cairo2:rectangle (+ 40 (* 3 j))
                                          (+ 50 (* 10 n))
-                                         (normalize 0d0 4d0 min max (aref str (+ (* *nlabels* i) j)))
-                                         (normalize 0d0 4d0 min max (aref str (+ (* *nlabels* i) j))))
+                                         (normalize 0d0 4d0 min max
+                                                    (aref str (+ (* *nlabels* i) j)))
+                                         (normalize 0d0 4d0 min max
+                                                    (aref str (+ (* *nlabels* i) j))))
                     (cl-cairo2:fill-path))
               (dbg :hmm-prof "One more line --- ~a of ~a ~%" i *nlabels*))))))
 
@@ -413,21 +434,25 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
 (defun viterbi-decode (segments alg)
   (let* ((tran (trans alg))
          (strans (special-trans  alg))
-                                        ;(ini (start-trans alg))
+         ;;(ini (start-trans alg))
          (notes (notes alg))
          (start (start-trans alg))
          (specials (special-notes alg))
          (size (length segments))
          (cache nil)
-         (tp (make-array (list size (+ (* 96 *nmodes*) *nspecials*)) :element-type 'double-float))
-         (m (make-array (list size (+ (* 96 *nmodes*) *nspecials*)) :element-type 'integer)))
+         (tp (make-array (list size (+ (* 96 *nmodes*) *nspecials*))
+                         :element-type 'double-float))
+         (m (make-array (list size (+ (* 96 *nmodes*) *nspecials*))
+                        :element-type 'integer)))
     (dbg :hmm-prof "Setting up initial conditions...~%")
     (iter (for note from 0 below *nlabels*)
           (declare (fixnum note))
           (setf (aref tp 0 note)
                 (+ (probabilities (first segments) notes specials note)
                    (aref start note)))
-          (setf cache (clip 10 (insert (list (aref tp 0 note) (aref m 0 note) 0 note) cache :less #'> :key #'first))))
+          (setf cache (clip 10 (insert (list (aref tp 0 note) (aref m 0 note) 0 note)
+                                       cache
+                                       :less #'> :key #'first))))
     (dbg :hmm-prof " ... done.~%")
     (iter (for i from 1 below size)
           (declare (fixnum i))
@@ -444,11 +469,15 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
                                                             (get-tran tran strans prevj j))))))
                   (setf (aref tp i j) (+ (* 2 prob) (first values))
                         (aref m i j) (second values))
-                  (setf newcache (clip 10 (insert (list (aref tp i j) (aref m i j) i j) newcache :less #'> :key #'first)))))
+                  (setf newcache (clip 10 (insert (list (aref tp i j) (aref m i j) i j)
+                                                  newcache
+                                                  :less #'> :key #'first)))))
           (setf cache newcache)
           (dbg :hmm-prof "Cache is: ~a~%" (mapcar2 #'number->label #'fourth cache)))
     (dbg :hmm-prof "Backtracking...~%")
-    (let ((chords (list (argmax #L(aref tp (1- (the fixnum size)) !1) 0 *nlabels*))))
+    (let ((chords (list (argmax #L(aref tp (1- (the fixnum size)) !1)
+                                0
+                                *nlabels*))))
       (iter (for i from (1- size) downto 1)
             (push (aref m i (first chords)) chords))
       (mapcar #'number->label chords))))
@@ -461,7 +490,8 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
 
 (add-algorithm (make-instance 'hmm
                               :name "EC-Hmm"
-                              :description "A Hidden Markov Model for chord labeling."))
+                              :description "A Hidden Markov Model for
+                              chord labeling."))
 
 (defclass hmm-bayes (hmm) ())
 
@@ -499,4 +529,5 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
 
 (add-algorithm (make-instance 'hmm-bayes
                               :name "ES-Bay"
-                              :description "A naive bayes classifier for chord labeling."))
+                              :description "A naive bayes classifier
+                              for chord labeling."))
