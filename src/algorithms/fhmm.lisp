@@ -59,27 +59,16 @@ is a good starting point)."))
        (degrees (iter (for (n m a) in (prod degree-numbers
                                             degree-modes
                                             degree-accidentals))
-                      (collect
-                          (make-roman-function :degree-number n
-                                               :degree-accidentals a
-                                               :mode m))))
-       (n (format t "d  ~a~%" degrees))
-       (transition-inputs (append
-                           (list (list :out))
-                           (prod key-modes degrees)))
+                      (collect (make-roman-function :degree-number n
+                                                    :degree-accidentals a
+                                                    :mode m))))
+       (transition-inputs (append '((:out)) (prod key-modes degrees)))
        (number->input (coerce transition-inputs 'vector))
        (input->number (make-number-hash-table #'equalp transition-inputs))
-       (transition-outputs (append
-                            (list (list :out))
-                            (iter (for (pitch m d) in (prod (range 0 95)
-                                                            key-modes
-                                                            degrees))
-                                  (collect (list pitch m d)))))
+       (transition-outputs (append '((:out)) (prod (range 0 95) key-modes degrees)))
        (number->toutput (coerce transition-outputs 'vector))
        (toutput->number (make-number-hash-table #'equalp transition-outputs))
-       (viterbi-degrees (append (list (list :out))
-                                (iter (for (k d) in (prod keys degrees))
-                                      (collect (list k d)))))
+       (viterbi-degrees (append '((:out)) (prod keys degrees)))
        (number->viterbi (coerce viterbi-degrees 'vector))
        (viterbi->number (make-number-hash-table #'equalp viterbi-degrees)))
   (defun number->input (number)
