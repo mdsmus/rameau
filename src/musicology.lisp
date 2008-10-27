@@ -204,7 +204,7 @@
         (cond ((arg :all-lily options) (lily-show-hash chorale-hash options))
               ((arg :each-lily options) (lily-each-hash chorale-hash options))
               (t (funcall chor-dis chorale-hash options)))
-        (cond ((arg :figure options) (funcall fig-dis hash options))
+        (cond ((arg :figure options) (funcall #'figure-show-hash hash options))
               (t (funcall fig-dis hash options)))))))
     
 (defun register-musicology-command (&key classifier

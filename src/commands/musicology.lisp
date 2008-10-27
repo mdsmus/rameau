@@ -209,7 +209,7 @@ analysis/cruzamento-<chorale>-<first-sonority>-<last-sonority>.ly")
       context
     (declare (ignore chor segno segm ans ignore))
     (if (chord-p chord)
-        (format nil "~a ~a" (chord-mode chord) (chord-7th chord))
+        (format nil "~a" (transpose-chord chord (- (parse-note (chord-root chord)))))
         (format nil "~a" chord))))
 
 (register-musicology-command :name "chords"
