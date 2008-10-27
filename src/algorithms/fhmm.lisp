@@ -8,7 +8,8 @@ The plan, so far, is to try to cut as much as humanly possible the
 size of the stochastic matrices. This is hard. So, for the transition
 matrix, we're doing the following:
 
-(degree * key-mode) -> module(new-key-pitch - current-key-pitch) * degree * key-mode
+\(degree * key-mode) -> module(new-key-pitch - current-key-pitch) *
+degree * key-mode
 
 This allows us to have \"only\" 926100 entries in this matrix, which
 is far too many, if you ask me, but I have no idea about how can I
@@ -17,7 +18,7 @@ modulation parts, but I've got to look at the data to figure this out.
 
 The output matrix will be:
 
-(degree * key-mode) -> module(note-pitch - key-pitch)
+\(degree * key-mode) -> module(note-pitch - key-pitch)
 
 Which has the unfortunate 8820 entries, also far too many. I don't
 think we have enough data to reliably estimate these values, but I
@@ -30,15 +31,13 @@ The by far biggest table is the viterbi table. It has to really
 encompass all possibilities for each sonority (as far as I can tell
 there is no trivial way of cutting it down). Its dimensions are:
 
-(key * degree) -> sonority
+\(key * degree) -> sonority
 
 The overall algorithm is a pretty traditional Hidden Markov Model, and
 a discussion of how can one be written is easy to find on the
 web (@link{wikipedia}{http://en.wikipedia.org/wiki/Hidden_markov_model}
-is a good starting point).
+is a good starting point)."))
 
-"))
-; ;;  " <-- for some reason font-lock likes this.
 (in-package :rameau-fhmm)
 
 (enable-sharp-l-syntax)
