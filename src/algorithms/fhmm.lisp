@@ -48,7 +48,7 @@ is a good starting point)."))
 (let* ((natural-pitches (mapcar #'parse-note '("a" "b" "c" "d" "e" "f" "g")))
        (key-pitches (mapcan #L(list (1- !1) !1 (1+ !1)) natural-pitches))
        (key-modes (list :major :minor))
-       (keys (iter (for (mode pitch) in (prod key-modes key-pitches))
+       (keys (iter (for (mode pitch) in (cartesian-product key-modes key-pitches))
                    (collect (make-tonal-key :mode mode
                                             :center-pitch pitch))))
        (degree-numbers (list 1 2 3 4 5 6 7))
@@ -56,19 +56,21 @@ is a good starting point)."))
                            :half-diminished :german-sixth :french-sixth
                            :italian-sixth))
        (degree-accidentals (list -1 0 1))
-       (degrees (iter (for (n m a) in (prod degree-numbers
-                                            degree-modes
-                                            degree-accidentals))
+       (degrees (iter (for (n m a) in (cartesian-product degree-numbers
+                                                         degree-modes
+                                                         degree-accidentals))
                       (collect (make-roman-function :degree-number n
                                                     :degree-accidentals a
                                                     :mode m))))
-       (transition-inputs (append '((:out)) (prod key-modes degrees)))
+       (transition-inputs (append '((:out)) (cartesian-product key-modes degrees)))
        (number->input (coerce transition-inputs 'vector))
        (input->number (make-number-hash-table #'equalp transition-inputs))
-       (transition-outputs (append '((:out)) (prod (range 0 95) key-modes degrees)))
+       (transition-outputs (append '((:out)) (cartesian-product (range 0 95)
+                                                                key-modes
+                                                                degrees)))
        (number->toutput (coerce transition-outputs 'vector))
        (toutput->number (make-number-hash-table #'equalp transition-outputs))
-       (viterbi-degrees (append '((:out)) (prod keys degrees)))
+       (viterbi-degrees (append '((:out)) (cartesian-product keys degrees)))
        (number->viterbi (coerce viterbi-degrees 'vector))
        (viterbi->number (make-number-hash-table #'equalp viterbi-degrees)))
   (defun number->input (number)
