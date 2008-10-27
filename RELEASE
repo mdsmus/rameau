@@ -14,6 +14,7 @@ Esse release tem as seguintes melhorias desde 4.0
 ** melhoramento no parser do lilypond (gera lily, usa ast)
 ** codigo para musicologia computacional
 ** interface web
+** rameau pode ser instalado pelo usuário
 
 * Rameau 4.0, 02 abril 2008
 
