@@ -89,7 +89,7 @@
   (let* ((*package* (find-package :rameau))
          (rameau-args (rameau-args))
          (arguments (if args (cl-ppcre:split " " args) rameau-args)))
-    (safe-with-backtrace (:condition (member "-d" arguments :test #'equalp)
+    (safe-with-backtrace (:condition t
                           :print-error-msg (format t "Rameau could not operate.~%")
                           :exit t)
       (if arguments

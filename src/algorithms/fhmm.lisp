@@ -45,47 +45,41 @@ is a good starting point)."))
 
 (defparameter *version* 8)
 
-(eval-when (:compile-toplevel :load-toplevel)
 (let* ((natural-pitches (mapcar #'parse-note '("a" "b" "c" "d" "e" "f" "g")))
        (key-pitches (mapcan #L(list (1- !1) !1 (1+ !1)) natural-pitches))
        (key-modes (list :major :minor))
-       (keys (iter (for mode in key-modes)
-                   (nconcing (iter (for pitch in key-pitches)
-                                   (collect (make-tonal-key :mode mode :center-pitch pitch))))))
+       (keys (iter (for (mode pitch) in (prod key-modes key-pitches))
+                   (collect (make-tonal-key :mode mode
+                                            :center-pitch pitch))))
        (degree-numbers (list 1 2 3 4 5 6 7))
-       (degree-modes (list :major :minor :augmented :diminished :half-diminished :german-sixth :french-sixth :italian-sixth))
+       (degree-modes (list :major :minor :augmented :diminished
+                           :half-diminished :german-sixth :french-sixth
+                           :italian-sixth))
        (degree-accidentals (list -1 0 1))
-       (degrees (iter (for n in degree-numbers)
-                      (nconcing
-                       (iter (for m in degree-modes)
-                             (nconcing
-                              (iter (for a in degree-accidentals)
-                                    (collect
-                                        (make-roman-function :degree-number n
-                                                             :degree-accidentals a
-                                                             :mode m))))))))
+       (degrees (iter (for (n m a) in (prod degree-numbers
+                                            degree-modes
+                                            degree-accidentals))
+                      (collect
+                          (make-roman-function :degree-number n
+                                               :degree-accidentals a
+                                               :mode m))))
+       (n (format t "d  ~a~%" degrees))
        (transition-inputs (append
                            (list (list :out))
-                           (iter (for d in degrees)
-                                (nconcing (iter (for m in key-modes)
-                                                (collect (list m d)))))))
+                           (prod key-modes degrees)))
        (number->input (coerce transition-inputs 'vector))
        (input->number (make-number-hash-table #'equalp transition-inputs))
        (transition-outputs (append
                             (list (list :out))
-                            (iter (for pitch from 0 to 95)
-                                  (nconcing
-                                   (iter (for m in key-modes)
-                                         (nconcing
-                                          (iter (for d in degrees)
-                                                (collect (list pitch m d)))))))))
+                            (iter (for (pitch m d) in (prod (range 0 95)
+                                                            key-modes
+                                                            degrees))
+                                  (collect (list pitch m d)))))
        (number->toutput (coerce transition-outputs 'vector))
        (toutput->number (make-number-hash-table #'equalp transition-outputs))
        (viterbi-degrees (append (list (list :out))
-                                (iter (for k in keys)
-                                      (nconcing
-                                       (iter (for d in degrees)
-                                             (collect (list k d)))))))
+                                (iter (for (k d) in (prod keys degrees))
+                                      (collect (list k d)))))
        (number->viterbi (coerce viterbi-degrees 'vector))
        (viterbi->number (make-number-hash-table #'equalp viterbi-degrees)))
   (defun number->input (number)
@@ -105,7 +99,7 @@ is a good starting point)."))
   (defparameter *ntoutputs* (length number->toutput))
   (defparameter *nnotes* (get-module))
   (defparameter *nviterbis* (length number->viterbi))
-  ))
+  )
 
 (defun nviterbi->ninput (viterbi)
   (destructuring-bind (key &optional degree) (number->viterbi viterbi)
