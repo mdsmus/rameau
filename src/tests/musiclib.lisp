@@ -40,9 +40,9 @@
   (is (= -5 (number-of-accidentals "ceseseseses" :lily))))
 
 (test match-note-representation
+  (is (= 1 (match-note-representation "c#" :latin)))
   (is (eql nil (match-note-representation "cis" :latin)))
   (is (eql nil (match-note-representation "c#" :lily)))
-  (is (= 1 (match-note-representation "c#" :latin)))
   (is (= 1 (match-note-representation "cis" :lily))))
 
 (test get-accidental
