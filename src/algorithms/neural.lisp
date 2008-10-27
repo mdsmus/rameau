@@ -30,9 +30,7 @@ For the functional neural network, the output is an M-of-N
 codification of our augmented-sixth format which is, I hope,
 simpler. The functions @function{rameau-neural}{get-function-net} and
 @function{rameau-neural}{function-net-result} should be
-self-explanatory, and they do this coding/decoding.
-
-"))
+self-explanatory, and they do this coding/decoding."))
 
 (in-package :rameau-neural)
 
@@ -48,7 +46,11 @@ self-explanatory, and they do this coding/decoding.
 
 (defun make-pathname-neural (filename type)
   (make-pathname :directory (logical-pathname-directory "rameau:algorithms;")
-                 :name (format nil "~@{~a~^-~}" *neural-prefix* *neural-version* filename)
+                 :name (format nil
+                               "~@{~a~^-~}"
+                               *neural-prefix*
+                               *neural-version*
+                               filename)
                  :type type))
 
 ;;; general functions
@@ -62,7 +64,9 @@ self-explanatory, and they do this coding/decoding.
 (defun make-answer-pattern (gabarito diff)
   (let ((atual (make-list (+ *root-increment* (get-module)) :initial-element 0)))
     (cond ((chord-p gabarito)
-           (incf (nth (module (- (parse-note (stringify (chord-root gabarito))) diff)) atual)))
+           (incf (nth (module (- (parse-note (stringify (chord-root gabarito)))
+                                 diff))
+                      atual)))
           ((melodic-note-p gabarito)
            (incf (nth (get-module) atual)))
           ((equal 'it (augmented-sixth-type gabarito))
@@ -76,24 +80,26 @@ self-explanatory, and they do this coding/decoding.
     atual))
 
 (defun extract-root-result (diff output)
-  (loop for i from 0
-        for r in output
-        with maxi = 0
-        with maxr = 0
-        when (< maxr r) do (setf maxi i maxr r)
-        finally (return (cond ((= (get-module) maxi)
-                               (make-melodic-note))
-                              ((> (get-module) maxi)
-                               (make-chord :root (print-note (code->notename (module (+ diff maxi)))
-                                                             :latin)))
-                              ((= (+ 1 (get-module)) maxi)
-                               (make-augmented-sixth :type "IT"))
-                              ((= (+ 2 (get-module)) maxi)
-                               (make-augmented-sixth :type "AL"))
-                              ((= (+ 3 (get-module)) maxi)
-                               (make-augmented-sixth :type "FR"))
-                              (t (format t "module: ~a, maxi: ~a, output: ~a" (get-module) maxi output)
-                                 (error "erro"))))))
+  (flet ((%make-root (a b)
+           (print-note (code->notename (module (+ a b))) :latin)))
+    (loop for i from 0
+          for r in output
+          with maxi = 0
+          with maxr = 0
+          when (< maxr r) do (setf maxi i maxr r)
+          finally (return
+                    (cond ((= (get-module) maxi)
+                           (make-melodic-note))
+                          ((> (get-module) maxi)
+                           (make-chord :root (%make-root diff maxi)))
+                          ((= (+ 1 (get-module)) maxi)
+                           (make-augmented-sixth :type "IT"))
+                          ((= (+ 2 (get-module)) maxi)
+                           (make-augmented-sixth :type "AL"))
+                          ((= (+ 3 (get-module)) maxi)
+                           (make-augmented-sixth :type "FR"))
+                          (t (format t "module: ~a, maxi: ~a, output: ~a" (get-module) maxi output)
+                             (error "erro")))))))
 
 (defun make-empty-pattern ()
   (repeat-list (+ *mode-length* *7th-length*) 0))
@@ -167,7 +173,6 @@ self-explanatory, and they do this coding/decoding.
     (if (chord-p root)
         (let* ((7th (extract-7th (nthcdr *mode-length* resto)))
                (mode (extract-mode (firstn resto *mode-length*) 7th)))
-
           (make-chord :root (chord-root root)
                       :mode mode
                       :7th 7th))
@@ -200,7 +205,8 @@ self-explanatory, and they do this coding/decoding.
           (format f (remove-comma-if-needed (format nil "~{~a ~}~%" (first d))))
           (format f "~{~a ~}~%" (second d)))))
 
-(defun train-net (net training-data value net-file hidden-units &optional (out-size 109))
+(defun train-net (net training-data value net-file hidden-units
+                  &optional (out-size 109))
   (setf (symbol-value net) (make-net value hidden-units out-size))
   (format t "* training the network~%")
   (train-on-file (symbol-value net) training-data 1500 100 0.1)
@@ -232,8 +238,12 @@ self-explanatory, and they do this coding/decoding.
     (if (cl-fad:file-exists-p fann-file)
         (progn
           (setf net (load-from-file fann-file))
-          (add-inversions inputs (mapcar #L(run-my-net !1 net #'extract-diff #'make-sonority-pattern)
-                                         inputs)))
+          (add-inversions inputs
+                          (mapcar #L(run-my-net !1
+                                                net
+                                                #'extract-diff
+                                                #'make-sonority-pattern)
+                                  inputs)))
         (progn
           (train-e-chord-net alg)
           (apply-e-chord-net inputs options alg)))))
@@ -276,7 +286,9 @@ self-explanatory, and they do this coding/decoding.
 
 (add-algorithm (make-instance 'chord-net
                               :name "ES-Net"
-                              :description "A neural network classifier that looks only at each sonority."))
+                              :description "A neural network
+                              classifier that looks only at each
+                              sonority."))
 ;;; context
 
 (defun context-training-data (alg)
@@ -296,7 +308,10 @@ self-explanatory, and they do this coding/decoding.
                                        #'context-extract-features)))))
 
 (defun context-data-set (alg)
-  (write-data-set (context-training-data alg) (context-data alg) (* (+ 1 (net-context-after alg) (net-context-before alg)) *value*)))
+  (write-data-set (context-training-data alg)
+                  (context-data alg)
+                  (* (+ 1 (net-context-after alg) (net-context-before alg))
+                     *value*)))
 
 (defun train-context-net (alg)
   (let ((fann-file (context-fann alg))
@@ -308,7 +323,8 @@ self-explanatory, and they do this coding/decoding.
     (unless (cl-fad:file-exists-p fann-file)
       (train-net 'net
                  data-file
-                 (* (+ 1 (net-context-after alg) (net-context-before alg)) *value*)
+                 (* (+ 1 (net-context-after alg) (net-context-before alg))
+                    *value*)
                  fann-file
                  (context-hidden-units alg)))))
 
@@ -326,8 +342,12 @@ self-explanatory, and they do this coding/decoding.
       (if (cl-fad:file-exists-p fann-file)
           (progn
             (setf net (load-from-file fann-file))
-            (add-inversions inputs (mapcar #L(run-my-net !1 net #'context-extract-diff #'context-extract-features)
-                                           context)))
+            (add-inversions inputs
+                            (mapcar #L(run-my-net !1
+                                                  net
+                                                  #'context-extract-diff
+                                                  #'context-extract-features)
+                                    context)))
           (progn
             (train-context-net alg)
             (apply-context-net inputs options alg))))))
@@ -373,7 +393,9 @@ self-explanatory, and they do this coding/decoding.
 
 (add-algorithm (make-instance 'context-net
                               :name "EC-Net"
-                              :description "A neural network classifier that considers surrounding sonorities as well."))
+                              :description "A neural network
+                              classifier that considers surrounding
+                              sonorities as well."))
 
 ;; The functional analysis contextual network
 
@@ -398,19 +420,24 @@ self-explanatory, and they do this coding/decoding.
 
 (defparameter *function-number-size* 7)
 (defparameter *function-accident-size* 3)
-(defparameter *function-modes* '(:major :minor :augmented :diminished :half-diminished :german-sixth :italian-sixth :french-sixth))
+(defparameter *function-modes* '(:major :minor :augmented :diminished
+                                 :half-diminished :german-sixth :italian-sixth
+                                 :french-sixth))
 (defparameter *function-mode-size* (1+ (length *function-modes*)))
-(defparameter *total-function-size* (+ *function-number-size* *function-accident-size* *function-mode-size*))
+(defparameter *total-function-size* (+ *function-number-size*
+                                       *function-accident-size*
+                                       *function-mode-size*))
 
 (defun maxi (list)
   (iter (for el in list)
         (for i from 0)
         (finding i maximizing el)))
 
-
 (defun extract-function-result (res)
   (let ((number (subseq res 0 *function-number-size*))
-        (accidentals (subseq res *function-number-size* (+ *function-number-size* *function-accident-size*)))
+        (accidentals (subseq res
+                             *function-number-size*
+                             (+ *function-number-size* *function-accident-size*)))
         (mode (subseq res (+ *function-number-size* *function-accident-size*))))
     (make-roman-function :degree-number (1+ (maxi number))
                          :degree-accidentals (1- (maxi accidentals))
@@ -428,15 +455,14 @@ self-explanatory, and they do this coding/decoding.
     (incf (nth (or (position md *function-modes*) 0) mode))
     (append number accidentals mode)))
 
-;; (extract-function-result (make-function-result (make-roman-function :degree-number 1 :degree-accidentals 0 :mode :german-sixth)))
-
 (defun get-function-net (diff res)
   (let ((key (extract-key-result diff (firstn res *tonal-key-size*)))
         (function (extract-function-result (nthcdr *tonal-key-size* res))))
     (make-fchord :key key :roman-function function)))
 
 (defun function-net-result (fchord diff)
-  (append (make-key-result diff (fchord-key fchord)) (make-function-result (fchord-roman-function fchord))))
+  (append (make-key-result diff (fchord-key fchord))
+          (make-function-result (fchord-roman-function fchord))))
 
 (defun functional-training-data (alg)
   (let* ((context-before (net-context-before alg))
@@ -542,4 +568,6 @@ self-explanatory, and they do this coding/decoding.
 
 (add-falgorithm (make-instance 'functional-net
                               :name "Tsui"
-                              :description "A neural network classifier for roman numeral functional analysis."))
+                              :description "A neural network
+                              classifier for roman numeral functional
+                              analysis."))
