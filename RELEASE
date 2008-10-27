@@ -1,5 +1,20 @@
 ; -*- org -*-
 
+* Rameau 5.0, 27 outubro 2008
+
+Esse release tem as seguintes melhorias desde 4.0
+
+** o codigo esta mais robusto
+** novos algoritmos para analise funcional
+** novos algoritmos: hmm
+** remove algoritmos obsoletos
+** tradução do codigo e documentação para ingles
+** bibliotecas separadas do rameau
+** melhor esquema para exportar simbolos
+** melhoramento no parser do lilypond (gera lily, usa ast)
+** codigo para musicologia computacional
+** interface web
+
 * Rameau 4.0, 02 abril 2008
 
 Esse release tem as seguintes melhorias desde 3.0
