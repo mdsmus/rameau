@@ -21,7 +21,6 @@
 0 ok     jumps -f chora:001
 0 ok     resolve-seventh -f chora:001
 0 ok     schoenberg -f chora:001
-0 ok     funalg -f chora:001
 0 ok     report
 0 ok     collect-data
 0 ok     document
