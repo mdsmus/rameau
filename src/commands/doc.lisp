@@ -1,5 +1,6 @@
 (defpackage :rameau-doc
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
+  (:import-from #:alexandria "SWITCH")
   (:use :rameau :cl :iterate :cl-utils :cl-who))
 
 (in-package :rameau-doc)
@@ -55,13 +56,37 @@
   (when docstring
     (cl-ppcre:regex-replace "\\[NOTEST\\]" docstring "")))
 
+(defun parse-test (sexp)
+  (flet ((parse-is-type (is-type)
+           (switch ((stringify is-type) :test #'equal)
+             ("is-false" nil)
+             ("is-true" t)
+             (t (error "Unknow is-type type ~a." is-type)))))
+   (when (consp sexp)
+     (destructuring-bind (is-type body) sexp
+       (case (length body)
+         (2 (list body (parse-is-type is-type)))
+         (3 (list (third body)
+                  (second body))))))))
+
 (defun find-test-body (test-name test-file)
   "Find the body of a test names @var{test-name} in file @var{test-file}"
-  (flet ((get-first-test (test-list) (second (third (first test-list)))))
-    (get-first-test (remove-if-not #L(string= test-name (second !1)) test-file))))
+  (labels ((fiveam-predicate (item)
+             "Use symbol-name because of package names."
+             (member (symbol-name item)
+                     '("IS" "IS-NOT" "IS-TRUE" "IS-FALSE")
+                     :test #'equalp))
+           (get-test (test-name test-file)
+             (remove-if-not #L(equal test-name (second !1)) test-file))
+           (get-first-test (test-list)
+             (first (remove-if-not #'fiveam-predicate
+                                   (nthcdr 2 (first test-list))
+                                   :key #'first))))
+    (let ((test (get-first-test (get-test test-name test-file))))
+      (parse-test test))))
 
 (defun document-function-or-macro (symbol &key (type :function)
-                                                   cross-func-ref-p)
+                                   cross-func-ref-p)
   (append (list :package-name (get-package-name symbol)
                 :name symbol
                 :type type
@@ -253,15 +278,14 @@ user-defined template."
                      (htm (:p :class "example-header" "Uses:")
                           (:p :class "uses-body"
                               (fmt "~{~(~a~^, ~)~}" uses))))
-                   (when (and example (listp example))
-                     (destructuring-bind (&optional ignore result cmd &rest rest)
-                         example
-                       (htm (:p :class "example-header" "Example:")
-                            (:span :class "example"
-                                   (str (pprint-to-string cmd))
-                                   (:br)
-                                   (str (concat "=> "
-                                                (pprint-to-string result)))))))))
+                   (when (consp example)
+                     (destructuring-bind (cmd result) example
+                      (htm (:p :class "example-header" "Example:")
+                           (:span :class "example"
+                                  (str (pprint-to-string cmd))
+                                  (:br)
+                                  (str (concat "=> "
+                                               (pprint-to-string result)))))))))
             (values)))))
 
 (defun make-index-page (packages)
