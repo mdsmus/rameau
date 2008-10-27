@@ -11,6 +11,7 @@
                (:file "terminal")
                (:file "analysis")
                (:file "lily")
+               (:file "musicology")
                (:file "main")
                ))
  
