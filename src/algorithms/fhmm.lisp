@@ -103,7 +103,8 @@ is a good starting point)."))
       (let ((pitch (cond ((and (eq key pkey) (eq :out key)) 0)
                          ((eq :out key) (tonal-key-center-pitch pkey))
                          ((eq :out pkey) (tonal-key-center-pitch key))
-                         (t (interval (tonal-key-center-pitch key) (tonal-key-center-pitch pkey)))))
+                         (t (interval (tonal-key-center-pitch key)
+                                      (tonal-key-center-pitch pkey)))))
             (mode (if (eq :out key)
                       :major
                       (tonal-key-mode key))))
@@ -127,7 +128,7 @@ is a good starting point)."))
     (make-fchord :key key :roman-function degree)))
 
 (defun make-input (fchord)
-  (if (eq :out fchord)
+  (if (eql :out fchord)
       (list :out)
       (list (tonal-key-mode (fchord-key fchord)) (fchord-roman-function fchord))))
 
@@ -144,9 +145,11 @@ is a good starting point)."))
   
 (defun make-toutput (fchord prev)
   (let ((pitch-difference (pitch-difference fchord prev)))
-    (if (eq :out fchord)
+    (if (eql :out fchord)
         (list :out)
-        (list pitch-difference (tonal-key-mode (fchord-key fchord)) (fchord-roman-function fchord)))))
+        (list pitch-difference
+              (tonal-key-mode (fchord-key fchord))
+              (fchord-roman-function fchord)))))
 
 (defun notes-probs (vector nviterbi sonority)
   (destructuring-bind (key &optional degree) (number->viterbi nviterbi)
@@ -181,7 +184,8 @@ is a good starting point)."))
                 (iter (for p in (mapcar #'event-pitch sonority))
                       (incf (aref pvec
                                   (input->number (make-input chord))
-                                  (interval (tonal-key-center-pitch (fchord-key chord)) p))))))
+                                  (interval (tonal-key-center-pitch (fchord-key chord))
+                                            p))))))
     (good-turing-reestimate pvec *ninputs* *nnotes*)))
 
 (defun train-functional-hmm (alg)
@@ -216,13 +220,23 @@ is a good starting point)."))
          (mtable (make-array (list (1+ nsegs) *nviterbis*) :initial-element 0d0))
          cache)
     (dbg :fhmm "Tran ~a, out ~a, nseg ~a, table ~a, mtable ~a, version ~a~%"
-         (type-of tran) (type-of out) nsegs (type-of table) (type-of mtable) (version alg))
+         (type-of tran)
+         (type-of out)
+         nsegs
+         (type-of table)
+         (type-of mtable)
+         (version alg))
     (iter (for j from 1 below *nviterbis*)
           (for s = (mapcar #'event-pitch (first segments)))
           (setf (aref table 0 j)
-                (+ (aref tran (input->number (list :out)) (nviterbi->first-toutput j))
+                (+ (aref tran
+                         (input->number (list :out))
+                         (nviterbi->first-toutput j))
                    (notes-probs out j s)))
-          (setf cache (clip 10 (insert (list (aref table 0 j) (aref mtable 0 j) 0 j) cache :less #'> :key #'first))))
+          (setf cache (clip 10
+                            (insert (list (aref table 0 j) (aref mtable 0 j) 0 j)
+                                    cache
+                                    :less #'> :key #'first))))
     (dbg :fhmm "Done setting the first row.~%")
     (iter (for i from 0)
           (for seg in segments)
@@ -235,7 +249,7 @@ is a good starting point)."))
                   (dbg :fhmm "  Doing column ~a~%" j)
                   (let ((probabilities (notes-probs out j s))
                         (values (iter (for (vtab vmtab previ jj) in cache)
-                                      ;(dbg :fhmm "    Doing pre-column ~a~%" jj)
+                                      ;;(dbg :fhmm "    Doing pre-column ~a~%" jj)
                                       (finding (list (+ (aref table (1- i) jj)
                                                         (get-tran tran j jj))
                                                      jj)
@@ -243,7 +257,12 @@ is a good starting point)."))
                                                              (get-tran tran j jj))))))
                     (setf (aref table i j) (+ (* 2 probabilities) (first values))
                           (aref mtable i j) (second values)
-                          newcache (clip 10 (insert (list (aref table i j) (aref mtable i j) i j) newcache :less #'> :key #'first)))))
+                          newcache (clip 10 (insert (list (aref table i j)
+                                                          (aref mtable i j)
+                                                          i
+                                                          j)
+                                                    newcache
+                                                    :less #'> :key #'first)))))
             (setf cache newcache)))
     (dbg :fhmm "Done building table~%")
     (let ((chords (iter (for (vtab vmtab previ jj) in cache)
@@ -261,7 +280,9 @@ is a good starting point)."))
 
 (add-falgorithm (make-instance 'functional-hmm
                                :name "F-Hmm"
-                               :description "A roman numeral functional analysis algorithm based on Raphael and Stoddard."))
+                               :description "A roman numeral
+                               functional analysis algorithm based on
+                               Raphael and Stoddard."))
 
 ;; (trace train-functional-hmm)
 ;; (rameau-main:main "functional -f chor:006")
