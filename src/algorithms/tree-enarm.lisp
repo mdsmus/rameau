@@ -1,6 +1,6 @@
 (defpackage :rameau-tree-enarm
   (:import-from #:arnesi "AIF" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
-  (:use #:cl #:rameau #:machine-learning #:cl-music #:cl-utils :cl-lily)
+  (:use #:cl #:rameau #:machine-learning #:cl-music #:cl-utils :cl-lily :iterate)
   (:documentation "A decision tree for chord labeling.
 
 One problem with this implementation is that it is not scalable at
@@ -12,32 +12,29 @@ when it leaves @rameau.
 
 (enable-sharp-l-syntax)
 
-(defparameter *attributes* (list
-                            (cons 'pitch1 (loop for i from 0 to 95 collect i))
-                            (cons 'pitch2 (loop for i from 0 to 95 collect i))
-                            (cons 'pitch3 (loop for i from 0 to 95 collect i))
-                            (cons 'pitch4 (loop for i from 0 to 95 collect i))
-                            ))
+(defparameter *attributes* (list (cons 'pitch1 (range 0 95))
+                                 (cons 'pitch2 (range 0 95))
+                                 (cons 'pitch3 (range 0 95))
+                                 (cons 'pitch4 (range 0 95))))
 
 (defparameter *names* '(pitch1 pitch2 pitch3 pitch4))
 (defparameter *version* 1)
 
 (defparameter *chords*
-  (loop for modo in '("" "m" "+" "°" "ø" "!")
-        append
-        (loop for setima in '("" "7" "7-" "7+")
-              append
-              (loop for root from 0 to 95 collect
-                    (make-chord :root (print-note (code->notename root))
-                                :mode modo
-                                :7th setima)))))
+  (iter (for (m s r) in (cartesian-product '("" "m" "+" "°" "ø" "!")
+                                           '("" "7" "7-" "7+")
+                                           (range 0 95)))
+        (collect (make-chord :root (print-note (code->notename r))
+                             :mode m
+                             :7th s))))
 
-(defparameter *chord-classes* (mapcar #'make-keyword (mapcar #'stringify (append (list '— 'al+6 'fr+6 'it+6)
-                                                                                 *chords*))))
+(defparameter *chord-classes* (mapcar2 #'make-keyword
+                                       #'stringify
+                                       (append (list '— 'al+6 'fr+6 'it+6)
+                                               *chords*)))
 
 (defun prepare-sonority (segmento)
-  (loop for nota in segmento
-        for n in *names* collect (cons n (event-pitch nota))))
+  (mapcar #'cons *names* (mapcar #'event-pitch segmento)))
 
 (defun extract-class (acorde)
   (if (and (chord-p acorde)
@@ -67,13 +64,14 @@ when it leaves @rameau.
 
 (defun train-chord-tree (alg corais gabaritos)
   (setf (tree-tree alg)
-        (id3 (prepare-training-song corais gabaritos) *attributes* *chord-classes*)))
+        (id3 (prepare-training-song corais gabaritos)
+             *attributes* *chord-classes*)))
 
 (defun chord-tree-classify (alg segmento)
-  (let ((res (classify (make-example :values (prepare-sonority segmento)) (tree-tree alg))))
-    (aif (parse-chord res)
-         it
-         (make-melodic-note))))
+  (aif (parse-chord (classify (make-example :values (prepare-sonority segmento))
+                              (tree-tree alg)))
+       it
+       (make-melodic-note)))
 
 (defun do-classification (coral options alg)
   (declare (ignore options))
