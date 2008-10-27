@@ -100,7 +100,9 @@ Bach chorales.
           do 
           (let ((d (distance pitches key)))
             (setf knn (clip k (insert (list d key value) knn :key #'car))))
-          finally (return (get-class diff (mapcar #'second knn) (mapcar #'third knn))))))
+          finally (return (get-class diff
+                                     (mapcar #'second knn)
+                                     (mapcar #'third knn))))))
 
 (defun prepare-answers-k1 (coral options alg)
   (add-inversions coral (mapcar #L(classify-k1 !1 options alg) coral)))
@@ -121,14 +123,16 @@ Bach chorales.
                 (when (and k v)
                   (nconcing (iter (for (mode count) in v)
                                   (when (and mode count)
-                                    (collect (list count (format nil "~a" (extract-chord mode 0)) k)))))))
+                                    (collect (list count
+                                                   (format nil "~a" (extract-chord mode 0))
+                                                   k)))))))
           #'>
           :key #'first))
 
 (defun visualize-knn-hash (alg)
   (cl-cairo2:with-png-file
       ((logical-pathname-namestring "rameau:analysis;view-knn.png")
-       :argb32
+       :argb32 
        2000
        2000)
     (let ((nn (prepare (knn-nn alg)))
@@ -142,9 +146,21 @@ Bach chorales.
         (iter (for (count chord vector) in  nn)
               (let* ((angle (random (* 2 pi)))
                      (distance (distance first-vector vector))
-                     (xpos (+ (first center) (* 700 (/ 1 (1+ (log count))) (/ 1 (1+ distance)) (cos angle))))
-                     (ypos (+ (second center) (* 700 (/ 1 (1+ (log count))) (/ 1 (1+ distance)) (sin angle)))))
-                (cl-cairo2:set-font-size (normalize 1 55 0 (log first-count) (log count)))
+                     (xpos (+ (first center)
+                              (* 700
+                                 (/ 1 (1+ (log count)))
+                                 (/ 1 (1+ distance))
+                                 (cos angle))))
+                     (ypos (+ (second center)
+                              (* 700
+                                 (/ 1 (1+ (log count)))
+                                 (/ 1 (1+ distance))
+                                 (sin angle)))))
+                (cl-cairo2:set-font-size (normalize 1
+                                                    55
+                                                    0
+                                                    (log first-count)
+                                                    (log count)))
                 (cairo-random-stroke-fill-colors)
                 (cl-cairo2:move-to xpos ypos)
                 (cl-cairo2:show-text chord)))))))
@@ -162,7 +178,8 @@ Bach chorales.
 
 (add-algorithm
  (make-instance 'knn :name "ES-Knn"
-                :description "A k-nearest-neighbors classifier that classifies each sonority by itself."))
+                :description "A k-nearest-neighbors classifier that
+                classifies each sonority by itself."))
 
 (defun show-examples ()
   "Mostra em que corais estão que tipos de acorde."
@@ -188,7 +205,8 @@ Bach chorales.
           for diff = (context-extract-diff alg segmento)
           for pitches = (context-extract-features alg segmento diff)
           do (if (listp acorde)
-                 (mapcar (lambda (x) (insert-count pitches x diff nn n process)) acorde)
+                 (mapcar (lambda (x) (insert-count pitches x diff nn n process))
+                         acorde)
                  (insert-count pitches acorde diff nn n process)))))
 
 (defun train-context (alg exemplos)
@@ -198,7 +216,10 @@ Bach chorales.
           for coral = (first exemplo)
           for n from 0
           for answer = (second exemplo)
-          do (train-context-nn alg (contextualize coral before-context after-context) answer n))))
+          do (train-context-nn alg
+                               (contextualize coral before-context after-context)
+                               answer
+                               n))))
 
 (defun classify-context (alg segmento options &optional (extract #'extract-chord))
   (declare (ignore options))
@@ -211,7 +232,9 @@ Bach chorales.
           do 
           (let ((d (distance pitches key)))
             (setf knn (clip k (insert (list d key value) knn :key #'car))))
-          finally (return (get-class diff (mapcar #'second knn) (mapcar #'third knn) extract)))))
+          finally (return (get-class diff (mapcar #'second knn)
+                                     (mapcar #'third knn)
+                                     extract)))))
 
 (defun prepare-answers-context (coral options alg)
   (let* ((before-context (cknn-before-context alg))
@@ -251,7 +274,8 @@ Bach chorales.
 (add-algorithm (make-instance
                 'context-knn
                 :name "EC-Knn"
-                :description "A k-nearest-neighbor classifier that considers a bit of contextual information."))
+                :description "A k-nearest-neighbor classifier that
+                considers a bit of contextual information."))
 
 
 ;; Functional knn
@@ -325,4 +349,6 @@ Bach chorales.
 (add-falgorithm (make-instance
                 'functional-knn
                 :name "F-Knn"
-                :description "A k-nearest-neighbor classifier that considers a bit of contextual information and does functional harmonic analysis."))
+                :description "A k-nearest-neighbor classifier that
+                considers a bit of contextual information and does
+                functional harmonic analysis."))
