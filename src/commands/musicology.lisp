@@ -10,18 +10,20 @@
 (defun do-classifier (classifier hash chorale-hash contextual)
   (destructuring-bind (chor seg segm answ &rest results) (first contextual)
     (declare (ignore segm answ results))
-    (awhen (cl-utils::listify (funcall classifier contextual))
+    (awhen (listify (funcall classifier contextual))
       (iter (for i in it)
-            (if (gethash chor chorale-hash)
-                (push seg (gethash chor chorale-hash))
-                (setf (gethash chor chorale-hash) (list seg)))
+            (when chorale-hash
+              (if (gethash chor chorale-hash)
+                  (push seg (gethash chor chorale-hash))
+                  (setf (gethash chor chorale-hash) (list seg))))
             (if (gethash i hash)
                 (push (list chor seg) (gethash i hash))
                 (setf (gethash i hash) (list (list chor seg))))))))
 
-(defun count-occurences-into-hash (analysis context-window classifier)
-  (let ((h (make-hash-table :test #'equalp))
-        (c (make-hash-table :test #'equalp)))
+(defun count-occurences-into-hash (analysis context-window classifier pre-filter)
+  (let ((h (make-hash-table :test #'equal))
+        (c (make-hash-table :test #'equal))
+        (e (make-hash-table :test #'equal)))
     (iter (for anal in analysis)
           (for segno = (iter (for i from 0)
                              (for e in (analysis-segments anal))
@@ -36,14 +38,93 @@
                                                     segments
                                                     answer)
                                               results)))
-          (for contextual = (butlast (group full-list context-window)
+          (for contextual = (butlast (group (funcall pre-filter full-list)
+                                            context-window)
                                      (1- context-window)))
-          (mapcar #L(do-classifier classifier h c !1) contextual))
-    (values h c)))
+          (mapcar #L(do-classifier classifier h c !1) contextual)
+          (do-classifier classifier e nil (last1 contextual)))
+    (values h c e)))
+
+
+(defun text-dimensions (text size)
+  "The size of @var{text} when printed as a size @var{size}."
+  (cl-cairo2:set-font-size size)
+  (multiple-value-bind (xbear ybear width height)
+      (cl-cairo2:text-extents text)
+    (list (/ (+ width xbear) 2) (/ (- height ybear) 2))))
+
+(defun collides (boxa boxb)
+  "True if the boxes collide."
+  (destructuring-bind ((cxa cya dxa dya &rest foo)
+                       (cxb cyb dxb dyb &rest bar))
+      (list boxa boxb)
+    (declare (ignore foo bar))
+    (and (> (+ 10 dxa dxb) (abs (- cxa cxb)))
+         (> (+ 5 dya dyb) (abs (- cya cyb))))))
+
+(defun approach-0 (number step)
+  "Bring number closer to 0 by a step."
+  (if (< number 0)
+      (- number step)
+      (+ number step))) 
 
 (defun sorted-hash (hash)
   "The elements in a frequency hash, sorted by least common first."
   (sorted (all-elements-hash hash) #'< :key #L(length (second !1))))
+
+(defun figure-compute-boxes (cadences max-size center)
+  (let (boxes)
+    (iter (for (cadence places) in cadences)
+          (for i from 1)
+          (let* ((size (normalize 10d0
+                                  55d0
+                                  0d0
+                                  max-size
+                                  (length places)))
+                 (dim (append (text-dimensions cadence size)
+                              (list cadence size)))
+                 (angle (random (* 2 pi)))
+                 (cenx (first center))
+                 (ceny (second center))
+                 (box (cons cenx (cons ceny dim)))
+                 (stepx (* 10 (cos angle)))
+                 (stepy (* 10 (sin angle))))
+            (iter (for n from 1 to 220)
+                  (always (some #'identity (mapcar #L(collides !1 box) boxes)))
+                  (setf box (cons (+ (first box) stepx)
+                                  (cons (+ (second box) stepy) dim))))
+            (push box boxes)))
+    boxes))
+
+(defun figure-show-hash (hash options)
+  "Draw the cadence figure for the cadences."
+  (make-random-state t)
+  (cl-cairo2:with-png-file
+      ((stringify
+               (make-analysis-file "png"
+                                   (arg :command options)))
+       :rgb24 2000 2000)
+    (let* ((center (list 1000 1000))
+           (boxes nil)
+           (cadences (sorted-hash hash))
+           (max-size (length (second (first cadences)))))
+      (cl-cairo2:select-font-face "Times" :normal :normal)
+      (cl-cairo2:rectangle 0 0 2000 2000)
+      (cl-cairo2:set-source-rgb 1 1 1)
+      (cl-cairo2:fill-path)
+      (setf boxes (figure-compute-boxes cadences max-size center))
+      (iter (for (cx cy dx dy cadence size) in boxes)
+            (for i from 1)
+            (for (red green blue) = (cairo-random-stroke-fill-colors))
+            (cl-cairo2:set-font-size size)
+            (multiple-value-bind (xbear ybear xwidth yheight)
+                (cl-cairo2:text-extents cadence)
+              (cl-cairo2:move-to (+ (- cx xwidth) xbear)
+                                 (- (- cy yheight) ybear)))
+            (cl-cairo2:text-path cadence)
+            (cl-cairo2:stroke-preserve)
+            (cairo-brighten-source red green blue)
+            (cl-cairo2:fill-path)))))
 
 (defun text-show-hash (hash options)
   "Show a frequency hash as text."
@@ -104,26 +185,39 @@
                                                            (1- s)
                                                            (1+ s))))))))
 
-(defun make-musicology-action (classifier context display functional chor-dis name)
+(defun make-musicology-action (classifier
+                               context
+                               display
+                               functional
+                               chor-dis
+                               fig-dis
+                               name
+                               pre-filter)
   (lambda (options)
     (let* ((analysis (if functional
-                         (analyse-files options :roman-function)
+                         (analyse-files options :roman-analysis)
                          (analyse-files options :chord-names))))
       (setf (arg :command options) name)
-      (multiple-value-bind (hash chorale-hash)
-          (count-occurences-into-hash analysis context classifier)
+      (multiple-value-bind (hash chorale-hash end-hash)
+          (count-occurences-into-hash analysis context classifier pre-filter)
+        (when (arg :last options)
+          (setf hash end-hash))
         (cond ((arg :freq options) (frequency-text-show-hash hash options))
               ((arg :text options) (text-show-hash hash options))
               (t (funcall display hash options)))
         (cond ((arg :all-lily options) (lily-show-hash chorale-hash options))
               ((arg :each-lily options) (lily-each-hash chorale-hash options))
-              (t (funcall chor-dis chorale-hash options)))))))
+              (t (funcall chor-dis chorale-hash options)))
+        (cond ((arg :figure options) (funcall fig-dis hash options))
+              (t (funcall fig-dis hash options)))))))
     
 (defun register-musicology-command (&key classifier
                                     (context 1)
                                     functional
                                     (display #'text-show-hash)
                                     (chorale-display #'empty-show-hash)
+                                    (figure-display #'empty-show-hash)
+                                    (pre-filter #'identity)
                                     name
                                     doc
                                     options)
@@ -136,6 +230,10 @@
                                         "Create a lily for all matches")
                                        ("" "each-lily"
                                         "Create a lily for each match")
+                                       ("" "figure"
+                                        "Create a figure for the results")
+                                       ("" "last"
+                                        "Match only the final segments")
                                        ("" "context" "Override default context"
                                         1 'rameau::type-int)
                                        ("-m" "max-print-error"
@@ -147,7 +245,60 @@
                                                     display
                                                     functional
                                                     chorale-display
-                                                    name)))
+                                                    figure-display
+                                                    name
+                                                    pre-filter)))
+
+(defun cadence-remove-repeated-chords (full-list)
+  (iter (with last-chord = nil)
+        (for element in full-list)
+        (for (chorale segno segm answ chord &rest ignore) = element)
+        (for c = chord)
+        (for lc = (fifth last-chord))
+        (if (not last-chord)
+              (progn (setf last-chord element)
+                     (collect element))
+              (unless  (and (equalp (fchord-key c) (fchord-key lc))
+                            (equal (roman-function-degree-number
+                                    (fchord-roman-function c))
+                                   (roman-function-degree-number
+                                    (fchord-roman-function lc))))
+                (collect element)
+                (setf last-chord element)))))
+
+(defun normalize-to-key (fchord first-key)
+  "Normalize fchord @var{fchord} to be in relation to @var{key}."
+  (let* ((this-key (fchord-key fchord))
+         (center-pitch (interval (tonal-key-center-pitch first-key)
+                                 (tonal-key-center-pitch this-key))))
+    (make-fchord :roman-function (fchord-roman-function fchord)
+                 :key (make-tonal-key :center-pitch  center-pitch
+                                      :mode (tonal-key-mode this-key))
+                 :inversion (fchord-inversion fchord)
+                 :bass (fchord-bass fchord)
+                 :7th (fchord-7th fchord))))
+
+
+(defun cadence-classifier (window)
+  (when (first window)
+    (let* ((chords (mapcar #'fifth window))
+           (key (fchord-key (first chords))))
+      (reduce #'concat
+              (mapcar #L(format nil "~a " !1)
+                      (cleanup-keys (mapcar #L(normalize-to-key !1 key) chords)))))))
+
+(register-musicology-command :classifier #'cadence-classifier
+                             :context 4
+                             :functional t
+                             :display #'frequency-text-show-hash
+                             :figure-display #'figure-show-hash
+                             :pre-filter #'cadence-remove-repeated-chords
+                             :name "cadences"
+                             :doc "Detect the chord progressions and
+cadences in the specified files using the first specified roman
+numeral functional analysis algorithm. The chord progressions will be
+in analysis/cadences.png . To detect the end cadences, use the parameter
+--last")
 
 (defun %pith-intersection (s1 s2)
   "Calculate the intersection between the pitches of two sonorities."

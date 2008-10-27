@@ -33,7 +33,6 @@
                (:module commands
                         :serial t
                         :components ((:file "analysis-command")
-                                     (:file "cadences")
                                      #-win32 (:file "web")
                                      (:file "doc")
                                      (:file "stat")
