@@ -2,7 +2,7 @@
 
 (enable-sharp-l-syntax)
 
-(defun do-classifier (classifier hash chorale-hash contextual)
+(defun do-classifier :private (classifier hash chorale-hash contextual)
   (when contextual
     (destructuring-bind (chor seg segm answ &rest results) (first contextual)
       (declare (ignore segm answ results))
@@ -16,7 +16,10 @@
                   (push (list chor seg) (gethash i hash))
                   (setf (gethash i hash) (list (list chor seg)))))))))
 
-(defun count-occurences-into-hash (analysis context-window classifier pre-filter)
+(defun count-occurences-into-hash :private (analysis
+                                            context-window
+                                            classifier
+                                            pre-filter)
   (let ((h (make-hash-table :test #'equal))
         (c (make-hash-table :test #'equal))
         (e (make-hash-table :test #'equal)))
@@ -42,14 +45,14 @@
     (values h c e)))
 
 
-(defun text-dimensions (text size)
+(defun text-dimensions :private (text size)
   "The size of @var{text} when printed as a size @var{size}."
   (cl-cairo2:set-font-size size)
   (multiple-value-bind (xbear ybear width height)
       (cl-cairo2:text-extents text)
     (list (/ (+ width xbear) 2) (/ (- height ybear) 2))))
 
-(defun collides (boxa boxb)
+(defun collides :private (boxa boxb)
   "True if the boxes collide."
   (destructuring-bind ((cxa cya dxa dya &rest foo)
                        (cxb cyb dxb dyb &rest bar))
@@ -58,17 +61,17 @@
     (and (> (+ 10 dxa dxb) (abs (- cxa cxb)))
          (> (+ 5 dya dyb) (abs (- cya cyb))))))
 
-(defun approach-0 (number step)
+(defun approach-0 :private (number step)
   "Bring number closer to 0 by a step."
   (if (< number 0)
       (- number step)
       (+ number step))) 
 
-(defun sorted-hash (hash)
+(defun sorted-hash :private (hash)
   "The elements in a frequency hash, sorted by least common first."
   (sorted (all-elements-hash hash) #'< :key #L(length (second !1))))
 
-(defun figure-compute-boxes (cadences max-size center)
+(defun figure-compute-boxes :private (cadences max-size center)
   (let (boxes)
     (iter (for (cadence places) in cadences)
           (for i from 1)
@@ -181,14 +184,14 @@
                                                            (1- s)
                                                            (1+ s))))))))
 
-(defun make-musicology-action (classifier
-                               context
-                               display
-                               functional
-                               chor-dis
-                               fig-dis
-                               name
-                               pre-filter)
+(defun make-musicology-action :private (classifier
+                                        context
+                                        display
+                                        functional
+                                        chor-dis
+                                        fig-dis
+                                        name
+                                        pre-filter)
   (lambda (options)
     (let* ((analysis (if functional
                          (analyse-files options :roman-analysis)
