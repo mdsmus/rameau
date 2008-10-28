@@ -73,7 +73,7 @@
     (iter (for (cadence places) in cadences)
           (for i from 1)
           (let* ((size (normalize 10d0
-                                  55d0
+                                  20d0
                                   0d0
                                   max-size
                                   (length places)))
@@ -102,7 +102,7 @@
        :rgb24 2000 2000)
     (let* ((center (list 1000 1000))
            (boxes nil)
-           (cadences (sorted-hash hash))
+           (cadences (reverse (sorted-hash hash)))
            (max-size (length (second (first cadences)))))
       (cl-cairo2:select-font-face "Times" :normal :normal)
       (cl-cairo2:rectangle 0 0 2000 2000)
