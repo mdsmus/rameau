@@ -15,15 +15,15 @@ global = {
 soprano = \relative c'' {
   \partial 4 g4 
     d'4 d4 d4 d4 
-  e4 d8 c8 b4 a4 
+  e4 d8 c8 b4\fermata a4 
   b8 cis8 d4 e4 e4 
-  d2 r4 d4 
+  d2\fermata r4 d4 
   d4 d4 d4 b8 c8   %5
-  d4 c8 b8 a4 d4 
+  d4 c8 b8 a4\fermata d4 
   c4 b4 a4 a4 
-  g8 a8 b8 c8 d4 d4 
+  g8 a8 b8 c8 d4\fermata d4 
   c4 b8 a8 b4 a4 
-  g2.   %10
+  g2.\fermata   %10
   
 }
 
@@ -60,15 +60,15 @@ tenor = \relative c' {
 baixo = \relative c' {
   \partial 4 g4 
     fis4 d4 g8 a8 b4 
-  c,4 d4 g4 fis4 
+  c,4 d4 g4\fermata fis4 
   e4 d4 g4 a4 
-  d,2 r4 fis4 
+  d,2\fermata r4 fis4 
   g4 a4 b4 e,4   %5
-  b4 c4 d4 b4 
+  b4 c4 d4\fermata b4 
   e8 fis8 g4 d4 dis4 
-  e8 fis8 g8 a8 b4 g4 
+  e8 fis8 g8 a8 b4\fermata g4 
   e4 d8 c8 d4 d4 
-  g,2.   %10
+  g,2.\fermata   %10
   
 }
 
