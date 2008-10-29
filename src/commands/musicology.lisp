@@ -219,82 +219,46 @@ analysis/cruzamento-<chorale>-<first-sonority>-<last-sonority>.ly")
                              :doc "List all the chords in the analyzes
 files.")
 
-(defun intervals (segment number)
-  (iter (for n in segment)
-        (for s previous n)
-        (when (and n s)
-          (when (= number
-                   (first (interval->code (module (- (event-pitch n)
-                                                     (event-pitch s))))))
-            (return (list s n))))))
+(defun interval-match (a b interval)
+  (= interval (first (interval->code (module (- (event-pitch b)
+                                                (event-pitch a)))))))
+(defun parallel-classifier (context interval)
+  (destructuring-bind (prev seg) (mapcar #L(sorted !1 #'event-<)
+                                         (mapcar #'third context))
+    (iter (for (a b) in (cartesian-product prev prev))
+          (when (and (not (eql a b))
+                     (event-< a b)
+                     (interval-match a b interval))
+            (let ((nexts (sorted (mapcar #L(extract-note seg !1) (list a b))
+                                 #'event-<)))
+              (when (interval-match (first nexts) (second nexts) interval)
+                (collect (format nil "Between ~a and ~a"
+                                 (event-voice-name a)
+                                 (event-voice-name b)))))))))
 
 (defun get-strong (strong? segments)
   (if strong?
       (remove-if-not #L(integerp (* 4 (event-dur (first !1)))) segments)
       segments))
 
-(defun do-parallel (options analysis number name strong)
-  #+sbcl(declare (sb-ext:muffle-conditions sb-ext::warning))
-  (iter (for anal in analysis)
-        (iter (for n in (get-strong strong (analysis-segments anal)))
-              (for s previous n)
-              (for p previous s)
-              (for i from 0)
-              (awhen (and n s (intervals (sorted s #'event-<) number))
-                (let* ((n1 (first it))
-                       (n2 (second it))
-                       (v1 (event-voice-name n1))
-                       (v2 (event-voice-name n2))
-                       (f1 (find-if #L(equal (event-voice-name !1) v1) n))
-                       (f2 (find-if #L(equal (event-voice-name !1) v2) n))
-                       (d1 (when f1 (- (event-pitch f1)
-                                       (event-pitch n1))))
-                       (d2 (when f2 (- (event-pitch f2)
-                                       (event-pitch n2)))))
-                  (when (and f1 f2 (= d1 d2) (not (= d1 0)))
-                    (unless strong
-                      (with-output-file (f (make-analysis-file "ly"
-                                                               "parallel"
-                                                               name
-                                                               (analysis-file-name anal)
-                                                               i))
-                        (format f "~a"
-                                (make-lily-segments
-                                 options
-                                 (remove-if #'null (list p s n))))))
-                    (format t " parallel ~a chorale ~a voices ~a and ~a sonority ~a notes ~a and ~a to ~a and ~a~%"
-                            name
-                            (analysis-file-name anal)
-                            v1
-                            v2
-                            i
-                            (print-event-note n1)
-                            (print-event-note n2)
-                            (print-event-note f1)
-                            (print-event-note f2))))))))
+(defun parallel-fifth-classify (context)
+  (parallel-classifier context 5))
 
-(defun parallel-fifths (options)
-  (let ((analysis (analyse-files options :chord-names)))
-    (format t "Quintas \"reais\":~%")
-    (do-parallel options analysis 5 "fifths" nil)
-    (format t "Quintas nos tempos fortes:~%")
-    (do-parallel options analysis 5 "fifths" t)))
-
-(register-command :name "fifths"
-                  :action #'parallel-fifths
-                  :documentation "Detect consecutive fifths in the given files.")
+(register-musicology-command :classifier #'parallel-fifth-classify
+                             :context 2
+                             :chorale-display #'lily-each-hash
+                             :name "fifths"
+                             :doc "Detect consecutive fifths in given files")
 
 
-(defun parallel-octaves (options)
-  (let ((analysis (analyse-files options :chord-names)))
-    (format t "Oitavas reais:~%")
-    (do-parallel options analysis 1 "octaves" nil)
-    (format t "Oitavas no compassos forte:~%")
-    (do-parallel options analysis 1 "octaves" t)))
+(defun parallel-octave-classify (context)
+  (parallel-classifier context 1))
 
-(register-command :name "octaves"
-                  :action #'parallel-octaves
-                  :documentation "Detect consecutive octaves and unisons in the given files.")
+(register-musicology-command :classifier #'parallel-fifth-classify
+                             :context 2
+                             :chorale-display #'lily-each-hash
+                             :name "octaves"
+                             :doc "Detect consecutive octaves in given files")
 
 (defun print-segments (options)
   (iter (for anal in (analyse-files options :chord-names))
