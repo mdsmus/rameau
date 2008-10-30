@@ -208,7 +208,8 @@
   (let* ((analysis (incf-pardo-classify segments options alg))
          (first-chord (first analysis))
          (root (chord-root first-chord))
-         (mode (if (or (equal (chord-mode first-chord) "") (null (chord-mode first-chord)))
+         (mode (if (or (equal (chord-mode first-chord) "")
+                       (null (chord-mode first-chord)))
                    :major
                    :minor))
          (key (make-tonal-key :center-pitch (parse-note root) :mode mode)))

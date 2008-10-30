@@ -12,8 +12,10 @@
           (sum (/ n (coerce l 'single-float))))))
 
 (defun stddev (r a)
-  (sqrt (iter (for n in r)
-              (sum (* (- n a) (- n a))))))
+  (let ((total (length r)))
+    (sqrt (/ (iter (for n in r)
+                   (sum (* (- n a) (- n a))))
+             total))))
 
 (defun count-hits (res gab)
   (length (remove-if #'null (mapcar #'compare-answer-sheet res gab))))
