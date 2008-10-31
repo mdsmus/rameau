@@ -18,7 +18,7 @@
              total))))
 
 (defun count-hits (res gab)
-  (length (remove-if #'null (mapcar #'compare-answer-sheet res gab))))
+  (count-if-not #'null (mapcar #'compare-answer-sheet res gab)))
 
 (defun collect-data (options)
   (let* ((analysis (analyse-files options :chord-names))
@@ -33,7 +33,7 @@
           (when (analysis-answer-sheet anal)
             (format t "~5a|" (analysis-file-name anal))
             (iter (for r in (analysis-results anal))
-                  (with size = (length r))
+                  (for size = (length r))
                   (for c = (count-hits r (analysis-answer-sheet anal)))
                   (for i from 0)
                   (format t "~6,2f%|" (% c size))
