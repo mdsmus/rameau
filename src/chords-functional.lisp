@@ -107,6 +107,15 @@
         ((equal mode "+") :augmented)
         (t :major)))
 
+(defun keyword->mode (mode)
+  "Match the chord-mode @var{mode} with the appropriate fchord-mode keyword."
+  (cond ((equal mode :major)  "")
+        ((equal mode :minor) "m")
+        ((equal mode :half-diminished) "ø")
+        ((equal mode :diminished) "°")
+        ((equal mode :augmented) "+")
+        (t "")))
+
 (defmethod chord->fchord ((chord chord) center)
   "Convert a chord of type 'chord' to a functional chord according to
 center. center must be a string and scale-mode a keyword."
@@ -128,6 +137,19 @@ center. center must be a string and scale-mode a keyword."
                :roman-function (make-roman-function :degree-number 1
                                                     :degree-accidentals 0
                                                     :mode :major)))
+
+(defun fchord->chord (fchord)
+  (let ((f (fchord-roman-function fchord))
+        (k (fchord-key fchord)))
+    (cond ((eql :german-sixth (roman-function-mode f))
+           (make-augmented-sixth :type :al))
+          ((eql :french-sixth (roman-function-mode f))
+           (make-augmented-sixth :type :it))
+          ((eql :italian-sixth (roman-function-mode f))
+           (make-augmented-sixth :type :fr))
+          (t (make-chord :root (print-note (code->notename (roman-function-root f k)))
+                         :mode (keyword->mode (roman-function-mode f)))))))
+        
 
 (defmethod %compare-answer-sheet ((answer fchord) (sheet fchord) &optional tempered?)
   (declare (ignore tempered?))
