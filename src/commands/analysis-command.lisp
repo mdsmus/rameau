@@ -16,6 +16,7 @@
       ("-c" "no-color" "don't use color in the answer")
       ("-s" "score" "generate annotated scores as answer")
       ("-z" "column-chord-size" "" "7")
+      ("" "as-chords" "show fchords as chords in functional analysis")
       ("" "column-number-size" "" "3")
       ("" "column-notes-size" "" "12")
       ("" "column-dur-size" "" "4")
@@ -25,7 +26,6 @@
       ("" "gv" "roda gv")
       ("" "png" "gera png")
       ("-S" "view-score" "gera score, roda lily e gv")))
-
 
 (defun analysis-terminal (options analysis)
   "Displays the analysis in @var{analysis} as a table on the console."
@@ -45,6 +45,9 @@
           (for result in (make-result-list analysis))
           (for comparison = (mapcar #L(compare-answer-sheet !1 answer) result))
           (setf right-answer-list (inc-bool-list comparison right-answer-list))
+          (when (arg :as-chords options)
+            (setf result (mapcar #'fchord->chord result)
+                  answer (fchord->chord answer)))
           (print-line-term options seg-number note dur answer)
           (iter (for res in result)
                 (for comp in comparison)
@@ -76,6 +79,8 @@
           (for seg-number from 1)
           (for result in (make-result-list analysis))
           (print-line-term options seg-number note dur)
+          (when (arg :as-chords options)
+            (setf result (mapcar #'fchord->chord result)))
           (iter (for res in result)
                 (print-chord-column options res))
           (finally
@@ -122,9 +127,14 @@
                                                  (analysis-answer-sheet analysis)
                                                  (alg-name al)
                                                  options
-                                                 (cleanup-keys re)))
+                                                 (if (arg :as-chords options)
+                                                     (mapcar #'fchord->chord re)
+                                                     (cleanup-keys re))))
           (format in-score (make-lyrics (alg-name al))))
     (when (analysis-answer-sheet analysis)
+      (when (arg :as-chords options)
+        (setf (analysis-answer-sheet analysis)
+              (mapcar #'fchord->chord (analysis-answer-sheet analysis))))
       (format variables (make-answer-sheet (analysis-answer-sheet analysis)))
       (format in-score (make-lyrics "answer")))
     (setf (node-text score) (%make-score-list music variables in-score))
