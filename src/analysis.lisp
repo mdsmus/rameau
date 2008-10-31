@@ -8,13 +8,11 @@
 
 (defun main-perform-analysis :private (fn segments options alg)
   (safe-with-backtrace
-      (:condition  (arg :debug options)
-       :print-error-msg (format t "Analysis failed for algorithm ~a.~%" alg))
+      (:print-error-msg (format t "Analysis failed for algorithm ~a.~%" alg))
     (funcall fn segments options alg)))
 
 (defun main-parse-file :private (file options)
-  (safe-with-backtrace (:condition (arg :debug options)
-                        :print-error-msg (format t "Could not parse file ~a.
+  (safe-with-backtrace (:print-error-msg (format t "Could not parse file ~a.
 Please check with lilypond to see if it is valid.
 If it is, please report a bug.~%" file)
                         :exit t)
@@ -48,8 +46,7 @@ Try omitting the \"-a\" option and trying again.~%")
                                                     #'path-parse-answer-sheet
                                                     #'path-parse-functional-answer-sheet)))
     (safe-with-backtrace
-        (:condition (arg :debug options)
-         :print-error-msg (format t "Could not analyse ~a.~%" last-file)
+        (:print-error-msg (format t "Could not analyse ~a.~%" last-file)
          :exit t)
       (iter (for file in (arg :files options))
             (setf last-file file)

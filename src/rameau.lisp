@@ -203,7 +203,12 @@ exists."
   "Set stroke and fill colors using cairo."
   (apply #'cl-cairo2:set-source-rgb colors))
 
-(defmacro safe-with-backtrace ((&key condition print-error-msg exit return)
+(defun rameau-log-file-name ()
+  (make-pathname :name (format nil "rameau-~a" (get-universal-time))
+                 :type "log"
+                 :directory "/var/tmp"))
+
+(defmacro safe-with-backtrace ((&key print-error-msg exit return)
                                &body code)
   "Runs @var{code} with error protection, calling
 @var{print-error-msg} if there's an error and doing a backtrace if
@@ -212,8 +217,11 @@ running on sbcl and @var{condition} is true at runtime."
     `(handler-bind ((error (lambda (,err)
                              ,print-error-msg
                              (format t "Error: ~a~%" ,err)
-                             (when ,condition
-                               #+sbcl (sb-debug:backtrace))
+                             (let ((name (rameau-log-file-name)))
+                               (with-output-file (f name)
+                                 #+sbcl (sb-debug:backtrace most-positive-fixnum f))
+                               (format t "For more detailed information see ~a~%"
+                                       name))
                              (when ,exit
                                (rameau-quit))
                              ,return)))

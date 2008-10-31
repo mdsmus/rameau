@@ -89,8 +89,7 @@
   (let* ((*package* (find-package :rameau))
          (rameau-args (rameau-args))
          (arguments (if args (cl-ppcre:split " " args) rameau-args)))
-    (safe-with-backtrace (:condition t
-                          :print-error-msg (format t "Rameau could not operate.~%")
+    (safe-with-backtrace (:print-error-msg (format t "Rameau could not operate.~%")
                           :exit t)
       (if arguments
           (iter (for command-list in (split-command-list arguments))
