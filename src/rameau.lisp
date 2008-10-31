@@ -203,10 +203,10 @@ exists."
   "Set stroke and fill colors using cairo."
   (apply #'cl-cairo2:set-source-rgb colors))
 
-(defun rameau-log-file-name ()
+(defun rameau-log-file-name :private ()
   (make-pathname :name (format nil "rameau-~a" (get-universal-time))
                  :type "log"
-                 :directory "/var/tmp"))
+                 :directory "/tmp"))
 
 (defmacro safe-with-backtrace ((&key print-error-msg exit return)
                                &body code)
