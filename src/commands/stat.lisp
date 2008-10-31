@@ -7,9 +7,9 @@
 
 
 (defun average (r)
-  (let ((l (length r)))
-    (iter (for n in r)
-          (sum (/ n (coerce l 'single-float))))))
+  (/ (iter (for n in r)
+           (sum n ))
+     (coerce l 'single-float)))
 
 (defun stddev (r a)
   (sqrt (/ (iter (for n in r)
