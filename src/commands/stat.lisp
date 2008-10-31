@@ -5,16 +5,15 @@
 
 (in-package :rameau-stat)
 
+(enable-sharp-l-syntax)
 
 (defun average (r)
   (/ (iter (for n in r)
            (sum n ))
-     (coerce l 'single-float)))
+     (coerce (length r) 'single-float)))
 
 (defun stddev (r a)
-  (sqrt (/ (iter (for n in r)
-                 (sum (* (- n a) (- n a))))
-           (length r))))
+  (sqrt (average (mapcar #L(square (- !1 a)) r))))
 
 (defun count-hits (res gab)
   (count-if-not #'null (mapcar #'compare-answer-sheet res gab)))
