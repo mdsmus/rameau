@@ -262,10 +262,10 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
               (iter (for j from 0 below 96)
                     (cl-cairo2:rectangle (+ 70 (* 30 n))
                                          (* 10 j)
-                                         (normalize 0d0 4d0 min max
-                                                    (aref notes (+ (* 96 i) j)))
-                                         (normalize 0d0 4d0 min max
-                                                    (aref notes (+ (* 96 i) j))))
+                                         (normalize-line 0d0 4d0 min max
+                                                         (aref notes (+ (* 96 i) j)))
+                                         (normalize-line 0d0 4d0 min max
+                                                         (aref notes (+ (* 96 i) j))))
                     (cl-cairo2:fill-path))
               (dbg :hmm-prof "One more line --- ~a of ~a ~%" i *nlabels*))
         (dbg :hmm-prof "Now the special chords.~%")
@@ -275,10 +275,10 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
               (iter (for j from 0 below 96)
                     (cl-cairo2:rectangle (+ 70 (* 30 m))
                                          (* 10 j)
-                                         (normalize 0d0 4d0 min max
-                                                    (aref specials (+ (* 96 n) j)))
-                                         (normalize 0d0 4d0 min max
-                                                    (aref specials (+ (* 96 n) j))))
+                                         (normalize-line 0d0 4d0 min max
+                                                         (aref specials (+ (* 96 n) j)))
+                                         (normalize-line 0d0 4d0 min max
+                                                         (aref specials (+ (* 96 n) j))))
                     (cl-cairo2:fill-path))
               (dbg :hmm-prof "One more line --- ~a of ~a ~%" i *nlabels*))))))
 
@@ -327,10 +327,10 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
               (iter (for j from 0 below *nlabels*)
                     (cl-cairo2:rectangle (+ 40 (* 3 j))
                                          (+ 50 (* 10 i))
-                                         (normalize 0d0 4d0 min max
-                                                    (aref tr (+ (* *nlabels* i) j)))
-                                         (normalize 0d0 4d0 min max
-                                                    (aref tr (+ (* *nlabels* i) j))))
+                                         (normalize-line 0d0 4d0 min max
+                                                         (aref tr (+ (* *nlabels* i) j)))
+                                         (normalize-line 0d0 4d0 min max
+                                                         (aref tr (+ (* *nlabels* i) j))))
                     (cl-cairo2:fill-path))
               (dbg :hmm-prof "One more line --- ~a of ~a ~%" i *nlabels*))
         (iter (for n from *nmodes* below (+ *nmodes* *nspecials*))
@@ -338,10 +338,10 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
               (iter (for j from 0 below *nlabels*)
                     (cl-cairo2:rectangle (+ 40 (* 3 j))
                                          (+ 50 (* 10 n))
-                                         (normalize 0d0 4d0 min max
-                                                    (aref str (+ (* *nlabels* i) j)))
-                                         (normalize 0d0 4d0 min max
-                                                    (aref str (+ (* *nlabels* i) j))))
+                                         (normalize-line 0d0 4d0 min max
+                                                         (aref str (+ (* *nlabels* i) j)))
+                                         (normalize-line 0d0 4d0 min max
+                                                         (aref str (+ (* *nlabels* i) j))))
                     (cl-cairo2:fill-path))
               (dbg :hmm-prof "One more line --- ~a of ~a ~%" i *nlabels*))))))
 
@@ -377,8 +377,8 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
         (iter (for i from 0 below *nlabels*)
               (cl-cairo2:rectangle 70
                                    (+ 7 (* 10 i))
-                                   (normalize 0d0 4d0 min max (aref tr i))
-                                   (normalize 0d0 4d0 min max (aref tr i)))
+                                   (normalize-line 0d0 4d0 min max (aref tr i))
+                                   (normalize-line 0d0 4d0 min max (aref tr i)))
               (cl-cairo2:fill-path))))))
 
 ;; (setf my-hmm (last1 rameau:*algorithms*))

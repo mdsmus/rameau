@@ -156,11 +156,11 @@ Bach chorales.
                                  (/ 1 (1+ (log count)))
                                  (/ 1 (1+ distance))
                                  (sin angle)))))
-                (cl-cairo2:set-font-size (normalize 1
-                                                    55
-                                                    0
-                                                    (log first-count)
-                                                    (log count)))
+                (cl-cairo2:set-font-size (normalize-line 1
+                                                         55
+                                                         0
+                                                         (log first-count)
+                                                         (log count)))
                 (cairo-random-stroke-fill-colors)
                 (cl-cairo2:move-to xpos ypos)
                 (cl-cairo2:show-text chord)))))))
