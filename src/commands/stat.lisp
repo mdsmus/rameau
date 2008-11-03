@@ -7,21 +7,13 @@
 
 (enable-sharp-l-syntax)
 
-(defun average (r)
-  (/ (iter (for n in r)
-           (sum n ))
-     (coerce (length r) 'single-float)))
-
-(defun stddev (r a)
-  (sqrt (average (mapcar #L(square (- !1 a)) r))))
-
 (defun count-hits (res gab)
   (count-if-not #'null (mapcar #'compare-answer-sheet res gab)))
 
 (defun collect-data (options)
-  (let* ((analysis (analyse-files options :chord-names))
+  (let* ((analysis (analyse-files options (if (arg :functional options) :roman-analysis :chord-names)))
          (a (first analysis))
-         (res (iter (for i in (analysis-algorithms (first analysis)))
+         (res (iter (for i in (analysis-algorithms a))
                     (collect (list 0)))))
     (format t "~5a|" " ")
     (iter (for alg in (analysis-algorithms a))
@@ -42,7 +34,7 @@
           (format t "~6,2f%|" (average (butlast r))))
     (format t "~%Desvios:~%~5a|" " ")
     (iter (for r in res)
-          (format t "~6,2f |" (stddev (butlast r) (average (butlast r)))))
+          (format t "~6,2f |" (stddev (butlast r))))
     (format t "~%")))
 
 (register-command :name "collect-data"
@@ -138,46 +130,33 @@
 (defun %make-hash (list)
   (iter (for i in list) (collect (make-hash-table :test #'equal))))
 
-(defun report (options)
-  (let* ((analysis (analyse-files options :chord-names))
-         (algorithms (analysis-algorithms (first analysis)))
-         (confusion-matrix (iter (for a in algorithms)
-                                 (collect (make-hash-table :test #'equal))))
-         (countings (iter (for a in algorithms)
-                          (collect (make-hash-table :test #'equal))))
-         (modes (make-hash-table :test #'equal))
-         (matrixes (repeat-list (length algorithms) nil))
-         (obtained (%make-hash algorithms))
-         (correct (%make-hash algorithms))
-         (answer (%make-hash algorithms)))
-    (iter (for anal in analysis)
-          (iter (for alg in algorithms)
-                (for r in (analysis-results anal))
-                (for m in confusion-matrix)
-                (for co in countings)
-                (for re in answer)
-                (for ob in obtained)
-                (for right in correct)
-                (iter (for an in r)
-                      (for ga in (analysis-answer-sheet anal))
-                      (let ((ga (if (listp ga) (first ga) ga)))
-                        (incf (gethash (answer->mode ga)
-                                       co
-                                       0))
-                        (setf (gethash (answer->mode an) modes) t
-                              (gethash (answer->mode ga) modes) t)
-                        (incf (gethash (list (answer->mode an) (answer->mode ga)) m 0))
-                        (if  (rameau::%compare-answer-sheet an ga)
-                             (incf (gethash (answer->mode an) right 0))
-                             (progn
-                               (incf (gethash (answer->mode ga) re 0))
-                               (incf (gethash (answer->mode an) ob 0))))))))
-    (format t "Done counting...~%")
-    (setf modes (iter (for (mode va) in-hashtable modes) (collect mode)))
-    (build-confusion-matrixes confusion-matrix countings matrixes modes)
-    (format t "Done building confusion matrix...~%")
-    (with-output-file (f (make-analysis-file "tex" "report"))
-      (format f "
+(defun do-counting (analysis algorithms confusion-matrix
+                    countings answer obtained correct modes)
+  (iter (for anal in analysis)
+        (iter (for alg in algorithms)
+              (for r in (analysis-results anal))
+              (for m in confusion-matrix)
+              (for co in countings)
+              (for re in answer)
+              (for ob in obtained)
+              (for right in correct)
+              (iter (for an in r)
+                    (for ga in (analysis-answer-sheet anal))
+                    (let ((ga (if (listp ga) (first ga) ga)))
+                      (incf (gethash (answer->mode ga)
+                                     co
+                                     0))
+                      (setf (gethash (answer->mode an) modes) t
+                            (gethash (answer->mode ga) modes) t)
+                      (incf (gethash (list (answer->mode an) (answer->mode ga)) m 0))
+                      (if  (rameau::%compare-answer-sheet an ga)
+                           (incf (gethash (answer->mode an) right 0))
+                           (progn
+                             (incf (gethash (answer->mode ga) re 0))
+                             (incf (gethash (answer->mode an) ob 0)))))))))
+
+(defun latex-header (f)
+  (format f "
 \\documentclass{article}
 \\usepackage{amsmath}
 \\usepackage[utf8x]{inputenc}
@@ -194,7 +173,28 @@
 
 \\maketitle
 
-")
+"))
+
+(defun report (options)
+  (let* ((analysis (analyse-files options :chord-names))
+         (algorithms (analysis-algorithms (first analysis)))
+         (confusion-matrix (iter (for a in algorithms)
+                                 (collect (make-hash-table :test #'equal))))
+         (countings (iter (for a in algorithms)
+                          (collect (make-hash-table :test #'equal))))
+         (modes (make-hash-table :test #'equal))
+         (matrixes (repeat-list (length algorithms) nil))
+         (obtained (%make-hash algorithms))
+         (correct (%make-hash algorithms))
+         (answer (%make-hash algorithms)))
+    (do-counting analysis algorithms confusion-matrix
+                 countings answer obtained correct modes)
+    (format t "Done counting...~%")
+    (setf modes (iter (for (mode va) in-hashtable modes) (collect mode)))
+    (build-confusion-matrixes confusion-matrix countings matrixes modes)
+    (format t "Done building confusion matrix...~%")
+    (with-output-file (f (make-analysis-file "tex" "report"))
+      (latex-header f)
       (make-confusion-matrixes f algorithms matrixes modes)
       (make-precision-table f "Precision"
                             #'precision

@@ -28,7 +28,8 @@
 
 (asdf:defsystem :commands
   :depends-on (:rameau-pkg :cl-lily :cl-store :cl-who :algorithms :swank :fiveam
-                           #-win32 :hunchentoot :md5 :cl-fad :cl-base64 :cl-store)
+                           #-win32 :hunchentoot :md5 :cl-fad :cl-base64 :cl-store
+                           :cl-statistics)
   :serial t
   :components ((:file "package-test")
                (:module commands
