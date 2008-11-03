@@ -10,9 +10,8 @@
 (defun count-hits (res gab)
   (count-if-not #'null (mapcar #'compare-answer-sheet res gab)))
 
-(defun collect-data (options)
-  (let* ((analysis (analyse-files options (if (arg :functional options) :roman-analysis :chord-names)))
-         (a (first analysis))
+(defun collect-data (analysis)
+  (let* ((a (first analysis))
          (res (iter (for i in (analysis-algorithms a))
                     (collect (list 0)))))
     (format t "~5a|" " ")
@@ -35,12 +34,8 @@
     (format t "~%Desvios:~%~5a|" " ")
     (iter (for r in res)
           (format t "~6,2f |" (stddev (butlast r))))
-    (format t "~%")))
-
-(register-command :name "collect-data"
-                  :action #'collect-data
-                  :documentation "Collect accuracy data on the chord
-                  labeling algorithms specified.")
+    (format t "~%")
+    res))
 
 (defun answer->mode (answer)
   (cond ((chord-p answer)
@@ -50,6 +45,11 @@
         ((melodic-note-p answer) (list :non-chord-tone))
         ((augmented-sixth-p answer)
          (list :aug6 (make-keyword (augmented-sixth-type answer))))
+        ((fchord-p answer)
+         (let ((f (fchord-roman-function answer)))
+           (list :functional
+                 (roman-function-degree-number f)
+                 (roman-function-mode f))))
         (t nil)))
 
 (defun make-precision-table (f name func algorithms answer correct obtained modes)
@@ -77,6 +77,12 @@
                     (format nil "~(~a~)" (third mode))))
     (:non-chord-tone "nct")
     (:aug6 (make-augmented-sixth :type (format nil "~(~a~)" (second mode))))
+    (:functional (make-fchord :key (make-tonal-key :center-pitch 0
+                                                   :mode :major)
+                              :roman-function (make-roman-function
+                                               :degree-number (second mode)
+                                               :degree-accidentals 0
+                                               :mode (third mode))))
     (t "")))
 
 (defun make-confusion-matrixes (f algorithms matrixes modes)
@@ -85,7 +91,8 @@
         (for nmodes = (length modes))
         (format f "\\begin{table}~%\\begin{center}~%\\begin{tabular}{r|~{~a~^|~}}~%"
                 (mapcar (lambda (x) (declare (ignore x)) "r") modes))
-        (format f "       & ~{~a~^ & ~} \\\\ \\hline~%" (mapcar #'mode->answer modes))
+        (format f "       & ~{~a~^ & ~} \\\\ \\hline~%"
+                (mapcar #'mode->answer modes))
         (iter (for m in modes)
               (for n from 0)
               (format f " ~a " (mode->answer m))
@@ -95,8 +102,26 @@
                                               " "
                                               (aref cm n i))))
               (format f " \\\\ \\hline~%"))
-        (format f "\\end{tabular}~%\\caption{Confusion matrix for ~a}~%\\end{center}~%\\end{table}~%"
+        (format f
+                "\\end{tabular}
+\\caption{Confusion matrix for ~a}
+\\end{center}
+\\end{table}
+"
                 (alg-name a))))
+
+(defun make-accuracy-table (f res algorithms)
+  (format f "\\begin{table}~%\\begin{center}~%\\begin{sc}~%\\begin{tabular}{lrr}~%")
+  (format f "\\hline~%")
+  (format f "Algorithm & Accuracy & Stddev \\\\ \\hline~%")
+  (iter (for alg in algorithms)
+        (for r in res)
+        (format f "~a & ~2,1f & ~2,1f \\\\~%"
+                (alg-name alg)
+                (average (butlast r))
+                (stddev (butlast r))))
+  (format f "\\hline")
+  (format f "\\end{tabular}~%\\end{sc}~%\\end{center}~%\\caption{Accuracies}~%\\end{table}"))
 
 (defun build-confusion-matrixes (confusion-matrix countings matrixes modes)
   (iter (for a in *algorithms*)
@@ -175,8 +200,40 @@
 
 "))
 
+(defun output-to-latex (algorithms modes matrixes obtained correct answer res)
+  (with-output-file (f (make-analysis-file "tex" "report"))
+    (latex-header f)
+    (make-confusion-matrixes f algorithms matrixes modes)
+    (make-precision-table f "Precision"
+                          #'precision
+                          algorithms
+                          answer
+                          correct
+                          obtained
+                          modes)
+    (make-precision-table f "Recall"
+                          #'recall
+                          algorithms
+                          answer
+                          correct
+                          obtained
+                          modes)
+    (make-precision-table f "F-measure"
+                          #'f-measure
+                          algorithms
+                          answer
+                          correct
+                          obtained
+                          modes)
+    (make-accuracy-table f res algorithms)
+    (format f "~%\\end{document}~%")
+    (format t "Modes: ~s~%" modes)))
+
 (defun report (options)
-  (let* ((analysis (analyse-files options :chord-names))
+  (let* ((functional (if (arg :functional options)
+                         :roman-analysis
+                         :chord-names))
+         (analysis (analyse-files options functional))
          (algorithms (analysis-algorithms (first analysis)))
          (confusion-matrix (iter (for a in algorithms)
                                  (collect (make-hash-table :test #'equal))))
@@ -186,43 +243,21 @@
          (matrixes (repeat-list (length algorithms) nil))
          (obtained (%make-hash algorithms))
          (correct (%make-hash algorithms))
-         (answer (%make-hash algorithms)))
+         (answer (%make-hash algorithms))
+         (res (collect-data analysis)))
     (do-counting analysis algorithms confusion-matrix
                  countings answer obtained correct modes)
     (format t "Done counting...~%")
     (setf modes (iter (for (mode va) in-hashtable modes) (collect mode)))
     (build-confusion-matrixes confusion-matrix countings matrixes modes)
     (format t "Done building confusion matrix...~%")
-    (with-output-file (f (make-analysis-file "tex" "report"))
-      (latex-header f)
-      (make-confusion-matrixes f algorithms matrixes modes)
-      (make-precision-table f "Precision"
-                            #'precision
-                            algorithms
-                            answer
-                            correct
-                            obtained
-                            modes)
-      (make-precision-table f "Recall"
-                            #'recall
-                            algorithms
-                            answer
-                            correct
-                            obtained
-                            modes)
-      (make-precision-table f "F-measure"
-                            #'f-measure
-                            algorithms
-                            answer
-                            correct
-                            obtained
-                            modes)
-      (format f "~%\\end{document}~%")
-      (format t "Modes: ~s~%" modes))))
+    (output-to-latex algorithms modes matrixes obtained correct answer res)
+    (format t "The tables are in analysis/report.tex~%")))
 
 
 (register-command :name "report"
                   :action #'report
                   :documentation "Collect precision, recall, f-measure
                   and confusion matrixes for the chord labeling
-                  algorithms specified.")
+                  algorithms specified."
+                  :options '(("" "functional" "Use functional analysis")))
