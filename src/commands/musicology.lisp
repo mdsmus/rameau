@@ -223,8 +223,7 @@ analysis/cruzamento-<chorale>-<first-sonority>-<last-sonority>.ly")
                              :classifier #'chords-classifier
                              :context 1
                              :show-as :frequency
-                             :doc "List all the chords in the analyzes
-files.")
+                             :doc "List all the chord modes in the analyzed files.")
 
 (defun interval-match (a b interval)
   (= interval (first (interval->code (module (- (event-pitch b)
