@@ -9,7 +9,7 @@
 
 (defparameter *rameau-packages*
   '("RAMEAU" "EXPORT-SYMBOLS" "CL-UTILS" "CL-MUSIC" "CL-LILY" "RAMEAU-WEB"
-    "RAMEAU-ALG-COMMANDS" "RAMEAU-ANALYSIS" "RAMEAU-CADENCES" "RAMEAU-DOC"
+    "RAMEAU-ALG-COMMANDS" "RAMEAU-ANALYSIS" "RAMEAU-DOC"
     "RAMEAU-MUSICOLOGY" "RAMEAU-STAT" "RAMEAU-WEB" "RAMEAU-HMM" "RAMEAU-NEURAL"
     "RAMEAU-KNN" "RAMEAU-TREE-ENARM" "RAMEAU-PARDO"))
 
@@ -188,6 +188,9 @@ html code in @var{body}. These are expanded in
 
 (make-docstring-template mono (text)
   (:span :class "mono" (str (escape-string text))))
+
+(make-docstring-template code (text)
+  (:pre :class "code" (str text)))
 
 (defun apply-replacement (name args string)
   "Compute the correct replacement for template named @var{name} in @var{string}"

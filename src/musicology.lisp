@@ -250,6 +250,93 @@
                                     name
                                     doc
                                     options)
+  "Register a command using @rameau's musicological queries framework.
+
+This framework encapsulates counting excerpts matching a given query
+and displaying this data in a user-friendly fashion. Using this
+framework is as simple as deciding which things to observe in a given
+query, writing a small lisp function that does the observing,
+receiving as parameters the data in a small window of a chorale and
+returns a list of the queries that window matched. The framework,
+then, deals with the messy details of analysing the files, storing the
+matches and generating the output.
+
+A simple example: suppose one wants to count the different chord modes
+in a few chorales. The classifier function will look something like
+
+@code{
+(defun chords-classifier (context options)
+  (declare (ignore options))
+  (destructuring-bind ((chor segno segm ans chord &rest ignore))
+      context
+    (declare (ignore chor segno segm ans ignore))
+    (if (chord-p chord)
+        (format nil \"~a\" (transpose-chord chord
+                                            (- (parse-note (chord-root chord)))))
+        (format nil \"~a\" chord))))
+}
+ 
+and the call to
+@function{rameau-musicology}{register-musicology-command} will look
+like:
+
+@code{
+(register-musicology-command
+  :name \"chords\"
+  :classifier #'chords-classifier
+  :context 1
+  :show-as :frequency
+  :doc \"List all the chord modes in the analyzed files.\")
+}
+
+After this, @rameau will group and count all the distinct values
+returned by the classifier function and output them as a frequency
+list on the terminal.
+
+Tha keyword arguments are:
+
+@var{:classifier} is the function used to classify.
+
+@var{:name} is the name of the command, used to run it via the
+command-line. Failing to specify the name is an error.
+
+@var{:doc} is a string describing the command. It will show in
+@rameau's help.
+
+@var{:options} are any extra command-line options the classifier
+accepts.
+
+@var{:context} is the amount of context the classifier wants. Defaults
+to 1.
+
+@var{:functional} is @var{t} if and only if the command expects
+functional analysis as its input.
+
+@var{:show-as} controls how the results will be displayed in the
+terminal. The posible values are @var{:text-list} (the default, which
+shows the occurrences and their origins), @var{:frequency} which,
+instead, shows the frequency of each occurrence and @var{:none} which
+displays nothign at all. 
+
+@var{:generate-figure} controls whether a figure will be
+generated. The possible values are @var{:cloud}, which generates a
+cloud-like display of the frequencies and @var{:none}, which does not
+generate a figure. The figure, if any, will be named
+analysis/<command>.png .
+
+@var{:generate-lily} controls whether lilypond will be generated for
+the results. The possible values are @var{:each}, which will generate
+a lilypond for each match, @{:all} which generates a lilypond
+containing all matches in a given chorale and @var{:none}, which does
+not generate a lilypond file. The lilypond, if any, will be named
+analysis/<command>-<start-of-match>-<end-of-match>.ly .
+
+If a function is passed as a @var{:pre-filter} it will be called
+before doing classification. Its job is to preemptively remove
+uninteresting data that would be hard to ignore from inside the
+classifier.
+
+"
   (register-command
    :name name
    :documentation doc
