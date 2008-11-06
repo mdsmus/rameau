@@ -298,3 +298,36 @@ files.")
                   :documentation "Create a lilypond snippet of the
 given file between the given sonorities. It will be saved as
 analysis/segments-<file>-<start>-<end>.ly")
+
+
+(defun count-notes-minor-classifier (context)
+  (destructuring-bind ((chorale segno segment answer result &rest ignore))
+      context
+    (declare (ignore ignore chorale segno result))
+    (let ((k (fchord-key answer)))
+      (when (eql :minor (tonal-key-mode k))
+        (mapcar #'print-event-note
+              (first (transpose-segmentos (list segment)
+                                          (- (tonal-key-center-pitch k)))))))))
+
+(register-musicology-command :classifier #'count-notes-minor-classifier
+                             :name "count-minor-notes"
+                             :display #'frequency-text-show-hash
+                             :functional t
+                             :doc "Count the notes in a minor key")
+
+(defun count-notes-major-classifier (context)
+  (destructuring-bind ((chorale segno segment answer result &rest ignore))
+      context
+    (declare (ignore ignore chorale segno result))
+    (let ((k (fchord-key answer)))
+      (when (eql :major (tonal-key-mode k))
+        (mapcar #'print-event-note
+              (first (transpose-segmentos (list segment)
+                                          (- (tonal-key-center-pitch k)))))))))
+
+(register-musicology-command :classifier #'count-notes-major-classifier
+                             :name "count-major-notes"
+                             :functional t
+                             :display #'frequency-text-show-hash
+                             :doc "Count the notes in a major key")
