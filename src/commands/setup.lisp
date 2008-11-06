@@ -13,7 +13,7 @@
   (main "algorithms -o train -a net -f chor:1..6 exa:11..13 exa:23..28")
   (main "algorithms -o train -a hmm tree bay knn -f chor:1..10 exa:11..13 exa:23..28 chor:012 chor:014 chor:17..33 ")
   (format t "Functional Algorithms: ~{~a~^ ~}~%" (mapcar #'alg-name *functional-algorithms*))
-  (main "funalg -o train -f chor:1..3 exa:001 chor:1..3 chor:006"))
+  (main "funalg -o train -f exa:001 chor:1..3 chor:006 chor:019"))
 
 (register-command :name "setup"
                   :documentation "Train using the default options."
