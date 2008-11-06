@@ -1,9 +1,9 @@
-(defpackage :rameau-musicology
+(defpackage :musicology-commands
   (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
-  (:use :rameau :cl-utils :cl-music :cl :iterate :cl-lily)
+  (:use :rameau :cl-utils :cl-music :cl :iterate :cl-lily :rameau-musicology)
   (:documentation "The computational musicology commands for @rameau"))
 
-(in-package :rameau-musicology)
+(in-package :musicology-commands)
 
 (enable-sharp-l-syntax)
 
@@ -37,7 +37,8 @@
                  :7th (fchord-7th fchord))))
 
 
-(defun cadence-classifier (window)
+(defun cadence-classifier (window options)
+  (declare (ignore options))
   (when (first window)
     (let* ((chords (mapcar #'fifth window))
            (key (fchord-key (first chords))))
@@ -48,8 +49,8 @@
 (register-musicology-command :classifier #'cadence-classifier
                              :context 4
                              :functional t
-                             :display #'frequency-text-show-hash
-                             :figure-display #'figure-show-hash
+                             :show-as :frequency
+                             :generate-figure :cloud
                              :pre-filter #'cadence-remove-repeated-chords
                              :name "cadences"
                              :doc "Detect the chord progressions and
@@ -63,7 +64,8 @@ in analysis/cadences.png . To detect the end cadences, use the parameter
   (intersection (remove-duplicates (mapcar #'event-pitch s1))
                 (remove-duplicates (mapcar #'event-pitch s2))))
 
-(defun schoenberg-classifier (context)
+(defun schoenberg-classifier (context options)
+  (declare (ignore options))
   (destructuring-bind ((chorale segno ps ignore0 p &rest ignore1)
                        (ignore2 ignore3 sonority ignore4 chord &rest ignore5))
       context
@@ -83,7 +85,7 @@ in analysis/cadences.png . To detect the end cadences, use the parameter
 (register-musicology-command :classifier #'schoenberg-classifier
                              :name "schoenberg"
                              :context 2
-                             :display #'frequency-text-show-hash
+                             :show-as :frequency
                              :doc "Collect stats on how many chord
 progressions found in the chorales are strong, weak, superstrong and
 neutral, according to Schoenberg's theory of harmony.") 
@@ -92,7 +94,8 @@ neutral, according to Schoenberg's theory of harmony.")
   (when (not (equal "" (chord-7th chord)))
     (first (member (7th-pitch chord) seg :key #'event-pitch))))
 
-(defun resolve-seventh-classifier (context)
+(defun resolve-seventh-classifier (context options)
+  (declare (ignore options))
   (destructuring-bind ((i ig ps &rest igno)
                        (ignor ignore seg chord &rest ignore1)
                        (ignore2 ignore3 nseg &rest ignore4))
@@ -115,7 +118,7 @@ neutral, according to Schoenberg's theory of harmony.")
 (register-musicology-command :name "resolve-seventh"
                              :classifier #'resolve-seventh-classifier
                              :context 3
-                             :display #'text-show-hash
+                             :show-as :text-list
                              :doc "Show a summary of all the
 seventh-note resolutions found in the files. Only for Bach chorales
 or other media with voicing information.")
@@ -126,7 +129,8 @@ or other media with voicing information.")
          (append '(nil nil nil nil nil)
                  (all-chords-single options anal)))))
 
-(defun jumps-classifier (context)
+(defun jumps-classifier (context options)
+  (declare (ignore options))
   (destructuring-bind ((i ig seg &rest ignore)
                        (ign igno nseg &rest ignore2))
       context
@@ -153,7 +157,8 @@ or other media with voicing information.")
               (print-event-note note)
               (+ 3 (event-octave note))))))
 
-(defun kostka-amb-classifier (context)
+(defun kostka-amb-classifier (context options)
+  (declare (ignore options))
   (destructuring-bind ((i ig segment &rest ignore)) context
     (declare (ignore i ig ignore))
     (remove-if #'null
@@ -164,8 +169,8 @@ or other media with voicing information.")
 
 (register-musicology-command :name "kostka-amb"
                              :classifier #'kostka-amb-classifier
-                             :display #'frequency-text-show-hash
-                             :chorale-display #'lily-each-hash
+                             :show-as :frequency
+                             :generate-lily :all
                              :doc "Show where the note ranges for the
 voices in a chorale are different from KP rules.
 Only for Bach chorales.")
@@ -176,7 +181,8 @@ Only for Bach chorales.")
                                    :key #L(cons (event-pitch !1)
                                                 (event-octave !1))))))
 
-(defun crossing-classifier (context)
+(defun crossing-classifier (context options)
+  (declare (ignore options))
   (destructuring-bind ((i ig segment &rest ignore))
       context
     (declare (ignore i ig ignore))
@@ -193,18 +199,18 @@ Only for Bach chorales.")
                   (event-voice-name alto)
                   (event-voice-name soprano)))))))
 
-
 (register-musicology-command :name "crossings"
                              :classifier #'crossing-classifier
-                             :display #'frequency-text-show-hash
-                             :chorale-display #'lily-show-hash
+                             :show-as :frequency
+                             :generate-lily :all
                              :context 1
                              :doc "Find all voice crossings in the
 specified files. Only for Bach chorales. Each crossing will be saved
 as a lilypond snippet in
 analysis/cruzamento-<chorale>-<first-sonority>-<last-sonority>.ly")
 
-(defun chords-classifier (context)
+(defun chords-classifier (context options)
+  (declare (ignore options))
   (destructuring-bind ((chor segno segm ans chord &rest ignore))
       context
     (declare (ignore chor segno segm ans ignore))
@@ -215,13 +221,14 @@ analysis/cruzamento-<chorale>-<first-sonority>-<last-sonority>.ly")
 (register-musicology-command :name "chords"
                              :classifier #'chords-classifier
                              :context 1
-                             :display #'frequency-text-show-hash
+                             :show-as :frequency
                              :doc "List all the chords in the analyzes
 files.")
 
 (defun interval-match (a b interval)
   (= interval (first (interval->code (module (- (event-pitch b)
                                                 (event-pitch a)))))))
+
 (defun parallel-classifier (context interval)
   (destructuring-bind (prev seg) (mapcar #L(sorted !1 #'event-<)
                                          (mapcar #'third context))
@@ -241,22 +248,24 @@ files.")
       (remove-if-not #L(integerp (* 4 (event-dur (first !1)))) segments)
       segments))
 
-(defun parallel-fifth-classify (context)
+(defun parallel-fifth-classify (context options)
+  (declare (ignore options))
   (parallel-classifier context 5))
 
 (register-musicology-command :classifier #'parallel-fifth-classify
                              :context 2
-                             :chorale-display #'lily-each-hash
+                             :generate-lily :each
                              :name "fifths"
                              :doc "Detect consecutive fifths in given files")
 
 
-(defun parallel-octave-classify (context)
+(defun parallel-octave-classify (context options)
+  (declare (ignore options))
   (parallel-classifier context 1))
 
-(register-musicology-command :classifier #'parallel-fifth-classify
+(register-musicology-command :classifier #'parallel-octave-classify
                              :context 2
-                             :chorale-display #'lily-each-hash
+                             :generate-lily :each
                              :name "octaves"
                              :doc "Detect consecutive octaves in given files")
 
@@ -300,7 +309,8 @@ given file between the given sonorities. It will be saved as
 analysis/segments-<file>-<start>-<end>.ly")
 
 
-(defun count-notes-minor-classifier (context)
+(defun count-notes-minor-classifier (context options)
+  (declare (ignore options))
   (destructuring-bind ((chorale segno segment answer result &rest ignore))
       context
     (declare (ignore ignore chorale segno result))
@@ -312,11 +322,12 @@ analysis/segments-<file>-<start>-<end>.ly")
 
 (register-musicology-command :classifier #'count-notes-minor-classifier
                              :name "count-minor-notes"
-                             :display #'frequency-text-show-hash
+                             :show-as :frequency
                              :functional t
                              :doc "Count the notes in a minor key")
 
-(defun count-notes-major-classifier (context)
+(defun count-notes-major-classifier (context options)
+  (declare (ignore options))
   (destructuring-bind ((chorale segno segment answer result &rest ignore))
       context
     (declare (ignore ignore chorale segno result))
@@ -329,5 +340,5 @@ analysis/segments-<file>-<start>-<end>.ly")
 (register-musicology-command :classifier #'count-notes-major-classifier
                              :name "count-major-notes"
                              :functional t
-                             :display #'frequency-text-show-hash
+                             :show-as :frequency
                              :doc "Count the notes in a major key")

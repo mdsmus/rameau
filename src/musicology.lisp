@@ -1,12 +1,18 @@
-(in-package :rameau)
+(defpackage :rameau-musicology
+  (:import-from #:arnesi "AIF" "AWHEN" "IT" "LAST1" "ENABLE-SHARP-L-SYNTAX")
+  (:use :rameau :cl-utils :cl-music :cl :iterate :cl-lily)
+  (:export :register-musicology-command)
+  (:documentation "The computational musicology query framework for @rameau"))
+
+(in-package :rameau-musicology)
 
 (enable-sharp-l-syntax)
 
-(defun do-classifier :private (classifier hash chorale-hash contextual)
+(defun do-classifier (classifier hash chorale-hash contextual options)
   (when contextual
     (destructuring-bind (chor seg segm answ &rest results) (first contextual)
       (declare (ignore segm answ results))
-      (awhen (listify (funcall classifier contextual))
+      (awhen (listify (funcall classifier contextual options))
         (iter (for i in it)
               (when chorale-hash
                 (if (gethash chor chorale-hash)
@@ -16,10 +22,11 @@
                   (push (list chor seg) (gethash i hash))
                   (setf (gethash i hash) (list (list chor seg)))))))))
 
-(defun count-occurences-into-hash :private (analysis
-                                            context-window
-                                            classifier
-                                            pre-filter)
+(defun count-occurences-into-hash (analysis
+                                   context-window
+                                   classifier
+                                   pre-filter
+                                   options)
   (let ((h (make-hash-table :test #'equal))
         (c (make-hash-table :test #'equal))
         (e (make-hash-table :test #'equal)))
@@ -40,19 +47,19 @@
           (for contextual = (butlast (group (funcall pre-filter full-list)
                                             context-window)
                                      (1- context-window)))
-          (mapcar #L(do-classifier classifier h c !1) contextual)
-          (do-classifier classifier e nil (last1 contextual)))
+          (mapcar #L(do-classifier classifier h c !1 options) contextual)
+          (do-classifier classifier e nil (last1 contextual) options))
     (values h c e)))
 
 
-(defun text-dimensions :private (text size)
+(defun text-dimensions (text size)
   "The size of @var{text} when printed as a size @var{size}."
   (cl-cairo2:set-font-size size)
   (multiple-value-bind (xbear ybear width height)
       (cl-cairo2:text-extents text)
     (list (/ (+ width xbear) 2) (/ (- height ybear) 2))))
 
-(defun collides :private (boxa boxb)
+(defun collides (boxa boxb)
   "True if the boxes collide."
   (destructuring-bind ((cxa cya dxa dya &rest foo)
                        (cxb cyb dxb dyb &rest bar))
@@ -61,17 +68,17 @@
     (and (> (+ 10 dxa dxb) (abs (- cxa cxb)))
          (> (+ 5 dya dyb) (abs (- cya cyb))))))
 
-(defun approach-0 :private (number step)
+(defun approach-0 (number step)
   "Bring number closer to 0 by a step."
   (if (< number 0)
       (- number step)
       (+ number step))) 
 
-(defun sorted-hash :private (hash)
+(defun sorted-hash (hash)
   "The elements in a frequency hash, sorted by least common first."
   (sorted (all-elements-hash hash) #'< :key #L(length (second !1))))
 
-(defun figure-compute-boxes :private (cadences max-size center)
+(defun figure-compute-boxes (cadences max-size center)
   (let (boxes)
     (iter (for (cadence places) in cadences)
           (for i from 1)
@@ -184,21 +191,44 @@
                                                            (1- s)
                                                            (1+ s))))))))
 
-(defun make-musicology-action :private (classifier
-                                        context
-                                        display
-                                        functional
-                                        chor-dis
-                                        fig-dis
-                                        name
-                                        pre-filter)
+(defun get-lily-display-function (key)
+  (case key
+    (:each #'lily-each-hash)
+    (:all #'lily-show-hash)
+    (:none #'empty-show-hash)
+    (t #'empty-show-hash)))
+
+(defun get-figure-display-function (key)
+  (case key
+    (:cloud #'figure-show-hash)
+    (:none #'empty-show-hash)
+    (t #'empty-show-hash)))
+
+(defun get-text-display-function (key)
+  (case key
+    (:text-list #'text-show-hash)
+    (:frequency #'frequency-text-show-hash)
+    (t #'empty-show-hash)))
+
+(defun make-musicology-action (classifier
+                               context
+                               display
+                               functional
+                               chor-dis
+                               fig-dis
+                               name
+                               pre-filter)
   (lambda (options)
     (let* ((analysis (if functional
                          (analyse-files options :roman-analysis)
                          (analyse-files options :chord-names))))
       (setf (arg :command options) name)
       (multiple-value-bind (hash chorale-hash end-hash)
-          (count-occurences-into-hash analysis context classifier pre-filter)
+          (count-occurences-into-hash analysis
+                                      context
+                                      classifier
+                                      pre-filter
+                                      options)
         (when (arg :last options)
           (setf hash end-hash))
         (cond ((arg :freq options) (frequency-text-show-hash hash options))
@@ -213,37 +243,40 @@
 (defun register-musicology-command (&key classifier
                                     (context 1)
                                     functional
-                                    (display #'text-show-hash)
-                                    (chorale-display #'empty-show-hash)
-                                    (figure-display #'empty-show-hash)
+                                    (show-as :text-list)
+                                    (generate-lily :none)
+                                    (generate-figure :none)
                                     (pre-filter #'identity)
                                     name
                                     doc
                                     options)
-  (register-command :name name
-                    :documentation doc
-                    :options (append options
-                                     '(("" "freq" "Show as a frequency hash")
-                                       ("" "text" "Show as a text hash")
-                                       ("" "all-lily"
-                                        "Create a lily for all matches")
-                                       ("" "each-lily"
-                                        "Create a lily for each match")
-                                       ("" "figure"
-                                        "Create a figure for the results")
-                                       ("" "last"
-                                        "Match only the final segments")
-                                       ("" "context" "Override default context"
-                                        1 'rameau::type-int)
-                                       ("-m" "max-print-error"
-                                        "Maximum number of elements to be printed."
-                                        10
-                                        'rameau::type-int)))
-                    :action (make-musicology-action classifier
-                                                    context
-                                                    display
-                                                    functional
-                                                    chorale-display
-                                                    figure-display
-                                                    name
-                                                    pre-filter)))
+  (register-command
+   :name name
+   :documentation doc
+   :options (append options
+                    '(("" "freq" "Show as a frequency hash")
+                      ("" "text" "Show as a text hash")
+                      ("" "all-lily"
+                       "Create a lily for all matches")
+                      ("" "each-lily"
+                       "Create a lily for each match")
+                      ("" "cloud"
+                       "Create a cloud figure for the results")
+                      ("" "last"
+                       "Match only the final segments")
+                      ("" "context" (format nil
+                                     "Override default context, ~a"
+                                     context)
+                       context 'rameau::type-int)
+                      ("-m" "max-print-error"
+                       "Maximum number of elements to be printed."
+                       10
+                       'rameau::type-int)))
+   :action (make-musicology-action classifier
+                                   context
+                                   (get-text-display-function show-as)
+                                   functional
+                                   (get-lily-display-function generate-lily)
+                                   (get-figure-display-function generate-figure)
+                                    name
+                                    pre-filter)))
