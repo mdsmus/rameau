@@ -1,5 +1,6 @@
 (asdf:defsystem :rameau-pkg
-  :depends-on (:cl-utils :cl-music :arnesi :iterate :alexandria :cl-lily :cl-ppcre :cl-store :cl-fad
+  :depends-on (:cl-utils :cl-music :arnesi :iterate :alexandria
+                         :cl-lily :cl-ppcre :cl-store :cl-fad
                          :cl-cairo2 #+win32 :cl-cairo2-win :cl-colors)
   :serial t
   :components ((:file "packages")
@@ -16,7 +17,8 @@
                ))
  
 (asdf:defsystem :algorithms
-  :depends-on (:rameau-pkg :cl-store :cl-cairo2 :cl-lily :fann :machine-learning :cl-fad)
+  :depends-on (:rameau-pkg :cl-store :cl-cairo2 :cl-lily :fann
+                           :machine-learning :cl-fad)
   :components ((:module algorithms
                         :components ((:file "hmm")
                                      (:file "neural")
