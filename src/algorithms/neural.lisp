@@ -41,7 +41,7 @@ self-explanatory, and they do this coding/decoding."))
 (defparameter *mode-length* 5)
 (defparameter *7th-length* 4)
 (defparameter *value* 96)
-(defparameter *neural-version* "008")
+(defparameter *neural-version* "009")
 (defparameter *neural-prefix* "master")
 
 (defun make-pathname-neural (filename type)
@@ -566,8 +566,12 @@ self-explanatory, and they do this coding/decoding."))
     (format t "Training functional net...~%")
     (train-functional-net alg)))
 
+
 (add-falgorithm (make-instance 'functional-net
                               :name "Tsui"
+                              :context-before 4
+                              :context-after 4
                               :description "A neural network
                               classifier for roman numeral functional
                               analysis."))
+
