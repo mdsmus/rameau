@@ -348,7 +348,10 @@ Bach chorales.
 
 (add-falgorithm (make-instance
                 'functional-knn
-                :name "F-Knn"
+                :name "F-knn"
+                :ck 2
+                :before-context 2
+                :after-context 2
                 :description "A k-nearest-neighbor classifier that
                 considers a bit of contextual information and does
                 functional harmonic analysis."))

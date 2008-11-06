@@ -529,8 +529,8 @@ self-explanatory, and they do this coding/decoding."))
 (defclass functional-net (rameau-algorithm)
   ((context-data :accessor context-data :initarg :data :initform nil)
    (context-fann :accessor context-fann :initarg :fann :initform nil)
-   (context-before :accessor net-context-before :initarg :context-before :initform 1)
-   (context-after :accessor net-context-after :initarg :context-after :initform 3)
+   (context-before :accessor net-context-before :initarg :context-before :initform 4)
+   (context-after :accessor net-context-after :initarg :context-after :initform 4)
    (hidden-units :accessor context-hidden-units :initarg :units :initform 22)
    (version)))
 
@@ -568,10 +568,10 @@ self-explanatory, and they do this coding/decoding."))
 
 
 (add-falgorithm (make-instance 'functional-net
-                              :name "Tsui"
-                              :context-before 4
-                              :context-after 4
-                              :description "A neural network
+                               :name "Tsui"
+                               :context-before 4
+                               :context-after 4
+                               :description "A neural network
                               classifier for roman numeral functional
                               analysis."))
 
