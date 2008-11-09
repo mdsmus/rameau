@@ -4,7 +4,6 @@
 
 (defclass rameau-algorithm ()
   ((name :accessor alg-name :initarg :name)
-   (tempered? :accessor alg-tempered? :initarg :tempered?)
    (description :accessor alg-description :initarg :description)))
 
 (defgeneric perform-analysis (segments options algorithm)
