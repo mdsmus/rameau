@@ -35,7 +35,7 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
   (iter (for (root mode seventh) in (cartesian-product (range 0 95)
                                                        '("" "m" "+" "°" "ø" "!")
                                                        '("" "7" "7-" "7+")))
-        (collect (make-chord :root (print-note (code->notename root) :latin)
+        (collect (make-chord :root (print-pitch root :latin)
                              :mode mode
                              :7th seventh))))
 
@@ -114,7 +114,7 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
            (module (- (the fixnum (parse-note (chord-root chord)))
                       (the fixnum (parse-note (chord-root prev)))))))
     (if (chord-p chord)
-        (make-chord :root (print-note (code->notename (diff-root prev chord)))
+        (make-chord :root (print-pitch (diff-root prev chord))
                     :mode (chord-mode chord)
                     :7th (chord-7th chord))
         (if (listp chord)
@@ -236,7 +236,7 @@ A nice discussion of how they work is found in @file{docs/hmm.tex}.
       (dbg :hmm-prof "Putting the notenames~%")
       (iter (for i from 0 to 95)
             (cl-cairo2:move-to 5  (+ 5 (* i 10)))
-            (cl-cairo2:show-text (print-note (code->notename i))))
+            (cl-cairo2:show-text (print-pitch i)))
       (dbg :hmm-prof "Putting the chords~%")
       (iter (for i from 0)
             (for chord in *modes*)

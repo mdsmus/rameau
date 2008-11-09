@@ -42,7 +42,7 @@ Bach chorales.
   (cond ((eq (first lista) '-)
          (make-melodic-note))
         ((eq (first lista) 'chord)
-         (make-chord :root (print-note (code->notename (+ (second lista) diff)))
+         (make-chord :root (print-pitch (+ (second lista) diff))
                      :mode (third lista)
                      :7th (fourth lista)))
         (t (make-augmented-sixth :type (first lista)))))

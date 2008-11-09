@@ -81,7 +81,7 @@ self-explanatory, and they do this coding/decoding."))
 
 (defun extract-root-result (diff output)
   (flet ((%make-root (a b)
-           (print-note (code->notename (module (+ a b))) :latin)))
+           (print-pitch (module (+ a b))) :latin))
     (loop for i from 0
           for r in output
           with maxi = 0

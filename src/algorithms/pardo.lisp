@@ -95,7 +95,7 @@
          (cod (module
                (+ (parse-note (stringify proxima-tonica))
                   (code->interval '(7 :maj)))))
-         (nota (print-note (code->notename cod) :latin)))
+         (nota (print-pitch cod :latin)))
     (or (find-if
          (lambda (x)
            (equal nota (stringify (pardo-grade-root x))))

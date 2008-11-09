@@ -24,7 +24,7 @@ when it leaves @rameau.
   (iter (for (m s r) in (cartesian-product '("" "m" "+" "°" "ø" "!")
                                            '("" "7" "7-" "7+")
                                            (range 0 95)))
-        (collect (make-chord :root (print-note (code->notename r))
+        (collect (make-chord :root (print-pitch r)
                              :mode m
                              :7th s))))
 

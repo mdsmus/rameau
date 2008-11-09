@@ -239,7 +239,7 @@
                                      (setf (gethash p pitch-colors)
                                            (cairo-random-stroke-fill-colors)))
                                 (cl-cairo2:move-to  (+ 20 i) cur-h)
-                                (cl-cairo2:show-text (print-note (code->notename p)))))
+                                (cl-cairo2:show-text (print-pitch p))))
                         (cl-cairo2:set-font-size 20)
                         (aif (gethash (equivalent-pitch re) pitch-colors)
                              (cairo-set-stroke-fill-colors it)

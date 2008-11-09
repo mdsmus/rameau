@@ -147,7 +147,7 @@ center. center must be a string and scale-mode a keyword."
            (make-augmented-sixth :type :it))
           ((eql :italian-sixth (roman-function-mode f))
            (make-augmented-sixth :type :fr))
-          (t (make-chord :root (print-note (code->notename (roman-function-root f k)))
+          (t (make-chord :root (print-pitch (roman-function-root f k))
                          :mode (keyword->mode (roman-function-mode f)))))))
         
 
