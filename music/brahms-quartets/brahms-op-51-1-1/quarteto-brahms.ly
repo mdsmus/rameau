@@ -46,10 +46,10 @@ global = {
   \mark \default
   s1*3/2*24
   \mark \default
-  s1*3/2*26
+  s1*3/2*30
   \bar "||"
   \time 2/2
-  s1*2/2*38
+  s1*2/2*37
   \bar "|."
 }
 

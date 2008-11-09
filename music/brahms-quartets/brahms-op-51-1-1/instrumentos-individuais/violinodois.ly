@@ -1,9 +1,12 @@
 pizz = ^\markup{\italic{pizz.}}
 arco = ^\markup{\italic{arco}}
 
-violinodois= { 
-	\relative c' {
-	 	
+\version "2.10.33"
+\score
+  \relative c' {
+  \key c \minor
+  \time 3/2
+
 		r2 r2  c4. \p (ees8) 
  		ees2 r2 \setTextCresc c4. \< (ees8) \! 
 		ees2 r2 c4. ees8
@@ -312,7 +315,4 @@ violinodois= {
 		c4-. r4 r2
 		c4-. r4 r2
 		<< <g' e'>1 ^\fermata { s4 \p s4\< s4\! \> s4\! } >> 
-		
-
- }
 }

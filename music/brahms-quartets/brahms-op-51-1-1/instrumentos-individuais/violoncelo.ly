@@ -16,9 +16,9 @@ arco = ^\markup{\italic{arco}}
 		aes2:8 aes2:8 \< aes2:8 		
 		ees2:8 ees2:8 ees2:8 \! 
 	%7
-		c4-. \f r \! g'4-. \f r \! r2
+		c4-. \f r g'4-. \f r  r2
 		R1 *3/2
-		bes4-. \p r f'4-. r r2 \!
+		bes4-. \p r f'4-. r r2 
 		R1 *3/2
 		aes,1. \p
 		bes1.
@@ -142,7 +142,7 @@ arco = ^\markup{\italic{arco}}
 		fis4 r4 r2 r2 
 		d,4. \arco \p \< (fis8 b4. d8 fis4. g8 \!)
 		g2 \> (b,4 \!) r4 r2
-		ees,4. \< g8 c4. ees8 g4. gis8 \! )
+		ees,4. \< (g8 c4. ees8 g4. gis8 \!)
 	%111
 		gis2 \> (bis,4 \!) r4 r2  \key e \major
 		e,4. \p ( \setTextCresc fis8 \< gis4. cis8 e4. gis8)
@@ -154,17 +154,176 @@ arco = ^\markup{\italic{arco}}
 		gis,1.	
 		fis4. \f gis8 a2 r2
 	%119
-		
-		
-		
-		 
-		
-		
-		
-		
- 
-		
-		
+		b4. cis8 d2 r2
+		dis4. e8 fis4. fisis8 gis4. a8
+		fis4-. r4 gis r4 gis,-. r4
+		r8 a'-. \f a-. gis-. r8 cis cis fis, fis b, b fis
+		r8 d'' d cis r8 fis fis b, b e, e b \clef tenor
+	%124
+		r8 bis' bis cis r8 cis cis d r8 dis dis e
+		r8 e e eis eis2 ~ eis8 e e f 
+		f2 ~ f8 e e f f2 ~
+		\setTextCresc f8 \< (e) e4 ~ (e8 d) d4 ~ (d8 e,) \clef bass e4 ~
+		(e8 d) d4 ~(d8 e,) e4 ~ (e8 d) d4
+	%129
+		cis4-. \f r r2 r8 a' cis, cis 
+	   %adicionar o marc.
+		fis4-. r4 r2 r8 a fis fis
+		e4-. r4 r2 r8 a e e
+		dis4-. r r2 r8 a' cis, cis  \key ees \major
+	%133
+		c4. \p (ees8 aes1)
+		c,4. (ees8 aes1)
+		c,1 (ees2 ~
+		ees aes1)
+		aes2:8 aes2:8 \< aes2:8
+		\setTextCresc a2:8 \< a2:8 g2:8
+		fis2:8 fis2:8 f2:8
+	%140
+		ees2:8 ees2:8 des2:8
+		c2 aes''-> ees-> 
+		c-> aes-> ees->
+		c4-. \f r4 g'-. r4 r2
+		R1 *3/2
+		b4-. \p r4 fis'-. r4 r2 
+		R1 *3/2 
+		<fis ais,>4-. \pizz r4 <fis b,>4-. r4 r2
+		R1 *3/2
+	%149
+		d,4 r e r fis r
+		g r c r d r
+		b1 \arco \p ~ (b4 f')
+		ees1 ~ (ees4 c)
+		b1 ~ (b4 a)
+		g1. 
+		g2 ~ (g4. b8 c2)
+	%156
+		aes4. (c8 f2 aes,)
+		g2 ~ (g4. b8 c2) ~
+		c2 (\setTextDim c,1 \>) ~
+		c1. \> ~ 
+		c2. (d4 e2) \!
+		r2 e-_ r2
+	   %colocar o tenuto
+	   	R1 *3/2
+		c'2 \p (\setTextCresc bes2 \< g)
+	%164
+		f4. \< (g8 aes4. c8 f4. aes8) \!
+		aes2 \f (b,4) r8 c8 (f4. aes8)
+		aes2 (des,4) r8 d8 (\setTextCresc f4. \< aes8)
+		bes2 (d,4) r8 ees8 (ges4. bes8)
+		des4. f8-. \sf des4. aes8 f4. des'8-. \sf 
+	%169
+		aes4. fes8 des4. a'8-. \sf fes4. des8
+		aes4-. r4 aes'2:8  aes2:8
+		c,2:8 c2:8 c2:8
+		c,4-. r g'-. r r2 
+		c,4-. r g'-. r r2 \clef tenor
+		f''2 \p (d b)
+	    %colocar o dolce
+	%175
+		c (ees fis)
+		g1 (b,2)
+		g'2 (a, b) \clef bass
+		c ees, g
+		bes, d f,
+	%180
+		g \f aes bes c d \> d, \!
+		g4 \p (aes'-.) (r f-. r d-.)
+		r g-. (r ees-. r c-.)
+		r8 bes bes e e des des g g e e bes'
+	%185
+		bes4 (aes-.) (r c-. r c-.) \clef tenor
+		r8 ees ees f ges2 ~ (ges8 f) f ges
+		r8 ees ees f ges2 ~ (ges8 f) f ges
+		r8 \setTextCresc ges \< ges ges ges f f ges ges2:8
+		ges2:8 \< ges2:8 ges2:8 \!
+	%190
+		R1 *3/2 \clef bass
+		r4 d,, \f (fis b ais d)
+		cis (fis,) r4 d' (cis fis,)
+		r4 d' \< (cis fis,) \! r2 
+		f2 \f f'1
+	%195
+		e2 e, d 
+		d' e f
+		g g, g'
+		f f,2. f'4
+		e2 a,4. a'8 d,,4. d'8
+	%200
+		g,4. g'8 c,,4. c'8 f,4. f'8
+		d,4 r8 f'8 d4. (a8) f4. (d8)
+		aes'4. (\setTextDim d,8 \>) aes'4. (d,8) \> aes'4. (d,8)   
+		a'4. (d,8) a'4. (d,8) fis4. (d8) \p
+	    %adicionar acima p dolce
+	    	g4. (c,8) a'4. (d,8) g4. (c,8)
+	%205   
+		fis4. (d8) a'4. (d,8) g4. (c,8)
+		a'4. (d,8) g4. (c,8) a'4. (a'8)
+		<< c,4. ({ s4 \< s8 } >> b8) b4. (e8) e4. (g8)
+		g,2-. \p (a2-.) r2 
+		R1 *3/2 
+	%210
+		b2-. (c2-.) r2 
+		R1 *3/2
+		r2 a2  \< (g)
+		fis (g) a-. \p 
+		(r2 g2-.) r2
+	%215
+		g \pizz r2 r2 
+		c,4. \arco (d8 \< ees4. g8 c4. ees8)
+		ees2 \> (fis,4) \! r4 r2
+		g2 \pizz r2 r2
+		g2 r2 r2
+		c,4. \arco  \p (d8 \< ees4. g8 c4. ees8)
+	   %adicionar o piú p
+		ees2 \> (fis,4) \! r4 r2
+		g2 \pizz r2 r2
+		g2 r2 r2 \time 2/2
+	%224
+		c,8 \p \setTextCresc c' \< c c, c c' c c,  
+	     %adicionar acima o crescendo ed agitato
+	     	c c' c c,  c c' c c, 
+		c c' c c,  c c' c c,
+		c \< c' c c,  c c' c c, \!
+		r4 bes'4-. \p (\setTextCresc r4 \< e,4-.)
+		r4 f-. (r aes-.) \clef tenor 
+		r4 aes''-> ~ aes8 f f c
+	%231
+		b4-. \< aes2-> g4 \clef bass 
+		c,,4. \f d8 e g c e
+		e2 c
+		f,4. g8 a c f a
+		c2 c,
+		f,4. \f g8 aes c f aes
+		aes,4. c8 des f aes des
+	%238
+		g,,4-. g'' (aes g
+		f d b g)
+		f,4. g8 aes c f aes
+		aes,4. c8 des f aes des
+		g,,4-. g' (aes g
+		f d b g)
+		c,4. d8 e-. g-. c-. e-. 
+		c,4. e8 f a c f
+	%246
+		c,4. e8 f aes des f 
+		aes2 f
+		c,4. d8 e g c e 
+		c,4. e8 f a c f
+		c,4. e8 f aes des f 
+		aes2 f
+	%252
+		c,4. d8 e g c e 
+		\times 2/3 {\setTextDim c,2 \> d4} \times 2/3 {e4 g c}
+	    	\times 2/3 {c,2 d4} \times 2/3 {e2 g4}
+		\times 2/3 {c,2 d4} \times 2/3 {e2 g4}
+		c,2 g' ~ 
+		g c, ~
+		c g' ~
+		g c, ~
+		<< c1 ^\fermata { s4 \p s4\< s4\! \> s4\! } >>
+
 		 
 
 
