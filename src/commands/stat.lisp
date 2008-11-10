@@ -7,13 +7,62 @@
 
 (enable-sharp-l-syntax)
 
+(defun beta-cdf (a b x)
+  "The cumulative distribution function for a beta(@var{a},@var{b})
+random variable."
+  (/ (statistics::beta-incomplete a b x)
+     (statistics::beta-incomplete a b 1)))
+
+(defun beta-pdf (a b x)
+  "The probability density function for a beta(@var{a},@var{b}) random
+variable."
+  (* (/ 1 (statistics::beta-incomplete a b 1))
+     (expt x (- a 1))
+     (expt (- 1 x) (- b 1))))
+
+(defun bisect (function xmin xmax)
+  "Find the zero of @var{function} between @var{xmin} and @var{xmax}
+by bisecting the interval. Wasteful, but works."
+  (iter (with x = (* 0.5d0 (+ xmin xmax)))
+        (for fx = (funcall function x))
+        (dbg :bisect "Guessing ~a obtaining ~a~%" x fx)
+        (until (< (abs fx) 1d-5))
+        (if (< fx 0)
+            (setf xmin x
+                  x (* 0.5d0 (+ x xmax)))
+            (setf xmax x
+                  x (* 0.5d0 (+ xmin x))))
+        (finally (return x))))
+
+(defun sum (l)
+  (reduce #'+ l))
+
+(defun inverse-beta (confidence a b)
+  "The inverse beta cdf for the given confidence value. Returns the
+  value of @var{x} for which @code{(beta-cdf a b x)} returns
+  @var{confidence}.
+
+It works by finding the zero of @code{(- (beta-cdf a b x) confidence)}"
+  (bisect  #L(- (beta-cdf a b (max 0 (min 1 !1))) confidence) 0 1))
+
+(defun beta-ci (confidence correct total)
+  "A centered confidence interval for a beta random variable."
+  (let* ((alpha (1+ correct))
+         (beta (1+ (- total correct))))
+    (if (or (= 0 alpha) (= 0 beta))
+        (list 1.0 1.0)
+        (list (inverse-beta (* 0.5 (- 1 confidence)) alpha beta)
+              (inverse-beta (* 0.5 (+ 1 confidence)) alpha beta)))))
+
 (defun count-hits (res gab)
   (count-if-not #'null (mapcar #'compare-answer-sheet res gab)))
 
 (defun collect-data (analysis)
   (let* ((a (first analysis))
          (res (iter (for i in (analysis-algorithms a))
-                    (collect (list 0)))))
+                    (collect (list (list 0 0)))))
+         (confidence 0.95)
+         (intervals nil))
     (format t "~5a|" " ")
     (iter (for alg in (analysis-algorithms a))
           (format t "~7a|" (alg-name alg)))
@@ -26,16 +75,20 @@
                   (for c = (count-hits r (analysis-answer-sheet anal)))
                   (for i from 0)
                   (format t "~6,2f%|" (% c size))
-                  (apush (% c size) (nth i res)))
+                  (apush (list c size) (nth i res)))
             (format t "~%")))
-    (format t "Medias:~%~5a|" " ")
-    (iter (for r in res)
-          (format t "~6,2f%|" (average (butlast r))))
-    (format t "~%Desvios:~%~5a|" " ")
-    (iter (for r in res)
-          (format t "~6,2f |" (stddev (butlast r))))
+    (setf intervals (mapcar #L(beta-ci confidence
+                                       (sum (mapcar #'first !1))
+                                       (sum (mapcar #'second !1)))
+                            res))
+    (format t "De:~%~5a|" " ")
+    (iter (for (baixo alto) in intervals)
+          (format t "~6,2f%|" (* 100 baixo)))
+    (format t "~%Até:~%~5a|" " ")
+    (iter (for (baixo alto) in intervals)
+          (format t "~6,2f%|" (* 100 alto)))
     (format t "~%")
-    res))
+    intervals))
 
 (defun answer->mode (answer)
   (cond ((chord-p answer)
@@ -115,11 +168,11 @@
   (format f "\\hline~%")
   (format f "Algorithm & Accuracy & Stddev \\\\ \\hline~%")
   (iter (for alg in algorithms)
-        (for r in res)
+        (for (baixo alto) in res)
         (format f "~a & ~2,1f & ~2,1f \\\\~%"
                 (alg-name alg)
-                (average (butlast r))
-                (stddev (butlast r))))
+                (* 100 baixo)
+                (* 100 alto)))
   (format f "\\hline")
   (format f "\\end{tabular}~%\\end{sc}~%\\end{center}~%\\caption{Accuracies}~%\\end{table}"))
 
