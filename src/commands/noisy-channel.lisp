@@ -6,6 +6,8 @@
 
 (in-package :rameau-noisy)
 
+(enable-sharp-l-syntax)
+
 (defun fchord->mode (fchord)
   (list (fchord-key fchord) (fchord-roman-function fchord)))
 
@@ -48,10 +50,94 @@
                      (* 100 (first ci))
                      (* 100 (second ci))))))))
 
-
-
 (register-command :name "calibrate-experts"
                   :documentation "Compute posterior probabilities for
                   agreement between the experts passed as files."
                   :action #'calibrate-experts
                   :options *terminal-options*)
+
+(let* ((natural-pitches (mapcar #'parse-note '("a" "b" "c" "d" "e" "f" "g")))
+       (key-pitches (mapcan #L(list (1- !1) !1 (1+ !1)) natural-pitches))
+       (key-modes (list :major :minor))
+       (keys (iter (for (mode pitch) in (cartesian-product key-modes key-pitches))
+                   (collect (make-tonal-key :mode mode
+                                            :center-pitch pitch))))
+       (degree-numbers (list 1 2 3 4 5 6 7))
+       (degree-modes (list :major :minor :augmented :diminished
+                           :half-diminished :german-sixth :french-sixth
+                           :italian-sixth))
+       (degree-accidentals (list -1 0 1))
+       (degrees (iter (for (n m a) in (cartesian-product degree-numbers
+                                                         degree-modes
+                                                         degree-accidentals))
+                      (collect (make-roman-function :degree-number n
+                                                    :degree-accidentals a
+                                                    :mode m))))
+       (analysis (cartesian-product keys degrees))
+       (number->analysis (coerce analysis 'vector))
+       (analysis->number (make-number-hash-table #'equalp analysis)))
+
+  (defun number->analysis (number)
+    (svref number->analysis number))
+  (defun analysis->number (vit)
+    (gethash vit analysis->number 0))
+
+  (defparameter *n* (length number->analysis))
+  )
+
+;; quero maximizar
+;;  P(p=f|Dados=d) = P(p=f) \prod_{j=1}^m \sum_{i=1}^n P(Correta=c_i|Dados=d_j,p=f).
+
+(defun p-correta-dado-dados-freq (cor dados freq)
+  (iter (for j in dados)
+        (multiply (if (= cor j)
+                      (- 1 freq)
+                      freq))))
+
+(defun p-freq-given-data (freq data)
+  (iter (for j in data)
+        (summing (log (iter (for i in j)
+                            (summing (* (/ 1d0 *n*)
+                                        (p-correta-dado-dados-freq i j freq))))))))
+
+(defun fchord->number (fchord)
+  (analysis->number (fchord->mode fchord)))
+
+(defun plot-likelihoods (options)
+  (let* ((answer-sheets (mapcar #'path-parse-functional-answer-sheet
+                                (arg :files options)))
+         (data (mapcar #L(mapcar #'fchord->number !1)
+                       (apply #'zip answer-sheets)))
+         (likelihoods (iter (for i from 0.1d0 below 1d0 by 0.001d0)
+                            (for log-likelihood = (p-freq-given-data i data))
+                            (collect (list (exp log-likelihood) i))))
+         (values (coerce (mapcar #'second likelihoods) 'vector))
+         (likes (coerce (mapcar #'first likelihoods) 'vector))
+         (total (iter (for l in-vector likes) (sum l)))
+         (mode (iter (for like in-vector likes)
+                     (for i from 0)
+                     (finding i maximizing like)))
+         (confidence 0.95d0))
+    (iter (for i from 0 below (length likes))
+          (setf (aref likes i) (/ (aref likes i) total)))
+    (format t "Mode ~,1f~%" (aref values mode))
+    (iter (with up = mode)
+          (with down = mode)
+          (for mass = (iter (for i from down to up) (summing (aref likes i))))
+          (while (< mass confidence))
+          (if (or (= (1+ up) (length likes))
+                  (< (aref likes (1+ up))
+                     (aref likes (1- down))))
+              (setf down (1- down))
+              (setf up (1+ up)))
+          (finally
+           (format t "95% confidence interval for the frequency is ~,1f% ~,1f%~%"
+                   (* 100 (- 1 (aref values up)))
+                   (* 100 (- 1 (aref values down))))))))
+
+(register-command :name "plot-likelihoods"
+                  :documentation "Compute confidence interval for
+agreement among experts using a bayesian information-theoretical
+calculation (work in progress)."
+                  :action #'plot-likelihoods
+                  :options nil)
