@@ -18,6 +18,16 @@
     ("yellow"        "1;33")
     ("white"         "1;37")))
 
+(defparameter *terminal-options*
+  '(("-c" "no-color" "don't use color in the answer")
+    ("-z" "column-chord-size" "" "7")
+    ("" "column-number-size" "" "3")
+    ("" "column-notes-size" "" "12")
+    ("" "column-dur-size" "" "4")
+    ("" "column-separator" "" "|")
+    ("" "wrong-answer-color" "" "red")))
+      
+
 (defun print-color-terminal (result comparison options)
   "Print @var{result} on a terminal with colors."
   (let ((column (concat "~" (arg :column-chord-size options) "a"))

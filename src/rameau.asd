@@ -44,6 +44,7 @@
                                      (:file "musicology")
                                      (:file "test")
                                      (:file "setup")
+                                     (:file "noisy-channel")
                                      ))))
 
 (asdf:defsystem :rameau
