@@ -46,7 +46,9 @@
                 (print-color-terminal a (equalp (fchord->mode a) mode) options))
           (finally
            (let ((ci (rameau-stat::beta-ci 0.95 corrects totals)))
-             (format t "~%Ci: 95% confidence between ~,1f% ~,1f%~%"
+             (format t "~%Confidence interval:
+with 95% confidence the real accuracy of the answer sheets
+lies between ~,1f% and ~,1f%~%"
                      (* 100 (first ci))
                      (* 100 (second ci))))))))
 
