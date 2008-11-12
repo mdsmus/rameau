@@ -143,7 +143,7 @@ lies between ~,1f% and ~,1f%~%"
                    (* 100 (- 1 (aref values up)))
                    (* 100 (- 1 (aref values down))))))))
 
-(register-command :name "plot-likelihoods"
+(register-command :name "information-theory"
                   :documentation "Compute confidence interval for
 agreement among experts using a bayesian information-theoretical
 calculation (work in progress)."
