@@ -108,13 +108,11 @@
   #+sbcl(sb-profile:report)
   #+cmu(profile:report-time))
 
+(define-condition exit-rameau () ())
+
 (defun rameau-quit ()
   "Exit @rameau.[NOTEST]"
-  #+clisp(ext:exit)
-  #+sbcl(sb-ext:quit))
-
-;; Compile this by hand if running under slime:
-;; (defun rameau-quit () (error "Quit."))
+  (error (make-condition 'exit-rameau)))
 
 (defun getenv (string)
   "Get environment variable @var{string} from the environment.[NOTEST]"

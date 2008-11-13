@@ -105,6 +105,34 @@ lies between ~,1f% and ~,1f%~%"
 (defun fchord->number (fchord)
   (analysis->number (fchord->mode fchord)))
 
+(defun report-ci (confidence mode likes values)
+  (iter (with up = mode)
+        (with down = mode)
+        (with all = nil)
+        (for mass = (iter (for i from down to up) (summing (aref likes i))))
+        (while (and (< mass confidence) (not all)))
+        (cond ((and (< 0 down)
+                    (< up (1- (length likes))))
+               (if (> (aref likes (1- down)) (aref likes (1+ up)))
+                   (decf down)
+                   (incf up)))
+              ((< 0 down)
+               (decf down))
+              ((< up (1- (length likes)))
+               (incf up))
+              (t (setf all t)))
+        (finally
+         (format t "95% confidence interval for the frequency is ~,1f% ~,1f%~%"
+                 (* 100 (- 1 (aref values up)))
+                 (* 100 (- 1 (aref values down)))))))
+
+(defun make-plot (likes values)
+  (with-output-file (f (make-analysis-file "data"
+                                           "likelihood"))
+    (iter (for l in-vector likes)
+          (for v in-vector values)
+          (format f "~,4f    ~,4f~%" v l))))
+
 (defun plot-likelihoods (options)
   (let* ((answer-sheets (mapcar #'path-parse-functional-answer-sheet
                                 (arg :files options)))
@@ -123,25 +151,8 @@ lies between ~,1f% and ~,1f%~%"
     (iter (for i from 0 below (length likes))
           (setf (aref likes i) (/ (aref likes i) total)))
     (format t "Mode ~,1f~%" (aref values mode))
-    (iter (with up = mode)
-          (with down = mode)
-          (with all = nil)
-          (for mass = (iter (for i from down to up) (summing (aref likes i))))
-          (while (and (< mass confidence) (not all)))
-          (cond ((and (< 0 down)
-                      (< up (1- (length likes))))
-                 (if (> (aref likes (1- down)) (aref likes (1+ up)))
-                     (decf down)
-                     (incf up)))
-                ((< 0 down)
-                 (decf down))
-                ((< up (1- (length likes)))
-                 (incf up))
-                (t (setf all t)))
-          (finally
-           (format t "95% confidence interval for the frequency is ~,1f% ~,1f%~%"
-                   (* 100 (- 1 (aref values up)))
-                   (* 100 (- 1 (aref values down))))))))
+    (make-plot values likes)
+    (report-ci confidence mode likes values)))
 
 (register-command :name "information-theory"
                   :documentation "Compute confidence interval for
