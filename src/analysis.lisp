@@ -43,8 +43,8 @@ Try omitting the \"-a\" option and trying again.~%")
                                               #'perform-analysis
                                               #'functional-analysis))
         (parse-answer-sheet (get-algorithm-opt algorithm-type
-                                                    #'path-parse-answer-sheet
-                                                    #'path-parse-functional-answer-sheet)))
+                                               #'path-parse-answer-sheet
+                                               #'path-parse-functional-answer-sheet)))
     (safe-with-backtrace
         (:print-error-msg (format t "Could not analyse ~a.~%" last-file)
          :exit t)
@@ -54,9 +54,12 @@ Try omitting the \"-a\" option and trying again.~%")
             (collect
                 (make-analysis
                  :segments segments
-                 :results (mapcar #L(main-perform-analysis analysis-function segments options !1) ;;;
+                 :results (mapcar #L(main-perform-analysis analysis-function
+                                                           segments
+                                                           options
+                                                           !1)
                                   (arg :algorithms options))
-                 :answer-sheet (funcall parse-answer-sheet file) ;;;
+                 :answer-sheet (funcall parse-answer-sheet file)
                  :file-name (pathname-name file)
                  :number-algorithms (length (arg :algorithms options))
                  :algorithms (arg :algorithms options)

@@ -57,11 +57,21 @@ It works by finding the zero of @code{(- (beta-cdf a b x) confidence)}"
 (defun count-hits (res gab)
   (count-if-not #'null (mapcar #'compare-answer-sheet res gab)))
 
+(defun compute-this-ci (intervals)
+  (let* ((confidence 0.95)
+         (corrects (sum (mapcar #'first intervals)))
+         (total (sum (mapcar #'second intervals)))
+         (errors (- total corrects))
+         (adj-corr (+ (* 0.85 corrects)
+                      (* 0.15 errors)))
+         (adj-err (+ (* 0.15 corrects)
+                     (* 0.85 errors))))
+    (beta-ci confidence adj-corr (+ adj-corr adj-err))))
+
 (defun collect-data (analysis)
   (let* ((a (first analysis))
          (res (iter (for i in (analysis-algorithms a))
                     (collect (list (list 0 0)))))
-         (confidence 0.95)
          (intervals nil))
     (format t "~5a|" " ")
     (iter (for alg in (analysis-algorithms a))
@@ -77,10 +87,7 @@ It works by finding the zero of @code{(- (beta-cdf a b x) confidence)}"
                   (format t "~6,2f%|" (% c size))
                   (apush (list c size) (nth i res)))
             (format t "~%")))
-    (setf intervals (mapcar #L(beta-ci confidence
-                                       (sum (mapcar #'first !1))
-                                       (sum (mapcar #'second !1)))
-                            res))
+    (setf intervals (mapcar #'compute-this-ci res))
     (format t "De:~%~5a|" " ")
     (iter (for (baixo alto) in intervals)
           (format t "~6,2f%|" (* 100 baixo)))
@@ -166,7 +173,7 @@ It works by finding the zero of @code{(- (beta-cdf a b x) confidence)}"
 (defun make-accuracy-table (f res algorithms)
   (format f "\\begin{table}~%\\begin{center}~%\\begin{sc}~%\\begin{tabular}{lrr}~%")
   (format f "\\hline~%")
-  (format f "Algorithm & Accuracy & Stddev \\\\ \\hline~%")
+  (format f "Algorithm & Lower & Upper \\\\ \\hline~%")
   (iter (for alg in algorithms)
         (for (baixo alto) in res)
         (format f "~a & ~2,1f & ~2,1f \\\\~%"
@@ -282,6 +289,10 @@ It works by finding the zero of @code{(- (beta-cdf a b x) confidence)}"
     (format f "~%\\end{document}~%")
     (format t "Modes: ~s~%" modes)))
 
+(defun get-key (fchord)
+  (make-fchord :key (fchord-key fchord)
+               :roman-function (parse-roman-function "I")))
+
 (defun report (options)
   (let* ((functional (if (arg :functional options)
                          :roman-analysis
@@ -297,7 +308,25 @@ It works by finding the zero of @code{(- (beta-cdf a b x) confidence)}"
          (obtained (%make-hash algorithms))
          (correct (%make-hash algorithms))
          (answer (%make-hash algorithms))
-         (res (collect-data analysis)))
+         (res nil))
+    (when (arg :as-chords options)
+      (iter (for anal in analysis)
+            (setf (analysis-answer-sheet anal)
+                  (mapcar #'fchord->chord
+                          (analysis-answer-sheet anal))
+                  (analysis-results anal)
+                  (mapcar #L(mapcar #'fchord->chord !1)
+                          (analysis-results anal)))))
+    (when (arg :key-only options)
+      (format t "Only considering keys")
+      (iter (for anal in analysis)
+            (setf (analysis-answer-sheet anal)
+                  (mapcar #'get-key
+                          (analysis-answer-sheet anal))
+                  (analysis-results anal)
+                  (mapcar #L(mapcar #'get-key !1)
+                          (analysis-results anal)))))
+    (setf res (collect-data analysis))
     (do-counting analysis algorithms confusion-matrix
                  countings answer obtained correct modes)
     (format t "Done counting...~%")
@@ -313,4 +342,6 @@ It works by finding the zero of @code{(- (beta-cdf a b x) confidence)}"
                   :documentation "Collect precision, recall, f-measure
                   and confusion matrixes for the chord labeling
                   algorithms specified."
-                  :options '(("" "functional" "Use functional analysis")))
+                  :options '(("" "functional" "Use functional analysis")
+                             ("" "as-chords" "Convert fchords to chords")
+                             ("" "key-only" "Analyse only keyfinding")))
