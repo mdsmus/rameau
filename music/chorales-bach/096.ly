@@ -77,8 +77,8 @@ baixo = \relative c {
   d8 e8 f8 d8 g4 a8 bes8 
   c4 c,4 f2 
   f8 e8 d8 f8 e8 f8 g8 e8 
-  fis8 gis8 a8 d,8 e4 e,4   %10
-  a2 d8 e8 f8 d8 
+  fis8 gis8 a8 d,8 e2   %10
+  a,2 d8 e8 f8 d8 
   bes'4 a8 g8 a4 a,4 
   d1 
   

@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "91 - Werleih' uns Frieden gnädiglich"
+  title = "91 - Verleih' uns Frieden gnädiglich"
   composer = "J. S. Bach"
 }
 
@@ -120,7 +120,7 @@ baixo = \relative c {
   d4 cis8 b8 fis'4 e4 
   a4 gis8 a8 b4 a8 b8 
   cis4 cis,4 fis4 fis8 gis8   %10
-  a8 b8 cis4 cis8 d8 cis8 b8 
+  a8 b8 cis4~ cis8 d8 cis8 b8 
   a8 eis8 fis8 cis8 d8 b8 e4 
   a,2 b2 
   cis4 d4 e4 e4 

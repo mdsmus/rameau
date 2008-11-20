@@ -71,8 +71,8 @@ baixo = \relative c' {
     \partial 4 b8  a8 
     g4 fis4 e4 d4 
     gis,4 a4 d4 ais4 
-    b4 e4 fis4 fis,4 
-    b2. } b'4 
+    b4 e4 fis4 fis4 
+    b,2. } b'4 
   eis,4 fis f e   %5
   fis4 g4 d4 d4 
   g4 fis8 e8 dis4 e4 
@@ -80,7 +80,7 @@ baixo = \relative c' {
   a8 b8 cis4 fis,8 gis8 a4 
   dis,4 e4 a,4 d4   %10
   cis4 d4 c8 b8 a4 
-  ais b fis
+  ais b fis'
   
 }
 

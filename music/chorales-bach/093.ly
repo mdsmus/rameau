@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "93 - Nun laßt uns Gott dem Herren"
+  title = "93 - Wach' aut, mein Herz"
   composer = "J. S. Bach"
 }
 

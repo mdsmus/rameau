@@ -23,7 +23,7 @@ soprano = \relative c'' {
   a2 b4 
   c2 d4 
   e4. f8 g4   %10
-  f4 e4 d4 
+  f4( e4) d4 
   e2. 
   e4 e4 e4 
   d2 d4 

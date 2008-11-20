@@ -1,7 +1,7 @@
 \version "2.10.33"
 
 \header {
-  title = "92 - Wenn mein Stündlein vorhanden ist 2"
+  title = "92 - O Jesu Christ, du höchstes Gut"
   composer = "J. S. Bach"
 }
 
@@ -25,7 +25,7 @@ soprano = \relative c'' {
   a4 b4 cis4 cis4 
   d4 e4 fis4. e8 
   d4 e8 d8 cis2   %10
-  b1 
+  b2.
   
 }
 
@@ -42,7 +42,7 @@ alto = \relative c' {
   fis4 gis4 a4 a8 g8 
   fis8 b8 a8 g8 fis2~ 
   fis4 e8 fis8 g4 fis8 e8   %10
-  dis1 
+  dis2.
   
 }
 
@@ -52,14 +52,14 @@ tenor = \relative c' {
     cis8 d8 e4 d8 cis8 b8 ais8 
     b8 cis8 ais4 b4 gis4 
     a4 e'4 d8 e8 fis4 
-    fis4. f8 fis4 } fis4 
+    fis4. eis8 fis4 } fis4 
   b,4 fis'8 e8 e8 d8 cis4   %5
   cis8 b8 b8 ais8 d4 b4 
   e4 d8 cis8 cis8 b8 a8 gis8 
   fis8 a8 d4 e4 e4 
   d8 g8 fis8 e8 d4 cis4~ 
   cis8 fis,8 b2 ais4   %10
-  fis1 
+  fis2. 
   
 }
 
@@ -72,11 +72,11 @@ baixo = \relative c' {
     b4 b,4 fis'4 } d4 
   e4 fis8 gis8 a4 ais4   %5
   b4 fis4 b,4 b'4 
-  a8 gis8 fis8 f8 fis4. e8 
+  a8 gis8 fis8 eis8 fis4. e8 
   d8 cis8 b4 a4 a'4 
   b4 cis4 d8 cis8 b8 ais8 
   b8 a8 g8 fis8 e4 fis4   %10
-  b,1 
+  b,2.
   
 }
 
