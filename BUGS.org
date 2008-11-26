@@ -1,0 +1,26 @@
+* todo futuro
+** gabaritos professores
+** maxwell
+** gui
+** musicologia computacional
+** otimizar hmm/knn
+** abc para web
+** musicas brahms, kostka, sonata
+** renomear *algorithms* para chord-names-algorithms
+** renomear *functional-algorithms* para *roman-analysis-algorithms*
+** submodules
+* refatoração check-list
+  - loop (e nao iterate)
+  - loop como mapcar
+  - let em loop e iterate
+  - foo? usar foop
+* usar asdf-binary-locations para make-image.lisp?
+* reuniao genos
+** falta tests
+** event-voice-name "\"foo\""
+** fechar tickets
+   nao fechar tickets sem conferir?
+** nomes tickets
+   novo, a revisar, fechado, descartado
+** documentacao ruim
+   "Parse a file name @var{exp} with the options in @var{options}."
