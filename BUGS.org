@@ -6,9 +6,12 @@
 ** otimizar hmm/knn
 ** abc para web
 ** musicas brahms, kostka, sonata
+*** ticket: checar rodar rameau no brahms
+*** analisar brahms
 ** renomear *algorithms* para chord-names-algorithms
 ** renomear *functional-algorithms* para *roman-analysis-algorithms*
 ** submodules
+** converter kern->lily
 * refatoração check-list
   - loop (e nao iterate)
   - loop como mapcar
