@@ -1,4 +1,5 @@
 \version "2.10.0"
+\include "global.ly"
 \include "violinoum.ly"
 \include "violinodois.ly"
 \include "viola.ly"
@@ -42,7 +43,7 @@ arco = ^\markup{\italic{arco}}
         \violoncelo
       >>
     >>
-%    \midi { }
+    \midi { }
     \layout { }
   }
 }

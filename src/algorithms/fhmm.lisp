@@ -112,6 +112,17 @@ is a good starting point)."))
                       (tonal-key-mode key))))
         (toutput->number (list pitch mode degree))))))
 
+(defun toutput->nviterbi (toutput prev-viterbi)
+  (destructuring-bind (pitch &optional mode degree) (number->toutput toutput)
+    (if (or (equal :out pitch) (equal 0 prev-viterbi))
+        0
+        (destructuring-bind (pkey &optional pdegree) (number->viterbi prev-viterbi)
+          (declare (ignore pdegree))
+          (let* ((pitch (module (+ (tonal-key-center-pitch pkey)
+                                   pitch)))
+                 (key (make-tonal-key :center-pitch pitch :mode mode)))
+            (viterbi->number (list key degree)))))))
+
 (defun nviterbi->first-toutput (viterbi)
   (destructuring-bind (key &optional degree) (number->viterbi viterbi)
     (if (eq :out key)
@@ -119,6 +130,14 @@ is a good starting point)."))
         (let ((pitch (tonal-key-center-pitch key))
               (mode (tonal-key-mode key)))
           (toutput->number (list pitch mode degree))))))
+
+(defun first-toutput->nviterbi (ftout)
+  (destructuring-bind (pitch &optional mode degree) (number->toutput ftout)
+    (if (equal :out pitch)
+        0
+        (viterbi->number (list (make-tonal-key :center-pitch  pitch
+                                               :mode mode)
+                               degree)))))
 
 (defun nviterbi->base-pitch (viterbi)
     (destructuring-bind (key &optional degree) (number->viterbi viterbi)
@@ -186,7 +205,8 @@ is a good starting point)."))
                 (iter (for p in (mapcar #'event-pitch sonority))
                       (incf (aref pvec
                                   (input->number (make-input chord))
-                                  (interval (tonal-key-center-pitch (fchord-key chord))
+                                  (interval (tonal-key-center-pitch
+                                             (fchord-key chord))
                                             p))))))
     (good-turing-reestimate pvec *ninputs* *nnotes*)))
 
@@ -207,12 +227,73 @@ is a good starting point)."))
 (defmethod you-ok-p ((alg functional-hmm))
   (and (trans alg) (out alg) (version alg)))
 
+(defun sample-from (distribution i njs)
+  (iter (for j from 0 below njs)
+        (with r = (random 1.0))
+        (with total = 0)
+        (if (<= total r (+ total (exp (aref distribution i j))))
+            (return j)
+            (incf total (exp (aref distribution i j))))))
+
+(defun nviterbi->pitch (nv)
+  (destructuring-bind (key &optional degree) (number->viterbi nv)
+    (declare (ignore degree))
+    (if (equal :out key)
+        0
+        (tonal-key-center-pitch key))))
+
+(defun sample-notes (notes viterbi)
+  (iter (for i below 4)
+        (with base = (nviterbi->pitch viterbi))
+        (collect (interval base
+                           (sample-from notes
+                                        (nviterbi->ninput viterbi)
+                                        *nnotes*)))))
+
+(defun sample-chord (chords prev)
+  (toutput->nviterbi (sample-from chords (nviterbi->ninput prev) *ntoutputs*)
+                     prev))
+
+(defun sample-first-chord (tr)
+  (iter (for sample = (first-toutput->nviterbi (sample-from tr 0 *ntoutputs*)))
+        (when (not (equal sample 0))
+          (return sample))))
+
+(defun do-sample (alg)
+  "Draws a sample melody and note sequence from the markov model. For
+entertainment purposes only ;-)
+
+It works sort of like this: we keep track of the current chord, draw a
+random number, figure out which note it implies, do this 3 more times,
+then we draw another uniform random number and see what next chord it
+goes to.
+"
+  (format t "Fazendo sample~%")
+  (setf *random-state* (make-random-state t))
+  (iter (with tr = (trans alg))
+        (with ou = (out alg))
+        (with current = (sample-first-chord tr))
+        (with chords = (list current))
+        (with notes = (list (sample-notes ou current)))
+        (for i from 0)
+        (setf current (sample-chord tr current))
+        (when (equal current 0)
+          (return (list (mapcar #'nviterbi->fchord (reverse chords))
+                        (reverse notes))))
+        (push current chords)
+        (push (sample-notes ou current) notes)))
+
 (defmethod do-options ((alg functional-hmm) options)
   (when (and (aget :train (arg :options options))
              (not (eql *version* (version alg))))
     (format t "Training.~%")
     (train-functional-hmm alg)
-    (setf (version alg) *version*)))
+    (setf (version alg) *version*))
+  (when (aget :sample (arg :options options))
+    (destructuring-bind (chords notes) (do-sample alg)
+      (iter (for c in chords)
+            (for nn in notes)
+            (format t " ~a ~{~a ~}~%" c (mapcar #'print-pitch nn))))))
 
 (defun viterbi-first-line (tran out segments table mtable cache)
   (iter (for j from 1 below *nviterbis*)
