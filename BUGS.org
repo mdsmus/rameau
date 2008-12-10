@@ -1,4 +1,5 @@
 * todo futuro
+** opcoes de compilacao (hunchentoot, cairo, fann)
 ** gabaritos professores
 ** maxwell
 ** gui
