@@ -1,18 +1,20 @@
 * todo futuro
 ** opcoes de compilacao (hunchentoot, cairo, fann)
+** gui
+** abc para web
 ** gabaritos professores
 ** maxwell
-** gui
 ** musicologia computacional
 ** otimizar hmm/knn
-** abc para web
 ** musicas brahms, kostka, sonata
+** avaliacao gabarito
+** analise notas melodicas
 *** ticket: checar rodar rameau no brahms
 *** analisar brahms
 ** renomear *algorithms* para chord-names-algorithms
 ** renomear *functional-algorithms* para *roman-analysis-algorithms*
 ** submodules
-** converter kern->lily
+** converter kern->rameau
 * refatoração check-list
   - loop (e nao iterate)
   - loop como mapcar
