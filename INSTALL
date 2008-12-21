@@ -7,7 +7,7 @@ libraries under the "lisp" section at
 http://git.genos.mus.br/cgit.cgi. If you want to compile rameau the
 easiest way, just issue the commands:
 
-    make LOCALDEPS=t update-deps rameau
+    make update-deps rameau
 
 This command will download all necessary libraries and compile rameau.
 Every time you want to compile rameau you should issue this command.
