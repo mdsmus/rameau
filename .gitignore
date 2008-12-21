@@ -28,4 +28,4 @@ docs/choral-book/*.tex
 rameau-documentation/*.html
 algorithms/*.data
 algorithms/*.fann
-rameau-deps/*
+

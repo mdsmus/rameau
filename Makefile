@@ -108,26 +108,12 @@ clisprameau: $(lisp-files)
 update: 
 	git pull --rebase
 
-update-deps:
-	$(if $(wildcard rameau-deps), $(MAKE) pull-deps, $(MAKE) clone-deps)
-
 pull-deps:
 	$(foreach dep, $(RAMEAU_DEPS), @echo $(call dep-update,$(dep)))
 
-clone-deps: rameau-deps
-	$(foreach dep, $(RAMEAU_DEPS), @echo $(call dep-checkout,$(dep)))
-
-rameau-deps:
-	mkdir rameau-deps
-
-update-modules:
+update-modules: pull-deps
 	git submodule init
 	git submodule update
-	cd rameau-deps/lisp-libs && git checkout master && git pull
-	cd rameau-deps/cl-fann && git checkout master && git pull
-	cd rameau-deps/cl-music && git checkout master && git pull
-	cd rameau-deps/cl-utils && git checkout master && git pull
-	cd rameau-deps/cl-lily && git checkout master && git pull
 
 coral:
 	./rameau anal -f chora:$(c) -a es-net -S
