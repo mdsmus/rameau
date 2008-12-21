@@ -1,4 +1,4 @@
-(in-package :rameau-test)
+(in-package :rameau)
 
 ;;; the functions in this file are defined with cl:defun because
 ;;; rameau-test must use cl:defun and cl:defmacro
@@ -46,7 +46,7 @@
   (let* ((args (arg :unit options))
          (arguments (if (and (equal args '("all"))
                              (arg :verbose options))
-                        *rameau-suite*
+                        '(all)
                         args)))
     (iter (for test1 in arguments)
           (for test-name = (intern (string-upcase test1) :rameau-test))
@@ -58,13 +58,6 @@
   ;; the function in fiveAM.
   (when (arg :unit options) (unit options))
   (when (arg :regression options) (regression options)))
-
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defparameter *rameau-suite* nil))
-
-(defmacro defsuite (name &optional description)
-  (pushnew name *rameau-suite*)
-  `(def-suite ,name :description ,description :in all))
 
 (register-command :name "test"
                   :action #'rameau-test

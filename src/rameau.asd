@@ -33,8 +33,7 @@
                            #-(or ecl win32) :hunchentoot :md5 :cl-fad :cl-base64 :cl-store
                            :cl-statistics)
   :serial t
-  :components ((:file "package-test")
-               (:module commands
+  :components ((:module commands
                         :serial t
                         :components ((:file "analysis-command")
                                      #-win32 (:file "web")
@@ -53,12 +52,9 @@
     :author "Alexandre Passos e Pedro Kroger"
     :depends-on (:rameau-pkg :algorithms :commands)
     :serial t
-    :components ((:file "package-test")
-                 (:module tests
+    :components ((:module tests
                           :serial t
                           :components ((:file "all")
-                                       (:file "format")
-                                       (:file "parser")
                                        (:file "segment")
                                        (:file "commands")
                                        (:file "chords")

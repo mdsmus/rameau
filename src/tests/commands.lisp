@@ -1,6 +1,6 @@
-(in-package #:rameau-test)
+(in-package #:rameau)
 
-(defsuite commands "Tests for the commands file")
+(def-suite commands :description "Tests for the commands file" :in all)
 (in-suite commands)
 
 (test get-command-by-name

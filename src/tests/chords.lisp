@@ -1,6 +1,6 @@
-(in-package #:rameau-test)
+(in-package #:rameau)
 
-(defsuite chords "Tests for the chords file")
+(def-suite chords :description "Tests for the chords file" :in all)
 (in-suite chords)
 
 (test chord-interval-code

@@ -13,7 +13,7 @@
            )
   (:shadowing-import-from #:export-symbols #:defun #:defmacro #:defgeneric
                           #:defparameter #:defvar #:defstruct #:defclass)
-  (:use #:cl-utils :cl-music #:cl #:iterate #:cl-lily)
+  (:use #:cl-utils :cl-music #:cl #:iterate #:cl-lily #:fiveAm)
   (:documentation "The core @rameau framework."))
 
 (in-package :rameau)

@@ -1,6 +1,6 @@
-(in-package #:rameau-test)
+(in-package #:rameau)
 
-(defsuite segment "Tests for the segment file")
+(def-suite segment :description "Tests for the segment file" :in all)
 (in-suite segment)
 
 (test sonorities
