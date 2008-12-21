@@ -166,6 +166,7 @@ distclean: cleanall clean-deps clean-analysis clean-score clean-midi clean-cache
 # remove os fasls do rameau, sem remover das bibliotecas
 lisp-clean: clean-lib
 	-find ~/lisp/fasl/ -type f | grep rameau | xargs rm -f
+	rm -rf fasl
 
 lisp-clean-all: clean-lib clean
 	rm -rf /var/cache/common-lisp-controller/\$${UID}/sbcl/local

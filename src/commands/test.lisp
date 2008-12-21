@@ -49,7 +49,7 @@
                         '(all)
                         args)))
     (iter (for test1 in arguments)
-          (for test-name = (intern (string-upcase test1) :rameau-test))
+          (for test-name = (intern (string-upcase test1) :rameau))
           (format t "TEST: ~a~%" test-name)
           (fiveam:run! test-name))))
 

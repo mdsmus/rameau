@@ -1,7 +1,8 @@
 (asdf:defsystem :rameau-pkg
   :depends-on (:cl-utils :cl-music :arnesi :iterate :alexandria
                          :cl-lily :cl-ppcre :cl-store :cl-fad
-                         :cl-cairo2 #+win32 :cl-cairo2-win :cl-colors)
+                         :cl-cairo2 #+win32 :cl-cairo2-win :cl-colors
+                         :fiveam)
   :serial t
   :components ((:file "packages")
                #+sbcl(:file "sbcl")
@@ -50,7 +51,7 @@
     :name "rameau"
     :version "4.0"
     :author "Alexandre Passos e Pedro Kroger"
-    :depends-on (:rameau-pkg :algorithms :commands)
+    :depends-on (:rameau-pkg :algorithms :commands :fiveam)
     :serial t
     :components ((:module tests
                           :serial t

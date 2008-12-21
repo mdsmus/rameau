@@ -35,6 +35,12 @@
   (loop for path in (directory (merge-pathnames "rameau-deps/*" *main-path*))
         do (push path asdf:*central-registry*)))
 
+(asdf:oos 'asdf:load-op :asdf-binary-locations)
+
+(setf asdf:*centralize-lisp-binaries*   t
+      asdf:*default-toplevel-directory* (merge-pathnames "fasl/" *main-path*)
+      asdf:*include-per-user-information* nil)
+
 (asdf:oos 'asdf:load-op :rameau :verbose nil)
 
 #+sbcl(sb-ext:save-lisp-and-die "rameau" :purify t :executable t :toplevel #'rameau:main)
