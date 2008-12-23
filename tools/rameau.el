@@ -2,22 +2,25 @@
 
 (require 'cl)
 (require 'slime)
-(require 'snippet)
+(require 'yasnippet)
 
 (defvar rameau-mode-map (make-sparse-keymap)
-  "Keymap for the Redshank minor mode.")
+  "Keymap for the rameau minor mode.")
 
 (define-minor-mode rameau-mode
     "Minor mode for editing and refactoring (Common) Lisp code."
   :lighter " Rameau")
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Declaration
+
 (defvar *rameau-ultimo-tipo* "")
 
 (defun rameau-declare-value-snippet (type)
   (setf *rameau-ultimo-tipo* type)
-  (snippet-insert (concat "(the " type " "))
+  (insert-snippet (concat "(the " type " "))
   (forward-sexp)
-  (snippet-insert ")"))
+  (insert-snippet ")"))
 
 (defun rameau-declare-value ()
   (interactive)
@@ -27,16 +30,14 @@
          *rameau-ultimo-tipo*
          type))))
 
-(define-key slime-mode-map [(control c) (control d) (control v)] 'rameau-declare-value)
-
 (defun rameau-declare-snippet (ignore type values)
-  (snippet-insert "(declare ")
+  (insert-snippet "(declare ")
   (unless (string= ignore "")
-    (snippet-insert (concat "(ignore " ignore ")"))
+    (insert-snippet (concat "(ignore " ignore ")"))
     (newline-and-indent))
   (unless (string= type "")
-    (snippet-insert (concat "(" type " " values ")")))
-  (snippet-insert ")")
+    (insert-snippet (concat "(" type " " values ")")))
+  (insert-snippet ")")
   (newline-and-indent))
 
 (defun rameau-declare ()
@@ -46,12 +47,19 @@
          (values (unless (string= type "") (read-from-minibuffer "Valores: "))))
     (rameau-declare-snippet ignore type values)))
 
-(define-key slime-mode-map [(control c) (control d) (control e)] 'rameau-declare)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; tests
 
-(defun rameau-new-test-snippet (function)
-  (newline 2)
-  (snippet-insert (concat "(test " function "\n"
-                          "$>(is ($${compara} $${resultado} (" function " $${argumentos}))$.))")))
+(defun insert-snippet (snippet)
+  (yas/expand-snippet (point) (point) snippet))
+
+(defun rameau-new-test-snippet (name)
+  (newline 1)
+  (insert-snippet (concat "(test "
+                          name
+                          "\n$>(is (${compare} ${result} ("
+                          name
+                          " ${args})))$0)\n")))
 
 (defun rameau-new-test-existing-file (file function)
   (find-file file)
@@ -68,7 +76,6 @@
     (when package
       (princ (concat "(in-package " package ")") buffer)
       (newline))
-    (princ "(use-package :lisp-unit)" buffer)
     (rameau-new-test-snippet function)
     (save-buffer)))
 
@@ -82,28 +89,20 @@
     (let ((function (thing-at-point 'symbol)))
       (end-of-line)
       (newline-and-indent)
-      (snippet-insert "(is ($${compara} $${resultado} (" function " $${argumentos})))"))))
-
-(define-key slime-mode-map [(alt control u)] 'rameau-cria-teste-defun)
-(define-key slime-mode-map [(control return)] 'rameau-new-test)
+      (insert-snippet (concat "(is (${compara} ${resultado} ("
+                              function
+                              " ${argumentos})))")))))
 
 (defun rameau-get-defun-name ()
   (beginning-of-defun)
   (forward-whitespace 1)
-  (thing-at-point 'symbol))
+  (slime-symbol-name-at-point))
 
 (defun rameau-test-filename ()
   (let ((file (buffer-file-name)))
     (concat (file-name-directory file)
-            "test-"
+            "tests/"
             (file-name-nondirectory file))))
-
-(defun rameau-get-package ()
-  (goto-char (point-min)) ;; beginning-of-buffer
-  (if (search-forward "(in-package" nil t)
-      (progn
-        (forward-whitespace 1)
-        (thing-at-point 'sexp))))
 
 (defun rameau-show-test ()
   (interactive)
@@ -112,9 +111,9 @@
           (file (buffer-file-name))
           (test-file (rameau-test-filename))
           (buffer (file-name-nondirectory (rameau-test-filename))))
-      (if (search "test-" (buffer-file-name))
+      (if (search "tests" (buffer-file-name))
           (princ "você já está no arquivo de teste!")
-          (let ((package (rameau-get-package)))
+          (let ((package (slime-find-buffer-package)))
             (if (file-exists-p test-file)
                 (progn
                   (find-file test-file)
@@ -143,39 +142,31 @@
     (let ((function (rameau-get-defun-name))
           (file (rameau-test-filename))
           (buffer (file-name-nondirectory (rameau-test-filename))))
-      (if (search "test-" (buffer-file-name))
+      (if (search "tests" (buffer-file-name))
           (princ "você já está no arquivo de teste!")
-          (let ((package (rameau-get-package)))
+          (let ((package (slime-find-buffer-package)))
             (if (file-exists-p file)
                 (rameau-new-test-existing-file file function)
                 (rameau-new-test-new-file file function package)))))))
 
-;; para funcionar tem que estar in-package
 (defun rameau-run-test ()
   (interactive)
   (save-excursion
     (let ((test-name (rameau-get-defun-name))
-          (package (rameau-get-package)))
-      (slime-eval '(cl:use-package :lisp-unit))
-      (slime-eval-defun)
+          (package (slime-find-buffer-package)))
       (slime-switch-to-output-buffer)
-      (goto-char slime-repl-input-start-mark)
-      (insert (concat "(run-tests " test-name ")"))
-      (slime-repl-return))))
+      (slime-repl-send-string (format "(5am:run! '%s::%s)"
+                                      (substring package 2)
+                                      test-name)))))
 
 (defun rameau-run-all-tests ()
   (interactive)
-  (slime-switch-to-output-buffer)
-  (goto-char slime-repl-input-start-mark)
-  (insert "(rameau:main \"test\")")
-  (slime-repl-return))
-  
-(define-key slime-mode-map [(alt control u)] 'rameau-cria-teste-defun)
-(define-key slime-mode-map [(alt control r)] 'rameau-run-test)
-(define-key slime-mode-map [(alt control s)] 'rameau-show-test)
-(define-key slime-mode-map [(control return)] 'rameau-new-test)
+  (save-excursion
+    (slime-switch-to-output-buffer)
+    (slime-repl-send-string "(rameau:main \"test\")")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; tickets
 
 (defun open-ticket (ticket-number)
   (browse-url (concat "http://bugs.genos.mus.br/issues/show/" ticket-number)))
@@ -188,5 +179,16 @@
   (interactive)
   (search-forward "#")
   (open-ticket (thing-at-point 'word)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; keys
+
+(define-key slime-mode-map [(control c) (control d) (control e)] 'rameau-declare)
+(define-key slime-mode-map [(control c) (control d) (control v)] 'rameau-declare-value)
+(define-key slime-mode-map [(alt control u)] 'rameau-cria-teste-defun)
+(define-key slime-mode-map [(alt control r)] 'rameau-run-test)
+(define-key slime-mode-map [(alt control a)] 'rameau-run-all-tests)
+(define-key slime-mode-map [(alt control s)] 'rameau-show-test)
+(define-key slime-mode-map [(control return)] 'rameau-new-test)
 
 (provide 'rameau)
