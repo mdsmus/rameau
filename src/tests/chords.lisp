@@ -15,7 +15,6 @@
     '(foo bar foo bar (foo))
     (rameau::expand-multiplications '((* 2 foo bar) (foo))))))
 
-
 (test parse-multiplication
   (is (equal '(* 2 :a) (rameau::parse-multiplication "a*2"))))
 
@@ -43,3 +42,5 @@
 (test compare-answer-sheet
   (is-true (compare-answer-sheet (parse-chord "ab") (parse-chord "g#") 'tempered))
   (is-false (compare-answer-sheet (parse-chord "ab") (parse-chord "g#"))))
+
+
