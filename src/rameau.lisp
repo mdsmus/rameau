@@ -89,15 +89,23 @@
   "Profile all functions in @var{Rameau}. [NOTEST]"
   #+sbcl(progn
           (setf sb-profile::*print-functions-not-called* nil)
+          (sb-profile:profile "MUSICOLOGY-COMMANDS")
           (sb-profile:profile "RAMEAU")
-          (sb-profile:profile "RAMEAU-PARDO")
-          (sb-profile:profile "RAMEAU-KNN")
+          (sb-profile:profile "RAMEAU-ALG-COMMANDS")
+          (sb-profile:profile "RAMEAU-ANALYSIS")
+          (sb-profile:profile "RAMEAU-DOC")
+          (sb-profile:profile "RAMEAU-FHMM")
           (sb-profile:profile "RAMEAU-HMM")
+          (sb-profile:profile "RAMEAU-KNN")
+          (sb-profile:profile "RAMEAU-MUSICOLOGY")
           (sb-profile:profile "RAMEAU-NEURAL")
+          (sb-profile:profile "RAMEAU-NOISY")
+          (sb-profile:profile "RAMEAU-PARDO")
+          (sb-profile:profile "RAMEAU-SETUP")
+          (sb-profile:profile "RAMEAU-STAT")
           (sb-profile:profile "RAMEAU-TREE-ENARM")
-          (sb-profile:profile "RAMEAU-MAIN")
-          (sb-profile:profile "GENOSLIB"))
-  #+cmu (progn
+          (sb-profile:profile "RAMEAU-WEB"))
+#+cmu (progn
           (profile:profile-all :package "RAMEAU")
           (profile:profile-all :package "RAMEAU-PARDO")
           (profile:profile-all :package "RAMEAU-KNN")
