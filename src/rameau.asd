@@ -1,62 +1,60 @@
-(asdf:defsystem :rameau-pkg
-  :depends-on (:cl-utils :cl-music :arnesi :iterate :alexandria
-                         :cl-lily :cl-ppcre :cl-store :cl-fad
-                         :cl-cairo2 #+win32 :cl-cairo2-win :cl-colors
-                         :fiveam)
+(asdf:defsystem :rameau
+  :name "rameau"
+  :version "5.0"
+  :author "Alexandre Passos e Pedro Kroger"
+  :depends-on (#+win32 :cl-cairo2-win
+                       :alexandria
+                       :arnesi
+                       :cl-base64
+                       :cl-cairo2
+                       :cl-colors
+                       :cl-fad
+                       :cl-lily
+                       :cl-music
+                       :cl-ppcre
+                       :cl-statistics
+                       :cl-store
+                       :cl-utils
+                       :cl-who
+                       :fann
+                       :fiveam
+                       :hunchentoot
+                       :iterate
+                       :machine-learning
+                       :md5
+                       :swank)
   :serial t
   :components ((:file "packages")
                #+sbcl(:file "sbcl")
                (:file "chords")
                (:file "chords-functional")
                (:file "rameau")
-               (:file "commands")
+               (:file "register-commands")
                (:file "terminal")
                (:file "analysis")
                (:file "lily")
                (:file "musicology")
                (:file "main")
-               ))
- 
-(asdf:defsystem :algorithms
-  :depends-on (:rameau-pkg :cl-store :cl-cairo2 :cl-lily :fann
-                           :machine-learning :cl-fad)
-  :components ((:module algorithms
-                        :components ((:file "hmm")
-                                     (:file "neural")
-                                     (:file "pardo")
-                                     (:file "knn")
-                                     (:file "tree-enarm")
-                                     (:file "fhmm")
-                                     ))))
-
-(asdf:defsystem :commands
-  :depends-on (:rameau-pkg :cl-lily :cl-store :cl-who :algorithms :swank :fiveam
-                           #-(or ecl win32) :hunchentoot :md5 :cl-fad :cl-base64 :cl-store
-                           :cl-statistics)
-  :serial t
-  :components ((:module commands
-                        :serial t
+               (:module commands
                         :components ((:file "analysis-command")
-                                     #-win32 (:file "web")
+                                     (:file "web")
                                      (:file "doc")
                                      (:file "stat")
                                      (:file "algorithms")
                                      (:file "musicology")
                                      (:file "test")
                                      (:file "setup")
-                                     (:file "noisy-channel")
-                                     ))))
-
-(asdf:defsystem :rameau
-    :name "rameau"
-    :version "4.0"
-    :author "Alexandre Passos e Pedro Kroger"
-    :depends-on (:rameau-pkg :algorithms :commands :fiveam)
-    :serial t
-    :components ((:module tests
-                          :serial t
-                          :components ((:file "all")
-                                       (:file "segment")
-                                       (:file "commands")
-                                       (:file "chords")
-                                       (:file "rameau")))))
+                                     (:file "noisy-channel")))
+               (:module algorithms
+                        :components ((:file "hmm")
+                                     (:file "neural")
+                                     (:file "pardo")
+                                     (:file "knn")
+                                     (:file "tree-enarm")
+                                     (:file "fhmm")))
+               (:module tests
+                        :components ((:file "all")
+                                     (:file "segment" :depends-on ("all"))
+                                     (:file "commands" :depends-on ("all"))
+                                     (:file "chords" :depends-on ("all"))
+                                     (:file "rameau" :depends-on ("all"))))))
