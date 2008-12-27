@@ -21,8 +21,8 @@ USER = $(shell echo $$USER)
 
 RAMEAU_DEPS = cl-fann cl-music cl-utils cl-lily lisp-libs
 
-dep-update =  $(shell cd rameau-deps/$1 && git pull)
-dep-checkout = $(shell cd rameau-deps && git clone git://genos.mus.br/$1)
+dep-update =  $(shell cd rameau-deps/$1 && git checkout master && git pull )
+dep-checkout = $(shell cd rameau-deps && git clone git://genos.mus.br/$1 )
 
 TRAIN_NAME = $(shell git branch | grep "*" | cut -f 2 -d ' ')-$(TRAIN_VERSION)
 LOCALDEPS = t
@@ -111,9 +111,11 @@ update:
 pull-deps:
 	$(foreach dep, $(RAMEAU_DEPS), @echo $(call dep-update,$(dep)))
 
-update-deps: pull-deps
+
+update-deps: #pull-deps
 	git submodule init
 	git submodule update
+	$(MAKE) pull-deps
 
 coral:
 	./rameau anal -f chora:$(c) -a es-net -S
