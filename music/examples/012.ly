@@ -5,22 +5,26 @@
   <<
     \new Staff {
       \relative c'' {
-        d dis e e
+        e4 d dis e
+        e1
       }
     }
     \new Staff {
       \relative c'' {
-        d b b c
+        c4 d b b
+        c1
       }
     }
     \new Staff {
       \relative c'' {
-        a a gis a
+        a4 a a gis
+        a1
       }
     }
     \new Staff {
-      \relative c' {
-        f f e a
+      \relative c'' {
+        a4 f f e
+        a1
       }
     }
   >>
