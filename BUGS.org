@@ -1,37 +1,44 @@
-* todo futuro
-  hora de olhar para os proximos 2 anos
+* todo futuro (a partir de fevereiro)
+  eu não me arrependo de nada que fizemos nos ultimos 2 anos, mas
+  agora é hora de olhar para os proximos 2-3 anos
 ** tem coisas para fazer como
 *** musicologia computacional
 **** analise de cifras (musica popular)
 **** comparacao entre coisas (e.g. conklin)
 *** analise notas melodicas
+*** contornos, motivos, etc
+** OBJETIVO: remodelar rameau e ferramentas para esse futuro
 ** qual formato "oficial"?
-   continuar lily, usar formato mais simples, musedata?)
-** merge cl-lily(abc,musedata,kern)|cl-music?
+*** continuar lily, usar formato mais simples, musedata?)
+*** o objetivo era usar um sub-conjunto do lily e nao gastar tempo com parser
+** merge cl-lily (abc,musedata,kern)|cl-music?
 ** voltar a ser 100% portavel, compila com ecl
 ** cl-lily:
-*** novo parser e lexer
-*** cl-yacc nao funciona com ecl
+*** novo parser e lexer (cl-yacc nao funciona com ecl)
 *** parseia kern|musedata|abc
+*** vale a pena pensar nisso porque o objetivo é ter corpus grande
 ** cl-music: nova versao "do zero"
-*** implementa varias codificações,
+*** implementa varias codificações
+    nao fazia sentido no inicio, agora faz
 *** ve o que os algoritmos precisam e abstrai
 *** vale a pena ter tipos para notas? (latin, lily, etc)
+*** retira cruft
 ** melhor maneira para gerar musica (lily|abc)
-   (coloca em biblioteca)
+*** estamos fazendo de maneira ad-hoc
+*** melhor unificar e colocar em biblioteca
 ** cl-fann:
-   nova versao, usa swig, limpa coisas
-** rameau: (next generation)
+*** nova versao, usa swig, limpa coisas
+** rameau: (next generation: re-escrita "do zero")
 *** remove cruft
-**** gui only (mostra "CALIBRATE EXPERTS")
+**** gui only (mostra complexidade e "CALIBRATE EXPERTS" em rameau -h)
 **** test nao deveria estar no binario (repl only)
+**** binario para usuarios finais
 *** repl-friendly
     divergimos para o programa ser CL-friendly mas acabou ficando
     interactive-unfriendly (repl)
+**** acho que gui vai unificar isso + restarts
 *** mais facil de testar
-    (e.g. testar formato de saida, e.g. codigo retornava :latin, NIL7)
+**** e.g. testar formato de saida
+**** e.g. codigo retornava :latin, NIL7
 *** remove coisas para bibliotecas (e.g. command-line)
-*** re-escrita "do zero"
-    deixar rameau mais facil de depurar no REPL (e.g. analisar musica
-    com step)
 *** opcoes de compilacao (hunchentoot, cairo, fann)
