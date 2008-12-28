@@ -1,47 +1,52 @@
 \version "2.10.0"
+\header {
+  title = "Well-Tempered Clavier, Book I, Prelude 10"
+  composer = "Bach"
+}
 \score {
-     \context PianoStaff <<
-	\new Staff =  "up" {
-		\clef treble
-		\time 4/4
-	<<
-		\relative c'' {
-			e16 d! c b a g f e c' b a g f e dis cis
-			dis[ b f'8 ] r16 e8 dis16 <gis, b e>2 \bar "||"
-		}
-		\\
-		\relative c'' {
-			g8 r8 s4 s2
-			\set Score.beatLength = #(ly:make-moment 1 8)
-			s16 b,8. ~ b8[ a] s2
-		}
-	   >>
-	}
-	\new Staff =  "down" {
-	        \clef bass
-	<<
-		\relative c {
-			s2 a16 b 
-			\override TextScript #'extra-offset = #'( 0.0 . 1.0 )
-			c^\markup{ 6 }
-			\override TextScript #'extra-offset = #'( 0.0 . 1.0 )
-			d^\markup{ 7 }
-			e f g a ~
-			a8. a16 g8[ f] <e, e'>2
-		}
-		\\
-		\relative c {
-			<c e>8 r8 r4 s2
-			b2 s2
-		}
-	  >>
-	}
-    >>
-    \layout {
-	ragged-right = ##t 
-	\context {
-	    \Staff
-	    \consists Horizontal_bracket_engraver
-	}
+  \context PianoStaff <<
+    \new Staff =  "up" {
+      \clef treble
+      \time 4/4
+      <<
+        \relative c'' {
+          \mark \markup {\tiny{"40"}}
+          e16 d! c b a g f e c' b a g f e dis cis
+          dis[ b f'8 ] r16 e8 dis16 <gis, b e>2 \bar "||"
+        }
+        \\
+        \relative c'' {
+          g8 r8 s4 s2
+          \set Score.beatLength = #(ly:make-moment 1 8)
+          s16 b,8. ~ b8[ a] s2
+        }
+      >>
     }
+    \new Staff =  "down" {
+      \clef bass
+      <<
+        \relative c {
+          s2 a16 b 
+          \override TextScript #'extra-offset = #'( 0.0 . 1.0 )
+          c^\markup{ 6 }
+          \override TextScript #'extra-offset = #'( 0.0 . 1.0 )
+          d^\markup{ 7 }
+          e f g a ~
+          a8. a16 g8[ f] <e, e'>2
+        }
+        \\
+        \relative c {
+          <c e>8 r8 r4 s2
+          b2 s2
+        }
+      >>
+    }
+  >>
+  \layout {
+    ragged-right = ##t 
+    \context {
+      \Staff
+      \consists Horizontal_bracket_engraver
+    }
+  }
 }

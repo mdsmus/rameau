@@ -1,4 +1,8 @@
 \version "2.10.33"
+\header {
+  title = "Unsere Vater hofften auf dich, Op 109"
+  composer = "Brahms"
+}
 sopA = \relative c' { \clef treble \key f \major
 	r1
 	r4 f g a
@@ -25,10 +29,10 @@ bassA = \relative c { \clef bass \key f \major
 	f4. e8 d2
 	f2 c4 c
 	d2 bes
-	f1
+	f'1
 }
 
-sopB = \relative c' { \clef treble \key f \major
+sopB = \relative c'' { \clef treble \key f \major
 	r1
 	r2 r4 c4
 	c2 bes2
