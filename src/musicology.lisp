@@ -82,11 +82,11 @@
   (let (boxes)
     (iter (for (cadence places) in cadences)
           (for i from 1)
-          (let* ((size (normalize 10d0
-                                  20d0
-                                  0d0
-                                  max-size
-                                  (length places)))
+          (let* ((size (normalize-line 10d0
+                                       20d0
+                                       0d0
+                                       max-size
+                                       (length places)))
                  (dim (append (text-dimensions cadence size)
                               (list cadence size)))
                  (angle (random (* 2 pi)))
