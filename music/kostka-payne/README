@@ -4,30 +4,29 @@ Stefan M. Kostka and Dorothy Payne. Tonal Harmony, with an
 introduction to twentieth-century music. McGraw-Hill, Boston. 4th
 edition. 2000.
 
-Old Example              Chapter                Page            New Example
-exemplo1.ly              To the Student         xii             001
-exemplo3-8b.ly           3                       51             002
-exemplo4-4.ly            4                       63             003
-exemplo4-5.ly            4                       63             004
-auto_teste_4-1C.ly       4                       67             005
-auto_teste_4-2C2.ly      4                       72             006
-exemplo_5-2a.ly          5                       77             007
-exemplo_5-2b.ly          5                       77             008
-Exemplo_7-1.ly           7                      105             009
-Exemplo_7-1b.ly          7                      105             010
-autoteste_7-1D2.ly       7                      121             011
-exemplo10-10.ly          10                     163             012
-exemplo10-11.ly          10                     164/165         013
-exemplo10-16.ly          10                     171             014
-exemplo_16-2.ly          14                     227             015
-exemplo_16-3a.ly         14                     228             016
-exemplo_16-5a.ly         14                     229             017
-exemplo_16-7.ly          14                     231             018
-autoteste_20-1C.ly       20                     349/350         019
-exemplo_24-01.ly         24                     403             020
+Name                                            Composer       Chapter                Page            New Example
+Herzlich lieb hab' ich dich, o Herr             Bach            To the Student         xii             001
+Easter Oratorio, II                             Bach            3                       51             002
+Well-TEmpered Clavier, Book I, Prelude 10       Bach            4                       63             003
+Sonata Op. 2, Nº 2, III, Trio                   Beethoven       4                       63             004
+Ach lieber Herre Jesu Christ                    Brahms          4                       67             005
+Chorale, Op 68, Nº 4                            Schumann        4                       72             006
+Example 5-2 A                                   Kostka          5                       77             007
+Example 5-2 B                                   Kostka          5                       77             008
+Example 7-1 A                                   Kostka          7                      105             009
+Example 7-1 B                                   Kostka          7                      105             010
+-                                               -               7                      121             011
+Sonata Nº 15, II                                Haydn           10                     163             012
+An die Freude, k. 53                            Mozart          10                     164/165         013
+Sonata Op. 26, I                                Beethoven       10                     171             014
+Example 14-2                                    Kostka          14                     227             015
+Symphony Nº 41, K 551, IV                       Mozart          14                     228             016
+Symphony Nº 9 Op 95, I                          Dvorák          14                     229             017
+Unsere Vater hofften auf dich, Op 109, Nº 1     Brahms          14                     231             018
+Symphony K 97, III                              Mozart          20                     349/350         019
+Ruf zur Maria, Op. 22, Nº 5                     Brahms          24                     403             020
+
 
 exemplo_16-4a.ly         não encontrado
 kostka_26-5.ly           não encontrado
 kostka_26-9.ly           não encontrado
-
-kostka_26-1.ly           exemplo repetido
