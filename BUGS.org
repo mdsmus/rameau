@@ -5,6 +5,8 @@
 ** gabaritos professores
 ** maxwell
 ** musicologia computacional
+*** analise de cifras (musica popular)
+*** comparacao entre coisas (e.g. conklin)
 ** otimizar hmm/knn
 ** musicas brahms, kostka, sonata
 ** avaliacao gabarito
