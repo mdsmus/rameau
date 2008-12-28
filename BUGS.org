@@ -1,34 +1,37 @@
 * todo futuro
-** opcoes de compilacao (hunchentoot, cairo, fann)
-** gui
-** abc para web
-** gabaritos professores
-** maxwell
-** musicologia computacional
-*** analise de cifras (musica popular)
-*** comparacao entre coisas (e.g. conklin)
-** otimizar hmm/knn
-** musicas brahms, kostka, sonata
-** avaliacao gabarito
-** analise notas melodicas
-*** ticket: checar rodar rameau no brahms
-*** analisar brahms
-** renomear *algorithms* para chord-names-algorithms
-** renomear *functional-algorithms* para *roman-analysis-algorithms*
-** submodules
-** converter kern->rameau
-* refatoração check-list
-  - loop (e nao iterate)
-  - loop como mapcar
-  - let em loop e iterate
-  - foo? usar foop
-* usar asdf-binary-locations para make-image.lisp?
-* reuniao genos
-** falta tests
-** event-voice-name "\"foo\""
-** fechar tickets
-   nao fechar tickets sem conferir?
-** nomes tickets
-   novo, a revisar, fechado, descartado
-** documentacao ruim
-   "Parse a file name @var{exp} with the options in @var{options}."
+  hora de olhar para os proximos 2 anos
+** tem coisas para fazer como
+*** musicologia computacional
+**** analise de cifras (musica popular)
+**** comparacao entre coisas (e.g. conklin)
+*** analise notas melodicas
+** qual formato "oficial"?
+   continuar lily, usar formato mais simples, musedata?)
+** merge cl-lily(abc,musedata,kern)|cl-music?
+** voltar a ser 100% portavel, compila com ecl
+** cl-lily:
+*** novo parser e lexer
+*** cl-yacc nao funciona com ecl
+*** parseia kern|musedata|abc
+** cl-music: nova versao "do zero"
+*** implementa varias codificações,
+*** ve o que os algoritmos precisam e abstrai
+*** vale a pena ter tipos para notas? (latin, lily, etc)
+** melhor maneira para gerar musica (lily|abc)
+   (coloca em biblioteca)
+** cl-fann:
+   nova versao, usa swig, limpa coisas
+** rameau: (next generation)
+*** remove cruft
+**** gui only (mostra "CALIBRATE EXPERTS")
+**** test nao deveria estar no binario (repl only)
+*** repl-friendly
+    divergimos para o programa ser CL-friendly mas acabou ficando
+    interactive-unfriendly (repl)
+*** mais facil de testar
+    (e.g. testar formato de saida, e.g. codigo retornava :latin, NIL7)
+*** remove coisas para bibliotecas (e.g. command-line)
+*** re-escrita "do zero"
+    deixar rameau mais facil de depurar no REPL (e.g. analisar musica
+    com step)
+*** opcoes de compilacao (hunchentoot, cairo, fann)
