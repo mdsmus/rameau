@@ -6,7 +6,7 @@
 **** analise de cifras (musica popular)
 **** comparacao entre coisas (e.g. conklin)
 *** analise notas melodicas
-*** contornos, motivos, etc
+*** contornos, frelmus, motivos, deteccao de frases, etc
 ** OBJETIVO: remodelar rameau e ferramentas para esse futuro
 ** qual formato "oficial"?
 *** continuar lily, usar formato mais simples, musedata?)
