@@ -6,15 +6,37 @@
 **** analise de cifras (musica popular)
 **** comparacao entre coisas (e.g. conklin)
 *** analise notas melodicas
-*** contornos, motivos, etc
+*** contornos, frelmus, motivos, deteccao de frases, etc
 ** OBJETIVO: remodelar rameau e ferramentas para esse futuro
+   rameau como plataforma estavel para musicologia computacional
+   (usável por usuários finais)
 ** qual formato "oficial"?
 *** continuar lily, usar formato mais simples, musedata?)
 *** o objetivo era usar um sub-conjunto do lily e nao gastar tempo com parser
+*** podemos usar formato interno para corpus do genos (cache)
+*** podemos usar um front-end que exporte (e.g. musicxml)
+** qual status dos corais de bach?
+*** 100% com rieman?
+*** corrigir em 2009 com budapeste?
+*** fazer edições multiplas?
 ** merge cl-lily (abc,musedata,kern)|cl-music?
 ** voltar a ser 100% portavel, compila com ecl
 ** cl-lily:
 *** novo parser e lexer (cl-yacc nao funciona com ecl)
+*** usar bison?
+*** usar pyScore?
+*** usar displayMusic?
+(make-music 'SequentialMusic
+  'elements (list (make-music 'EventChord
+                    'elements (list (make-music 'NoteEvent
+                                      'duration (ly:make-duration 2 0 1 1)
+                                      'pitch (ly:make-pitch 0 0 0))
+                                    (make-music 'AbsoluteDynamicEvent
+                                      'text "f")))))
+
+lento (4.5),    \set Score.skipTypesetting = ##t e -dbackend=null (3.16)
+*** hackear lilypond para usar musicxml formato
+*** lilypond streams?
 *** parseia kern|musedata|abc
 *** vale a pena pensar nisso porque o objetivo é ter corpus grande
 ** cl-music: nova versao "do zero"
@@ -37,6 +59,7 @@
     divergimos para o programa ser CL-friendly mas acabou ficando
     interactive-unfriendly (repl)
 **** acho que gui vai unificar isso + restarts
+**** usar restarts e check-type e assert
 *** mais facil de testar
 **** e.g. testar formato de saida
 **** e.g. codigo retornava :latin, NIL7
