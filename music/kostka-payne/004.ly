@@ -5,12 +5,13 @@
 }
 \score {
   \context PianoStaff <<
+    \set Score.currentBarNumber = #13
+    \bar ""
     \new Staff =  "up" {
       \clef treble
       \time 3/4
       <<
         \relative c'' {
-          \mark \markup {\tiny{"13"}}
           f4( e d
           c! b a
           \override TextScript #'extra-offset = #'( 0.0 . 1.0 )

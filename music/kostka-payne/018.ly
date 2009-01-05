@@ -64,6 +64,8 @@ bassB = \relative c { \clef bass \key f \major
 
 <<
 \new PianoStaff { <<
+        \set Score.currentBarNumber = #48
+        \bar ""
 	\new Staff { << { \sopA } \\ { \contA } >> }
 	\new Staff { << { \tenA } \\ { \bassA } >> }
 	>> }

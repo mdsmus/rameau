@@ -8,6 +8,9 @@
 
 \new ChoirStaff <<
 \new Staff \relative c'{\time 3/4 \key g \major  
+\set Score.currentBarNumber = #25
+\bar ""
+
 \repeat volta 2 {
 b'-. a-. b-. 
 c2( a4)

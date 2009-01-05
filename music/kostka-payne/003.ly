@@ -5,12 +5,13 @@
 }
 \score {
   \context PianoStaff <<
+    \set Score.currentBarNumber = #40
+    \bar ""
     \new Staff =  "up" {
       \clef treble
       \time 4/4
       <<
         \relative c'' {
-          \mark \markup {\tiny{"40"}}
           e16 d! c b a g f e c' b a g f e dis cis
           dis[ b f'8 ] r16 e8 dis16 <gis, b e>2 \bar "||"
         }

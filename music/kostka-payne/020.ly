@@ -4,7 +4,8 @@
   composer = "Brahms"
 }
 \new ChoirStaff {
-
+  \set Score.currentBarNumber = #28
+  \bar ""
 	<<
 	\new Staff \relative c''{
 		\time 6/4
