@@ -1,3 +1,5 @@
+\version "2.12.0"
+
 pizz = ^\markup{\italic{pizz.}}
 arco = ^\markup{\italic{arco}}
 
@@ -6,7 +8,7 @@ viola= {
 	\relative c {
 	 	
 		ees8 \p ees8 ees ees ees2:8 ees 2:8
-		ees2:8 ees2:8 \setTextCresc ees2:8 \< 
+		ees2:8 ees2:8 \crescTextCresc ees2:8 \< 
 		ees2:8 ees2:8 ees2:8
 		ees2:8 ees2:8 des2:8
 		c2:8 c2:8 \< c2:8
@@ -27,13 +29,13 @@ viola= {
 		g4. (b8 c2) r2
 		r2 a (c)		
 		g4 r4 r2 r2
-		\setTextDim b \> (g fis)
+		\dimTextDim b \> (g fis)
 		r2 fis r2
 	%22
 		g \< (ees d) \!
 		c4. \< (d8 ees4. g8 c4. ees8) \!
  		ees2 \f (fis,4) r8 g (c4. ees8)
-		ees2 (aes,4) r8 \setTextCresc a \< (c4. ees8)
+		ees2 (aes,4) r8 \crescTextCresc a \< (c4. ees8)
 		f2 (a,4) r8 bes (des4. f8)
 	%27		
 		aes4. c8-. \sf aes4. ees8-. c4. aes'8-. \sf 
@@ -60,7 +62,7 @@ viola= {
 		c,1 \p cis 2
 		d1 dis 2  
 	%47		
-		\setTextCresc e \< eis fis
+		\crescTextCresc e \< eis fis
 		g \< e g, \!
 		r4 fis \f (a d cis fis)
 		e (a,) r f (a d
@@ -76,7 +78,7 @@ viola= {
 		f bes bes d ees4.-> (c8) aes4.-> (f8)
 		d'4.-> (bes8) g4.-> (ees8) c'4.-> (aes8) \clef alto
 		c4.-> (aes8) f4. (c8)  aes4. (f8)
-		<f aes>4 \setTextDim <f-. aes>4 \> (r <f-. aes>4 r <f-. aes>4)  
+		<f aes>4 \dimTextDim <f-. aes>4 \> (r <f-. aes>4 r <f-. aes>4)  
 	%62
 		r <f a>4 r <f a>4 \! r <f c'>4 \p	  
 		r <g bes>4 r <f a>4 r <g bes>4
@@ -112,7 +114,7 @@ viola= {
 		bes4. \p (c8 \< d4. f8 bes4. d8 \!)
 		d2 \> (gis,4 \!) r r2 
 		\repeat "tremolo" 2 {a,8 \< (c8} \repeat "tremolo" 2 {a8 c8} \repeat "tremolo" 2 {a8 c8 \!)} 
-		\setTextCresc \repeat "tremolo" 2 {f,8 \< (c'8} \repeat "tremolo" 2 {f,8 c'8} \repeat "tremolo" 2 {f,8 c'8 )} 
+		\crescTextCresc \repeat "tremolo" 2 {f,8 \< (c'8} \repeat "tremolo" 2 {f,8 c'8} \repeat "tremolo" 2 {f,8 c'8 )} 
 	%90
 		\repeat "tremolo" 2 {f8 (d8} \repeat "tremolo" 2 {f8 d8} \repeat "tremolo" 2 {f8 d8)} 	
 		\repeat "tremolo" 2 {b'8 (gis8} \repeat "tremolo" 2 {b8 e,8)} e2-.
@@ -141,7 +143,7 @@ viola= {
   		g g' g g, g g' g g, g g' g gis 	
 	%111		
 		gis, gis' gis gis, gis gis' gis gis, gis gis' gis gis, \key e \major
-		gis \p \setTextCresc gis' \< gis gis, gis gis' gis gis, gis gis' gis gis,
+		gis \p \crescTextCresc gis' \< gis gis, gis gis' gis gis, gis gis' gis gis,
 		a e' e e, e e' e e, e e' e a,
 		a \f a' a a, a a' a fis fis d' d f, 
 	%115
@@ -159,7 +161,7 @@ viola= {
 		r a a gis r b b a r cis cis b
 		r d d cis cis2 ~ cis8 d d cis 
 		cis2 ~ cis8 ~ d d cis cis2 ~ 
-		\setTextCresc cis8 \< (d) (d4 ~ d8 e,) (e4 ~ e8 d) d4 ~
+		\crescTextCresc cis8 \< (d) (d4 ~ d8 e,) (e4 ~ e8 d) d4 ~
 		(d8 e,) e4 ~ (e8 d) d4 ~ (d8 e e4)
 	%129
 		< cis a'>4 \f r8 a''8-. fis-. e-. a,-. fis-. fis-. e-. cis-. cis-.  
@@ -173,7 +175,7 @@ viola= {
 		c2:8 c2:8 c2:8
 		c2:8 c2:8 c2:8
 		c2:8 c2:8 \< <ees c'>2:8
-		\setTextCresc <ees c'>2:8 \<  <ees c'>2:8  <ees c'>2:8
+		\crescTextCresc <ees c'>2:8 \<  <ees c'>2:8  <ees c'>2:8
 		 <ees c'>2:8  <ees c'>2:8  <ees c'>2:8  
 	%140
 		<f c'>2:8  <f c'>2:8  <f bes>2:8
@@ -197,17 +199,17 @@ viola= {
 	%156
 		c4 (g' aes f c f,)
 		g4. (b8 c2) r2
-		\setTextDim  c4. \> (d8 e2 c)
+		\dimTextDim  c4. \> (d8 e2 c)
 		c,2. \> (d4 e) \! r4
 		a2 \> (f e) \!
 		r2 e2-_ r2
 	     %colocar tenuto mais staccato
-	 	g2 \p (\setTextCresc e \< des)	
+	 	g2 \p (\crescTextCresc e \< des)	
 		<c c'>1. 
 	%164
 		f4. \< (g8 aes4. c8 f4. aes8) \!
 		aes2 \f (b,4) r8 c8 (f4. aes8)
-		aes2 (des,4) r8 d8 (\setTextCresc f4. \< aes8)
+		aes2 (des,4) r8 d8 (\crescTextCresc f4. \< aes8)
 		bes2 (d,4) r8 e8 (ges4. aes8)
 		des4. f8-. \sf des4. aes8 f4. des'8-. \sf 
 	%169
@@ -233,7 +235,7 @@ viola= {
 		r8 e,-. e-. aes aes f f c' c aes aes f'
 		a,1 \p  bes2 
 		b1 c2
-		\setTextCresc des2 \< d e
+		\crescTextCresc des2 \< d e
 		e \< cis e, \!
 	%190
 		r4 dis \f (gis b ais dis)
@@ -250,7 +252,7 @@ viola= {
 	%200
 		(f8 d) d4. (c8) e4. (c8) a'4 ~
 		(a8 f) a4. (f8) d4. (a8) f'4 ~
-		(f8 d)\setTextDim c4. \> (d8) c4. \> (d8) c4 ~
+		(f8 d)\dimTextDim c4. \> (d8) c4. \> (d8) c4 ~
 		(c8 d) c4. (d8) c4. (d8) c4 \p ~ 
 	    %colocar p dolce
 		(c8 e) c4. (d8) c4. (e8) c4  ~
@@ -276,11 +278,11 @@ viola= {
 	  % acima colocar o piú p
 	  	<< { << a1. ({ s4 \> s4  s4\! s4} >> g1.) ~ g} \\ {ees1. ~ ees (d)} >>  \time 2/2
 	 %224
-		r4 \p \setTextCresc e4-. \< (r4 e4-.)
+		r4 \p \crescTextCresc e4-. \< (r4 e4-.)
 		r4 f4-. (r4 aes4-.)
 		r4 aes'-> ~ aes8 f f c
 		b4-. \< aes2-> g4-.
-		c,8 \p \setTextCresc c' \< c c, c c' c c,
+		c,8 \p \crescTextCresc c' \< c c, c c' c c,
 		c c' c c,  c c' c c,  
 		c c' c c,  c c' c c,  
 	%231
@@ -309,7 +311,7 @@ viola= {
 		<des f>8 <des f>8-. <des f>8-. <des f>8-. <f, aes>2:8
 	%252
 		<g g'>1:8 
-		\setTextDim <g g'>1:8 \>
+		\dimTextDim <g g'>1:8 \>
 		\times 2/3 {g4-. g-. g-.} \times 2/3 {g4-. g-. g-.}
 		\times 2/3 {g4-. g-. g-.} \times 2/3 {g4-. g-. g-.}
 		e4-. e4-. e4-. e4-.

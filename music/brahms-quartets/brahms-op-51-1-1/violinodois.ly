@@ -1,3 +1,5 @@
+\version "2.12.0"
+
 pizz = ^\markup{\italic{pizz.}}
 arco = ^\markup{\italic{arco}}
 
@@ -5,7 +7,7 @@ violinodois= {
 	\relative c' {
 	 	
 		r2 r2  c4. \p (ees8) 
- 		ees2 r2 \setTextCresc c4. \< (ees8) \! 
+ 		ees2 r2 \crescTextCresc c4. \< (ees8) \! 
 		ees2 r2 c4. ees8
 		f2 (a,4) r8 bes (des4. f8)
 		aes4. c,8 ees4. \< aes8 c4. ees,8 
@@ -25,7 +27,7 @@ violinodois= {
 	    %Ligadura de frase em quiálteras?		
 		c2 (aes g)
 		c2 ( ~ \times 2/3 {c4 \< b c \!} \times 2/3 {a'4 \> ees c ) \!}
-		b2 (\setTextDim g \> fis \!)
+		b2 (\dimTextDim g \> fis \!)
 		r1 s2
 		r1 s2
 	%22
@@ -59,7 +61,7 @@ violinodois= {
 		r8 dis  \p dis dis dis cisis cisis dis dis bis bis cis
 		r8 c c c c b b c c b b c
 	%47		
-		r8 \setTextCresc cis \< cis cis cis bis bis cis cis2:8 \!
+		r8 \crescTextCresc cis \< cis cis cis bis bis cis cis2:8 \!
 		cis2:8 \< cis2:8 cis2:8 \!
 		r4 <d \f a d,>4 r4 fis, (a d)
 		cis (<d, a' a'>4) r2 r4 f
@@ -108,7 +110,7 @@ violinodois= {
 		\repeat "tremolo" 2 {f,8 (d'8} \repeat "tremolo" 2 {f,8 d'8} \repeat "tremolo" 2 {d,8 bes'8)} 
 		\repeat "tremolo" 2 {d8 (gis,8} \repeat "tremolo" 2 {c8 gis8} \repeat "tremolo" 2 {b8 gis8)} 
 		\repeat "tremolo" 2 {c8 \< (a8} \repeat "tremolo" 2 {c8 a8} \repeat "tremolo" 2 {c8 a8 \! ) } 
-	 	\setTextCresc \repeat "tremolo" 2 {c8 \< (a8} \repeat "tremolo" 2 {c8 a8} \repeat "tremolo" 2 {c8 a8)} 
+	 	\crescTextCresc \repeat "tremolo" 2 {c8 \< (a8} \repeat "tremolo" 2 {c8 a8} \repeat "tremolo" 2 {c8 a8)} 
 
 	%90
 		\repeat "tremolo" 2 {d8 (bes8} \repeat "tremolo" 2 {d8 bes8} \repeat "tremolo" 2 {d8 bes8)} 
@@ -138,7 +140,7 @@ violinodois= {
 		R1 *3/2
 	%111
 		r8 dis' dis  \< e fis2 \! \> ~ (fis8 d) \! d gis, \key e \major
-		\setTextCresc <cis, e>1. \p \< 
+		\crescTextCresc <cis, e>1. \p \< 
 		cis4. (e8 a4. b8 cis4. e8)
 		r8 d \f d a d2 ~ (d8 a) a  a,
 	%115		
@@ -156,7 +158,7 @@ violinodois= {
 		dis4. e8 eis4. fis8 fisis4. gis8
 		<gis b,>2  ~ <gis b,>8 <a b,>8 <a b,>8 <gis b,>8 <gis b,>2  ~
 		<gis b,>8 <a b,>8 <a b,>8 <gis b,>8 <gis b,>2  ~ <gis b,>8 <a b,>8 <a b,>8 <gis b,>8
-		<< {\setTextCresc gis4. \< (a8) a4. (gis8) gis4. (a8)\!} \\ {b,2 b b} >> 
+		<< {\crescTextCresc gis4. \< (a8) a4. (gis8) gis4. (a8)\!} \\ {b,2 b b} >> 
 		<< {a'4. \< (gis8) <gis b,>4. (gis,8) <gis' b,>4. \! (<a a,>8)} \\ {b,2 s1} >> 
            %revisar linha acima
 	%129
@@ -170,7 +172,7 @@ violinodois= {
 		r2 aes1 
 		(b1 c2) ~
 		c2 ~ c4.  \< (aes8 c4. ees8 \!)
-		\setTextCresc ees2 \< r4 r8 g, (c4. ees8)
+		\crescTextCresc ees2 \< r4 r8 g, (c4. ees8)
 		ees2 (aes,4) r8 a8 (c4. ees8)
 	%140 
 		f2 (a,4) r8 bes8 (des4. f8)
@@ -199,11 +201,11 @@ violinodois= {
 		R1 *3/2
 		R1 *3/2
 		R1 *3/2
-		c2 \p (\setTextCresc bes \< g)
+		c2 \p (\crescTextCresc bes \< g)
 	%164
 		aes8 \< g aes b c e f g aes b c f
 		<f aes>2:8 \f <f aes>2:8  <f aes>2:8
-		<f aes>2:8  <f aes>2:8 \setTextCresc <f aes>2:8 \< 
+		<f aes>2:8  <f aes>2:8 \crescTextCresc <f aes>2:8 \< 
 		<f ges>2:8  <f ges>2:8  <ees ges>2:8
 		<f aes,>2:8  <f aes,>2:8 <f aes,>2:8	
 	%169
@@ -229,7 +231,7 @@ violinodois= {
 		r4 c-. (r4 f-. r4 c'-.)
 		r8 c \p c c c b b c c a a b 
 		r8 a a a a gis gis a a gis gis a
-		r8 \setTextCresc bes \< bes bes bes a a bes bes2:8
+		r8 \crescTextCresc bes \< bes bes bes a a bes bes2:8
 		bes2:8 \<  bes2:8  bes2:8 \!
 	%190
 		r4 <b fis b,>4 \f r4 dis,4 (fis b)
@@ -246,7 +248,7 @@ violinodois= {
 	%200
 		b'4.-> (g8) e4.-> (c8) a'4.-> (f8)
 		a'4.-> (f8) d4.-> (a8) f4.-> (d8)
-		<d f>4 \setTextDim <d f>4-. \> ( r4 <d f>4-. r4 <d f>4 )
+		<d f>4 \dimTextDim <d f>4-. \> ( r4 <d f>4-. r4 <d f>4 )
 		r4 \> <d fis>4 r4 <d fis>4 r4 <d a'>4 \p
 	    %adicionar o p dolce
 	    	r4 <g e>4 r4 <fis d>4 r4  <g e>4
@@ -268,12 +270,12 @@ violinodois= {
 		<< c1. ~ { s4 \p s4 s4 \< s4 s4 s4 \!} >> << c1. ~ { s4 \> s4  s4\! s4} >> c1. (b1.) \time 2/2	
 	    %adicionar o piú 
 	%224
-		r4 \p \setTextCresc bes4-. \< ( r g-.)
+		r4 \p \crescTextCresc bes4-. \< ( r g-.)
 	    %adicionar o crescendo ed agitato	
 		r4 c4-. ( r c-.)
 		r8 d d ees f aes, aes'4 ~
 		aes8 \< g g f f <d b'>8 <d b'>8 <d b'>8 \!
-		r4 <e g,>4-. \p (\setTextCresc r4 \< <g g,>4-.)
+		r4 <e g,>4-. \p (\crescTextCresc r4 \< <g g,>4-.)
 		r4 <aes c,>4-. (r4 <aes f>4-.) 
 		r8 d d ees f aes, aes'4 ~
 	%231
@@ -302,7 +304,7 @@ violinodois= {
 		aes8 aes8-. aes8-. aes8-. des2:8
 	%252
 		<c e>1:8
-		\setTextDim <c e>1:8 \>
+		\dimTextDim <c e>1:8 \>
 		\times 2/3 { <c e>4-. <c e>4-. <c e>4-. } \times 2/3 { <c e>4-.
 <c e>4-. <c e>4-. }
 		\times 2/3 { <c e>4-. <c e>4-. <c e>4-. } \times 2/3 { <c e>4-. 

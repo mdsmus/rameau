@@ -1,3 +1,5 @@
+\version "2.12.0"
+
 pizz = ^\markup{\italic{pizz.}}
 arco = ^\markup{\italic{arco}}
 
@@ -7,7 +9,7 @@ violoncelo= {
 	 	
 		
 	c8 \p c' c  c c2:8 c2:8
-		c2:8 c2:8 \setTextCresc c2:8 \< 
+		c2:8 c2:8 \crescTextCresc c2:8 \< 
 		c2:8 c2:8 c2:8 
 		c2:8 c2:8 bes2:8
 		aes2:8 aes2:8 \< aes2:8 		
@@ -26,14 +28,14 @@ violoncelo= {
 		aes4. (c8 f2 aes,4) r
 		g2 ~ (g4. b8 c2)
 		fis,4. (b8 c2 fis,4) r
-		g4. (a8 \setTextDim b2 \> ~ b4. cis8)
+		g4. (a8 \dimTextDim b2 \> ~ b4. cis8)
 		d2 \> ~ d4. e8 \! fis2
 		r2 fis r2		
 	%22
 		g, \< (ees d) \!
 		c4. \< (d8 ees4. g8 c4. ees8) \!
  		ees2 \f (fis,4) r8 g (c4. ees8)
-		ees2 (aes,4) r8 \setTextCresc a  \< (c4. ees8)
+		ees2 (aes,4) r8 \crescTextCresc a  \< (c4. ees8)
 		f2 (a,4) r8 bes (des4. f8)
 	%27		
 		aes4. c8-. \sf aes4. ees8-. c4. aes'8-. \sf 
@@ -60,7 +62,7 @@ violoncelo= {
 		r8 fis \p  fis gis a2 ~ (a8 gis) gis a
 		r8 fis fis gis a2 ~ (a8 gis) gis a 
 	%47		
-		r8 \setTextCresc a \< a a a gis gis a a2:8
+		r8 \crescTextCresc a \< a a a gis gis a a2:8
 		a2:8 \< a2:8 a2:8 \!
 		R1 *3/2 \clef bass
 		r4 f,,4 (a d cis f)
@@ -76,7 +78,7 @@ violoncelo= {
 		g4. g,8 c,4. c'8 f,4. f'8
 	 	bes,4. bes8 ees,4. ees'8 aes,4. aes8
 		f4 r8 aes' f4. (c8) aes4. (f8) 
-		ces'4. ( \setTextDim f,8) \> ces'4. (f,8) ces'4. (f,8)	
+		ces'4. ( \dimTextDim f,8) \> ces'4. (f,8) ces'4. (f,8)	
 	%62
 		c'4. (f,8) \! c'4. (f,8) a4. \p (f8)
 		bes4. (f8) c'4. (f,8) bes4. (ees,8)
@@ -112,7 +114,7 @@ violoncelo= {
 		d
 		e
 		e \< 
-		\setTextCresc f4. \< (g8 a4. c8 f4. a8)
+		\crescTextCresc f4. \< (g8 a4. c8 f4. a8)
 	%90
 		d,,1.
 		e4. fis8 gis4. b8 e4 r
@@ -142,7 +144,7 @@ violoncelo= {
 		ees,4. \< (g8 c4. ees8 g4. gis8 \!)
 	%111
 		gis2 \> (bis,4 \!) r4 r2  \key e \major
-		e,4. \p ( \setTextCresc fis8 \< gis4. cis8 e4. gis8)
+		e,4. \p ( \crescTextCresc fis8 \< gis4. cis8 e4. gis8)
 		cis,,1.
 		d4. \f (e8 fis4. a8 d4. fis8)
 	%115
@@ -160,7 +162,7 @@ violoncelo= {
 		r8 bis' bis cis r8 cis cis d r8 dis dis e
 		r8 e e eis eis2 ~ eis8 e e f 
 		f2 ~ f8 e e f f2 ~
-		\setTextCresc f8 \< (e) e4 ~ (e8 d) d4 ~ (d8 e,) \clef bass e4 ~
+		\crescTextCresc f8 \< (e) e4 ~ (e8 d) d4 ~ (d8 e,) \clef bass e4 ~
 		(e8 d) d4 ~(d8 e,) e4 ~ (e8 d) d4
 	%129
 		cis4-. \f r r2 r8 a' cis, cis 
@@ -174,7 +176,7 @@ violoncelo= {
 		c,1 (ees2 ~
 		ees aes1)
 		aes2:8 aes2:8 \< aes2:8
-		\setTextCresc a2:8 \< a2:8 g2:8
+		\crescTextCresc a2:8 \< a2:8 g2:8
 		fis2:8 fis2:8 f2:8
 	%140
 		ees2:8 ees2:8 des2:8
@@ -197,17 +199,17 @@ violoncelo= {
 	%156
 		aes4. (c8 f2 aes,)
 		g2 ~ (g4. b8 c2) ~
-		c2 (\setTextDim c,1 \>) ~
+		c2 (\dimTextDim c,1 \>) ~
 		c1. \> ~ 
 		c2. (d4 e2) \!
 		r2 e-_ r2
 	   %colocar o tenuto
 	   	R1 *3/2
-		c'2 \p (\setTextCresc bes2 \< g)
+		c'2 \p (\crescTextCresc bes2 \< g)
 	%164
 		f4. \< (g8 aes4. c8 f4. aes8) \!
 		aes2 \f (b,4) r8 c8 (f4. aes8)
-		aes2 (des,4) r8 d8 (\setTextCresc f4. \< aes8)
+		aes2 (des,4) r8 d8 (\crescTextCresc f4. \< aes8)
 		bes2 (d,4) r8 ees8 (ges4. bes8)
 		des4. f8-. \sf des4. aes8 f4. des'8-. \sf 
 	%169
@@ -233,7 +235,7 @@ violoncelo= {
 		bes4 (aes-.) (r c-. r c-.) \clef tenor
 		r8 ees ees f ges2 ~ (ges8 f) f ges
 		r8 ees ees f ges2 ~ (ges8 f) f ges
-		r8 \setTextCresc ges \< ges ges ges f f ges ges2:8
+		r8 \crescTextCresc ges \< ges ges ges f f ges ges2:8
 		ges2:8 \< ges2:8 ges2:8 \!
 	%190
 		R1 *3/2 \clef bass
@@ -250,7 +252,7 @@ violoncelo= {
 	%200
 		g,4. g'8 c,,4. c'8 f,4. f'8
 		d,4 r8 f'8 d4. (a8) f4. (d8)
-		aes'4. (\setTextDim d,8 \>) aes'4. (d,8) \> aes'4. (d,8)   
+		aes'4. (\dimTextDim d,8 \>) aes'4. (d,8) \> aes'4. (d,8)   
 		a'4. (d,8) a'4. (d,8) fis4. (d8) \p
 	    %adicionar acima p dolce
 	    	g4. (c,8) a'4. (d,8) g4. (c,8)
@@ -278,12 +280,12 @@ violoncelo= {
 		g2 \pizz r2 r2
 		g2 r2 r2 \time 2/2
 	%224
-		c,8 \p \setTextCresc c' \< c c, c c' c c,  
+		c,8 \p \crescTextCresc c' \< c c, c c' c c,  
 	     %adicionar acima o crescendo ed agitato
 	     	c c' c c,  c c' c c, 
 		c c' c c,  c c' c c,
 		c \< c' c c,  c c' c c, \!
-		r4 bes'4-. \p (\setTextCresc r4 \< e,4-.)
+		r4 bes'4-. \p (\crescTextCresc r4 \< e,4-.)
 		r4 f-. (r aes-.) \clef tenor 
 		r4 aes''-> ~ aes8 f f c
 	%231
@@ -312,7 +314,7 @@ violoncelo= {
 		aes2 f
 	%252
 		c,4. d8 e g c e 
-		\times 2/3 {\setTextDim c,2 \> d4} \times 2/3 {e4 g c}
+		\times 2/3 {\dimTextDim c,2 \> d4} \times 2/3 {e4 g c}
 	    	\times 2/3 {c,2 d4} \times 2/3 {e2 g4}
 		\times 2/3 {c,2 d4} \times 2/3 {e2 g4}
 		c,2 g' ~ 

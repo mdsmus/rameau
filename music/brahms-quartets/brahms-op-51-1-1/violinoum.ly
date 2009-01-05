@@ -1,3 +1,5 @@
+\version "2.12.0"
+
 pizz = ^\markup{\italic{pizz.}}
 arco = ^\markup{\italic{arco}}
 
@@ -5,7 +7,7 @@ violinoum= {
 	\relative c' {
 
 		c4. \p \< (d8 ees4. g8 c4. ees8) \!
- 		ees2 (fis,4) r8 \setTextCresc g \< (c4. ees8)
+ 		ees2 (fis,4) r8 \crescTextCresc g \< (c4. ees8)
 		ees2 (aes,4) r8 a (c4. ees8)
 		f2 (a,4) r8 bes (des4. f8)
 		aes4. c,8 \! ees4. \< aes8 c4. ees,8 
@@ -30,7 +32,7 @@ violinoum= {
 		r2 r2 r8 aes, g b
 		c \< d ees fis g b c d ees g b c \!
 		ees-. \f ees,-. ees-. ees'-. ees ees, ees ees' ees ees, ees ees'
-		ees ees, ees ees' ees ees, ees ees' \setTextCresc ees \< ees, ees ees'
+		ees ees, ees ees' ees ees, ees ees' \crescTextCresc ees \< ees, ees ees'
 		des des, des des' des des, des des' des des, des des'
 	%27 
 		c ees, ees c' c ees, ees c' c ees, ees c' 
@@ -57,7 +59,7 @@ violinoum= {
 		r8  a \p a gis fis2 ~ (fis8 eis) eis fis
 		r8 a a gis fis2 ~ (fis8 eis) eis fis
 	%47
-		r8 \setTextCresc cis'\< cis b a2 ~ a8 gis gis a \!		
+		r8 \crescTextCresc cis'\< cis b a2 ~ a8 gis gis a \!		
 		r8 \< cis cis b b a a gis gis a a gis \!
 		gis-. \f a-. a-. gis-. gis a a gis gis a a gis
 		gis a a gis gis a a gis gis a a gis
@@ -109,7 +111,7 @@ violinoum= {
 		\repeat "tremolo" 2 {d8 (bes8)} \repeat "tremolo" 2 {bes8 (f8)} \repeat "tremolo" 2 {f8 (d8)}
 		\repeat "tremolo" 2 {f8 (d8} \repeat "tremolo" 2 {e8 c8} \repeat "tremolo" 2 {d8 b8)}
 		a4. \< (b8 c4. e8 a4. c8) \!
-		\setTextCresc c2 \< (ees,4) r4 r2
+		\crescTextCresc c2 \< (ees,4) r4 r2
 	%90	       
 		bes4. (c8 d4. f8 bes4. d8) 
 		f2-. e-. <gis,-. b, e,> 
@@ -140,7 +142,7 @@ violinoum= {
 	%111
 		r8 fis fis  \< gis a2 \! \> ~ (a8 fis) \! fis  dis \key e \major
 		R1 *3/2	
-		a4. \p (\setTextCresc b8 \< cis4. e8 a4. cis8)
+		a4. \p (\crescTextCresc b8 \< cis4. e8 a4. cis8)
 		r8 fis \f fis   gis a2 ~ (a8 fis)  fis  d 
 	%115		
 		r8 bis bis cis dis2   ~ (dis8 a)  a  gis 
@@ -157,7 +159,7 @@ violinoum= {
 		dis4. e8 eis4. fis8 fisis4. gis8
 		gis2 ~ gis8 a a gis gis2 ~
 		gis8 a  a gis gis2 ~ gis8 a a gis
-		\setTextCresc gis4. \< (a8) a4. (gis8) gis4. (a8)
+		\crescTextCresc gis4. \< (a8) a4. (gis8) gis4. (a8)
 		a4. \< (gis8) gis4. (b8) b4. (a8) 
 	%129
 		a8-. \f fis-. fis-. e-. r4 a,,8 fis fis e r4
@@ -170,7 +172,7 @@ violinoum= {
 		r2 c1 
 		(d1 ees2) ~
 		ees2 ~ ees4.  \< (aes8 c4. ees8 \!)
-		\setTextCresc ees2 \< (fis,4) r8 g (c4. ees8)
+		\crescTextCresc ees2 \< (fis,4) r8 g (c4. ees8)
 		ees2 (aes,4) r8 a8 (c4. ees8)
 		
 	%140	
@@ -196,16 +198,16 @@ violinoum= {
 	%156		
 		f
 		e
-		\setTextDim e,4. \> (f8 g2 e)
+		\dimTextDim e,4. \> (f8 g2 e)
 		f2  \> (a,1 \!)
 		R1 *3/2
 		R1 *3/2
-		g'2 \p (\setTextCresc e \< des)	
+		g'2 \p (\crescTextCresc e \< des)	
 		c1 ~ (c8 des c e \<)
 	%161
 		f g aes b c e f g aes b c f 
 		d \f d, d d' d d, d d' c c, c c'
-		ces ces, ces ces' ces ces, ces ces' bes \setTextCresc bes, \< bes bes'
+		ces ces, ces ces' ces ces, ces ces' bes \crescTextCresc bes, \< bes bes'
 		bes bes, bes bes' bes bes, bes bes' ees ees, ees ees'
 		des des, des des' des des, des des' des des, des des'
 	%169
@@ -231,7 +233,7 @@ violinoum= {
 		r c-. (r aes-. r f-.)
 		r8 ges \p ges f ees2 ~ (ees8 d) d ees
 		r8 ges ges f ees2 ~ (ees8 d) d ees
-		r8 \setTextCresc bes' \< bes aes ges2 ~ (ges8 f) f ges
+		r8 \crescTextCresc bes' \< bes aes ges2 ~ (ges8 f) f ges
 		r8 bes \< bes aes aes ges ges f f ges ges f \!
 	%190
 		eis-. \f fis-. fis-. eis-. eis fis fis eis eis fis fis eis
@@ -282,7 +284,7 @@ violinoum= {
 		r4 aes'-. (r4 f4-.)
 		r8 b b c d2 ~
 		d8 \< ees ees f f g aes g
-		r4 des4-. \p (\setTextCresc r4 \< bes4-.)
+		r4 des4-. \p (\crescTextCresc r4 \< bes4-.)
 		r4 aes'4-. (r4 f4-.)
 		r8 b b c d2 ~
 	%231 
@@ -306,7 +308,7 @@ violinoum= {
 		<des f,>2 ~ <des f,>4. ees8 \< f a des f \! e4 b,4 \rest
 		<c e,>2 ~ <c e,>4 b4 \rest <c f,>2 ~ <c f,>4 b4 \rest 
 		<des f,>2 ~ <des f,>4. ees8 \< f a des f \! e4 b,4 \rest 
-		<c' e,>2 ~ \setTextDim <c e,>4 \> b,4 \rest \!
+		<c' e,>2 ~ \dimTextDim <c e,>4 \> b,4 \rest \!
 		<g' c,>2 ~ <g c,>4 b,4 \rest 
 		<c e,>2 ~ <c e,>4 b4 \rest 
 		<g g,>2 ~ <g g,>4 b4 \rest 
