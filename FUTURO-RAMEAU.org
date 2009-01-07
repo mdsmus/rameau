@@ -43,7 +43,7 @@ lento (4.5),    \set Score.skipTypesetting = ##t e -dbackend=null (3.16)
 *** implementa varias codificações
     nao fazia sentido no inicio, agora faz
 *** ve o que os algoritmos precisam e abstrai
-*** vale a pena ter tipos para notas? (latin, lily, etc)
+*** vale a pena ter tipos para notas? (para as codificaçoes)
 *** retira cruft
 ** melhor maneira para gerar musica (lily|abc)
 *** estamos fazendo de maneira ad-hoc
