@@ -156,6 +156,9 @@ uninstall:
 	rm -rf $(prefix)/bin/rameau
 	rm -rf $(prefix)/share/rameau
 
+rameau.tar.gz:
+	tar czvf rameau.tar.gz -C .. --exclude rameau/rameau --exclude fasl --exclude algorithms --exclude analysis --exclude .git --exclude _darcs --exclude rameau.tar.gz --exclude *.pdf rameau
+
 clean:
 	rm -f rameau cmurameau eclrameau clisprameau checa-notas
 	rm -f web/cache.store
