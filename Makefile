@@ -44,7 +44,7 @@ else
 	clisp = clisp -ansi -K full
 endif
 
-lisp-files = $(wildcard src/*.asd src/*.lisp tools/*.lisp src/tests/*.lisp src/algorithms/*.lisp src/commands/*.lisp src/cl-lily/*.lisp)
+lisp-files = $(wildcard src/*.asd src/*.lisp tools/*.lisp src/tests/*.lisp src/algorithms/*.lisp src/commands/*.lisp rameau-deps/*/*.lisp rameau-deps/*/*/*.lisp)
 
 .PHONY: update clean all doc train data all-rameau check visuals update-deps
 
