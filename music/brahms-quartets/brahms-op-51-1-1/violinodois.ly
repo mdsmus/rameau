@@ -135,9 +135,9 @@ violinodois= {
 		r8 cis cis  \< d e2 \! \> ~ (e8 c) \! e  c
 	%107
 		r8 cis cis \< d e2 \! \> ~ (e8 c) \! c  fis,
-		R1 *3/2
+		R1*3/2
 		r8 d' d  \< ees f2 \! \> ~ (f8 d) \! d  g,
-		R1 *3/2
+		R1*3/2
 	%111
 		r8 dis' dis  \< e fis2 \! \> ~ (fis8 d) \! d gis, \key e \major
 		\crescTextCresc <cis, e>1. \p \< 
@@ -179,11 +179,11 @@ violinodois= {
 		aes4. c,8 ees4. aes8 c4. ees,8
 		aes4. c8 ees4. aes,8 c4. ees8
 		aes4-. \f r4 <g b, d,>4-. r4 r2
-		R1 *3/2
+		R1*3/2
 		d,4-. \p r4 cis-. r4 r2
-		R1 *3/2		
+		R1*3/2		
 		cis4-. \pizz r4 b-. r4 r2
-	    	R1 *3/2
+	    	R1*3/2
 	%149
 		r4 a r g r d'
 		r4 d r c \> r a
@@ -198,9 +198,9 @@ violinodois= {
 		c2 (aes g)
 	 	bes ~ (\times 2/3 {bes4 \< a bes \! } \times 2/3 {g'4 \> e bes \!)}
 		a2 \> (f e) \!
-		R1 *3/2
-		R1 *3/2
-		R1 *3/2
+		R1*3/2
+		R1*3/2
+		R1*3/2
 		c2 \p (\crescTextCresc bes \< g)
 	%164
 		aes8 \< g aes b c e f g aes b c f

@@ -16,9 +16,9 @@ violoncelo= {
 		ees2:8 ees2:8 ees2:8 \! 
 	%7
 		c4-. \f r g'4-. \f r  r2
-		R1 *3/2
+		R1*3/2
 		bes4-. \p r f'4-. r r2 
-		R1 *3/2
+		R1*3/2
 		aes,1. \p
 		bes1.
 		aes1.
@@ -45,8 +45,8 @@ violoncelo= {
 		ees4-. \f r4 bes'4-. r4 r2
 	%32
 		ees,4-. r4 bes'4-. r4 r2
-		R1 *3/2
-		R1 *3/2 
+		R1*3/2
+		R1*3/2 
 		\clef tenor bes''1 \p (d,2) 
 		bes'2 (c, d) \clef bass
 	%37
@@ -64,7 +64,7 @@ violoncelo= {
 	%47		
 		r8 \crescTextCresc a \< a a a gis gis a a2:8
 		a2:8 \< a2:8 a2:8 \!
-		R1 *3/2 \clef bass
+		R1*3/2 \clef bass
 		r4 f,,4 (a d cis f)
 		e (a,) r f' \< (e a,)
 	%52	       
@@ -87,9 +87,9 @@ violoncelo= {
 		ees'4. (d,8) d'4. (g,8) g'4. \! (bes,8)			
 	%67
 		bes'2-. (c,-.) \p r2
-		R1 *3/2
+		R1*3/2
 		d2-. (ees-.) r2
-		R1 *3/2
+		R1*3/2
 		r2  c2-. \< (bes-.) \!
 	%72
 		a \< (bes) \! c-. \p
@@ -183,11 +183,11 @@ violoncelo= {
 		c2 aes''-> ees-> 
 		c-> aes-> ees->
 		c4-. \f r4 g'-. r4 r2
-		R1 *3/2
+		R1*3/2
 		b4-. \p r4 fis'-. r4 r2 
-		R1 *3/2 
+		R1*3/2 
 		<fis ais,>4-. \pizz r4 <fis b,>4-. r4 r2
-		R1 *3/2
+		R1*3/2
 	%149
 		d,4 r e r fis r
 		g r c r d r
@@ -204,7 +204,7 @@ violoncelo= {
 		c2. (d4 e2) \!
 		r2 e-_ r2
 	   %colocar o tenuto
-	   	R1 *3/2
+	   	R1*3/2
 		c'2 \p (\crescTextCresc bes2 \< g)
 	%164
 		f4. \< (g8 aes4. c8 f4. aes8) \!
@@ -238,7 +238,7 @@ violoncelo= {
 		r8 \crescTextCresc ges \< ges ges ges f f ges ges2:8
 		ges2:8 \< ges2:8 ges2:8 \!
 	%190
-		R1 *3/2 \clef bass
+		R1*3/2 \clef bass
 		r4 d,, \f (fis b ais d)
 		cis (fis,) r4 d' (cis fis,)
 		r4 d' \< (cis fis,) \! r2 
@@ -261,10 +261,10 @@ violoncelo= {
 		a'4. (d,8) g4. (c,8) a'4. (a'8)
 		<< c,4. ({ s4 \< s8 } >> b8) b4. (e8) e4. (g8)
 		g,2-. \p (a2-.) r2 
-		R1 *3/2 
+		R1*3/2 
 	%210
 		b2-. (c2-.) r2 
-		R1 *3/2
+		R1*3/2
 		r2 a2  \< (g)
 		fis (g) a-. \p 
 		(r2 g2-.) r2

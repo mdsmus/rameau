@@ -136,12 +136,12 @@ violinoum= {
 		r8 ais ais  \< b cis2 \! \> ~ (cis8 g) \! g  fis
 	%107		
 		r8 e e  \< fis g2 \! \> ~ (g8 e) \! e  cis
-		R1 *3/2
+		R1*3/2
 		r8 f f  \< g aes2 \! \> ~ (aes8 f) \! f  d
-		R1 *3/2
+		R1*3/2
 	%111
 		r8 fis fis  \< gis a2 \! \> ~ (a8 fis) \! fis  dis \key e \major
-		R1 *3/2	
+		R1*3/2	
 		a4. \p (\crescTextCresc b8 \< cis4. e8 a4. cis8)
 		r8 fis \f fis   gis a2 ~ (a8 fis)  fis  d 
 	%115		
@@ -180,11 +180,11 @@ violinoum= {
 		aes4. c,8 ees4. aes8 c4. ees,8
 		aes4. c8 ees4. aes,8 c4. ees8
 		aes4-. \f r4 ees-. r4 r2
-		R1 *3/2
+		R1*3/2
 		<g,,-. b,>4 \p r4 <fis-. ais,>4 r4 r2	    	
-		R1 *3/2
+		R1*3/2
 		e4-. \pizz r4 d-. r4 r2 		
-	   	R1 *3/2
+	   	R1*3/2
 	%149
 		r4 fis r4 g r4 a
 		r4 g r4 ees r4 d
@@ -200,8 +200,8 @@ violinoum= {
 		e
 		\dimTextDim e,4. \> (f8 g2 e)
 		f2  \> (a,1 \!)
-		R1 *3/2
-		R1 *3/2
+		R1*3/2
+		R1*3/2
 		g'2 \p (\crescTextCresc e \< des)	
 		c1 ~ (c8 des c e \<)
 	%161
@@ -216,7 +216,7 @@ violinoum= {
 		aes4. c8 ees4. aes,8 c4. ees8
 		aes4-. r4 g-. r4 r4 r8 ees8
 		c'4-. r4 b4-. r4 r2
-		R1 *3/2
+		R1*3/2
 	%175    
 		r4 g4-. \p ( r4 ees-. r4 c-.)
 		r8 b b \< c d2 \> ~ (d8 ees \!) ees d
@@ -270,11 +270,11 @@ violinoum= {
 	%215
 		g4 \> (f e2 \! d)
 		c2 r2 r2
-		R1 *3/2
+		R1*3/2
 		r2 r2 g'2 \< ~
 		(g4 \> f \! e2 d2)
 		c2 r2 r2
-		R1 *3/2
+		R1*3/2
 		r2 r2 g2 \p ~
  	   %adicionar o piú		
 		(g4 f ees2 d) \time 2/2

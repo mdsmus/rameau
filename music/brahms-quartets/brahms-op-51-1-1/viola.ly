@@ -87,7 +87,7 @@ viola= {
 		r c r bes r bes \!
 	%67
 		<aes-. aes'>2  (<aes-. aes'>2) \p  r2
-		R1 *3/2
+		R1*3/2
 		<bes-. f'>2  (<a-. c>2) r2
 		r2 r2 ees' ~ 		
 		ees ees,1 \< 
