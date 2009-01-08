@@ -1,4 +1,4 @@
-\version "2.10.33"
+\version "2.12.0"
 global = { \key d \major \time 4/2 }
 ana = { \partial 2*1 }
 Ana = { \partial 2*3 }

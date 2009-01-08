@@ -1,4 +1,4 @@
-\version "2.10.33"
+\version "2.12.0"
 global = { \key g \major \time 4/4 }
 
 sop = \relative c'' { \clef treble 

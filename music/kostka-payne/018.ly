@@ -1,4 +1,4 @@
-\version "2.10.33"
+\version "2.12.0"
 \header {
   title = "Unsere Vater hofften auf dich, Op 109"
   composer = "Brahms"
