@@ -5,13 +5,14 @@
   composer = "Mozart"
 }
 
-\score {
-  \context PianoStaff <<
-    \new Staff 	\relative c'{
-      \key f \major \time 2/4
-      f4. ( g16 a)
+\new PianoStaff <<
+  \new Staff {
+    \relative c'{
+      \key f \major 
+      \time 2/4
+      f4.( g16 a)
       g2
-      a8 (g16 a) bes8 g
+      a8 g16( a) bes8 g
       e f r4
       f4. a16( c )
       bes4. g16( f)
@@ -23,11 +24,11 @@
       a g r4
       g4. c8
       a4. f'16( d)              
-      c4. b?8
+      c4. b8
       c4 r4 
       c4. e16( c)
       a8( f') e( d)
-      c4 b?
+      c4 b
       c r4
       a4. bes16( c)
       bes4 a8( g)
@@ -50,12 +51,15 @@
       a4 g4
       f4 r4
       \bar "|."
-
     }
-    \new Staff \relative c'{
-      \key f \major \time 2/4 \clef bass
-      r8  a g f
-      r e d c
+  }
+  \new Staff { 
+    \relative c'{
+      \key f \major 
+      \time 2/4 
+      \clef bass
+      r8 a( g f)
+      r e( d c)
       f f e bes
       c d r4
       r8 a' a a
@@ -95,25 +99,5 @@
       c c c, c
       f4 r
     }
-
-  >>
-  
-  \midi {
-    \context {
-      \Score
-      tempoWholesPerMinute = #(ly:make-moment 140 8)
-    }
   }
-
-
-
-  \layout {
-                                %	ragged-right = ##t 
-
-    \context {
-      \Staff
-      \consists Horizontal_bracket_engraver
-    }
-  }
-}
-
+>>
