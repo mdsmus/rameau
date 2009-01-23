@@ -16,7 +16,7 @@
 Please check with lilypond to see if it is valid.
 If it is, please report a bug.~%" file)
                         :exit t)
-     (parse-file file)))
+    (parse-file file)))
 
 (defun all-chords-single (options anal)
   (declare (ignore options))
@@ -50,7 +50,9 @@ Try omitting the \"-a\" option and trying again.~%")
          :exit t)
       (iter (for file in (arg :files options))
             (setf last-file file)
-            (for segments = (sonorities (main-parse-file file options)))
+            (for segments = (sonorities (main-parse-file file options)
+                                        (arg :start options)
+                                        (arg :end options)))
             (collect
                 (make-analysis
                  :segments segments

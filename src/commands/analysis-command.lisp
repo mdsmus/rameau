@@ -11,6 +11,8 @@
   (append
    '(("" "dont-compare" "don't compare the results with the answer sheet")
      ("" "sonorities" "print total number of sonorities")
+     ("" "start" "analyze from start to end" 0 type-integer)
+     ("" "end" "analyze from start to end" nil type-integer)
      ("-u" "show-dur" "")
      ("-n" "show-notes" "")
      ("" "as-chords" "show fchords as chords in functional analysis")
