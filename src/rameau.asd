@@ -45,7 +45,7 @@
                                      (:file "test")
                                      (:file "setup")
                                      (:file "noisy-channel")
-                                     (:file "debug")))
+                                     (:file "music-data")))
                (:module algorithms
                         :components ((:file "hmm")
                                      (:file "neural")
