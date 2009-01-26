@@ -12,6 +12,7 @@
   (when contextual
     (destructuring-bind (chor seg segm answ &rest results) (first contextual)
       (declare (ignore segm answ results))
+      (assert chor)
       (awhen (listify (funcall classifier contextual options))
         (iter (for i in it)
               (when chorale-hash
@@ -37,8 +38,9 @@
           (for results = (analysis-results anal))
           (for answer = (analysis-answer-sheet anal))
           (for segments = (analysis-segments anal))
-          (for choraleno = (repeat-list (length answer)
+          (for choraleno = (repeat-list (length segments)
                                         (analysis-file-name anal)))
+          (assert choraleno)
           (for full-list = (apply #'zip (append (list choraleno
                                                     segno
                                                     segments
@@ -176,20 +178,22 @@
 (defun lily-each-hash (hash options)
   (iter (with name = (arg :command options))
         (for (chorale segments) in-hashtable hash)
-        (for file = (first (member chorale
-                                   (arg :files options)
-                                   :key #'pathname-name)))
-        (iter (for s in segments)
-              (with-output-file (f (make-analysis-file "ly"
-                                                       name
-                                                       chorale
-                                                       (1- s)
-                                                       (1+ s)))
-                (format f "~a" (make-lily-segments options
-                                                   (subseq (sonorities
-                                                            (parse-file file))
-                                                           (1- s)
-                                                           (1+ s))))))))
+        (when chorale
+          (for file = (first (member chorale
+                                     (arg :files options)
+                                     :key #'pathname-name)))
+          (for segs = (sonorities (parse-file file)))
+          (for len = (length segs))
+          (iter (for s in segments)
+                (with-output-file (f (make-analysis-file "ly"
+                                                         name
+                                                         chorale
+                                                         (max 0 (1- s))
+                                                         (min len (1+ s))))
+                  (format f "~a" (make-lily-segments options
+                                                     (subseq segs
+                                                             (max 0 (1- s))
+                                                             (min len (1+ s))))))))))
 
 (defun get-lily-display-function (key)
   (case key
@@ -366,4 +370,5 @@ classifier.
                                    (get-lily-display-function generate-lily)
                                    (get-figure-display-function generate-figure)
                                     name
-                                    pre-filter)))
+                                    pre-filter))
+ nil)

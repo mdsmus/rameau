@@ -233,15 +233,26 @@ analysis/cruzamento-<chorale>-<first-sonority>-<last-sonority>.ly")
   (destructuring-bind (prev seg) (mapcar #L(sorted !1 #'event-<)
                                          (mapcar #'third context))
     (iter (for (a b) in (cartesian-product prev prev))
-          (when (and (not (eql a b))
+          (when (and a b
+                     prev seg
+                     (not (eql a b))
                      (event-< a b)
                      (interval-match a b interval))
-            (let ((nexts (sorted (mapcar #L(extract-note seg !1) (list a b))
-                                 #'event-<)))
-              (when (interval-match (first nexts) (second nexts) interval)
-                (collect (format nil "Between ~a and ~a"
+            (let* ((notes (mapcar #L(extract-note seg !1) (list a b)))
+                   (nexts (when (and (first notes) (second notes))
+                            (sorted notes #'event-<))))
+              (when (and nexts
+                         (interval-match (first nexts) (second nexts) interval)
+                         (equal (absolute-interval a (first nexts))
+                                (absolute-interval b (second nexts)))
+                         (not (equal (event-pitch a) (event-pitch (first nexts)))))
+                (collect (format nil "Between ~a and ~a notes ~a ~a ~a ~a"
                                  (event-voice-name a)
-                                 (event-voice-name b)))))))))
+                                 (event-voice-name b)
+                                 (print-event-note a)
+                                 (print-event-note b)
+                                 (print-event-note (first nexts))
+                                 (print-event-note (second nexts))))))))))
 
 (defun get-strong (strong? segments)
   (if strong?
