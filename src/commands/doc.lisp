@@ -317,3 +317,22 @@ user-defined template."
                   :documentation "Generate the documentation for
                   rameau and save it in the rameau-documentation
                   folder.")
+
+(defun show-help (command &key full)
+  (format t "~:@(* ~a~)~%" (dashs->space (command-name command)))
+  (when full
+    (format t "    ~a~%" (command-documentation command))
+    (iter (for (short long help) in (command-options command))
+          (format t "~4T~4a--~25a ~a~%" short long (remove #\Newline help)))))
+
+(defun help (options)
+  "Display detailed help for one subcommand, specified with -c.
+If not specified, list all subcommands and their descriptions."
+  (aif (arg :command options)
+       (show-help (get-command-by-name it) :full t)
+       (mapcar #'show-help *commands*)))
+
+(register-command :name "help"
+                  :action #'help
+                  :documentation "Show the help for a command."
+                  :options '(("-c" "command" "The command to be helped.")))
