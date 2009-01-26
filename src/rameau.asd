@@ -44,7 +44,8 @@
                                      (:file "musicology")
                                      (:file "test")
                                      (:file "setup")
-                                     (:file "noisy-channel")))
+                                     (:file "noisy-channel")
+                                     (:file "debug")))
                (:module algorithms
                         :components ((:file "hmm")
                                      (:file "neural")
