@@ -31,7 +31,7 @@ soprano = \relative c {
 alto = \relative c {
   e'2 d 
   d4 dis e fis 
-  e d2 d4 
+  e d2 e4 
   e2 d 
   d1 
   d 
