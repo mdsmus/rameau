@@ -19,7 +19,7 @@ RAMEAU_VERSION = $(shell grep "\* Rameau [0-9]\+\.[0-9]\+" RELEASE -m 1 -o | awk
 COMPILATION_DATE = $(shell date)
 USER = $(shell echo $$USER)
 
-RAMEAU_DEPS = cl-fann cl-music cl-utils cl-lily lisp-libs
+RAMEAU_DEPS = cl-fann cl-music cl-utils cl-lily lisp-libs genos-corpus
 
 dep-update =  $(shell cd rameau-deps/$1 && git checkout master && git pull )
 dep-checkout = $(shell cd rameau-deps && git clone git://genos.mus.br/$1 )

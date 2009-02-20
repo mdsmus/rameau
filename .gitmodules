@@ -13,3 +13,6 @@
 [submodule "rameau-deps/cl-fann"]
 	path = rameau-deps/cl-fann
 	url = git://genos.mus.br/cl-fann
+[submodule "rameau-deps/genos-corpus"]
+	path = rameau-deps/genos-corpus
+	url = git://genos.mus.br/genos-corpus
