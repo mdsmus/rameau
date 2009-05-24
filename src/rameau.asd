@@ -36,6 +36,7 @@
                (:file "musicology")
                (:file "main")
                (:module commands
+                        :serial t
                         :components ((:file "analysis-command")
                                      (:file "web")
                                      (:file "doc")

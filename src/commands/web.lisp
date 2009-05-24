@@ -229,7 +229,7 @@ baixo = \\relative c {
            (file-string
             (make-pathname :directory
                            (logical-pathname-directory "rameau:music;chorales-bach;")
-                           :name "da"
+                           :name c
                            :type "ly"))))))
 
 (defun grab-possible-answer-sheet ()
