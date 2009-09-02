@@ -358,17 +358,13 @@ baixo = \\relative c {
 
 (defun start-rameau-web (port)
   "Start the web server for @rameau."
-  (start-server :port port))
-
-;;(start-rameau-web)
-
+  (hunchentoot:start (make-instance 'hunchentoot:acceptor :port port)))
 
 (defun web (options)
   (let ((port (arg :port options)))
     (format t "Starting rameau web on port ~a.~%" port)
     (format t "Open http://localhost:~a/rameau/index.html on your browser" port)
-    (rameau-web::start-rameau-web port))
-  (loop (sleep 10)))
+    (rameau-web::start-rameau-web port)))
 
 (register-command :name "web"
                   :action #'web
