@@ -8,7 +8,8 @@
 
 (enable-sharp-l-syntax)
 
-(setf *catch-errors-p* nil)
+(setf hunchentoot:*show-lisp-errors-p* T)
+
 (defparameter *data* nil)
 
 (defparameter *results*
@@ -121,31 +122,31 @@
 (push (create-prefix-dispatcher "/rameau/" 'rameau-web) *dispatch-table*)
 
 (defun favicon ()
-  (setf (content-type) "image/gif")
+  (setf (content-type*) "image/gif")
   (binary-file-string (translate-logical-pathname "rameau:web;static;favicon.ico")))
 
 (push (create-prefix-dispatcher "/favicon.ico" 'favicon) *dispatch-table*)
 
 (defun logo-genos ()
-  (setf (content-type) "image/png")
+  (setf (content-type*) "image/png")
   (binary-file-string (translate-logical-pathname "rameau:web;static;genos.png")))
 
 (push (create-prefix-dispatcher "/genos.png" 'logo-genos) *dispatch-table*)
 
 (defun logo-grande ()
-  (setf (content-type) "image/png")
+  (setf (content-type*) "image/png")
   (binary-file-string (translate-logical-pathname "rameau:web;static;background.png")))
 
 (push (create-prefix-dispatcher "/rameau/background.png" 'logo-grande) *dispatch-table*)
 
 (defun style-sheet ()
-  (setf (content-type) "text/css")
+  (setf (content-type*) "text/css")
   (binary-file-string (translate-logical-pathname "rameau:web;static;style.css")))
 
 (push (create-prefix-dispatcher "/style.css" 'style-sheet) *dispatch-table*)
 
 (defun javascript ()
-  (setf (content-type) "application/javascript")
+  (setf (content-type*) "application/javascript")
   (binary-file-string (translate-logical-pathname "rameau:web;static;scripts.js")))
 
 (push (create-prefix-dispatcher "/scripts.js" 'javascript) *dispatch-table*)
@@ -228,7 +229,7 @@ baixo = \\relative c {
                 (c (get-chorale-string n)))
            (file-string
             (make-pathname :directory
-                           (logical-pathname-directory "rameau:music;chorales-bach;")
+                           (logical-pathname-directory "rameau:music;bach-chorales;")
                            :name c
                            :type "ly"))))))
 
@@ -295,7 +296,7 @@ baixo = \\relative c {
           (collect  file))))
 
 (defun show-png ()
-  (setf (content-type) "image/png")
+  (setf (content-type*) "image/png")
   (let ((n (parse-integer (parameter "n")))
         (md5 (format nil "~a" (parameter "md5"))))
     (when (gethash md5 *results*)
@@ -362,7 +363,6 @@ baixo = \\relative c {
 
 (defun web (options)
   (let ((port (arg :port options)))
-    (format t "Starting rameau web on port ~a.~%" port)
     (format t "Open http://localhost:~a/rameau/index.html on your browser" port)
     (rameau-web::start-rameau-web port)))
 

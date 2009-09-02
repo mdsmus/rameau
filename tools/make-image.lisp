@@ -20,7 +20,9 @@
 
 (setf (logical-pathname-translations "rameau")
       `(("user-data;*.*.*"      ,(merge-pathnames ".rameau/" (user-homedir-pathname)))
+        ("answer-sheets;*;*.*.*" ,(merge-pathnames "rameau-deps/genos-corpus/answer-sheets/*/" *install-path*))
         ("answer-sheets;*.*.*" ,(merge-pathnames "rameau-deps/genos-corpus/answer-sheets/*.*" *install-path*))
+        ("music;*;*.*.*" ,(merge-pathnames "rameau-deps/genos-corpus/music/*/" *install-path*))
         ("music;*.*.*" ,(merge-pathnames "rameau-deps/genos-corpus/music/*.*" *install-path*))
         ("**;*.*.*" ,(merge-pathnames "**/" *install-path*))))
 

@@ -18,7 +18,7 @@
 
 (test parse-file-name
   (is (pathnames-equal-p
-       (translate-logical-pathname "rameau:music;chorales-bach;001.ly")
+       (translate-logical-pathname "rameau:music;bach-chorales;001.ly")
        (first (parse-file-name "chor:001"
                                (make-default-arguments (get-command-by-name "anal")))))))
 
