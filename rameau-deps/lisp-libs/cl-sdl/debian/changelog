@@ -1,0 +1,62 @@
+cl-sdl (0.2.2) unstable; urgency=low
+
+  * The ``Accumulated bugfixes of 10 months'' release.
+    - Ignas Mikalajunas found a ``memory leak'' in the foreign interface.
+    - Julian Stecklina sent a patch to support FreeBSD
+    - Nikodemus Siivola points out that cl-sdl depends on libsdl1.2-dev too
+      (Closes: #188059).
+      + Also added appropriate -dev deps to ttf/mix/img.
+    - Dan Knapp had a clever patch to speed-up foreign struct access in cmucl.
+    - David Morse had trouble installing cl-sdl-opengl without glu dev libs.
+    - Apologies if I've left you out of this list, that's all I have.
+  * New functions: get-pixel and get-rgb.
+  * Miscellaneous clean-ups, etc.
+  * Build Arch: all packages in binary-indep (Closes: #174385).
+  * Now using libsdl-ttf2.0.
+  * Updated Standards Version to 3.6.1.
+  * Changing maintainer address.
+  * Joystick support patch from Dick Gerrits.
+
+ -- Matthew Danish <mrd@debian.org>  Mon,  3 Nov 2003 12:30:40 -0500
+
+cl-sdl (0.2.1) unstable; urgency=low
+
+  * New foreign library loading framework
+    - more flexible, less hassle
+    - better at finding libraries
+    - understands dependencies
+  * Improvements to search paths
+  * MinGW support
+  * Eliminated need for sdlmixstub, for now
+  * Minor bugfixes
+
+ -- Matthew Danish <mdanish@andrew.cmu.edu>  Wed,  1 Jan 2003 14:02:35 -0500
+
+cl-sdl (0.2.0) unstable; urgency=low
+
+  * Lots of new SDL, SDL-TTF, SDL-IMG, SDL-MIX functionality.
+  * CL-SDL, CL-SDL-TTF packages with Lispier interface.
+  * Various bugfixes.
+
+ -- Matthew Danish <mdanish@andrew.cmu.edu>  Wed, 18 Dec 2002 20:14:03 -0500
+
+cl-sdl (0.1.2) unstable; urgency=low
+
+  * cstring wrapper now handle returned cstrings
+  * fixed a bug in DEREF-POINTER for Allegro
+
+ -- Matthew Danish <mdanish@andrew.cmu.edu>  Wed, 11 Dec 2002 12:02:34 -0500
+
+cl-sdl (0.1.1) unstable; urgency=low
+
+  * Added 3 new binary packages, cl-sdl-{ttf,mix,img}
+  * Workaround for a CMUCL bug: foreign-loading moved to a separate file
+    for some libraries.
+
+ -- Matthew Danish <mdanish@andrew.cmu.edu>  Tue, 10 Dec 2002 18:36:46 -0500
+
+cl-sdl (0.1.0) unstable; urgency=low
+
+  * Initial release. (Closes: #172241)
+
+ -- Matthew Danish <mdanish@andrew.cmu.edu>  Sun,  8 Dec 2002 13:34:03 -0500

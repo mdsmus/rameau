@@ -1,0 +1,1 @@
+../cl-ppcre-1.3.2/cl-ppcre-test.asd

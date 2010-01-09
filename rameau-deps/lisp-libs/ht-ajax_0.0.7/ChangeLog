@@ -1,0 +1,25 @@
+* HT-AJAX ChangeLog
+** Version 0.0.7 <2007-03-08>
+**** Fixed bug in jsmin.lisp
+
+** Version 0.0.6  <2007-02-20>
+**** Added unexport function
+**** Added the "virtual .js file" feature
+**** Code reorganization
+**** Changed the JS-FILE-URI parameter to JS-FILE-URIS
+**** Added support for Yahoo UI library
+**** Support for returning complex objects to Javascript with JSON
+
+** Version 0.0.5  /unreleased/
+**** Added error calbacks to the public interface
+**** Added the option to compress the generated Javascript 
+     to minimize the download size
+**** Processor for Dojo Toolkit ( http://dojotoolkit.org/ )
+	
+** Version 0.0.4  <2007-02-09>
+**** Applied patch by Pierre THIERRY for better control over 
+     Javascript debugging 
+**** Code & documentation cleanups
+
+** Version 0.0.3  <2007-02-05>
+**** Added Prototype processor

@@ -1,0 +1,1 @@
+../asdf-binary-locations/asdf-binary-locations-test.asd

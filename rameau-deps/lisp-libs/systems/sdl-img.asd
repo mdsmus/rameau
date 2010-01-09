@@ -1,0 +1,1 @@
+../cl-sdl/sdl-img.asd

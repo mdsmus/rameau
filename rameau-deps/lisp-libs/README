@@ -1,0 +1,6 @@
+To use this package put the following line in your lisp initialization
+file (e.g. ~/.sbclrc or ~/.swank.lisp):
+
+(push (merge-pathnames "lisp/lisp-libs/systems/" (user-homedir-pathname)) asdf:*central-registry*)
+
+The "systems" directory already has all necessary symbolic links.

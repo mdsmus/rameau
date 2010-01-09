@@ -1,0 +1,50 @@
+Source: cl-sdl
+Section: devel
+Priority: optional
+Maintainer: Matthew Danish <mrd@debian.org>
+Build-Depends: debhelper (>> 4.0.0), libsdl1.2-dev, xlibmesa-dev | libgl-dev, libsdl-ttf2.0-dev, libsdl-mixer1.2-dev, libsdl-image1.2-dev, xlibmesa-glu-dev | libglu-dev
+Standards-Version: 3.6.1
+
+Package: cl-sdl
+Architecture: any
+Depends: ${shlibs:Depends}, common-lisp-controller (>= 3.37), cl-uffi, libsdl1.2-dev
+Description: Common Lisp bindings to the SDL graphics library
+ Provides a foreign-function interface, using UFFI, to the cross-platform
+ Simple Directmedia Layer graphics and game library.
+ .
+ This package contains the core CL-SDL functionality.
+
+Package: cl-sdl-opengl
+Architecture: any
+Depends: ${shlibs:Depends}, common-lisp-controller (>= 3.37), cl-sdl, cl-uffi, xlibmesa-glu-dev | libglu-dev
+Description: Support for OpenGL in Common Lisp, via CL-SDL
+ Provides a foreign-function interface, using UFFI, to OpenGL.  Uses the
+ CL-SDL package as its utility library.
+
+Package: cl-sdl-demos
+Architecture: all
+Depends: common-lisp-controller (>= 3.37), cl-sdl, cl-sdl-opengl
+Description: CL-SDL and OpenGL example programs
+ Includes a sample of CL-SDL and OpenGL example programs, including
+ tutorial code adapted from the NeHe OpenGL tutorials.
+
+Package: cl-sdl-ttf
+Architecture: any
+Depends: ${shlibs:Depends}, common-lisp-controller (>= 3.37), cl-sdl, cl-uffi, libsdl-ttf2.0-dev
+Description: Support for the SDL_ttf library in Common Lisp
+ A foreign function interface, using UFFI, to the SDL_ttf library which
+ provides true-type font facilities to SDL programs.
+
+Package: cl-sdl-img
+Architecture: any
+Depends: ${shlibs:Depends}, common-lisp-controller (>= 3.37), cl-sdl, cl-uffi, libsdl-image1.2-dev
+Description: Support for the SDL_image library in Common Lisp
+ A foreign function interface, using UFFI, to the SDL_image library which
+ provides support for dealing with various image formats.
+
+Package: cl-sdl-mix
+Architecture: any
+Depends: ${shlibs:Depends}, common-lisp-controller (>= 3.37), cl-sdl, cl-uffi, libsdl-mixer1.2-dev
+Description: Support for the SDL_mixer library in Common Lisp
+ A foreign function interface, using UFFI, to the SDL_mixer library which
+ provides support for multi-channel sample and music mixing.

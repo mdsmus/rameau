@@ -1,0 +1,151 @@
+This package contains Common Lisp bindings to GTK+ v2.x. It currently
+works with CMUCL 19, SBCL 0.9 and CLISP. Ports to other CL
+implementations may be added later.
+
+
+New versions
+------------
+
+The most recent version of this package can be downloaded from
+http://sourceforge.net/projects/clg.
+
+
+
+Build instructions
+------------------
+
+1. If you are using a version of SBCL without native callback support
+   you need to upgrade or add third party callback code. The following 
+   instructions of how to add callback support, are borrowed
+   from the Common Music installation guide:
+
+   1. Download Thomas Burdick's Alien Function package¹ and restore it 
+      to a directory on your machine.
+   2. Compile the Alien Function package and save a new sbcl.core image:
+
+      $ cd sbcl-af
+      $ sbcl --load "system"
+      * (sb-ext:save-lisp-and-die "/tmp/sbcl.core")
+      $ cd /usr/local/lib/sbcl
+      $ cp sbcl.core sbcl.core.orig
+      $ mv /tmp/sbcl.core .
+
+
+   ¹ A slightly modified version which works with SBCL 0.8.21 or newer
+     could be found at 
+     http://jupiter.td.org.uit.no/lisp/sbcl-0.8.21-af.tar.gz
+
+
+2. Set up paths to match your system:
+
+   - Set the correct pkg-config search path if your Gtk+ installation
+     is in an unusual place, by adding it to the PKG_CONFIG_PATH
+     environment variable before starting lisp.
+
+   - Make sure ASDF finds the system definition files:
+       
+       (push "/path/to/clg/systems/" asdf:*central-registry*)
+
+
+     When checking out of CVS also do the following:
+     $ cd <clg toplevel>
+     $ mkdir systems && cd systems
+     $ find .. -name '*.asd' -exec ln -s {} . \;
+
+
+3. Compile and load the system:
+   
+     (asdf:oos 'asdf:load-op :gtk)
+
+   In CMUCL 19a this will fail with:
+
+   Error in function KERNEL::%REDEFINE-DEFSTRUCT:
+     Redefining class PCL::SLOT-INFO incompatibly with the current definition.
+
+   Just accept the redefinition (restart 1) to continue building or
+   loading. To avoid doing this every time clg is loaded, compile
+   and load glib/pcl.lisp in newly started CMUCL process and save a
+   new core image.
+
+   If you are running SBCL with Slime you need to put the following
+   in ~/.swank.lisp to prevent Slime from spawning multiple
+   threads, since GTK+ is not really thread safe:
+
+     #+sbcl(setq swank:*communication-style* :fd-handler)
+
+   CLISP needs to be started with the option '-ansi' for clg to
+   compile and load.
+
+
+4. If everything worked, try (load "hello-world") to see a small
+   window pop up, and then run testgtk.lisp in the example directory.
+
+
+
+Guidelines for using the GTK+ API documentation 
+-----------------------------------------------
+
+Here are some brief guidelines for using the GTK+ API documentation. A
+lot of (both intentional and unintentional) inconsistencies exists,
+so it is also wise to check the source code.
+
+- library prefixes are stripped from all symbols
+
+- object properties should be available as virtual slots. A lot of 
+  "missing" properties are manually defined as slots. Slots may be read
+  only or write only, but there later type are generally only
+  defined automatically through introspection
+
+- the get/set part are removed from regular accessors, but retained
+  in functions which set or retrieve multiple values
+
+- predicate functions follow the normal convention of ending
+  with '-P'
+
+- if there are multiple similar named functions which only differ in
+  the type of argument they accept, only one function accepting any
+  kind of valid argument types is provided
+
+- there are no gtk_*_new functions, use MAKE-INSTANCE to create widgets
+
+- use CHILD-PROPERTY-VALUE or automatically defined accessors to
+  access child properties
+
+- use STYLE-PROPERTY-VALUE to access style properties
+
+- the only function used to connect signals is SIGNAL-CONNECT
+
+- some additional initargs to make-instance:
+
+  - gtk:container
+
+    child -- adds a child to a container widget. This argument could
+    be a widget or a list who's first element is a widget and the rest
+    child properties. Multiple :child initargs may be specified
+
+    children -- list of children to be added
+
+    child-args -- default child properties used when adding children (during
+    construction only)
+
+    show-children -- automatically make children (and grandchildren)
+    visible. May be overridden in a child by explicit specifying :visible or
+    another :show-children
+
+
+  - gtk:button
+
+    stock -- equivalent to ":label stock :use-stock t :use-underline t"
+
+
+  - gtk:dialog
+
+    button -- button specification applied to dialog-add-button. Multiple
+    :button initargs may be specified
+
+    buttons -- list of button specifications
+
+
+
+Send comments and patches to clg-devel@lists.sourceforge.net or
+espen@users.sourceforge.net.

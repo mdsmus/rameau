@@ -1,0 +1,28 @@
+This is a start at an ASDF-INSTALL extension to upgrade installed
+packages. Rather than attempt to parse and compare versions, it works
+by comparing timestamps of a package's installed version against the
+latest available tarball.
+
+Currently, there is no reliable installation time timestamp to use for
+comparison---a patch to ASDF-INSTALL is forthcoming. Until then, this
+won't really work reliably.
+
+There is a darcs repository at:
+
+   http://slacknet.com/~jamesjb/asdf-upgrade
+
+Or you can install ASDF-UPGRADE with ASDF-INSTALL:
+
+   (asdf-install:install "asdf-upgrade")
+
+Exported functions:
+
+   ASDF-UPGRADE:REPORT
+
+   Prints a report of installed packages and whether an upgrade is
+   available (or the package is broken).
+
+   ASDF-UPGRADE:UPGRADE
+
+   Display a summary of upgradable packages and upgrade them using
+   ASDF-INSTALL.

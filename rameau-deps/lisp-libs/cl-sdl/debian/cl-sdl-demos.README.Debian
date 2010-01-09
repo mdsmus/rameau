@@ -1,0 +1,12 @@
+cl-sdl-demos for Debian
+-----------------------
+
+(require :sdl-demos)
+(sdl-test:start)
+(nehe:run-tutorial <n>) where <n> is 2-11, 16, :solar-system, :vertex-arrays,
+                        :torus, and :lighting
+
+Q quits, some tutorials let you use the arrow keys, L for lighting, F for
+texture filter, B for blending, and page-up/page-down for some kind of motion.
+
+Enjoy!

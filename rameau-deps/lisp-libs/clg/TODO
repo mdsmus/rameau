@@ -1,0 +1,19 @@
+* Enable building without opening display -- done
+
+* Complete bindings of all widgets -- mostly done
+
+* Clean up code in glib module -- done
+
+* Use CMUCL's native mechanism for callbacks from C -- done
+
+* Add documentation and more examples
+
+* Make subclassing of gobjects possible -- done
+
+* Port to SBCL -- done
+
+* Improve load time
+
+* Porting to amd64 -- done (patch supplied by Gabriel Ebner)
+
+* CLisp port -- done

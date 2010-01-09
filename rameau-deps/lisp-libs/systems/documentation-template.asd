@@ -1,0 +1,1 @@
+../documentation-template-0.4.0/documentation-template.asd

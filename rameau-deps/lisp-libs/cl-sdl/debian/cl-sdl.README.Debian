@@ -1,0 +1,8 @@
+cl-sdl for Debian
+-----------------
+
+http://cl-sdl.sourceforge.net/
+
+(require :sdl) should load CL-SDL in your favorite C-L-C compliant Lisp.
+
+The `cl-sdl-demos' package has more fun demos to play with.

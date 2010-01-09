@@ -1,0 +1,523 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+<!--
+;;;
+;;; Copyright (c) 2007, Ury Marshak
+;;; The code comes with a BSD-style license, so you can basically do
+;;; with it whatever you want. See the file LICENSE for details.
+;;;
+-->
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <title>HT-AJAX - Common Lisp AJAX framework for Hunchentoot</title>
+  <meta name="description" content="HT-AJAX is an AJAX framework in Common Lisp for Hunchentoot web server under BSD license, portable, is known to run on SBCL and Lispworks. Supports such Javascript libraries as Lokris, Prototype, YUI and Dojo. Supports JSON, virtual Javascript files,Javascript minimization." />
+  <meta name="keywords" content="HT-AJAX,AJAX,Common Lisp,Lisp,Hunchentoot,framework,opensource,BSD license,library,SBCL,Lispworks,Lokris,Prototype,Dojo,YUI,JSON, virtual Javascript files, Javascript minimization" />
+
+  <style type="text/css">
+  pre { padding:5px; background-color:#e0e0e0; 
+        margin-left: 1cm; margin-right: 3cm;
+        margin-top: 0cm; margin-bottom: 0cm;
+  }
+  h3, h4 { text-decoration: underline; }
+  a { text-decoration: none; }
+  a.noborder { border:0px }
+  a.noborder:hover { border:0px }  a.none { border:1px solid white; }
+  a.none { border:1px solid white; }
+  a.none:hover { border:1px solid white; }
+
+  a.note { border:1px solid white; text-decoration: bold; }
+
+  a { border:1px solid white; }
+  a:hover   { border: 1px solid black; } 
+  a.noborder { border:0px }
+  a.noborder:hover { border:0px }
+  .browser { background-color:#f0f0f0; border: 1px solid black;
+        margin-left: 1cm; margin-right: 3cm;
+        margin-top: 0cm; margin-bottom: 0cm;
+  }
+  </style>
+</head>
+
+<body bgcolor="white">
+
+<h2> HT-AJAX - AJAX framework for Hunchentoot</h2>
+
+<div style="margin-left: 4cm; margin-right: 4cm;">
+<br />&nbsp;<br /><h3><a name="abstract" class="none">Abstract</a></h3>
+
+<p>
+HT-AJAX is a small <a href="http://www.lisp.org">Common Lisp</a> framework that is designed to ease dynamic 
+interaction of your web pages with the server. It runs under the 
+<a  href="http://weitz.de/hunchentoot/">Hunchentoot</a> web server by Dr. Edi Weitz.
+</p>
+
+<p>
+Basically it allows 'exporting' of your lisp functions so that they can be easily called
+from the Javascript code on your web page. The details of the data transfer can be
+handled by different backends, or as we'll call them 'AJAX processors'. At the moment three
+such processors are supported: one simple, built-in, that generates code inside the
+web page and does not require external libraries. The others are using a javascript
+<a href="#supported-libraries">library</a>, such as 
+<a href="http://prototypejs.org/">Prototype</a> or
+<a href="http://dojotoolkit.org/">Dojo</a>
+<a href="#supported-libraries">(full list)</a>.
+</p>
+
+<p>
+The code comes with
+a <a href="http://www.opensource.org/licenses/bsd-license.php">BSD-style
+license</a> so you can basically do with it whatever you want.
+</p>
+
+<p>
+<font color="red">Download shortcut:</font> <a href="http://85.65.214.241/misc/ht-ajax.tar.gz">http://85.65.214.241/misc/ht-ajax.tar.gz</a>.
+</p>
+</div>
+
+<br />&nbsp;<br /><h3><a class="none" name="contents">Contents</a></h3>
+<ol>
+  <li><a href="#download">Download and installation</a></li>
+  <li><a href="#support">Support</a></li>
+  <li><a href="#getting-started">Getting started (mini-tutorial)</a></li>
+  <li><a href="#choosing-processor">Choosing the right ajax-processor</a></li>
+  <li><a href="#generated-js">Using the generated Javascript functions</a></li>
+  <li><a href="#dictionary">The HT-AJAX dictionary</a>
+    <ol>
+      <li><a href="#make-ajax-processor"><code>make-ajax-processor</code></a></li>
+      <li><a href="#export-func"><code>export-func</code></a></li>
+      <li><a href="#unexport-func"><code>unexport-func</code></a></li>
+      <li><a href="#defun-ajax"><code>defun-ajax</code></a></li>
+      <li><a href="#generate-prologue"><code>generate-prologue</code></a></li>
+      <li><a href="#get-handler"><code>get-handler</code></a></li>
+    </ol>
+  </li>
+  <li><a href="#supported-libraries">Supported Javascript libraries</a></li>
+  <li><a href="#portability">Portability</a></li>
+  <li><a href="#notes">Notes</a></li>
+  <li><a href="#ack">Acknowledgements</a></li>
+</ol>
+
+<br />&nbsp;<br /><h3><a class="none" name="download">Download and installation</a></h3>
+
+HT-AJAX together with this documentation can be downloaded from 
+<a href="http://85.65.214.241/misc/ht-ajax.tar.gz">http://85.65.214.241/misc/ht-ajax.tar.gz</a>. 
+The current version is 0.0.7 .
+
+<br />
+If you have <a href="http://www.cliki.net/ASDF-Install">ASDF-Install</a> working you can use
+it to install HT-AJAX:
+<pre>
+(require 'asdf-install)
+(asdf-install:install :ht-ajax)
+</pre>
+
+<br />
+Otherwise, download and untar the distribution and use the normal procedure for your system to
+install a library that comes with an ASDF system definition. For example, make an appropriate
+symbolic link to the ht-ajax.asd file and run
+<pre>(require 'asdf)
+(asdf:oos 'asdf:load-op :ht-ajax)</pre>
+
+<br />&nbsp;<br /><h3><a class="none" name="support">Support</a></h3>
+<p>Questions, bug reports, requests, criticism and just plain information that you found
+this package useful (or useless) are to be sent to 
+<span>ur</span>ym<span>@t</span>wo-by<span>te</span>s<span>.</span>c<span>o</span>m
+
+</p>
+
+<br />&nbsp;<br /><h3><a class="none" name="getting-started">Getting started (mini-tutorial)</a></h3>
+<p>In this tutorial we assume that the reader is reasonably familiar with Hunchentoot 
+and AJAX.</p>
+
+
+<p>So, let's suppose we already have some lisp code working under Hunchentoot and start
+modifying it to use AJAX.
+Note that normally we'll <b>(use-package :ht-ajax)</b>, so that we won't have to prefix 
+the symbols with <b>ht-ajax:</b>, but here we'll still do it to show clearly which symbols 
+come from the HT-AJAX package.</p>
+
+
+<p>At first some setup:</p>
+<pre>
+(defparameter *ajax-handler-url* "/hunchentoot/some/suitable/uri/ajax-hdlr")
+</pre>
+<p>Here we select some URL that will handle our AJAX requests. Later we'll need to arrange
+for an appropriate handler to be called when we get a request for this URL (and all
+URLs starting with it). Replace the URL with whatever makes sense for your application</p>
+
+<br /> <br />
+<p>After this we create an instance of so-called ajax-processor that will handle all our
+AJAX needs. One ajax-processor per application should be enough. We pass the following 
+parameters: <b>:type :lokris</b> to select which backend to use, in this case it's
+the <a href="http://www.ajax-buch.de/lokris/">Lokris</a> library. Also we pass the
+<b>:server-uri</b> that we've selected and the <b>:js-file-uris</b> that shows where
+to find the appropriate library file, lokris.js in this case (the URL may be relative
+to the URL of the page):</p>
+<pre>
+(defparameter *ajax-processor* (ht-ajax:make-ajax-processor
+                                :type :lokris
+                                :server-uri *ajax-handler-url*
+                                :js-file-uris "static/lokris.js"))
+</pre>
+
+<br /> 
+
+<p>Now we create the function that we want to be called from the web page:</p>
+<pre>
+(ht-ajax:defun-ajax testfunc (command) (*ajax-processor* :method :post)
+    (prin1-to-string (eval (read-from-string command nil))))
+</pre>
+<p>We've used here the <b>defun-ajax</b> macro that performs two tasks: defines the function 
+as per <b>defun</b> and 'exports' it - makes available to the web page's javascript. 
+This fragment could've been written more verbosely as:</p>
+<pre>
+(defun testfunc (command)
+    (prin1-to-string (eval (read-from-string command nil))))
+
+(ht-ajax:export-func *ajax-processor* 'testfunc :method :post)
+</pre>
+<p>The function itself contains the code to evaluate the string parameter <i>command</i> 
+and return the result as a string. (It's possible to return more complex objects to the
+Javascript code by using <a href="http://www.json.org/">JSON</a>). 
+While processig the request HT-AJAX will call Hunchentoot's function 
+<a href="http://weitz.de/hunchentoot/#no-cache"><b>no-cache</b></a> to make sure the browser 
+will make a request to the server each time and not cache the results, so we don't have to 
+do it here. If we want to manually control the caching we can pass <b>:allow-cache t</b> 
+parameter when exporting the function.
+</p>
+
+<p>The only thing left to prepare the server side of the things
+is to create the dispatcher for our <b>*ajax-handler-url*</b> and to add it to
+Hunchentoot's dispatch table. The specifics of this can vary, but it might include something 
+like:
+</p>
+<pre>(create-prefix-dispatcher *ajax-handler-url* (ht-ajax:get-handler *ajax-processor*)
+</pre>
+<p> The call to <b>(ht-ajax:get-handler *ajax-processor*)</b> returns the handler that the 
+handler URL
+needs to be dispatched to.<a href="#note1"><sup>[1]</sup></a></p></p>
+<br /> 
+<p>Now we need to make sure that the dynamic web pages we generate are correctly set up. 
+This means that the result of the call <b>(ht-ajax:generate-prologue *ajax-processor*)</b>
+needs to be inserted somewhere in the HTML page (right after the <b>&lt;body&gt;</b> tag 
+seems like
+a good place). Once again how to do this depends on the facilities that are used for HTML 
+generation.
+For example when using <a href="http://weitz.de/html-template/">HTML-TEMPLATE</a> we'll have 
+something like the following in our template:</p>
+<pre>
+&lt;body&gt;
+&lt;!-- TMPL_VAR prologue --&gt;
+</pre>
+<p>and then pass the output of <b>(ht-ajax:get-handler *ajax-processor*)</b> as the 
+<i>prologue</i> parameter to the <b>fill-and-print-template</b> call.<a href="#note2"><sup>[2]</sup></a></p>
+
+<p>After that, whatever means for HTML generation we're using, let's put the following HTML 
+somewhere in the page:</p>
+<pre>
+
+&lt;table width="50%"&gt;
+  &lt;tr&gt;
+    &lt;td colspan="2"&gt;
+      &lt;span id="result"&gt; &lt;i&gt;no results yet&lt;/i&gt;
+      &lt;/span&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td width="70%"&gt;
+      &lt;input type="text" size="70" name="command" id="command" /&gt;
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input type="button" value="Eval" onclick="javascript:command_clicked();"/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+
+</pre>
+
+<p>This will produce something like:</p>
+<div class="browser">
+<table width="50%">
+  <tr>
+    <td colspan="2">
+      <span id="result"> <i>no results yet</i>
+      </span>
+    </td>
+  </tr>
+  <tr>
+    <td width="70%">
+      <input type="text" size="70" name="command" id="command" />
+    </td>
+    <td>
+      <input type="button" value="Eval" />
+    </td>
+  </tr>
+</table>
+</div>
+
+<br /> 
+Now write into the template the javascript function that will be called when you click the 
+button:
+<pre>
+&lt;script type="text/javascript"&gt;
+function command_clicked(txt) {
+// get the current value of the text input field
+var command = document.getElementById('command').value;
+
+// call function testfunc on the server with the parameter
+// command and set the element with the id 'result' to the return
+// value of the function
+ajax_testfunc_set_element('result', command); 
+}
+&lt;/script&gt;
+</pre>
+<p>The function <b>ajax_testfunc_set_element</b> that we call here was generated for us by 
+HT-AJAX.
+It takes one required parameter - the id of the element that we want to be set to the result of
+the remote call. All other parameters will be passed to corresponding exported lisp function, 
+<b>testfunc</b> in this case (watch out for the number of arguments). The resulting string will
+be assigned to the <b>.innerHTML</b> property of the element with the id 'result'.
+</p>
+
+<br />
+
+<p>This is it. Now to save the files, compile the lisp code, make sure the 
+Hunchentoot server is started and open the web page in the browser. 
+Enter something like <b>(+ 1 42)</b> in the text field and click 'Eval'.
+If all's well the results of the evaluation will be displayed.</p>
+
+<br />
+
+
+
+<br />&nbsp;<br /><h3><a class="none" name="choosing-processor">Choosing the right ajax-processor</a></h3>
+<p>If one of the <a href="#supported-libraries">supported libraries</a> 
+(like <a href="http://prototypejs.org/">Prototype</a>) is 
+already used in Javascript code then the decision is is easy - use the appropriate ajax-processor.
+Otherwise consider if you need to make server calls using HTTP GET or POST method. If GET works 
+for you then SIMPLE may be enough, otherwise for POST method use Lokris.
+</p>
+
+<br />&nbsp;<br /><h3><a class="none" name="generated-js">Using the generated Javascript functions</a></h3>
+<p>
+Exporting the function (and later including the result of the GENERATE-PROLOGUE call in the 
+web page) makes available two functions for the Javascript code on the page. Assuming the
+exported function was called TESTFUNC and the standard prefix (ajax_) was used they are:
+</p>
+<pre>
+ajax_testfunc_callback(<i>callback_specification</i>, [params for the server's TESTFUNC....])
+</pre>
+and
+<pre>
+ajax_testfunc_set_element(element_id, [params for the server's TESTFUNC....])
+</pre>
+<p>
+Both functions will call the server-side function TESTFUNC, the <b>ajax_testfunc_callback</b>
+version will call the provided <i>callback</i> function with the result of the server call 
+as a single parameter, the <b>ajax_testfunc_set_element</b> version with find the document
+element with the id <i>element_id</i> and set it's <b>innerHTML</b> to the result of the 
+server call.<br />
+The result of the server call is normally a string and is passed to the callback as-is, 
+unless the Content-Type header was set to <b>application/json</b> which is the 
+<a href="http://www.iana.org/assignments/media-types/application/">official</a> IANA
+media type. In case of JSON the result is evaluated using &quot;unsafe&quot;
+<a href="#note3"><sup>[3]</sup></a> <b>eval</b> 
+call and the resulting object is passed to the callback.
+<br />
+</p>
+<p><a class="none" name="callback-specification"></a>
+The <i>callback_specification</i> parameter can be used 
+to specify two kinds of callacks (at the same time). The success callback function will
+be called 
+after a successful interaction with the server and passed the server call result 
+as a parameter. The error callback function will be called in case of an error
+and passed a string with the information about the error. 
+<br />So the <i>callback_specification</i> can take the following forms:</p>
+<ul>
+ <li>A function. This will be used as a success callback.</li> 
+ <li>An array of two functions. The first will be used as a success callback,
+the second as an error callback.</li>
+ <li>An object. The value of the "success" property of the object
+will be used as a success callback, the value of the "error" property - as an
+error callback. </li> 
+</ul>
+
+
+<br />&nbsp;<br /><h3><a class="none" name="dictionary">The HT-AJAX dictionary</a></h3>
+
+
+<!-- Entry for MAKE-AJAX-PROCESSOR -->
+
+<p><br />[Function]<br /><a class="none" name='make-ajax-processor'><b>make-ajax-processor</b> <i><tt>&amp;rest</tt> rest <tt>&amp;key</tt> type <tt>&amp;allow-other-keys</tt></i> =&gt; <i>new-ajax-processor</i></a></p>
+<blockquote><br />
+
+Creates an ajax-processor object. Parameters: <br />
+   TYPE - selects the kind of ajax-processor to use (should be 
+          one of:SIMPLE or :LOKRIS, :PROTOTYPE, :YIU or :DOJO) (required). <br />
+   SERVER-URI - url that the ajax function calls will use (required). <br />
+   JS-FILE-URIS - a list of URLs on your server of the .js files that the
+                used library requires , such as lokris.js or prototype.js 
+                (parameter required for all processors except :SIMPLE). If
+                only one file needs to be included then instead of a list a single 
+                string may be passed. Also if this parameter is a string that ends 
+                in a forward slash ( #\/ ) then it is assumed to be a directory 
+                and the default file names for the processor are appended to it. <br />
+   AJAX-FUNCTION-PREFIX - the string to be prepended to the generated js functions,
+                (default prefix is &quot;ajax_&quot;). <br />
+   JS-DEBUG - enable the Javascript debugging function debug_alert(). Overrides
+              such parameters as JS-COMPRESSION and VIRTUAL-FILES. <br />
+   JS-COMPRESSION - enable Javascript compression of the generated code
+                 to minimize the download size. <br />
+   VIRTUAL-JS-FILE - enable creation of virtual Javascript file instead of
+                inline Javascript code that may be
+                cached on the client to minimize traffic. <br />
+</blockquote>
+
+<!-- End of entry for MAKE-AJAX-PROCESSOR -->
+
+
+<!-- Entry for EXPORT-FUNC -->
+
+<p><br />[Generic function]<br /><a class="none" name='export-func'><b>export-func</b> <i>processor funcallable <tt>&amp;key</tt> method name content-type allow-cache</i> =&gt;| </a></p>
+<blockquote><br />
+
+Makes the function designated by FUNCALLABLE exported (available to call from js)
+Parameters: <br />
+  METHOD - :get (default) or :post (:post is not supported under SIMPLE processor). <br />
+  NAME - export the function under a different name. <br />
+  CONTENT-TYPE - Value of Content-Type header so set on the reply 
+                (default: text/plain). <br />
+  ALLOW-CACHE - (default nil) if true then HT-AJAX will not call NO-CACHE function and
+                allow to control cache manually. <br />
+  JSON - (default nil) if true, the function returns a JSON-encoded object that will
+         be decoded on the client and passed to the callback as an object<br />
+<br />
+Exporting the function (and later including the result of the GENERATE-PROLOGUE call in the 
+web page) makes available two functions for the Javascript code on the page:
+<b>ajax_testfunc_callback</b> and <b>ajax_testfunc_set_element</b>. See 
+"<a href="#generated-js">Using the generated Javascript functions</a>" 
+for more details.
+</blockquote>
+
+<!-- End of entry for EXPORT-FUNC -->
+
+<!-- Entry for UNEXPORT-FUNC -->
+
+<p><br />[Generic function]<br /><a class="none" name='unexport-func'><b>unexport-func</b> <i>processor symbol-or-name</i> =&gt;| </a></p>
+<blockquote><br />
+
+Removes the previously exported function, should be called
+with either the name (string) under which it was exported or the symbol
+designating the function
+
+</blockquote>
+
+<!-- End of entry for UNEXPORT-FUNC -->
+
+
+<!-- Entry for DEFUN-AJAX -->
+
+<p><br />[Macro]<br /><a class="none" name='defun-ajax'><b>defun-ajax</b> <i>name params (processor <tt>&amp;rest</tt> export-args) declaration* statement*</i> </a></p>
+<blockquote><br />
+
+Macro, defining a function exported to AJAX
+Example: (defun-ajax func1 (arg1 arg2) (*ajax-processor*)
+   (do-stuff))
+
+</blockquote>
+
+<!-- End of entry for DEFUN-AJAX -->
+
+
+<!-- Entry for GENERATE-PROLOGUE -->
+
+<p><br />[Generic function]<br /><a class="none" name='generate-prologue'><b>generate-prologue</b> <i>processor <tt>&amp;key</tt> use-cache</i> =&gt; <i>html-prologue</i></a></p>
+<blockquote><br />
+
+Generates the necessary HTML+JS to be included in the web page.
+Provides caching if USE-CACHE is true (default).
+
+</blockquote>
+
+<!-- End of entry for GENERATE-PROLOGUE -->
+
+
+<!-- Entry for GET-HANDLER -->
+
+<p><br />[Generic function]<br /><a class="none" name='get-handler'><b>get-handler</b> <i>processor</i> =&gt; <i>handler</i></a></p>
+<blockquote><br />
+
+Get the hunchentoot handler for AJAX url. 
+The url that was passed as the SERVER-URI parameter (and all URLs starting with it)
+should be dispatched to this handler.
+
+</blockquote>
+
+<!-- End of entry for GET-HANDLER -->
+
+
+<br />&nbsp;<br /><h3><a class="none" name="supported-libraries"></a>Supported Javascript libraries</h3>
+<ul>
+  <li>"Simple" - does not use an external library
+  </li>
+  <li><a href="http://www.ajax-buch.de/lokris/">Lokris</a> version 1.2 2006/08/02
+  </li>
+  <li><a href="http://prototypejs.org/">Prototype</a> version 1.5.0
+  </li>
+  <li><a href="http://dojotoolkit.org/">Dojo</a> version 0.4.1
+  </li>
+  <li><a href="http://developer.yahoo.com/yui/">Yahoo! User Interface (YUI) Library</a> versions 0.12.2 and 2.2.0
+  </li>
+</ul>
+
+
+<br />&nbsp;<br /><h3><a class="none" name="portability">Portability</a></h3>
+<p> At the moment HT-AJAX is known to run on SBCL and Lispworks, but it aims to be
+portable across all the implementations Hunchentoot runs on. Please report all incompatibilities.
+</p>
+
+<br />&nbsp;<br /><h3><a class="none" name="notes">Notes</a></h3>
+<p><a class="note" name="note1">[1]</a>
+When not using CREATE-PREFIX-DISPATCHER, note that not only the <b>SERVER-URI</b> itself 
+but also all the URLs starting with it need to be dispatched to the handler in order for
+&quot;virtual .js files&quot; mechanism to function.
+</p>
+
+<p><a class="note" name="note2">[2]</a>
+By default HTML-TEMPLATE escapes some characters while expanding. In the case of the prologue of
+HT-AJAX there's no need to do it since HT-AJAX already wraps the generated Javascript code in the
+proper CDATA sections (which also makes it possible to generate documents compliant with for
+example XHTML Strict requirements). So one of the options is to wrap the template expansion 
+in the following binding:
+</p>
+
+<pre>
+(let ((*string-modifier* #'CL:IDENTITY))
+      <i>...template expansion...</i>  )
+</pre>
+<br />
+
+<p><a class="note" name="note3">[3]</a>
+The word &quot;unsafe&quot; means that it might not be generally safe to evaluate 
+arbitrary Javascript code coming from an untrusted source; in our case it's ok since 
+we control both the client and the server.
+</p>
+
+<br />&nbsp;<br /><h3><a class="none" name="ack">Acknowledgements</a></h3>
+
+<p>
+This documentation was prepared with the help of 
+<a href="http://weitz.de/documentation-template/">DOCUMENTATION-TEMPLATE</a> 
+by Edi Weitz (the code was hacked to run on SBCL).<br />
+The initial inspiration for the SIMPLE processor came from Richard Newman's <a href="http://www.cliki.net/cl-ajax">CL-AJAX</a> which is designed for use with Araneida.
+</p>
+
+<br />
+<a href="index.html">Back to the Lisp page</a>
+<br />
+<p style="font-size: x-small; text-color:#404040">
+;;; Copyright (c) 2007, Ury Marshak
+<br />
+</p>
+</body>
+</html>

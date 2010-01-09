@@ -1,0 +1,49 @@
+You need UFFI, ASDF, libSDL.  OpenGL is required for the OpenGL portions.
+
+Run ``make'' to compile the C stub libraries.  It attempts a little
+auto-detection of platform, but right now it's rudimentary.
+
+In your Lisp:
+
+Several ASDF systems have been defined:
+  sdl, opengl, sdl-ttf, sdl-mix, sdl-img, sdl-examples, sdl-demos, etc
+
+You can load them like so:
+  (asdf:oos 'asdf:load-op 'sdl-demos)  ; for example
+
+The following examples should work, unless otherwise noted:
+
+;; SDL examples:
+(2dt:start) 
+
+;; SDL (and OpenGL) demos:
+(sdl-test:start)
+(nehe:run-tutorial <x>)
+
+;; Where <x> could be: 2-11, 16, :torus, :solar-system, :vertex-array
+
+
+Has been tested on 
+* CMUCL/Linux/x86
+* Allegro/Linux/x86
+* SBCL/Linux/x86
+  - Tends to crash on the NeHe demos, not sure why.
+* Allegro/Win32
+* Lispworks/Linux/x86
+  - Only the SDL portion seems to work correctly.  OpenGL demos range
+    from no display to erratic.
+* Lispworks/Win32
+  - Won't resolve OpenGL symbols for some reason.
+* OpenMCL/Darwin/PPC
+  - Compiles, loads, crashes.  Argh.  Let me know if you can get this
+    actually running, please!
+
+Search paths:
+
+If the default search paths and various other path-finding mechanisms
+can't handle your setup, the relevant places to look are in ffi/uffi.lisp,
+at variables *library-paths*, *library-types*, and *drive-letters*
+and in examples/data.lisp variable *data-search-dirs*.
+
+
+Matthew Danish <mrd@debian.org>

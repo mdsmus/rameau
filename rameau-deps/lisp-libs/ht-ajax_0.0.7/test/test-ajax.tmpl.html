@@ -1,0 +1,134 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!--
+;;;
+;;; Copyright (c) 2007, Ury Marshak
+;;; The code comes with a BSD-style license, so you can basically do
+;;; with it whatever you want. See the file LICENSE for details.
+;;;
+-->
+<head>
+<title>HT_AJAX Test page</title>
+<!-- <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> -->
+<style type="text/css">
+<!--
+.header1 {
+	background-color: #FFFFCC;
+	font-size: x-large;
+	font-weight: bold;
+        border-width: 2;
+}
+body {
+	background-color: #FFCC99;
+}
+.main {
+	background-color: #FFFFCC;
+}
+
+table {border:none}
+td {border:none}
+fieldset {border:none}
+
+table.jsontable {
+  border: 1px solid;
+  cellspacing:3px;
+  cellpadding:5px;
+  background-color: #FFCC77;
+}
+.jsontable td {
+  border: 1px solid;
+  text-align: right;
+}
+-->
+</style>
+</head>
+
+<body>
+<!-- TMPL_VAR prologue -->
+<noscript><h1 style="color:red;">This page requires Javascript</h1><br /></noscript>
+
+<div class="header1"><h3 style="text-align:center;" class="header1">Test</h3>
+</div>
+<script type="text/javascript">
+function ajax1() {
+    var s = function (res) {
+        el = document.getElementById('res');
+        el.innerHTML = res;
+    }
+    var e = function (info) {
+        debug_alert('Handler caught error: '+info)
+    }
+    ajax_get_counter_callback([s, e]);
+}
+</script>
+<a href="javascript:ajax1();">GET COUNTER</a>
+<br />
+<span id="res">text</span>
+
+<hr />
+
+<br />
+<br />
+<table width="50%">
+  <tr>
+    <td colspan="2">
+      <span id="result"> <i>no results yet</i>
+      </span>
+    </td>
+  </tr>
+  <tr>
+    <td width="70%">
+      <input type="text" size="70" name="command" id="command" />
+    </td>
+    <td>
+      <input type="button" value="Eval" onclick="javascript:command_clicked();"/>
+    </td>
+  </tr>
+</table>
+
+<br />
+<script type="text/javascript">
+function command_clicked(txt) {
+// get the current value of the text input field
+var command = document.getElementById('command').value;
+
+// call function testfunc on the server with the parameter
+// command and set the element with the id 'result' to the return
+// value of the function
+ajax_testfunc_set_element('result', command); 
+
+}
+</script>
+
+
+
+<hr />
+<script type="text/javascript">
+function do_test_json() {
+    ajax_testjson_callback(function (obj) {
+        document.getElementById("object-p").innerHTML=obj.p;
+        document.getElementById("element-of-object-p").innerHTML=obj.p[3];
+    });
+}
+</script>
+<p>Test JSON</p>
+<br />
+<table class="jsontable">
+  <tr>
+    <td>&nbsp;</td>
+    <td>object.p</td>
+    <td>object.p[3]</td>
+  </tr>
+  <tr>
+    <td onclick="do_test_json();" style="background-color: #EE7777">Click here</td>
+    <td id="object-p">&nbsp;</td>
+    <td id="element-of-object-p">&nbsp;</td>
+  </tr>
+</table>
+<br />
+
+
+<hr />
+<p>This is just a test page</p>
+<hr />
+</body>
+</html>

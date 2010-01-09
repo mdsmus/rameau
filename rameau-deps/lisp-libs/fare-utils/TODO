@@ -1,0 +1,9 @@
+TODO
+* document what works and what doesn't
+* document all those functions, classes, etc., that do work.
+* export all the symbols correctly.
+* complete avl-tree -- or maybe just package the trees thing from Nathan Froyd?
+* import trie from pangram thingie
+
+
+* DECLAIM - distributed execution of common-lisp agents with intent and mobility

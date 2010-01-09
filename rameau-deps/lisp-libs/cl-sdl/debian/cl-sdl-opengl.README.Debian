@@ -1,0 +1,9 @@
+cl-sdl-opengl for Debian
+------------------------
+
+http://cl-sdl.sourceforge.net/
+
+(require :opengl) should load CL-SDL with OpenGL in your favorite C-L-C
+compliant Lisp.
+
+The `cl-sdl-demos' package has more fun demos to play with.

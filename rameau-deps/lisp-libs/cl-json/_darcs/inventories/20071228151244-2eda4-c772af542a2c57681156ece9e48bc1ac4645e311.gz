@@ -1,0 +1,78 @@
+[First version, decoder
+henrik@evahjele.com**20060130172648] 
+[encoder works
+henrik@evahjele.com**20060202142849] 
+[html
+henrik@evahjelte.com**20060203193308] 
+[testjson
+henrik@evahjelte.com**20060203211337] 
+[MIT license
+henrik@evahjelte.com**20060205110905] 
+[ No form-character on openmcl
+henrik@evahjelte.com**20060205170525] 
+[links refer to json.org
+henrik@evahjelte.com**20060218114508] 
+[bugfix encoding hashtables
+henrik@evahjelte.com**20060222215326] 
+[keyword package for keys when decoding objects
+henrik@evahjelte.com**20060223090421] 
+[json-rpc
+henrik@evahjelte.com**20060818161526] 
+[remove separate asdf module for json-rpc
+henrik@evahjelte.com**20060922142524] 
+[symbols encoded by parenscript, 'camel-case becomes "camelCase"
+henrik@evahjelte.com**20060922142711] 
+[interning of strings moved to a single function json-intern
+henrik@evahjelte.com**20060923090745] 
+[decoding symbols in camelCase becomes camel-case just as in parenscript.
+henrik@evahjelte.com**20060923091853] 
+[smarter json-bind allows access to nested objects with dot-notation
+henrik@evahjelte.com**20060923103021] 
+[json-bind can take alist as well as string
+henrik@evahjelte.com**20060923171022] 
+[bugfix to last json-bind change
+henrik@evahjelte.com**20060924093311] 
+[restarts in json-rpc
+Henrik Hjelte <henrik@evahjelte.com>**20060926135223] 
+[configurable to allow non-strict json (suggestion by Ben Hyde)
+Henrik Hjelte <henrik@evahjelte.com>**20061031054156
+ set *use-strict-json-rules* to nil if you want to be 
+ generous in what json you accept..
+] 
+[encode characters as strings, patch by Ken Harris
+Henrik Hjelte <henrik@evahjelte.com>**20061229094512] 
+[serious-condition instead of reader-error to trap number overflow
+Henrik Hjelte <henrik@evahjelte.com>**20061229101705
+ SBCL signals reader-error, Allegro signals error. 
+ Serious-condition ought to work on all Lisp implementations
+] 
+[show failures better
+Henrik Hjelte <henrik@evahjelte.com>**20061229101832] 
+[simplify test that failed for the wrong reason
+Henrik Hjelte <henrik@evahjelte.com>**20061229101922] 
+[json.asd renamed cl-json.asd, asdf cleanup by Pascal Bourguignon
+Henrik Hjelte <henrik@evahjelte.com>**20070324093357] 
+[json.test renamed cl-json.test
+Henrik Hjelte <henrik@evahjelte.com>**20070324095848] 
+[Failing alist test by Nathan Hawkins
+Henrik Hjelte <henrik@evahjelte.com>**20070324102326] 
+[encode-json now tries dotted-list if normal list fails
+Henrik Hjelte <henrik@evahjelte.com>**20070324110354] 
+[TAG 0.3.0
+henrik@evahjelte.com**20070324141654] 
+[variable json-symbols-package allows other packages besides keyword for interning json symbols
+Henrik Hjelte <henrik@evahjelte.com>**20070324115951] 
+[documentation updated
+Henrik Hjelte <henrik@evahjelte.com>**20070324122807] 
+[test for json-symbols-package
+Henrik Hjelte <henrik@evahjelte.com>**20070324141640] 
+[version 0.3.1
+Henrik Hjelte <henrik@evahjelte.com>**20070324141935] 
+[TAG 0.3.1
+Henrik Hjelte <henrik@evahjelte.com>**20070324142014] 
+[documented parenscript dependency
+Henrik Hjelte <henrik@evahjelte.com>**20070325211904] 
+[restart functions for json-rpc
+Henrik Hjelte <henrik@evahjelte.com>**20070531134607] 
+[json-rpc-error-object as in working draft fro json-rpc spec 1.1 
+Henrik Hjelte <henrik@evahjelte.com>**20070531150713] 

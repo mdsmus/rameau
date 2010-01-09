@@ -1,0 +1,1 @@
+../uffi-1.6.0/uffi-tests.asd

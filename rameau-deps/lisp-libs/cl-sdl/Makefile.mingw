@@ -1,0 +1,21 @@
+#### -*- Mode: Makefile -*-
+
+CC=gcc
+CFLAGS=-shared -Wall -fPIC
+LDFLAGS=
+SHLIB_SUFFIX=dll
+
+SDL_CFLAGS=$(CFLAGS) `sdl-config --cflags`
+SDL_LDFLAGS=$(LDFLAGS) `sdl-config --libs`
+
+GL_CFLAGS=$(CFLAGS)
+GL_LDFLAGS=$(LDFLAGS) -lglu32 -lopengl32
+
+SDL_TTF_CFLAGS=$(SDL_CFLAGS)
+SDL_TTF_LDFLAGS=$(LDFLAGS) -lSDL_ttf
+
+SDL_MIX_CFLAGS=$(SDL_CFLAGS)
+SDL_MIX_LDFLAGS=$(LDFLAGS) -lSDL_mixer
+
+SDL_IMG_CFLAGS=$(SDL_CFLAGS)
+SDL_IMG_LDFLAGS=$(LDFLAGS) -lSDL_image

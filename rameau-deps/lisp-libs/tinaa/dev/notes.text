@@ -1,0 +1,418 @@
+(in-package tinaa)
+
+- graphs: what if more than one graph per part?
+- need to associate url's
+- need to include in pages...
+
+- in part-of: if have X a, X b, X c -> X: a, b, c...
+- System properties Tinaa could use to control output...
+- in index and in detail page, show internal / external [in general, 
+    allow some sort of modifier, perhaps in combination with a style sheet]
+- Indexes for ASDF-System - a combined index of its packages...
+- if there are no indexes, don't show "Indexes:" text on page
+? - filenames (on asdf-system page) can use entire space
+? - (on asdf-system page), make it clear what the headings in the other files list are
+- (on asdf-system page), make it clear that e-mail is an e-mail! (graphic)
+- (on asdf-system page), make it clear what a "dependency" is 
+- tinaa, e.g. says it has 10 extenal symbols but shows only 9
+  - problem is that slots aren't shown on package page b/c (I think)
+    package tinaa has no slots as parts. The slots are parts of the classes...
+- bind says 41 internal, shows far fewer
+- sort files
+- initargs names not printed correctly (in doc-class.lisp)
+
+As it stands today, name-holders will appear as folders at the root level. Every
+name-holder / name-holder-kind pair must therefore be unique. Each name-holder's 
+folder will contain the documentation for the parts it names. 
+
+(progn
+  (setf ms
+        (document-system 'asdf-system 'tinaa
+                         "user-home:docs;asdf;tinaa;")))
+
+;;; ---------------------------------------------------------------------------
+
+(deftestsuite test-format-list () 
+  ())
+
+(deftestsuite test-default-format-list (test-format-list) 
+  ()
+  (:test ((ensure-same (format-list '(1 2 3)) "1, 2, and 3." :test #'string-equal)))
+  (:test ((ensure-same (format-list '(1 2)) "1 and 2." :test #'string-equal)))
+  (:test ((ensure-same (format-list '(1)) "1." :test #'string-equal)))
+  (:test ((ensure-same (format-list '()) "none." :test #'string-equal))))
+
+(deftestsuite test-format-list-with-changes (test-format-list) 
+  ()
+  (:test ((ensure-same (format-list '(1 2 3) :end-with "") "1, 2, and 3" :test #'string-equal)))
+  (:test ((ensure-same (format-list '(1 2) :final-separator ", ") "1, 2." :test #'string-equal)))
+  (:test ((ensure-same (format-list '() :empty-list "zip") "zip." :test #'string-equal))))
+
+
+Suppose we had a unique mapping from systems / packages -> names (e.g., GUIDs)
+  then Tinaa could know how to point to things... 
+  in the complex case, we could point to a web of documentations...
+  in the simple case, we know we're building it all and stay local. We build up 
+  the map as we go.
+  use symbolic links?
+  version control
+  use checksum?
+
+  level of detail -- where do you find the natural 'breaks'. For CL, it's packages.
+
+write out
+  system 
+
+produces a checksum of the (lisp) files in a directory hierarchy (doesn't handle spaces)
+  find . -name "*.lisp" -type f -print | xargs cat | md5
+
+ASDF-systems 
+  vertical align in table (CSS...)
+  find and create links for URLs in strings
+  * more indexes
+
+  missing indexes (none built)
+    probably want sub-indexs for packages PLUS overall indexes
+
+  parse files
+
+  if package is part of a system, include link back to system
+    this might be something on a separate page / index
+    soemthing that we can build when documenting multiple systems
+      in the AIT case, though, where do we keep this state? write it out.
+
+      this could be nice - a map of systems dependencies, packages to systems
+        list of symbol-names to packages, etc. Helpful in archeology
+
+      use a DB? -- makes it sound bigger than tinaa if I do that.x
+
+
+Package
+  Missing indexes links on details
+
+Design
+
+  allow additional stuff to get generated on a page via plug-ins
+
+  allow filters for documentation -> HTML 
+
+permuted index is missing conditions and classes?
+  includes only generic functions?
+
+(setf g (document-system 'package 'cl-graph "user-home:docs;cl-graph;"))
+(setf tinaa (document-system 'package 'tinaa "user-home:docs;tinaa;"))
+(setf m (document-system 'package 'moptilities "user-home:docs;moptilities;"))
+(setf ma (document-system 'asdf-system 'moptilities "user-home:docs;asdf;moptilities;"))
+
+
+How do we deal with edge->dot in a permuted index?
+  need to skip non-words?
+
+Permuted indexes
+  restructure to avoid all those <pre></pre>s
+  use absolute positioning for a back to top link
+  back to top graphic
+    unicode?
+
+LIFT: testing with unwind-protect... testing wtih variables you want to reset
+LIFT: removing tests at an upper level without removing lower level tests
+LIFT: constant HTML output / even text output
+
+- For some reason, the [generic] function documentation does not show the arguments (but it does show them for methods) -  this for links from index.html, but see below
+
+- Within various pages, all liknks Contents, Function, Generic-function, Symbol are wrong
+
+? - Within class pages, all links to methods are wrong.
+
+- You can see all this in the generated doc for tinaa in the enclosed tinaa.zip
+
+- The only format for the <destination> argument in tinaa:document-system is the local OS directory path format, including the final "/" or "\\". The Unix format does not work under Windows, even if that is otherwise common practice.  Rather restrictive, how about accepting logical pathnames and, at least, working internally only with such names? This might save you crashes of the type appearing in the enclosed "tinaa.log".
+
+- I also got another crash playing with document-system. Actually they are caused by:
+  = make-root-pointing-url coughs if file-depth-below-root does not return a number - well, it may return nil
+
+= relative-url: binding file-name crashes if searching for root-pos does not find - this is the crash in tinaa.log  
+
+Hope this is useful, I am really attracted by what tinaa tries to do
+ 
+
+find . -path "*/dev/*" -and -not -path "*/_darcs/*" -type f -name "*.lisp" -print -exec grep -iq "copyright" {} \;
+
+
+
+class - default-initargs
+  could summarize: readers, writers, initargs...
+
+document functions
+docuemtn package
+
+slot documentation
+
+Can Css make graph-vertex-not-found-in-edge-error wrap more nicely?
+
+If doing both internal and external, show this somehow
+  similar for direct / all
+
+Full Class diagram
+Mini-class diagrams
+Callers, etc... (use swank code?)
+
+Provide some mechanism (HTTP redirection to link all packages, etc)
+index does not show SLOTs (it shows their names but not any description)
+
+Generic functions has links to classes that aren't documented (b/c not exported)
+  that's ok? 
+
+main page does not show SLOTS 
+
+from inspector package
+(defun symbol-has-bindings-p (sym)
+  (or (constantp sym) (proclaimed-special-p sym) (boundp sym)
+      (special-form-p sym) (macro-function sym) (fboundp sym)
+      (type-specifier-p sym) (record-type-p sym nil)
+      (find-class sym nil)))
+
+what is this?? display-part ((part doclisp-macro) (mode (eql :table-summary)))
+  doing???
+
+Make part parents a union-find container
+
+FUTURE: make it easy to change style sheet
+  an argument?
+
+system should have list of files
+  printing file names
+  print files in a 2 or 3 column layout
+  links to CVS / Darcs / Etc
+    make part of method somewhere
+  using htmlize form source + extend with links to rest of (relevant) documentation
+
+package dependency graphs
+
+system dependency graphs
+
+Overview documentation
+Slots
+Setfs
+List of bugs, etc...
+CVS access
+
+*default-packages-to-ignore* needs to be updated as other systems are loaded
+
+#|
+index doesn't know about packages
+index only lists packages
+print symbols with package prefix?
+show list of files for system
+show list of files for package -- how does this work!?
+  need to add to the list of subpart kinds but only when documenting a package
+  as part of a system
+packages are not "descended" into
+add documentation string to eksl-system defs
+should skip ccl, ae-tools, others...
+systems listed as if they contain themselves
+In output-table-summary, need to look at (subparts (name-holder part))
+  but also want to ignore things that are not "part of" the current part.
+  perhaps look at 'parents'
+|#
+
+
+;;; ---------------------------------------------------------------------------
+
+handle doc-strings better (<, >, line breaks)
+
+(setf <symbol>) in url-for-part
+
+Current simple mode is that we create pages for everyone that has a 
+  :detail display-part method.
+
+linking is still a bit of mystery
+From Zach Beane: Random blue sky: why limit symbol documentation 
+lookup to the HyperSpec? It'd be nice if package authors provided a 
+way to map from symbols to documentation URLs, preferably in a 
+programmatic way that integrates with SLIME.
+
+sort container for associative containers
+
+how do we extend it 
+  e.g., get internal or external symbols of a package
+  options become part of a web form? generate pages for all option combinations?
+
+given a system and a part-name, I get parts. I'll need to (potentially) make
+  "systems" out of these parts. So I'll need to say how to do that.
+
+This will be consy as hell, but I don't think that's an issue
+
+Note that I'm making collectors here rather than mappers... is that bad
+
+Part -> HTML
+  class -> HTML
+  maybe two forms 
+    single page (all in one)
+    frame style (lists of subparts on side for jumping too)
+
+Global options / part options (means defined by system)
+  use reflection to determine options for system being documented
+    and ask up front
+
+documentation is made up of lots of parts
+  I could ask for different pages at different times
+there is summary documentation and detail documentation
+I can insert summary documentation in the 'parent's' page
+some things have no detail -- then they don't have their own page
+
+We can imagine different styles
+  e.g., the alphabetical style used in Tapir
+
+Lint would be another kind of documentation
+
+Should say "no documentation available" if methods aren't written.
+  maybe (use CSS somehow to insert text or not)
+
+~ make-part needs to return singletons
+
+;;; ---------------------------------------------------------------------------
+
+Is there a nice way to handle things that are the same but naturally divide:
+  direct-slot, inherited-slots. Are these two kinds of slots? Are they one 
+  kind with a marker that says which sub-kind they are. If we want to easily
+  display separate lists, the former makes more sense. Can this handled more
+  easily in the output side?
+
+Suppose my superclass is in a different package. That's ok if I'm doing a 
+system, but what if I'm doing a package. No link. Specialized link. Broken link?
+How does find-part know how to handle this.
+
+Currently, packages have gf, methods, classes, etc. But not slots. Classes
+have slots. (The same package thing comes up here of course with inherited slots).
+When I (find-part * 'slot <name>), what should happen. Should I look for it
+in the package -- only one name holder. Or in the class? 
+
+Should make the part specs returned by subpart-kinds return instances of
+something with structure. This could be a way of supporting things like
+all-slots, direct-slots, inherited-slots.
+
+Slots are still just symbols. But (in doclisp sense) of a special kind.
+
+Packages could have symbols though I might not want them reported.
+(Rather they'd go in a separate page / index page).
+
+One way to do this is to have everything in the package. If you're doing a
+system, then the system looks in each package [heck, it would know in which 
+packge to look]. This would mean that either the package's subpart-kinds
+must include all the kinds of its subparts or that the package doesn't mind
+creating subpart-kinds that it knows nothing about.
+
+Parts can have many parents. E.g., a slot. Should we be explicit about this.
+What is the parent for?
+
+;;; ---------------------------------------------------------------------------
+
+package summary needs to show readers / writers
+index should deal with slots readers/writers?
+setf's
+function list need to include setf's as well
+if slots are exported, don't show them if we're only doing external
+if symbols aren't exported, should not show them in lists
+
+Extend:
+(defun document-symbol-p (symbol)
+  (find (symbol-package symbol) (packages-to-document)))
+(defun packages-to-document ()
+  ;; hack
+  (list (find-package (name *root-part*))))
+
+to do eksl-system, need to clarify name-holders and indexes
+want indexes to do every symbol (sub-indexes?)
+
+counts of different kinds of things in package summary
+
+color index 'sections'
+make go to top nicer
+index seems spread out -- table in table problem?
+on class page
+  also default-initargs (ccl::CLASS-DEFAULT-INITARGS)
+:summary isn't used right now...
+links to summaries on summary pages
+links to top on summary pages
+if no methods, no detail page
+why are things getting internal links (#) that they shouldn't be getting
+logo!?
+symbols need to override documentation-exists-p
+~ have summary show first bit of comment, detail show all
+show direct / indirect slots on class page
+show direct / indirect methods on class page ??
+show direct / indirect superclasses on class page ??
+show subclasses - how far down?
+
+nice way of dealing with direct / indirect slots (for example)
+
+do Tapir
+add file detail page shows what is in it
+  and includes a link to the file
+do files
+  include files on all detail pages
+do debugging
+callers
+graphical subclasses
+  dealing with multiple inheritance?!
+  graphviz
+
+ok - title of package 
+ok - macro details
+ok - function details
+ok - variable details
+ok - page should use real name, not nickname
+ok - symbol index should show "function" even if they aren't linked
+ok - class method summary no longer linking to gf pages
+ok - constants
+ok - not all variables seem to show up in the variables index
+ok - rework index to include all necessary symbols (and always include A-Z)
+ok - map-parts-from-leaves should only hit each part once.
+ok -  minimum widths for name td in table-summary
+ok - top file should be index
+ok - index pages should have links to other indexes
+ok - lower case indexes
+ok - generic functions detail page
+ok - getting polutents!? docing u gives us still in Krill and Hats
+ok - short documentation broken
+ok - methods args should link to classes
+ok - rely on 5.1 and long files... sure!
+ok - index for symbols should include the different links to the uses of the symbol
+ok - documentation all messed
+ok - links to classes from gf details page
+ok - sort methods alphabeticaly
+ok - every page should have a link to the root
+ok - new name
+ok - fix header
+ok more package information: symbol counts
+ok - index pages need link to Contents
+ok - don't index if no function / value
+ok - HTML titles of index pages
+ok - documenting-page needs a title arg.
+ok - make-part needs args to use for initialization
+ok - alternate row colors AH
+ok - on class page, slot summary should be more interesting
+  allocation, readers / writers / accessors, initform, initargs
+  if long, should go into detail section
+ok - on gf page, need to get method / methods correct
+ok - way to specify up front which symbols we want (internal / external)
+ok - don't include readers / writers in gf summary
+ok - each kind will need its own url/page
+  i.e., the gf foo needs to be different than the class foo
+ok - index includes undocumented symbols
+ok - Doesn't handle #\/ or #\* in symbol names
+ok - improve 
+  "directed-edge-class initform 'Cl-Graph::Basic-Directed-Edge, initargs Directed-Edge-Class."
+ok - Make it clear that is is tinaa version in footer, not software
+ok - Several symbols are left out when doing portable-threads .
+  This is because the symbols are in CCL and CCL isn't a *package-to-document*
+ok - We can show parents too -- pointers back up...
+  ok - move license to bottom (or separate page or something if it's long)
+  ok - want a nicer way to show files (extract the "common root")
+  ok - have separate folders for each name-holder
+    use when creating indexes and URLs
+  ok - show files from root (not full names)
+  ok - only show 'direct' files (not all files)
+  
+defer - alphabet if more than k-entries for a section

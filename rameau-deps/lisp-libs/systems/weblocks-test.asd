@@ -1,0 +1,1 @@
+../weblocks-stable/weblocks-test.asd

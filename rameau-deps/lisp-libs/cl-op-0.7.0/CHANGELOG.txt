@@ -1,0 +1,61 @@
+Version 0.7.0
+5-17-2009
+Rewrote code walker in CPS.
+Better lifting from special forms.
+Added compiler macro for beta reduction.
+BREAKING CHANGE -- renamed CL-OP-HOF to CL-OP.HOF
+
+Version 0.6.1
+4-13-2009
+Added GENERATOR to CL-OP-HOF.
+Refactored WALK.
+
+Version 0.6.0
+3-26-2009
+Better invariant lifting of macro forms containing slots.
+Added COMPOSE.
+Moved the utility higher order functions (FLIP, CONJOIN, DISJOIN, COMPOSE) to a seperate package CL-OP-HOF.
+
+Version 0.5.2
+3-24-2009
+Major refactoring.
+Added CONJOIN.
+Exported CONJOIN and DISJOIN.
+
+Version 0.5.1
+3-16-2009
+Made environment passing explicit.
+Added CHANGELOG.txt
+
+Version 0.5.0
+3-12-2009
+BREAKING CHNAGE -- removed PAPPLY, PAPPLY*, PFUNCALL, PFUNCALL*, PMULTIPLE-VALUE-CALL, PMULTIPLE-VALUE-CALL*, *WALKER-IGNORE-LIST*.
+
+Version 0.4.2
+3-11-2009
+Added support for nested OPs.
+
+Version 0.4.0 
+3-10-2009
+Made invariant lifting less aggressive but more robust.
+
+Version 0.3.2
+3-9-2009
+Minor cleanup.
+
+Version 0.3.1
+3-8-2009
+bugfix: improper handling of LAMBDA macro.
+
+Version 0.3.0
+3-5-2009
+Macroexpanding only to determine whether to lift.
+
+Version 0.2.0
+3-4-2009
+BREAKING CHANGE -- OP now takes a function name or a lambda expression as the function argument (instead of a function designator as before). 
+Added PFUNCALL and PMULTIPLE-VALUE-CALL. 
+
+Version 0.1.0
+3-1-2009
+Initial release. 

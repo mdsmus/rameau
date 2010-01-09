@@ -1,0 +1,41 @@
+Starting with tag:
+[TAG 0.3.2
+henrik@evahjelte.com**20071228151244] 
+[Added CLOS / MOP infrastructure.
+boris.smilga@gmail.com**20071223151000] 
+[Added decoding of objects to CLOS objects, hash tables or alists.
+boris.smilga@gmail.com**20071223151334] 
+[Added decoding of arrays to vectors or lists.
+boris.smilga@gmail.com**20071223151610] 
+[Added WITH-OLD-DECODER-SEMANTICS.
+boris.smilga@gmail.com**20071223151705] 
+[Added encoding of CLOS objects, and prototypes for alists and hash tables.
+boris.smilga@gmail.com**20071223151744] 
+[renamed some parameters like constants
+Henrik Hjelte <henrik@evahjelte.com>**20071228145823] 
+[move around some stuff, made testcases work for old semantics
+Henrik Hjelte <henrik@evahjelte.com>**20071228150818
+ if you call set-list-decoder-semantics before (5am:run 'json)
+ the 101 old testcases work ok.
+] 
+[put old style semantics as default
+Henrik Hjelte <henrik@evahjelte.com>**20071228152325
+ until the clos objects are integrated,
+ have testcases, all tests run ok.
+] 
+[changed name of with-old-decoder-semantics to with-list-decoder-semantics
+Henrik Hjelte <henrik@evahjelte.com>**20071228170803] 
+[Updated some testcases to work with arrays as well as lists
+Henrik Hjelte <henrik@evahjelte.com>**20071228170926] 
+[restore list-decoder defaults 
+Henrik Hjelte <henrik@evahjelte.com>**20080105100011
+ for backwards compatibility, some
+ of my old code broke with the new default
+ variable values
+] 
+[todo file
+Henrik Hjelte <henrik@evahjelte.com>**20080114144149] 
+[get rid of some newly introduced compiler warnings
+Henrik Hjelte <henrik@evahjelte.com>**20080120091410] 
+[encode as p-list (by Hans Hübner)
+Henrik Hjelte <henrik@evahjelte.com>**20080318233313] 

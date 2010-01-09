@@ -1,0 +1,10 @@
+#### -*- Mode: Makefile -*-
+#### Author: Matthew Danish <mrd@debian.org>
+#### Common Makefile options
+
+STUBS=  sdlstub.$(SHLIB_SUFFIX) \
+	glstub.$(SHLIB_SUFFIX) \
+	sdlttfstub.$(SHLIB_SUFFIX) \
+	sdlmixstub.$(SHLIB_SUFFIX) \
+	sdlimgstub.$(SHLIB_SUFFIX)
+

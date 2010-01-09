@@ -1,0 +1,109 @@
+about-dialog -- 2.8
+accel-group -- 2.6 (except some functions which are probably not very useful)
+accel-label
+accel-map -- 2.6 (except some functions which are probably not very useful)
+accessible -- 2.6
+adjustment -- defined by introspection
+alignment -- 2.6
+arrow -- defined by introspection
+aspect-frame -- defined by introspection
+bin -- 2.6
+box -- 2.6
+button -- 2.6
+button-box -- defined by introspection
+calendar -- 2.6
+cell-layout -- 2.6
+check-button -- defined by introspection
+check-menu-item -- 2.6
+color-button -- defined by introspection
+color-selection -- 2.6 minus palette
+color-selection-dialog -- 2.8
+combo-box -- 2.4
+combo-box-entry -- 2.6
+container 
+dialog -- 2.6
+drawing-area -- defined by introspection
+editable -- 2.6
+entry -- 2.6
+entry-completion -- 2.8
+event-box -- defined by introspection
+expander -- defined by introspection
+file-chooser -- 2.8
+file-chooser-button -- defined by introspection (but the dialog property should be readable)
+file-chooser-dialog -- defined by introspection
+file-chooser-widget -- defined by introspection
+file-filter -- 2.6
+fixed -- 2.6
+frame -- 2.6
+font-button -- defined by introspection
+font-selection -- 2.6
+frame -- 2.6
+handle-box -- 2.6
+h-box -- defined by introspection
+h-button-box -- defined by introspection
+h-paned -- defined by introspection
+h-ruler -- defined by introspection
+h-scale -- defined by introspection
+h-scrollbar -- defined by introspection
+h-separator -- defined by introspection
+image -- 2.8
+image-menu-item -- 2.6
+im-context
+im-context-simple
+im-multicontext
+item -- 2.6
+label -- 2.6
+layout -- 2.6
+list-store -- 2.6
+menu -- 2.6
+menu-bar -- defined by introspection, 2.8
+menu-item -- 2.6
+menu-shell -- 2.8
+menu-tool-button -- 2.6
+message-dialog -- 2.4
+notebook -- 2.6
+paned -- 2.6
+plug
+progess-bar -- 2.6
+radio-button -- 2.6
+radio-menu-item -- 2.6
+radio-tool-button -- 2.6
+range -- 2.6
+ruler -- 2.6
+scale -- 2.6
+scrollbar -- defined by introspection
+scrolled-window -- 2.8
+separator -- defined by introspection
+separator-menu-item -- defined by introspection
+separator-tool-item -- defined by introspection
+size-group -- 2.8
+socket
+spin-button -- 2.6
+statusbar -- 2.6
+stock-item -- 2.6
+table -- 2.6
+tearoff-menu-item -- defined by introspection
+text-buffer -- 2.6 (but the API may change)
+text-iter -- 2.6
+text-mark -- 2.6
+text-tag -- 2.6 minus text-attributes
+text-tag-table -- 2.6
+text-view -- 2.6
+toggle-button -- defined by introspection
+toggle-tool-button -- 2.6
+toolbar -- 2.6
+tool-button -- 2.8
+tool-item -- 2.6 (except initialize-instance)
+tooltips -- 2.6
+tree-store -- 2.6
+viewport -- defined by introspection
+v-box -- defined by introspection
+v-button-box -- defined by introspection
+v-paned -- defined by introspection
+v-ruler -- defined by introspection
+v-scale -- defined by introspection
+v-scrollbar -- defined by introspection
+v-separator -- defined by introspection
+widget -- 2.6 (more or less)
+window -- 2.8
+window-group -- 2.6

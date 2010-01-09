@@ -1,0 +1,1 @@
+../memoize-1.6/memoize.asd

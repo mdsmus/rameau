@@ -1,0 +1,69 @@
+#!/bin/sh
+
+tempDir="$HOME/temporary"
+sourceDir="$HOME/darcs"
+source="asdf-install"
+tarPath="gking@common-lisp.net:/project/cl-containers/public_html/asdf-install"
+
+force="t"
+install=""
+
+### Grab stuff from Sourceforge
+rm asdf-install/doc/index.html
+result=""
+cvs -d :ext:gwking@cvs.sourceforge.net:/cvsroot/cclan update asdf-install
+result="result:$?"
+echo "Result is '$result'"
+
+if [ "$result" != "result:0" ]; then
+    echo "failed to get data: " $result
+    exit -1
+fi
+
+### Put it in darcs
+darcs whats --summ --look
+if [ $? -ne 0 ]; then
+	echo "No changes to record"
+else
+	darcs record -a -m "Recording latest changes from CCLAN"
+	install="yes"
+fi
+
+if [ \( -z "$install" \) -and \( -z "$force" \) ]; then
+	echo "Not rebuilding"
+else
+	### Now we can proceed in the semi-usual fashion
+	echo "Rebuilding"
+	
+	PASSWORD=`cat ~/.ssh/goomber`
+	SOFTWARE="${source}_latest"
+	echo "Making $SOFTWARE"
+	pushd . > /dev/null
+	cd $tempDir
+	if [ -d asdf-install ]; then
+		rm -r asdf-install
+	fi
+	mkdir asdf-install
+	cd asdf-install
+	darcs get $sourceDir/$source
+	rm -r $source/_darcs
+	if [ -f $source/version ]; then
+		VERSION=`cat $source/version`
+		echo $VERSION
+	fi
+	cd asdf-install
+	tar -cf $SOFTWARE.tar $source
+	gzip $SOFTWARE.tar
+	echo $PASSWORD | gpg --batch --passphrase-fd 0 -b -a $SOFTWARE.tar.gz
+
+	rsync \
+		--archive \
+		--rsh=ssh \
+		--compress \
+		-v \
+		$SOFTWARE.tar.* \
+		$tarPath
+
+	rsync-1-repository  "asdf-install" "asdf-install"
+fi
+

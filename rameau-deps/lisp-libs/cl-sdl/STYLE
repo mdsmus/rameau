@@ -1,0 +1,123 @@
+A few guidelines on coding style and other notes for those working on
+CL-SDL and using its foreign-function interface wrapper:
+
+
+* Implementation notes
+
+CMUCL is particular about types.  Especially floating-point types.
+Always use precisely the correct float type (0f0 or 0d0 for example)
+when supplying it to foreign functions.  Similarly, be correct about
+array types, and about declarations.
+
+Allegro is probably the most forgiving FFI, but it can be too
+forgiving and silent about problems.
+
+OpenMCL requires the precise usage of :struct and :struct-pointer.
+Thus, always use (:struct foo) or (:struct-pointer foo) when
+declaring a particular structure type in a foreign function.
+
+LispWorks is picky about the distinction between SLOT and SLOT-PTR.
+Be sure to use SLOT when you want the value of the slot and SLOT-PTR
+when you want a pointer to it.  For example, if you are doing
+(foo->bar->baz) then it will probably look like 
+(SLOT (SLOT-PTR foo foo-t bar) bar-t baz).
+
+* Notes on SGUM, in uffi.lisp
+
+All FFI wrapper macros should accept only unevaluated types and
+slot-names.  This means, for example: (SLOT foo foo-type slot-name),
+or (DEREF-ARRAY array (:array int) 1).  Yes, I know it sucks and is
+inflexible, but this is the limitation imposed by several FFIs.  If it
+makes you feel better, C programmers don't get anything better.
+
+You are encouraged to use the wrappers defined in uffi.lisp in the
+SGUM package, but if you absolutely must use functionality outside of
+this and cannot wait for it to be incorporated into the main tree then
+use UFFI directly.  Feel free to write your own macros into the
+uffi.lisp file, instead, or into the SGUM package and make use of the
+support functions there to help integrate it properly.
+
+A list of wrapper-supported typenames can be gleaned from the CAR of
+the *TYPE-TABLE* in uffi.lisp, but UFFI-supported names work too.  I'm
+not altogether happy with the choice of names in UFFI, though, and
+have provided some better names.
+
+* The usage of C wrappers
+
+If a construct cannot be reasonably and portably expressed in Lisp,
+due to FFI limitations, then do not hesitate to write a C wrapper.  I
+use the stub C files for just this purpose, as well as to simplify
+linking issues.  Portability is highly valued in this project, and
+remember that users of certain implementations (CLISP) may not enjoy
+the compiled speed of more capable implementations.
+
+For example, I originally wrote the DRAW-PIXEL function in CL, when
+the code was restricted to CMUCL, and it worked well.  But once I
+tried to make it portable, I realized I needed a CAST operation which
+simply wasn't available with UFFI; possibly not with all
+implementations either.  Also, this particular function could be a
+bottleneck in an interpreter.  Thus I ``ported'' it to C.
+
+* Defining interfaces
+
+If possible, when defining new interfaces to foreign functionality,
+consider first ways that it can be used efficiently as well as
+conveniently; and let the user choose which way.  This concept might
+best be explained by example--the vertex-array interface is designed
+with this in mind (hopefully):
+
+Vertex-arrays allow you to specify packed data for OpenGL functions
+to grok.  The most portable version would simply copy Lisp arrays into
+foreign arrays.  This is obviously not the most efficient way if Lisp
+arrays can be used directly, as Timo had originally written for CMUCL.
+But the desire is to be able to use the same constructs even on
+implementations which don't support packed Lisp arrays.  Users of
+CLISP might want to precompile a vertex-array and use it later on,
+while users of CMUCL don't need to do this.  An interface to return an
+abstract vertex-array type is provided, as well as operations to
+manipulate the data in the array, and free it.  Also, a macro has been
+defined which lets the library know over what extent the vertex-array
+is being accessed by OpenGL.  Usage of this interface should provide
+the most efficient implementation of vertex-arrays available on a
+given platform.  For example, in CMUCL, most of the interface might be
+empty (except perhaps to ensure that the array qualifies for packed
+access) except for the WITH-VERTEX-ARRAY-IN-USE macro which must
+prevent relocation of the Lisp array within its extent.  Whereas in
+CLISP it would allocate a foreign array and operate on that object
+instead.  In addition to this, the WITH-VERTEX-ARRAY-IN-USE macro has
+options that allow it to conveniently create and destroy a completely
+new vertex-array if this is so desired.
+
+* Code style
+
+Now a few words on actual code style!  In order to avoid problems with
+annoying implementations such as ``Modern'' Allegro, all symbols are
+to be written in lower-case and uninterned symbols are preferred over
+strings where such use might be dictated (package declarations, etc).
+Indentation follows Emacs+ILISP guidelines (but I won't object too
+strenuously to others, so long as they are reasonable.  Just don't be
+surprised if your indentation changes later on =).
+
+* Constants
+
+Constant names are formed by converting CamelCase and Underscore_Words
+to dash-separated-words and cutting off the prefix.  SDL_INIT_VIDEO is
+sdl:+init-video+, for example.
+
+* Functions
+
+Function names are formed similarly, ie. SDL_SetVideoMode is
+sdl:set-video-mode.  Suffixes are dash-separated as well, so glColor3f is
+gl:color-3f.
+
+* Types and slots
+
+Typenames and slots follow suit as well, ie. SDL_Rect is sdl:rect with
+a slot called sdl::x.  However there is a handy macro called
+DEF-FOREIGN-STRUCT-ACCESSORS which defines proper accessors for
+structs and exports them.  I'd rather you use the accessors created by
+this macro than the unexported slot names.
+
+- SDLMod is SDL:KMOD
+
+--mrd
