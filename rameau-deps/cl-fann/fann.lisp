@@ -8,7 +8,7 @@
 (define-foreign-library libfann
   (:unix #.(namestring
             (make-pathname :directory (pathname-directory (translate-logical-pathname "rameau:lib;"))
-                           :name "libfann"
+                           :name "libfann64"
                            :type "so"))))
 
 (defun load-fann ()
