@@ -4,7 +4,7 @@ book: book-stuff
 	dvips book-corais.dvi
 
 book-stuff: corais.lytex
-	lilypond-book -o out -I ../../../genos-corpus/music/bach-chorales/ corais.lytex
+	lilypond-book -o out -I ../../../genos-corpus/music/bach-chorales/ly/ corais.lytex
 
 clean:
 	rm -f book-corais.{aux,dvi,log,tex}
